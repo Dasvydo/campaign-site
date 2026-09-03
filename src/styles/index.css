@@ -1,0 +1,212 @@
+@import './fonts.css';
+@import 'tailwindcss';
+
+/* ==========================================================================
+   Design tokens. Every colour is from brand-lock.md and is authoritative,
+   not provisional. See AUDIT.md section 2 and DESIGN-PLAN.md section 2.
+   ========================================================================== */
+@theme {
+  /* The six that carry the page */
+  --color-cream: #fff0e5;
+  --color-espresso: #251d18;
+  --color-charcoal: #1d1816;
+  --color-sand: #f2e3d9;
+  --color-rule: #e4d7cd;
+  --color-amber: #f59b0a;
+
+  /* Supporting warm neutrals, light ground */
+  --color-paper: #fdf9f7;
+  --color-peach: #fbebda;
+  --color-taupe: #ddcfc6;
+  --color-muted: #70635c;
+  --color-destructive: #db2424;
+
+  /* Supporting warm neutrals, dark ground */
+  --color-amber-dark: #fbbd23;
+  --color-warmwhite: #faf1eb;
+  --color-card-dark: #28221f;
+  --color-secondary-dark: #38312e;
+  --color-rule-dark: #463e39;
+  --color-muted-dark: #b8a394;
+
+  /* Brand marks */
+  --color-teal: #2a6c7c;
+  --color-orange: #e96c32;
+
+  --font-display: 'Playfair Display', 'Playfair Fallback', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  --radius-brand: 16px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-cream);
+    color: var(--color-espresso);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 400;         /* regular serif reads editorial; bold reads template */
+    letter-spacing: -0.01em;
+    line-height: 1.12;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p { margin: 0; text-wrap: pretty; }
+
+  /* Visible keyboard focus on both grounds. Never removed without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-amber-dark);
+  }
+
+  ::selection {
+    background: var(--color-peach);
+    color: var(--color-espresso);
+  }
+}
+
+@layer components {
+  /* The page's structural device: a hairline that runs the full width,
+     the way a rule works on a printed page. Not a card border. */
+  .rule-top { border-top: 1px solid var(--color-rule); }
+  .rule-bottom { border-bottom: 1px solid var(--color-rule); }
+  .on-dark .rule-top { border-top-color: var(--color-rule-dark); }
+  .on-dark .rule-bottom { border-bottom-color: var(--color-rule-dark); }
+
+  /* Section number in the left margin. Does the job of an eyebrow label
+     without being an ALL-CAPS eyebrow label. */
+  .margin-number {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-muted);
+  }
+  .on-dark .margin-number { color: var(--color-muted-dark); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1;
+    padding: 15px 26px;
+    border-radius: var(--radius-brand);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+  }
+  .btn-primary {
+    background: var(--color-espresso);
+    color: var(--color-cream);
+  }
+  .btn-primary:hover { background: #12100e; }
+  .on-dark .btn-primary {
+    background: var(--color-warmwhite);
+    color: var(--color-charcoal);
+  }
+  .on-dark .btn-primary:hover { background: #ffffff; }
+
+  .btn-quiet {
+    background: transparent;
+    color: var(--color-espresso);
+    border-color: var(--color-rule);
+  }
+  .btn-quiet:hover { background: var(--color-sand); }
+  .on-dark .btn-quiet {
+    color: var(--color-warmwhite);
+    border-color: var(--color-rule-dark);
+  }
+  .on-dark .btn-quiet:hover { background: var(--color-secondary-dark); }
+
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  /* Form controls on the charcoal band. */
+  .field-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-warmwhite);
+    margin-bottom: 7px;
+  }
+  .field-hint {
+    font-size: 14px;
+    color: var(--color-muted-dark);
+    margin-top: 6px;
+  }
+  .field-error {
+    font-size: 14px;
+    color: #ffb4b4;
+    margin-top: 6px;
+  }
+  .field {
+    width: 100%;
+    background: var(--color-card-dark);
+    border: 1px solid var(--color-rule-dark);
+    border-radius: var(--radius-brand);
+    color: var(--color-warmwhite);
+    font-family: var(--font-sans);
+    font-size: 16px;   /* 16px stops iOS Safari zooming the page on focus */
+    line-height: 1.4;
+    padding: 14px 15px;
+    appearance: none;
+  }
+  .field::placeholder { color: #8e7d72; }
+  .field:hover { border-color: #5a504a; }
+  .field[aria-invalid='true'] { border-color: #e07575; }
+
+  select.field {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23B8A394' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 42px;
+  }
+
+  /* The one animated thing on the whole page: the amber dot that says the
+     draft just landed. Everything else is still, by design. */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    flex: none;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+}
+
+/* Respect the setting. This kills the only animation and the smooth scroll. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .live-dot { animation: none; opacity: 1; }
+}

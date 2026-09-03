@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FFF0E5" />
+
+    <title>DoviLoop for teams</title>
+    <meta name="description" content="Email drafting for teams who live in Outlook. It reads the message, pulls what your firm knows, and writes the reply in your voice. You read it and send it." />
+
+    <!-- Fonts are self-hosted from our own origin. No Google Fonts request, which
+         keeps the page clean for EU visitors and removes a render-blocking hop.
+         Only the two faces above the fold are preloaded; the rest load normally. -->
+    <link rel="preload" href="/fonts/playfair-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/dm-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- ==================================================================
+         Meta pixel. INERT until VITE_META_PIXEL_ID is set.
+
+         The ID is injected at build time by src/lib/pixel.ts, which reads
+         import.meta.env.VITE_META_PIXEL_ID. With the variable empty this
+         block does nothing at all: no script is fetched, no request is made,
+         no cookie is written. That is deliberate. Dovy has not created the
+         Meta Business account yet, and firing a pixel with no ID would be a
+         wasted request on every page view and a consent-banner problem in
+         the EU for no gain.
+
+         When the ID exists, pixel.ts injects the standard fbevents.js loader
+         below and fires PageView once. Nothing else here needs to change.
+         See BLOCKED.md entry 4.
+         ================================================================== -->
+    <noscript>
+      <!-- The <img> fallback is written by src/lib/pixel.ts alongside the
+           script, again only when an ID is present. Nothing hardcoded here. -->
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
