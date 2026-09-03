@@ -6,7 +6,6 @@
  * and the four UTM values, which is why nothing calls posthog.capture directly.
  * Use track() and the properties come along automatically.
  */
-import posthog from 'posthog-js';
 import { env } from './env';
 import type { Locale, Market, Utm } from './contract';
 
@@ -27,8 +26,14 @@ interface Context {
   utm: Utm;
 }
 
+type PostHog = typeof import('posthog-js').default;
+
 let ctx: Context | null = null;
 let started = false;
+let ph: PostHog | null = null;
+/* Events fired before the library finishes loading are held here, not dropped.
+   page_view in particular fires on the first frame and would otherwise be lost. */
+let pending: Array<{ name: EventName; props: Record<string, unknown> }> = [];
 
 export function initAnalytics(context: Context): void {
   ctx = context;
@@ -45,15 +50,37 @@ export function initAnalytics(context: Context): void {
     return;
   }
 
-  posthog.init(env.posthogKey, {
-    api_host: env.posthogHost,
-    // We fire page_view ourselves so it carries market, locale and UTM.
-    capture_pageview: false,
-    capture_pageleave: true,
-    persistence: 'localStorage+cookie',
-    autocapture: false,
-    disable_session_recording: true,
-  });
+  /* Loaded on demand rather than bundled into the entry chunk. posthog-js is
+     larger than the rest of this page put together, and a landing page that
+     paints fast converts better than one that ships an analytics library in
+     its critical path. */
+  void import('posthog-js')
+    .then((mod) => {
+      const client = mod.default;
+      client.init(env.posthogKey, {
+        api_host: env.posthogHost,
+        // We fire page_view ourselves so it carries market, locale and UTM.
+        capture_pageview: false,
+        capture_pageleave: true,
+        persistence: 'localStorage+cookie',
+        autocapture: false,
+        disable_session_recording: true,
+      });
+      ph = client;
+      const queued = pending;
+      pending = [];
+      for (const e of queued) {
+        try {
+          client.capture(e.name, e.props);
+        } catch {
+          /* never break the page for analytics */
+        }
+      }
+    })
+    .catch(() => {
+      // Blocked by an extension or offline. The page carries on unaffected.
+      pending = [];
+    });
 }
 
 /** Keeps market and locale current when the visitor switches language. */
@@ -84,8 +111,15 @@ export function track(name: EventName, props: Record<string, unknown> = {}): voi
     return;
   }
 
+  if (!ph) {
+    // Still loading. Hold it, with a cap so a permanently blocked library
+    // cannot grow an unbounded array.
+    if (pending.length < 40) pending.push({ name, props: payload });
+    return;
+  }
+
   try {
-    posthog.capture(name, payload);
+    ph.capture(name, payload);
   } catch {
     // Analytics must never break the page or the form.
   }
