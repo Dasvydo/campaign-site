@@ -114,12 +114,17 @@ placeholder swaps itself out. Dovy's step is one file copy, no code change.
   live text in DM Sans with the brand-lock two-tone colouring ("Dovi" `#2A6C7C`, "Loop"
   `#E96C32`), which is a sanctioned lockup. The monogram is not faked. Logged in `BLOCKED.md`.
 - No testimonials, no named pilots, no customer logos. Per `00-START-HERE.md` these must not be
-  invented, so the social-proof slot is filled with the measured ROI figures instead, presented
-  as estimates.
+  invented, so the social-proof slot is filled with the ROI figures instead, presented as a worked
+  example with the basis printed next to each one. *Note, 2026-09-06: Dovy has confirmed these
+  figures are modelled, assumed time saved costed at a salary, and were never measured against a
+  customer. The page copy now says so in all three languages.*
 
 ## 7. What this batch will not touch
 
-- Supabase project `kngcxwcybozgqgnoweyt`: untouched, never contacted.
+- Supabase project `kngcxwcybozgqgnoweyt`: untouched, never contacted. *Note, 2026-09-06: Dovy has
+  since confirmed the campaign ledger lives in Supabase project `oqpeebtwtikdzorgouxd`, schema
+  `campaign`. The ID above is what the audit recorded on 2026-09-03 and is left as a record. This
+  repo contacts neither; ledger writes stay with Batch F.*
 - No database migration written or applied.
 - No live API call requiring a secret. The webhook POST is exercised against a local mock
   endpoint only.

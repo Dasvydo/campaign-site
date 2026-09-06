@@ -85,17 +85,17 @@ export const da: Content = {
 
   numbers: {
     title: 'Hvad det er værd',
-    lead: 'Tre tal vi kan stå inde for, og hvor hvert af dem kommer fra.',
+    lead: 'Tre tal, og regnestykket bag hvert af dem.',
     rows: [
       {
         figure: 'cirka 9x',
         label: 'i afkast på prisen per bruger',
-        basis: 'Sparet tid holdt op mod, hvad en bruger koster jer om måneden.',
+        basis: 'Den tid vi antager en bruger sparer, holdt op mod hvad den bruger koster jer om måneden.',
       },
       {
         figure: 'cirka 400 EUR',
         label: 'sparet om måneden, per bruger',
-        basis: 'Tid der ikke længere går med at skrive de samme svar igen, sat til en mellemlederløn.',
+        basis: 'De timer vi antager ikke længere går med at skrive de samme svar igen, sat til en løn på mellemniveau.',
       },
       {
         figure: 'cirka 40 dage',
@@ -104,7 +104,7 @@ export const da: Content = {
       },
     ],
     caveat:
-      'Det er estimater fra målt brug, ikke en garanti. Hvad I får ud af det afhænger af, hvor stor en del af jeres post der er gengangere. Vi laver regnestykket med jeres egne tal på mødet, og hvis det ikke holder, siger vi det.',
+      'Det er en model, ikke en måling. Vi antager, hvor lang tid gengangerne tager, sætter tiden til en løn på mellemniveau og regner efter. Tallene er endnu ikke efterprøvet hos en rigtig kunde. Hvad I får ud af det afhænger af, hvor stor en del af jeres post der er gengangere. Vi laver regnestykket med jeres egne tal på mødet, og hvis det ikke holder, siger vi det.',
   },
 
   who: {

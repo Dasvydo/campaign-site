@@ -82,17 +82,17 @@ export const en: Content = {
 
   numbers: {
     title: 'What it is worth',
-    lead: 'Three figures we can defend, and where each one comes from.',
+    lead: 'Three figures, and the sum behind each one.',
     rows: [
       {
         figure: 'about 9x',
         label: 'return on the seat cost',
-        basis: 'Time saved, costed against what a seat costs you per month.',
+        basis: 'The time we assume a seat saves, costed against what that seat costs you per month.',
       },
       {
         figure: 'about 400 EUR',
         label: 'saved per month, per seat',
-        basis: 'Time no longer spent rewriting repeat replies, costed at a mid level salary.',
+        basis: 'The hours we assume stop going into rewriting repeat replies, costed at a mid level salary.',
       },
       {
         figure: 'about 40 days',
@@ -101,7 +101,7 @@ export const en: Content = {
       },
     ],
     caveat:
-      'These are estimates from measured usage, not a guarantee. What you get depends on how much of your mail is repeat work. We will do the sum with your own numbers on the call, and if it does not clear we will tell you.',
+      'These are a model, not a measurement. We assume how much time repeat replies take, cost it at a mid level salary, and do the arithmetic. They have not yet been checked against a real customer. Your number depends on how much of your mail is repeat work. We will do the sum with your own figures on the call, and if it does not clear we will say so.',
   },
 
   who: {

@@ -85,17 +85,17 @@ export const lt: Content = {
 
   numbers: {
     title: 'Kiek tai verta',
-    lead: 'Trys skaičiai, už kuriuos galime atsakyti, ir iš kur kiekvienas jų.',
+    lead: 'Trys skaičiai ir skaičiavimas, iš kurio kiekvienas jų gautas.',
     rows: [
       {
         figure: 'apie 9 kartus',
         label: 'grąža nuo vienos vietos kainos',
-        basis: 'Sutaupytas laikas, palygintas su tuo, kiek viena vieta Jums kainuoja per mėnesį.',
+        basis: 'Laikas, kurį, mūsų prielaida, sutaupo viena vieta, palygintas su tuo, kiek ta vieta Jums kainuoja per mėnesį.',
       },
       {
         figure: 'apie 400 EUR',
         label: 'sutaupoma per mėnesį vienai vietai',
-        basis: 'Laikas, nebeskiriamas tiems patiems atsakymams perrašyti, įvertintas vidutinio lygio atlyginimu.',
+        basis: 'Valandos, kurių, mūsų prielaida, nebereikia tiems patiems atsakymams perrašyti, įvertintos vidutinio lygio atlyginimu.',
       },
       {
         figure: 'apie 40 dienų',
@@ -104,7 +104,7 @@ export const lt: Content = {
       },
     ],
     caveat:
-      'Tai yra įverčiai iš išmatuoto naudojimo, o ne garantija. Rezultatas priklauso nuo to, kokia Jūsų pašto dalis kartojasi. Skaičiavimą atliksime su Jūsų pačių skaičiais pokalbio metu, o jei jis neapsimoka, taip ir pasakysime.',
+      'Tai modelis, o ne matavimas. Darome prielaidą, kiek laiko užima pasikartojantys atsakymai, įvertiname jį vidutinio lygio atlyginimu ir suskaičiuojame. Šie skaičiai dar nėra patikrinti su tikru klientu. Rezultatas priklauso nuo to, kokia Jūsų pašto dalis kartojasi. Skaičiavimą atliksime su Jūsų pačių skaičiais pokalbio metu, o jei jis neapsimoka, taip ir pasakysime.',
   },
 
   who: {

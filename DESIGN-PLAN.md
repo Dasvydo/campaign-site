@@ -123,10 +123,10 @@ CHARCOAL footer
 |      |            16:9, reserved                |                    |   fixed aspect, no CLS
 |      +------------------------------------------+                    |
 |                                                                      |
-|  05  What it is worth      | ~9x return    | measured across ...      |   a table, not stat tiles
+|  05  What it is worth      | ~9x return    | assumed hrs x salary     |   a table, not stat tiles
 |                            | ~EUR 400/mo   | ...                      |
 |                            | ~40 days      | ...                      |
-|      These are estimates from measured usage, not a guarantee.        |
+|      These are a model, not a measurement. Not a guarantee.           |
 |//////////////////////////////////////////////////////////////////////|
 | 06  Who this is for                                                  |
 |     accounting  /  insurance  /  administrative     10 seats minimum |
@@ -222,7 +222,9 @@ inventing.
    deliberately unequal column widths so they cannot read as a set of three. Reason: the
    identical-card ban, and icons would have been generic-AI decoration.
 3. **Big stat figures became a small sourced table** with a basis line for each figure and a
-   plain caveat sentence saying these are estimates from measured usage and not a guarantee.
+   plain caveat saying these are a model, assumed time saved costed at a salary, and not a
+   measurement or a guarantee. (Wording revised 2026-09-06 on Dovy's decision that the ROI
+   figures are modelled, not measured; see `RUN-REPORT.md`, Decisions applied.)
    Reason: the audience is sceptical and personally accountable. A figure with its basis attached
    is more persuasive to this reader than the same figure set 96px tall.
 4. **Accordion became five open Q and A blocks** separated by hairlines, question in Playfair,
@@ -239,7 +241,9 @@ inventing.
    focus ring. Reason: this brief's ban overrides brand-lock's option, and amber on cream fails
    contrast under text anyway.
 9. **The "trusted by" strip was deleted outright**, not filled. Reason: no testimonials and no
-   named pilots exist, and inventing them is forbidden. The ROI table carries the proof instead.
+   named pilots exist, and inventing them is forbidden. The ROI table carries the
+   argument instead, as a worked example. It is a model, not proof: nothing in it was measured
+   against a customer (decision of 2026-09-06).
 
 ## 8. Quality floor, treated as unannounced requirements
 

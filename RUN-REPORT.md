@@ -270,3 +270,45 @@ are not auto-enrolled into email without the opt-in.
 - Anything requiring a real credential: no live n8n, no live PostHog project, no
   live Meta pixel, no Vercel deploy, no DNS. All of those were stubbed, mocked
   or left inert, and none of them was called.
+
+## 8. Decisions applied, 2026-09-06
+
+Dovy made four campaign-wide decisions. This section records each one and what
+changed in this repo as a result.
+
+**1. The ROI figures are modelled, not measured.** The ~9x return, ~400 EUR per
+seat per month and ~40 day payback were worked out from assumed time saved,
+costed at a salary. They have never been observed against a real customer. They
+stay on the page as a worked example, and nothing may claim or imply they were
+measured.
+*Changed here:* the `numbers` section in `src/content/{en,da,lt}.ts`. The lead
+is now "Three figures, and the sum behind each one." (and its Danish and
+Lithuanian equivalents), the two time-based `basis` lines now say the time is
+assumed, and the caveat now opens "These are a model, not a measurement",
+explains the arithmetic, and says the figures have not yet been checked against
+a real customer. `DESIGN-PLAN.md` (wireframe, section 7 items 3 and 9) and
+`AUDIT.md` section 6 no longer describe the figures as measured or as proof.
+`da.ts` and `lt.ts` keep their `NEEDS NATIVE CHECK` header; the new Lithuanian
+stays in formal *Jūs*. No em dashes were introduced.
+
+**2. Price is 89 USD per seat per month plus 500 USD one-off setup, everywhere.**
+*Changed here:* nothing. Grepped `src/` and every markdown file for 49, 99, 89
+and 500. The only price occurrences are `perSeat: '89 USD'` and
+`setup: '500 USD'` in all three locale files, the "500 dollar setup fee" basis
+line, and the `$89` / `$500` in `DESIGN-PLAN.md`. Every other hit is a font
+weight, the `25-49` team-size band, or the mock's deliberate HTTP 500.
+
+**3. Reply sentiment taxonomy is interested, not_now, not_a_fit, referred,
+objection, unsubscribe.** *Changed here:* nothing. Grepped for every value and
+for "sentiment"; this repo does not reference the taxonomy. The five
+`objections` blocks are a different thing (Batch E's objection list) and are
+unaffected.
+
+**4. The campaign ledger lives in Supabase project `oqpeebtwtikdzorgouxd`,
+schema `campaign`.** *Changed here:* `AUDIT.md` section 7 named a different
+project ID as of 2026-09-03; that line is now annotated with the confirmed
+project and schema. This repo still never contacts Supabase; ledger writes
+belong to Batch F via the webhook, exactly as before.
+
+`npm run build` and `npm run verify:payload` were re-run after these edits and
+pass. `BLOCKED.md` has a matching note at the end.

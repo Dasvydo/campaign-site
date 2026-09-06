@@ -122,3 +122,26 @@ There are no unsized images. No third-party request is made on load unless PostH
 These are the things Lighthouse would flag, but the score itself is unverified.
 
 **Unblocks it:** Dovy runs Lighthouse against the Vercel preview URL. About 2 minutes.
+
+---
+
+## Resolved by Dovy's decisions of 2026-09-06
+
+Four campaign-wide decisions landed. Checked each of the eight entries above against them.
+
+- **ROI figures are modelled, not measured.** Not a numbered entry, but the old caveat ("estimates
+  from measured usage") was an unflagged assumption and is now wrong. **Resolved:** the `numbers`
+  copy in all three locales, plus `DESIGN-PLAN.md` and `AUDIT.md`, now say the figures are a model
+  built from assumed time saved costed at a salary, never checked against a real customer.
+- **Price is 89 USD per seat per month plus 500 USD setup.** Already what the page said. Nothing
+  was blocked on it and nothing changed.
+- **Reply sentiment taxonomy** (interested, not_now, not_a_fit, referred, objection,
+  unsubscribe). Not referenced in this repo. Entry 5 is about Batch E's *objection* taxonomy,
+  which is a different list, so entry 5 stays open.
+- **Ledger is Supabase project `oqpeebtwtikdzorgouxd`, schema `campaign`.** Entry 4 was never
+  blocked on *where* the ledger lives, only on the live `VITE_LEAD_WEBHOOK_URL` value, which
+  still does not exist. Entry 4 stays open for that reason alone. `AUDIT.md` section 7, which
+  named a different project ID, is annotated.
+
+Net: no numbered entry closes. Entries 1 to 8 remain open on exactly what they said before, and
+none of them was waiting on these four decisions.
