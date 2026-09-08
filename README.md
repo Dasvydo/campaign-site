@@ -3,6 +3,23 @@
 The DoviLoop Teams campaign landing page. English, Danish and Lithuanian, one
 template, three routes. Ships to `teams.doviloop.dev`.
 
+> **Campaign-wide documents live in `campaign-n8n/ops/`.** This repo is one of six
+> batches; the status of all of them, the setup guide for a new machine, the
+> decisions taken and what is still waiting on a human are kept together there:
+>
+> | File | What |
+> |---|---|
+> | `ops/STATUS.md` | audit of all six batches |
+> | `ops/NEW-PC-SETUP.md` | clone, install and prove every repo from scratch |
+> | `ops/DECISIONS.md` | what was decided, why, and how to reverse it |
+> | `ops/NIGHT-RUN.md` | the current task plan and its live status |
+> | `ops/HANDOFF.md` | what to pick up next |
+>
+> The six repos must be cloned as **siblings under one parent directory** -
+> several tools reach across them by relative path, and this repo's own contract
+> tests locate `campaign-ledger` that way.
+
+
 This repo is deliberately separate from the `doviloop.dev` product. It gets
 edited constantly for six weeks by ad and reel copy changes, and it has its own
 Vercel project so no campaign edit can ever reach production.
