@@ -21,6 +21,11 @@ prove nothing new. What only a browser can answer:
      submits. This settles decision P-6 with evidence instead of a code read.
   4. That the phone-lead attribution fix works end to end through a real
      History API navigation, not just through the module's unit test.
+  5. That a lead survives a dead webhook in a real browser: two POSTs to a
+     real 500, the payload in real localStorage, replayed under the same
+     dedupe_id on the next load, and the 14-day expiry actually expiring.
+     With VITE_LEAD_WEBHOOK_URL unset in production this queue is the live
+     delivery path, not a fallback.
 
 NOTHING LEAVES THE MACHINE. The build uses obviously fake ids, every request
 to a Meta or PostHog host is aborted at the route level before it is sent, and
@@ -373,7 +378,120 @@ def main(argv: list[str] | None = None) -> int:
                   "P-6: that Lead still carries no properties",
                   json.dumps(lead[0]) if lead else "no Lead at all")
 
-            # --- 5. nothing broke --------------------------------------------
+            # --- 5. the lead survives a dead webhook ------------------------
+            # This is not a hypothetical. VITE_LEAD_WEBHOOK_URL is unset in
+            # production, so submitLead falls back to same-origin /api/lead,
+            # and there is no api/ directory in this repo: every lead lands in
+            # the localStorage queue until Dovy fills that variable in. The
+            # queue is therefore the live delivery path, not the fallback, and
+            # jsdom is not where you want to have proved it works.
+            #
+            # The 500s are real ones from the mock's own /api/lead-fail route,
+            # reached by rewriting the request URL, so the failure travels over
+            # HTTP exactly as an n8n outage would.
+            print("\nLead recovery with the webhook down (VITE_LEAD_WEBHOOK_URL "
+                  "unset behaves like this)")
+            fail_endpoint = "http://127.0.0.1:%d/api/lead-fail" % mock_port
+            state = {"fail": True}
+            posts: list[str] = []
+
+            rec = browser.new_context(viewport={"width": 360, "height": 800}).new_page()
+            rec.on("pageerror", lambda e: console_errors.append(str(e)))
+
+            def rec_route(route):
+                url = route.request.url
+                if any(h in url for h in ("connect.facebook.net",
+                                          "facebook.com/tr", "posthog.com")):
+                    blocked.append(url)
+                    return route.abort()
+                if url == lead_endpoint and state["fail"]:
+                    if route.request.method == "POST":
+                        posts.append(url)
+                    return route.continue_(url=fail_endpoint)
+                return route.continue_()
+
+            rec.route("**/*", rec_route)
+
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.fill("#f-company_name", "Vesterled Revision")
+            rec.fill("#f-work_email", "queue@vesterled.dk")
+            rec.fill("#f-phone", "+45 20 11 22 33")
+            rec.select_option("#f-team_size", "10-24")
+            rec.select_option("#f-email_client", "outlook")
+            rec.select_option("#f-role", "owner_partner")
+            before_posts = len(received)
+            rec.click("button[type=submit]")
+            rec.wait_for_timeout(5000)      # two attempts either side of a 1200ms pause
+
+            check(len(posts) == 2, "the webhook is POSTed twice, then given up on",
+                  "%d POST(s) to a 500" % len(posts))
+
+            queue = rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]')")
+            check(len(queue) == 1, "the lead is in the localStorage queue, not lost",
+                  "%d entry/entries" % len(queue))
+            entry = queue[0] if queue else {}
+            check(bool(entry.get("dedupe_id")),
+                  "the queued entry carries a dedupe_id for batch F to key on",
+                  str(entry.get("dedupe_id")))
+            check(entry.get("payload", {}).get("company_name") == "Vesterled Revision"
+                  and entry.get("payload", {}).get("team_size") == "10-24",
+                  "and the whole contract payload, not a fragment",
+                  json.dumps(sorted(entry.get("payload", {}).keys()))[:120])
+
+            # Promise 3: the visitor is never shown the outage. A qualified lead
+            # gets the booking link whether or not the row ever reached n8n.
+            booking = rec.locator("a[href*='cal.example.invalid']")
+            check(booking.count() > 0,
+                  "the visitor still gets their booking link with delivery failed",
+                  "%d booking link(s) on the result screen" % booking.count())
+
+            # Next page load, n8n is back.
+            state["fail"] = False
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.wait_for_timeout(2500)
+
+            after = []
+            if mock_log.exists():
+                after = [json.loads(line) for line in
+                         mock_log.read_text(encoding="utf-8").splitlines() if line]
+            replayed = after[len(received):]
+            check(len(replayed) == 1, "the queued lead is replayed on the next load",
+                  "%d payload(s) reached the mock" % len(replayed))
+            check(bool(replayed) and replayed[0].get("dedupe") == entry.get("dedupe_id"),
+                  "and replays under the SAME dedupe_id, so batch F can drop the "
+                  "duplicate",
+                  "sent %s, queued %s" % (replayed[0].get("dedupe") if replayed
+                                          else None, entry.get("dedupe_id")))
+            check(bool(replayed) and replayed[0].get("valid") is True,
+                  "the replayed payload still passes the contract validator",
+                  json.dumps(replayed[0].get("problems")) if replayed else "none")
+            check(rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]').length")
+                == 0, "and the queue is emptied afterwards")
+
+            # The 14-day expiry, which nothing had ever exercised. Two seeded
+            # entries either side of the cutoff, with the webhook down again so
+            # neither can be drained: only age can remove one.
+            state["fail"] = True
+            rec.evaluate("""(payload) => {
+              const day = 24 * 60 * 60 * 1000;
+              const at = (d) => new Date(Date.now() - d * day).toISOString();
+              localStorage.setItem('dl_lead_queue', JSON.stringify([
+                { dedupe_id: 'age-15', queued_at: at(15), attempts: 2, payload },
+                { dedupe_id: 'age-13', queued_at: at(13), attempts: 2, payload },
+              ]));
+            }""", entry.get("payload"))
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.wait_for_timeout(3000)
+            aged = rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]')"
+                ".map(e => e.dedupe_id)")
+            check(aged == ["age-13"],
+                  "an entry older than 14 days is dropped, a younger one is kept",
+                  "queue holds %s" % (json.dumps(aged) or "[]"))
+
+            # --- 6. nothing broke --------------------------------------------
             print("\nHousekeeping")
             check(not console_errors, "no uncaught javascript errors",
                   "; ".join(console_errors[:3]) or "none")
