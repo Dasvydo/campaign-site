@@ -12,8 +12,9 @@ the real <Qualifier /> in jsdom and POSTs over real HTTP to the mock webhook,
 which validates the contract strictly. Repeating it here would add runtime and
 prove nothing new. What only a browser can answer:
 
-  1. Layout at 360px. jsdom has no layout at all, so "no horizontal overflow on
-     a small phone" was an assertion about CSS nobody had ever measured.
+  1. Layout at 360, 768 and 1280px. jsdom has no layout at all, so "no
+     horizontal overflow" was an assertion about CSS nobody had ever measured.
+     Run with --self-test to watch those checks fail on purpose.
   2. The 16px input rule that stops iOS zooming the page on focus - a computed
      style, so again not visible to jsdom.
   3. Which analytics calls actually fire, in order, as a person scrolls and
@@ -59,6 +60,50 @@ OUT = ROOT / "dist-verify"
 # an id actually run.
 FAKE_PIXEL_ID = "000000000000000"
 FAKE_POSTHOG_KEY = "phc_verification_only_not_a_real_key"
+
+# A phone, a tablet and a laptop. A page can be clean at 360 and still overflow
+# at 768: a max-width that only bites below a breakpoint, a table or a pre that
+# has room to spread, a grid that goes two-up and stops wrapping. One width
+# measured is one width proved, so measure the three that matter.
+VIEWPORTS = (
+    (360, 800, "phone"),
+    (768, 1024, "tablet"),
+    (1280, 800, "laptop"),
+)
+LOCALES = (("/", "en"), ("/da", "da"), ("/lt", "lt"))
+
+# The measurement, plus the widest offenders when it is positive: a number on
+# its own says the page overflows, this says what to go and look at.
+OVERFLOW_JS = """() => {
+  const over = document.documentElement.scrollWidth - window.innerWidth;
+  const culprits = [];
+  if (over > 0) {
+    const wide = [];
+    for (const el of document.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect();
+      const right = r.right + window.scrollX;
+      if (r.width > 0 && right > window.innerWidth + 1) wide.push({ el, right, w: r.width });
+    }
+    wide.sort((a, b) => b.right - a.right);
+    for (const c of wide.slice(0, 3)) {
+      const cls = typeof c.el.className === 'string' && c.el.className
+        ? '.' + c.el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+      culprits.push(c.el.tagName.toLowerCase() + (c.el.id ? '#' + c.el.id : '') + cls
+        + ' right=' + Math.round(c.right) + 'px w=' + Math.round(c.w) + 'px');
+    }
+  }
+  return { over, culprits };
+}"""
+
+# --self-test only. A check nobody has watched fail is a check nobody should
+# believe, so this puts a 2000px block on the page and the overflow checks must
+# go red. If they stay green the measurement is not measuring anything.
+CANARY_JS = """() => {
+  const d = document.createElement('div');
+  d.id = 'overflow-canary';
+  d.style.cssText = 'width:2000px;height:4px;background:red';
+  document.body.appendChild(d);
+}"""
 
 failures: list[str] = []
 
@@ -155,6 +200,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--headed", action="store_true")
     ap.add_argument("--keep", action="store_true",
                     help="leave dist-verify/ in place afterwards")
+    ap.add_argument("--self-test", action="store_true",
+                    help="inject a deliberately over-wide element so the "
+                         "overflow checks must fail; proves they can go red")
     args = ap.parse_args(argv)
 
     try:
@@ -187,28 +235,45 @@ def main(argv: list[str] | None = None) -> int:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=not args.headed)
 
-            # --- 1. layout at 360px, every locale ---------------------------
-            print("Layout at 360x800 (the phone this page is designed for)")
-            ctx = browser.new_context(viewport={"width": 360, "height": 800},
-                                      device_scale_factor=2)
-            page = ctx.new_page()
-            # An uncaught exception is the signal. "Failed to load resource"
-            # is not: every analytics host is aborted on purpose below, and
-            # the browser reports each abort as a console error with no URL in
-            # the text, so filtering those by string would be guesswork.
-            page.on("pageerror", lambda e: console_errors.append(str(e)))
-            page.route("**/*", lambda route: (
-                blocked.append(route.request.url) or route.abort())
-                if any(h in route.request.url for h in
-                       ("connect.facebook.net", "facebook.com/tr", "posthog.com"))
-                else route.continue_())
+            # --- 1. layout at every viewport, every locale ------------------
+            def open_page(width: int, height: int):
+                ctx = browser.new_context(viewport={"width": width, "height": height},
+                                          device_scale_factor=2)
+                pg = ctx.new_page()
+                # An uncaught exception is the signal. "Failed to load resource"
+                # is not: every analytics host is aborted on purpose below, and
+                # the browser reports each abort as a console error with no URL
+                # in the text, so filtering those by string would be guesswork.
+                pg.on("pageerror", lambda e: console_errors.append(str(e)))
+                pg.route("**/*", lambda route: (
+                    blocked.append(route.request.url) or route.abort())
+                    if any(h in route.request.url for h in
+                           ("connect.facebook.net", "facebook.com/tr", "posthog.com"))
+                    else route.continue_())
+                return pg
 
-            for path, locale in (("/", "en"), ("/da", "da"), ("/lt", "lt")):
-                page.goto(base + path, wait_until="networkidle")
-                over = page.evaluate(
-                    "() => document.documentElement.scrollWidth - window.innerWidth")
-                check(over <= 0, "%s has no horizontal overflow at 360px" % locale,
-                      "scrollWidth - innerWidth = %dpx" % over)
+            print("Layout: horizontal overflow at %d widths x %d locales%s"
+                  % (len(VIEWPORTS), len(LOCALES),
+                     "  (--self-test: these MUST fail)" if args.self_test else ""))
+            pages = {}
+            for width, height, label in VIEWPORTS:
+                pages[width] = open_page(width, height)
+                print("  %dx%d, the %s" % (width, height, label))
+                for path, locale in LOCALES:
+                    pages[width].goto(base + path, wait_until="networkidle")
+                    if args.self_test:
+                        pages[width].evaluate(CANARY_JS)
+                    m = pages[width].evaluate(OVERFLOW_JS)
+                    detail = "scrollWidth - innerWidth = %dpx" % m["over"]
+                    if m["culprits"]:
+                        detail += "; widest: " + "; ".join(m["culprits"])
+                    check(m["over"] <= 0,
+                          "%s has no horizontal overflow at %dpx" % (locale, width),
+                          detail)
+
+            # Everything below is about behaviour, not layout, so it runs once,
+            # on the phone: the width the traffic actually arrives at.
+            page = pages[360]
 
             # --- 2. the iOS zoom guard --------------------------------------
             print("\nForm inputs at 16px or more, so iOS does not zoom on focus")
