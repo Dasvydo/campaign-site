@@ -140,7 +140,7 @@ count is quoted here any more: it goes stale on every commit, and
 
 | Requirement | Status |
 |---|---|
-| Responsive to mobile | **Designed and coded, not verified in a real browser.** Fluid `clamp()` type, `minmax(0,1fr)` grids that collapse at `sm`/`md`, 16px form inputs to stop iOS zoom, sticky header that keeps only wordmark, locale switch and button. No headless Chrome in this container to confirm at 360px |
+| Responsive to mobile | **Measured in Chromium at 360x800 on 2026-09-09, all three locales: zero horizontal overflow.** Fluid `clamp()` type, `minmax(0,1fr)` grids that collapse at `sm`/`md`, 16px form inputs to stop iOS zoom, sticky header that keeps only wordmark, locale switch and button. The 16px rule is measured too - every one of the six fields computes at 16px or more. `python3 scripts/verify-browser.py`, and see section 7 |
 | Visible keyboard focus | **In the CSS and asserted present in the built stylesheet.** A 2px amber outline with 2px offset, redefined for the dark bands. `outline: none` appears nowhere |
 | `prefers-reduced-motion` respected | **In the CSS and asserted present in the built stylesheet.** It stops the one animation on the page and disables smooth scrolling |
 | Accessible contrast | **Calculated by hand, not measured by a tool.** Ratios are written out in `DESIGN-PLAN.md` section 2. The tightest pairing is muted text at about 4.6:1, which clears AA for normal text; it is used only at 16px and above. Amber never carries a letterform on cream, where it would fail badly |
@@ -267,6 +267,12 @@ are not auto-enrolled into email without the opt-in.
 
 ## 7. Honest list of what could not be verified
 
+**Partly closed, 2026-09-09.** The first item below was true when written: there
+was no browser in the container it was written in. There is one now (Chromium at
+`/opt/pw-browsers`), so `scripts/verify-browser.py` was written and run, and
+fifteen checks pass. What it measured, and what it did not, is at the end of
+this section.
+
 - Rendering in any real browser engine. jsdom has no layout, so responsiveness,
   the actual focus ring, contrast as rendered, and font swap behaviour are
   designed and reasoned about but not observed.
@@ -276,6 +282,34 @@ are not auto-enrolled into email without the opt-in.
 - Anything requiring a real credential: no live n8n, no live PostHog project, no
   live Meta pixel, no Vercel deploy, no DNS. All of those were stubbed, mocked
   or left inert, and none of them was called.
+
+### What the browser pass measured, 2026-09-09
+
+`python3 scripts/verify-browser.py`. It builds with obviously fake analytics
+ids, serves the build locally, and aborts every request to a Meta or PostHog
+host at the route level - nothing leaves the machine. The Meta pixel is read
+out of `window.fbq.queue`, which with `fbevents.js` blocked is a complete and
+exact record of every call the page made.
+
+| | Result |
+|---|---|
+| Horizontal overflow at 360x800, en/da/lt | **0px on all three** |
+| Form fields below 16px (the iOS zoom guard) | **none of six** |
+| Pixel calls on load | exactly `init` then `PageView` |
+| Playing the demo | one `ViewContent`, `content_name: 'demo_video'` |
+| Scrolling the pricing band into view | **no pixel call at all** - this is decision P-6, now measured rather than read |
+| Submitting the form | one `Lead`, and it carries **no properties** - the other half of P-6 |
+| A phone lead (`utm_source=phone&utm_medium=call&source=outreach`) | arrives at the webhook as `source: "outreach"` - batch C's fix, end to end through a real page load |
+| Uncaught javascript errors | none |
+
+Both of the P-6 assertions were proved by making the page do the thing they
+forbid and watching them fail, and the overflow check by injecting a 900px
+element. A check nobody has seen fail is a check nobody should believe.
+
+Still not measured, and not measurable this way: Lighthouse, contrast as
+rendered by a real display, font swap behaviour, and whether the stack matches
+`doviloop.dev`. `public/demo.mp4` is still absent - the pass synthesises a
+one-second file so the demo lane exists to be observed.
 
 ## 8. Decisions applied, 2026-09-06
 

@@ -51,6 +51,7 @@ a 422 and the reason printed.
 ```bash
 npm run build          # tsc then vite build, must pass
 npm run verify:payload # the full QA harness, ~10 seconds
+python3 scripts/verify-browser.py   # the same page in a real browser, ~40 seconds
 ```
 
 `verify:payload` boots the mock webhook, bundles the real components, renders
@@ -60,6 +61,21 @@ the POSTed body is exactly the contract shape over real HTTP, the free-provider
 email warns without blocking, the retry and localStorage recovery path works,
 and every PostHog event name is wired. It exits non-zero on any failure, so it
 can go straight into CI.
+
+`verify-browser.py` covers what jsdom structurally cannot: layout, and what the
+analytics calls actually are as a person scrolls and submits. It measures
+horizontal overflow at 360x800 in all three locales, the 16px rule that stops
+iOS zooming the form, every Meta pixel call in order, and a phone-attributed
+lead arriving at the webhook as `outreach`. It builds with fake analytics ids
+and aborts every request to a Meta or PostHog host, so nothing leaves the
+machine.
+
+It is not an npm script on purpose. It needs Playwright for Python and a
+Chromium - both already present in the container this was built in
+(`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`), neither present after a plain
+`npm ci`. Adding Playwright to `package.json` would put a browser download in
+front of every install for a check that runs occasionally. On a fresh machine:
+`pip install playwright && playwright install chromium`.
 
 ## Scripts
 
@@ -71,6 +87,7 @@ can go straight into CI.
 | `npm run mock` | Local mock of the n8n lead webhook, port 8787 |
 | `npm run verify:payload` | The full QA harness described above |
 | `npm run fonts` | Re-copy the woff2 faces into `public/fonts` after an install |
+| `python3 scripts/verify-browser.py` | The real-browser pass. Needs Playwright for Python |
 
 ## Layout
 
