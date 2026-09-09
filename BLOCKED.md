@@ -5,26 +5,36 @@ blocks, and what unblocks it.
 
 ---
 
-## 1. `doviloop.dev` product frontend is not present in this container
+## 1. `doviloop.dev` product frontend stack match — RESOLVED 2026-09-08
 
-**Missing:** the product repo, anywhere on the machine. Searched the whole filesystem; the only
-`doviloop` hit is `/home/user/reel-engine/brands/doviloop`, a sibling batch repo this session is
-forbidden to read.
+**The original entry said the product frontend was not present in this container. It was.** The
+search looked for a directory named `doviloop*`; the repo is named `flow-savvy-automations`, so the
+match was missed. The `/home/user/reel-engine/brands/doviloop` hit was a red herring.
 
-**Blocks:** Phase 0 step 3, "look at the existing frontend for the stack conventions and match
-them". Could not be executed by inspection.
+**Compared directly, `package.json` to `package.json`:**
 
-**What I did instead:** chose the stack the spec's own evidence implies, React + TypeScript +
-Tailwind + Vite. The `VITE_` env prefixes and the instruction to edit `index.html` directly are
-Vite conventions and are not how Next.js is configured. Reasoning is written out in `AUDIT.md`.
+| | product (`flow-savvy-automations`) | this repo |
+|---|---|---|
+| framework | Vite `^5.4.19` | Vite `^6.0.0` |
+| react | `^18.3.1` | `^18.3.1` |
+| react-dom | `^18.3.1` | `^18.3.1` |
+| react-router-dom | `^6.30.1` | `^6.28.0` |
+| tailwindcss | `^3.4.17` | `^4.0.0` |
+| typescript | `^5.8.3` | `^5.6.3` |
+| **next** | **absent** | **absent** |
 
-**Status: the convention match is UNVERIFIED.** If the product frontend is Next.js, or pins
-different majors of React or Tailwind, this repo does not match it.
+**The risk this entry existed to flag is gone.** The concern was "if the product frontend is
+Next.js, this repo does not match it, and the switch costs roughly half a day." Neither is Next.js.
+Both are Vite + React 18 + Tailwind + TypeScript, and the reasoning recorded in `AUDIT.md` — that
+`VITE_` env prefixes and editing `index.html` directly are Vite conventions — was correct.
 
-**Unblocks it:** Dovy opens `doviloop.dev`'s repo and compares `package.json`. Impact is low
-because the spec requires a separate repo and separate Vercel project by design, so no build
-artefact is shared. Cost of a later switch would be a rewrite of routing and entry files, roughly
-half a day, and it is avoidable by checking now.
+**What remains is two major-version gaps, and they are harmless by design.** Vite 5 vs 6 and
+Tailwind 3 vs 4. The spec requires a separate repo and a separate Vercel project, so the two share
+no build artefact, no config and no dependency tree. Nothing needs to change unless you later want
+to move components between them, at which point the Tailwind major is the one that would bite
+(v4 moved configuration into CSS).
+
+**No action needed.** Left here rather than deleted so the original reasoning stays legible.
 
 ## 2. No demo video file exists locally
 
