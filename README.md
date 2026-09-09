@@ -54,7 +54,7 @@ npm run verify:payload # the full QA harness, ~10 seconds
 ```
 
 `verify:payload` boots the mock webhook, bundles the real components, renders
-them in jsdom, and checks 60-odd assertions: all three locales render with no
+them in jsdom, and checks 88 assertions: all three locales render with no
 missing keys and no English leaking in, all three routing outcomes are correct,
 the POSTed body is exactly the contract shape over real HTTP, the free-provider
 email warns without blocking, the retry and localStorage recovery path works,

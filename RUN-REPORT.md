@@ -1,6 +1,6 @@
 # RUN-REPORT — Batch A, `campaign-site`
 
-Branch `campaign/a-site`. 8 commits, nothing pushed, no remote configured.
+Branch `campaign/a-site`.
 `npm install` ran, `npm run build` passes, `npm run verify:payload` passes with
 88 assertions and 0 failures.
 
@@ -125,10 +125,16 @@ default page, plus two smaller failures. Section 7 lists the nine revisions with
 the reason for each. Section 5 is a ban-by-ban table showing how each of the
 seven hard bans is answered.
 
-### `[x] Nothing pushed, branch campaign/a-site`
+### `[x] Nothing pushed, branch campaign/a-site` *(true as written; superseded 2026-09-08)*
 
-**Verified.** `git remote -v` is empty, no push was attempted, and all 8 commits
-sit on `campaign/a-site`.
+**Verified at the time.** `git remote -v` was empty, no push was attempted, and
+every commit sat on `campaign/a-site`.
+
+**Since 2026-09-08** the work is on `claude/campaign-build-status-9j9194` and is
+pushed to `github.com/Dasvydo/campaign-site`, on Dovy's explicit instruction.
+`campaign/a-site` is untouched and remains this batch's own record. No commit
+count is quoted here any more: it goes stale on every commit, and
+`git log --oneline` is authoritative.
 
 ### Quality floor, unannounced
 
