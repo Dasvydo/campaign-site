@@ -12,14 +12,20 @@ the real <Qualifier /> in jsdom and POSTs over real HTTP to the mock webhook,
 which validates the contract strictly. Repeating it here would add runtime and
 prove nothing new. What only a browser can answer:
 
-  1. Layout at 360px. jsdom has no layout at all, so "no horizontal overflow on
-     a small phone" was an assertion about CSS nobody had ever measured.
+  1. Layout at 360, 768 and 1280px. jsdom has no layout at all, so "no
+     horizontal overflow" was an assertion about CSS nobody had ever measured.
+     Run with --self-test to watch those checks fail on purpose.
   2. The 16px input rule that stops iOS zooming the page on focus - a computed
      style, so again not visible to jsdom.
   3. Which analytics calls actually fire, in order, as a person scrolls and
      submits. This settles decision P-6 with evidence instead of a code read.
   4. That the phone-lead attribution fix works end to end through a real
      History API navigation, not just through the module's unit test.
+  5. That a lead survives a dead webhook in a real browser: two POSTs to a
+     real 500, the payload in real localStorage, replayed under the same
+     dedupe_id on the next load, and the 14-day expiry actually expiring.
+     With VITE_LEAD_WEBHOOK_URL unset in production this queue is the live
+     delivery path, not a fallback.
 
 NOTHING LEAVES THE MACHINE. The build uses obviously fake ids, every request
 to a Meta or PostHog host is aborted at the route level before it is sent, and
@@ -59,6 +65,50 @@ OUT = ROOT / "dist-verify"
 # an id actually run.
 FAKE_PIXEL_ID = "000000000000000"
 FAKE_POSTHOG_KEY = "phc_verification_only_not_a_real_key"
+
+# A phone, a tablet and a laptop. A page can be clean at 360 and still overflow
+# at 768: a max-width that only bites below a breakpoint, a table or a pre that
+# has room to spread, a grid that goes two-up and stops wrapping. One width
+# measured is one width proved, so measure the three that matter.
+VIEWPORTS = (
+    (360, 800, "phone"),
+    (768, 1024, "tablet"),
+    (1280, 800, "laptop"),
+)
+LOCALES = (("/", "en"), ("/da", "da"), ("/lt", "lt"))
+
+# The measurement, plus the widest offenders when it is positive: a number on
+# its own says the page overflows, this says what to go and look at.
+OVERFLOW_JS = """() => {
+  const over = document.documentElement.scrollWidth - window.innerWidth;
+  const culprits = [];
+  if (over > 0) {
+    const wide = [];
+    for (const el of document.querySelectorAll('*')) {
+      const r = el.getBoundingClientRect();
+      const right = r.right + window.scrollX;
+      if (r.width > 0 && right > window.innerWidth + 1) wide.push({ el, right, w: r.width });
+    }
+    wide.sort((a, b) => b.right - a.right);
+    for (const c of wide.slice(0, 3)) {
+      const cls = typeof c.el.className === 'string' && c.el.className
+        ? '.' + c.el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
+      culprits.push(c.el.tagName.toLowerCase() + (c.el.id ? '#' + c.el.id : '') + cls
+        + ' right=' + Math.round(c.right) + 'px w=' + Math.round(c.w) + 'px');
+    }
+  }
+  return { over, culprits };
+}"""
+
+# --self-test only. A check nobody has watched fail is a check nobody should
+# believe, so this puts a 2000px block on the page and the overflow checks must
+# go red. If they stay green the measurement is not measuring anything.
+CANARY_JS = """() => {
+  const d = document.createElement('div');
+  d.id = 'overflow-canary';
+  d.style.cssText = 'width:2000px;height:4px;background:red';
+  document.body.appendChild(d);
+}"""
 
 failures: list[str] = []
 
@@ -155,6 +205,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--headed", action="store_true")
     ap.add_argument("--keep", action="store_true",
                     help="leave dist-verify/ in place afterwards")
+    ap.add_argument("--self-test", action="store_true",
+                    help="inject a deliberately over-wide element so the "
+                         "overflow checks must fail; proves they can go red")
     args = ap.parse_args(argv)
 
     try:
@@ -187,28 +240,45 @@ def main(argv: list[str] | None = None) -> int:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=not args.headed)
 
-            # --- 1. layout at 360px, every locale ---------------------------
-            print("Layout at 360x800 (the phone this page is designed for)")
-            ctx = browser.new_context(viewport={"width": 360, "height": 800},
-                                      device_scale_factor=2)
-            page = ctx.new_page()
-            # An uncaught exception is the signal. "Failed to load resource"
-            # is not: every analytics host is aborted on purpose below, and
-            # the browser reports each abort as a console error with no URL in
-            # the text, so filtering those by string would be guesswork.
-            page.on("pageerror", lambda e: console_errors.append(str(e)))
-            page.route("**/*", lambda route: (
-                blocked.append(route.request.url) or route.abort())
-                if any(h in route.request.url for h in
-                       ("connect.facebook.net", "facebook.com/tr", "posthog.com"))
-                else route.continue_())
+            # --- 1. layout at every viewport, every locale ------------------
+            def open_page(width: int, height: int):
+                ctx = browser.new_context(viewport={"width": width, "height": height},
+                                          device_scale_factor=2)
+                pg = ctx.new_page()
+                # An uncaught exception is the signal. "Failed to load resource"
+                # is not: every analytics host is aborted on purpose below, and
+                # the browser reports each abort as a console error with no URL
+                # in the text, so filtering those by string would be guesswork.
+                pg.on("pageerror", lambda e: console_errors.append(str(e)))
+                pg.route("**/*", lambda route: (
+                    blocked.append(route.request.url) or route.abort())
+                    if any(h in route.request.url for h in
+                           ("connect.facebook.net", "facebook.com/tr", "posthog.com"))
+                    else route.continue_())
+                return pg
 
-            for path, locale in (("/", "en"), ("/da", "da"), ("/lt", "lt")):
-                page.goto(base + path, wait_until="networkidle")
-                over = page.evaluate(
-                    "() => document.documentElement.scrollWidth - window.innerWidth")
-                check(over <= 0, "%s has no horizontal overflow at 360px" % locale,
-                      "scrollWidth - innerWidth = %dpx" % over)
+            print("Layout: horizontal overflow at %d widths x %d locales%s"
+                  % (len(VIEWPORTS), len(LOCALES),
+                     "  (--self-test: these MUST fail)" if args.self_test else ""))
+            pages = {}
+            for width, height, label in VIEWPORTS:
+                pages[width] = open_page(width, height)
+                print("  %dx%d, the %s" % (width, height, label))
+                for path, locale in LOCALES:
+                    pages[width].goto(base + path, wait_until="networkidle")
+                    if args.self_test:
+                        pages[width].evaluate(CANARY_JS)
+                    m = pages[width].evaluate(OVERFLOW_JS)
+                    detail = "scrollWidth - innerWidth = %dpx" % m["over"]
+                    if m["culprits"]:
+                        detail += "; widest: " + "; ".join(m["culprits"])
+                    check(m["over"] <= 0,
+                          "%s has no horizontal overflow at %dpx" % (locale, width),
+                          detail)
+
+            # Everything below is about behaviour, not layout, so it runs once,
+            # on the phone: the width the traffic actually arrives at.
+            page = pages[360]
 
             # --- 2. the iOS zoom guard --------------------------------------
             print("\nForm inputs at 16px or more, so iOS does not zoom on focus")
@@ -308,7 +378,120 @@ def main(argv: list[str] | None = None) -> int:
                   "P-6: that Lead still carries no properties",
                   json.dumps(lead[0]) if lead else "no Lead at all")
 
-            # --- 5. nothing broke --------------------------------------------
+            # --- 5. the lead survives a dead webhook ------------------------
+            # This is not a hypothetical. VITE_LEAD_WEBHOOK_URL is unset in
+            # production, so submitLead falls back to same-origin /api/lead,
+            # and there is no api/ directory in this repo: every lead lands in
+            # the localStorage queue until Dovy fills that variable in. The
+            # queue is therefore the live delivery path, not the fallback, and
+            # jsdom is not where you want to have proved it works.
+            #
+            # The 500s are real ones from the mock's own /api/lead-fail route,
+            # reached by rewriting the request URL, so the failure travels over
+            # HTTP exactly as an n8n outage would.
+            print("\nLead recovery with the webhook down (VITE_LEAD_WEBHOOK_URL "
+                  "unset behaves like this)")
+            fail_endpoint = "http://127.0.0.1:%d/api/lead-fail" % mock_port
+            state = {"fail": True}
+            posts: list[str] = []
+
+            rec = browser.new_context(viewport={"width": 360, "height": 800}).new_page()
+            rec.on("pageerror", lambda e: console_errors.append(str(e)))
+
+            def rec_route(route):
+                url = route.request.url
+                if any(h in url for h in ("connect.facebook.net",
+                                          "facebook.com/tr", "posthog.com")):
+                    blocked.append(url)
+                    return route.abort()
+                if url == lead_endpoint and state["fail"]:
+                    if route.request.method == "POST":
+                        posts.append(url)
+                    return route.continue_(url=fail_endpoint)
+                return route.continue_()
+
+            rec.route("**/*", rec_route)
+
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.fill("#f-company_name", "Vesterled Revision")
+            rec.fill("#f-work_email", "queue@vesterled.dk")
+            rec.fill("#f-phone", "+45 20 11 22 33")
+            rec.select_option("#f-team_size", "10-24")
+            rec.select_option("#f-email_client", "outlook")
+            rec.select_option("#f-role", "owner_partner")
+            before_posts = len(received)
+            rec.click("button[type=submit]")
+            rec.wait_for_timeout(5000)      # two attempts either side of a 1200ms pause
+
+            check(len(posts) == 2, "the webhook is POSTed twice, then given up on",
+                  "%d POST(s) to a 500" % len(posts))
+
+            queue = rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]')")
+            check(len(queue) == 1, "the lead is in the localStorage queue, not lost",
+                  "%d entry/entries" % len(queue))
+            entry = queue[0] if queue else {}
+            check(bool(entry.get("dedupe_id")),
+                  "the queued entry carries a dedupe_id for batch F to key on",
+                  str(entry.get("dedupe_id")))
+            check(entry.get("payload", {}).get("company_name") == "Vesterled Revision"
+                  and entry.get("payload", {}).get("team_size") == "10-24",
+                  "and the whole contract payload, not a fragment",
+                  json.dumps(sorted(entry.get("payload", {}).keys()))[:120])
+
+            # Promise 3: the visitor is never shown the outage. A qualified lead
+            # gets the booking link whether or not the row ever reached n8n.
+            booking = rec.locator("a[href*='cal.example.invalid']")
+            check(booking.count() > 0,
+                  "the visitor still gets their booking link with delivery failed",
+                  "%d booking link(s) on the result screen" % booking.count())
+
+            # Next page load, n8n is back.
+            state["fail"] = False
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.wait_for_timeout(2500)
+
+            after = []
+            if mock_log.exists():
+                after = [json.loads(line) for line in
+                         mock_log.read_text(encoding="utf-8").splitlines() if line]
+            replayed = after[len(received):]
+            check(len(replayed) == 1, "the queued lead is replayed on the next load",
+                  "%d payload(s) reached the mock" % len(replayed))
+            check(bool(replayed) and replayed[0].get("dedupe") == entry.get("dedupe_id"),
+                  "and replays under the SAME dedupe_id, so batch F can drop the "
+                  "duplicate",
+                  "sent %s, queued %s" % (replayed[0].get("dedupe") if replayed
+                                          else None, entry.get("dedupe_id")))
+            check(bool(replayed) and replayed[0].get("valid") is True,
+                  "the replayed payload still passes the contract validator",
+                  json.dumps(replayed[0].get("problems")) if replayed else "none")
+            check(rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]').length")
+                == 0, "and the queue is emptied afterwards")
+
+            # The 14-day expiry, which nothing had ever exercised. Two seeded
+            # entries either side of the cutoff, with the webhook down again so
+            # neither can be drained: only age can remove one.
+            state["fail"] = True
+            rec.evaluate("""(payload) => {
+              const day = 24 * 60 * 60 * 1000;
+              const at = (d) => new Date(Date.now() - d * day).toISOString();
+              localStorage.setItem('dl_lead_queue', JSON.stringify([
+                { dedupe_id: 'age-15', queued_at: at(15), attempts: 2, payload },
+                { dedupe_id: 'age-13', queued_at: at(13), attempts: 2, payload },
+              ]));
+            }""", entry.get("payload"))
+            rec.goto(base + "/", wait_until="networkidle")
+            rec.wait_for_timeout(3000)
+            aged = rec.evaluate(
+                "() => JSON.parse(localStorage.getItem('dl_lead_queue') || '[]')"
+                ".map(e => e.dedupe_id)")
+            check(aged == ["age-13"],
+                  "an entry older than 14 days is dropped, a younger one is kept",
+                  "queue holds %s" % (json.dumps(aged) or "[]"))
+
+            # --- 6. nothing broke --------------------------------------------
             print("\nHousekeeping")
             check(not console_errors, "no uncaught javascript errors",
                   "; ".join(console_errors[:3]) or "none")
