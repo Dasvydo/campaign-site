@@ -88,7 +88,7 @@ export const lt: Content = {
     lead: 'Trys skaičiai ir skaičiavimas, iš kurio kiekvienas jų gautas.',
     rows: [
       {
-        figure: 'apie 9 kartus',
+        figure: 'apie 5 kartus',
         label: 'grąža nuo vienos vietos kainos',
         basis: 'Laikas, kurį, mūsų prielaida, sutaupo viena vieta, palygintas su tuo, kiek ta vieta Jums kainuoja per mėnesį.',
       },
@@ -253,8 +253,8 @@ export const lt: Content = {
     privacyLink: 'Privatumas',
     contactLink: 'Susisiekite',
     company: {
-      legalName: '',
-      registrationNumber: '',
+      legalName: 'DoviLoop OU',
+      registrationNumber: '17355061',
       address: '',
     },
   },

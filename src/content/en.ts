@@ -85,7 +85,7 @@ export const en: Content = {
     lead: 'Three figures, and the sum behind each one.',
     rows: [
       {
-        figure: 'about 9x',
+        figure: 'about 5x',
         label: 'return on the seat cost',
         basis: 'The time we assume a seat saves, costed against what that seat costs you per month.',
       },
@@ -250,8 +250,8 @@ export const en: Content = {
     privacyLink: 'Privacy',
     contactLink: 'Contact us',
     company: {
-      legalName: '',
-      registrationNumber: '',
+      legalName: 'DoviLoop OU',
+      registrationNumber: '17355061',
       address: '',
     },
   },

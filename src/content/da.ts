@@ -88,7 +88,7 @@ export const da: Content = {
     lead: 'Tre tal, og regnestykket bag hvert af dem.',
     rows: [
       {
-        figure: 'cirka 9x',
+        figure: 'cirka 5x',
         label: 'i afkast på prisen per bruger',
         basis: 'Den tid vi antager en bruger sparer, holdt op mod hvad den bruger koster jer om måneden.',
       },
@@ -253,8 +253,8 @@ export const da: Content = {
     privacyLink: 'Privatliv',
     contactLink: 'Kontakt os',
     company: {
-      legalName: '',
-      registrationNumber: '',
+      legalName: 'DoviLoop OU',
+      registrationNumber: '17355061',
       address: '',
     },
   },
