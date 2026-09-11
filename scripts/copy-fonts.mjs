@@ -19,8 +19,11 @@ const out = resolve(root, 'public/fonts');
 mkdirSync(out, { recursive: true });
 
 const faces = [
-  ['playfair-display', [400, 600]],
-  ['dm-sans', [400, 500, 700]],
+  // One family, four weights. The 2026-09-11 redesign moved the page off the
+  // Playfair/DM Sans pair it shared with the product site: that pairing is the
+  // product's warm editorial brand, and this page needed to read as a product
+  // landing page instead. Amber is the only thing carried over.
+  ['inter', [400, 500, 600, 700]],
 ];
 
 let copied = 0;

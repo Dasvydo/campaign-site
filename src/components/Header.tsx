@@ -25,7 +25,7 @@ export function Header({
       <div className="mx-auto flex w-full max-w-[1180px] items-center gap-4 px-5 py-3.5 sm:px-8">
         <Link
           to={pathFor(locale)}
-          className="font-sans text-[1.15rem] font-bold tracking-[-0.01em] no-underline"
+          className="font-sans text-[17px] font-bold tracking-[-0.01em] no-underline"
           aria-label="DoviLoop"
         >
           {/* <img src="/logo.png" alt="" width={26} height={26} /> when it exists */}
@@ -53,7 +53,10 @@ export function Header({
           })}
         </nav>
 
-        <a href="#qualifier" className="btn btn-primary hidden sm:inline-flex" onClick={onCta}>
+        {/* Quiet, not amber. Amber is the page's call to action and there should
+            be exactly one of those in view at a time - an amber header button
+            sitting above an amber hero button halves the meaning of both. */}
+        <a href="#qualifier" className="btn btn-quiet hidden sm:inline-flex" onClick={onCta}>
           {c.nav.cta}
         </a>
       </div>

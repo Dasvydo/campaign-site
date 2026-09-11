@@ -381,7 +381,7 @@ export function Qualifier({
 
               <div className="mt-11 rule-top pt-7">
                 <h4 className="font-display text-[1.3rem]">{c.results.tooSmall.nurtureTitle}</h4>
-                <p className="mt-2.5 max-w-[56ch] text-[15.5px] leading-relaxed text-muted-dark">
+                <p className="mt-2.5 max-w-[56ch] text-[15px] leading-relaxed text-muted-dark">
                   {c.results.tooSmall.nurtureBody}
                 </p>
                 <a
@@ -427,7 +427,7 @@ export function Qualifier({
                 <h4 className="font-display text-[1.3rem]">{c.results.qualified.coversTitle}</h4>
                 <ul className="mt-4 m-0 list-none p-0">
                   {c.results.qualified.covers.map((line) => (
-                    <li key={line} className="flex gap-3 py-2 text-[15.5px] leading-relaxed">
+                    <li key={line} className="flex gap-3 py-2 text-[15px] leading-relaxed">
                       <span
                         aria-hidden="true"
                         className="mt-2.5 h-1.5 w-1.5 flex-none rounded-full"

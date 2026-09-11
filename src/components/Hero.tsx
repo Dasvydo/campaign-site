@@ -17,11 +17,11 @@ export function Hero({ c, onCta }: { c: Content; onCta: () => void }) {
         <div className="md:pt-2">
           <h1 className="max-w-[16ch] text-[clamp(2.3rem,5.2vw,3.5rem)]">{c.hero.opening}</h1>
 
-          <p className="mt-6 max-w-[46ch] text-[1.06rem] leading-relaxed opacity-85">
+          <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed opacity-85">
             {c.hero.subOpening}
           </p>
 
-          <p className="mt-6 max-w-[46ch] text-[1.06rem] leading-relaxed">{c.hero.claim}</p>
+          <p className="mt-6 max-w-[46ch] text-[16px] leading-relaxed">{c.hero.claim}</p>
 
           <div className="mt-9">
             <a href="#qualifier" className="btn btn-primary" onClick={onCta}>
@@ -34,13 +34,13 @@ export function Hero({ c, onCta }: { c: Content; onCta: () => void }) {
         {/* The artifact */}
         <figure className="m-0">
           {/* Incoming: recessed, flat left edge, no shadow. */}
-          <div className="rounded-r-brand border-l-2 border-taupe bg-sand p-6 sm:p-7">
+          <div className="rounded-brand border border-rule bg-sand p-6 sm:p-7">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[13.5px] text-muted">
               <time className="font-medium tabular-nums text-espresso">{c.hero.clockIn}</time>
               <span>{c.hero.message.from}</span>
             </div>
             <p className="mt-3 font-medium">{c.hero.message.subject}</p>
-            <p className="mt-2.5 text-[15.5px] leading-relaxed opacity-85">{c.hero.message.body}</p>
+            <p className="mt-2.5 text-[15px] leading-relaxed opacity-85">{c.hero.message.body}</p>
           </div>
 
           {/* The one moment of colour and the one animation on the page. */}
@@ -51,20 +51,17 @@ export function Hero({ c, onCta }: { c: Content; onCta: () => void }) {
           </div>
 
           {/* The draft: the one raised plane on the whole page. */}
-          <div
-            className="rounded-brand border border-rule bg-paper p-6 sm:p-7"
-            style={{ boxShadow: '0 10px 30px -18px rgba(37, 29, 24, 0.35)' }}
-          >
-            <p className="text-[15.5px]">{c.hero.draft.greeting}</p>
-            <p className="mt-3 text-[15.5px] leading-relaxed">{c.hero.draft.body}</p>
-            <p className="mt-3 text-[15.5px] leading-relaxed opacity-85">{c.hero.draft.signoff}</p>
+          <div className="card card-raised p-6 sm:p-7">
+            <p className="text-[15px]">{c.hero.draft.greeting}</p>
+            <p className="mt-3 text-[15px] leading-relaxed">{c.hero.draft.body}</p>
+            <p className="mt-3 text-[15px] leading-relaxed opacity-85">{c.hero.draft.signoff}</p>
           </div>
 
           <figcaption className="mt-4 flex flex-wrap items-baseline justify-between gap-3 text-[13.5px] text-muted">
             <span>{c.hero.exampleCaption}</span>
           </figcaption>
 
-          <p className="mt-5 max-w-[52ch] text-[1.02rem] leading-relaxed">{c.hero.afterLine}</p>
+          <p className="mt-5 max-w-[52ch] text-[15px] leading-relaxed">{c.hero.afterLine}</p>
         </figure>
       </div>
     </section>

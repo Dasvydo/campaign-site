@@ -48,7 +48,7 @@ export function Section({
               {title}
             </h2>
             {lead ? (
-              <p className="mt-4 max-w-[62ch] text-[1.05rem] leading-relaxed opacity-80">{lead}</p>
+              <p className="mt-4 max-w-[62ch] text-[16px] leading-relaxed opacity-80">{lead}</p>
             ) : null}
             <div className="mt-10">{children}</div>
           </div>

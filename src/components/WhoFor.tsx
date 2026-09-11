@@ -12,13 +12,13 @@ export function WhoFor({ c }: { c: Content }) {
         {c.who.groups.map((g) => (
           <div key={g.title} className="rule-top pt-5">
             <h3 className="text-[1.22rem]">{g.title}</h3>
-            <p className="mt-2.5 text-[15.5px] leading-relaxed opacity-85">{g.body}</p>
+            <p className="mt-2.5 text-[15px] leading-relaxed opacity-85">{g.body}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-12 grid gap-4 rule-top pt-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10">
-        <p className="flex items-start gap-3 text-[1.02rem] leading-relaxed">
+        <p className="flex items-start gap-3 text-[15px] leading-relaxed">
           <span
             aria-hidden="true"
             className="mt-2.5 h-1.5 w-1.5 flex-none rounded-full"
@@ -26,7 +26,7 @@ export function WhoFor({ c }: { c: Content }) {
           />
           <span>{c.who.seatMinimum}</span>
         </p>
-        <p className="text-[1.02rem] leading-relaxed opacity-85">{c.who.noTech}</p>
+        <p className="text-[15px] leading-relaxed opacity-85">{c.who.noTech}</p>
       </div>
     </Section>
   );

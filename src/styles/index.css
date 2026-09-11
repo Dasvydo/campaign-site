@@ -2,44 +2,71 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Design tokens. Every colour is from brand-lock.md and is authoritative,
-   not provisional. See AUDIT.md section 2 and DESIGN-PLAN.md section 2.
+   Design tokens.  Rebuilt 2026-09-11.
+
+   WHAT CHANGED AND WHY.  This page used to carry the product site's brand
+   exactly: cream #fff0e5, Playfair Display over DM Sans, 16px radius. Not
+   approximately - every colour matched doviloop.dev to the byte. That brand is
+   warm and editorial, which suits a product site and made this one read like a
+   brochure rather than a place you buy something.
+
+   So the page moved to a product-landing palette: a cool near-white ground,
+   white cards with real elevation, one geometric sans at tight tracking, an
+   8px rhythm and a 12px radius. AMBER IS THE ONE THING CARRIED OVER, unchanged
+   at #f59b0a, and it is now spent only on calls to action and live state. That
+   single value is what makes a visitor who clicks through to doviloop.dev read
+   it as the same company.
+
+   THE TOKEN NAMES ARE DELIBERATELY UNCHANGED.  cream, paper, sand, espresso
+   and the rest are now cool neutrals rather than warm ones. Keeping the names
+   means every component re-skins from this file alone instead of needing a
+   rename sweep that would touch every file and break nothing visibly if it
+   went wrong. The names describe their ROLE on the page, not their hue.
    ========================================================================== */
 @theme {
-  /* The six that carry the page */
-  --color-cream: #fff0e5;
-  --color-espresso: #251d18;
-  --color-charcoal: #1d1816;
-  --color-sand: #f2e3d9;
-  --color-rule: #e4d7cd;
+  /* --- Light ground ------------------------------------------------------ */
+  --color-cream: #fcfcfd;        /* page */
+  --color-paper: #ffffff;        /* raised card */
+  --color-sand: #f4f5f8;         /* recessed block */
+  --color-peach: #fff4de;        /* amber tint, selection + highlight */
+  --color-rule: #e8eaef;         /* hairline */
+  --color-taupe: #d7dae2;        /* stronger edge */
+
+  /* --- Ink --------------------------------------------------------------- */
+  --color-espresso: #0b0d12;     /* headings and body */
+  --color-charcoal: #0b0d12;     /* the dark band */
+  --color-muted: #6e7684;        /* secondary text, 4.9:1 on cream */
+
+  /* --- The one brand value ----------------------------------------------- */
   --color-amber: #f59b0a;
+  --color-amber-ink: #6b4100;    /* amber as TEXT on light: 7.4:1, amber is not */
+  --color-destructive: #d92d20;
 
-  /* Supporting warm neutrals, light ground */
-  --color-paper: #fdf9f7;
-  --color-peach: #fbebda;
-  --color-taupe: #ddcfc6;
-  --color-muted: #70635c;
-  --color-destructive: #db2424;
-
-  /* Supporting warm neutrals, dark ground */
+  /* --- Dark ground (qualifier band, footer) ------------------------------ */
   --color-amber-dark: #fbbd23;
-  --color-warmwhite: #faf1eb;
-  --color-card-dark: #28221f;
-  --color-secondary-dark: #38312e;
-  --color-rule-dark: #463e39;
-  --color-muted-dark: #b8a394;
+  --color-warmwhite: #eef0f4;
+  --color-card-dark: #151922;
+  --color-secondary-dark: #1e242f;
+  --color-rule-dark: #262c38;
+  --color-muted-dark: #9aa3b2;   /* 7.1:1 on charcoal */
 
-  /* Brand marks */
-  --color-teal: #2a6c7c;
-  --color-orange: #e96c32;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 
-  --font-display: 'Playfair Display', 'Playfair Fallback', Georgia, 'Times New Roman', serif;
-  --font-sans: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-
-  --radius-brand: 16px;
+  --radius-brand: 12px;
+  --radius-sm: 8px;
 }
 
+/* Elevation. Two shadows each: a tight contact shadow so the edge reads, and a
+   wide soft one so the card sits in space. One shadow alone always looks like
+   a sticker. */
 @layer base {
+  :root {
+    --shadow-sm: 0 1px 2px rgba(11, 13, 18, 0.04), 0 1px 3px rgba(11, 13, 18, 0.06);
+    --shadow-md: 0 2px 6px -2px rgba(11, 13, 18, 0.06), 0 8px 20px -6px rgba(11, 13, 18, 0.09);
+    --shadow-lg: 0 4px 10px -4px rgba(11, 13, 18, 0.07), 0 24px 48px -20px rgba(11, 13, 18, 0.20);
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
@@ -50,32 +77,35 @@
     background-color: var(--color-cream);
     color: var(--color-espresso);
     font-family: var(--font-sans);
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';  /* Inter's saner a, g, l, 1 */
   }
 
+  /* Tight tracking is most of what separates a product headline from a
+     default one. It scales with size: large type needs more negative
+     tracking than small type, never the same value everywhere. */
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 400;         /* regular serif reads editorial; bold reads template */
-    letter-spacing: -0.01em;
-    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.021em;
+    line-height: 1.1;
     text-wrap: balance;
     margin: 0;
   }
+  h1 { letter-spacing: -0.032em; line-height: 1.05; }
+  h3 { font-weight: 600; letter-spacing: -0.013em; line-height: 1.25; }
 
   p { margin: 0; text-wrap: pretty; }
 
-  /* Visible keyboard focus on both grounds. Never removed without a replacement. */
   :focus-visible {
     outline: 2px solid var(--color-amber);
     outline-offset: 2px;
     border-radius: 4px;
   }
-  .on-dark :focus-visible {
-    outline-color: var(--color-amber-dark);
-  }
+  .on-dark :focus-visible { outline-color: var(--color-amber-dark); }
 
   ::selection {
     background: var(--color-peach);
@@ -84,123 +114,155 @@
 }
 
 @layer components {
-  /* The page's structural device: a hairline that runs the full width,
-     the way a rule works on a printed page. Not a card border. */
   .rule-top { border-top: 1px solid var(--color-rule); }
   .rule-bottom { border-bottom: 1px solid var(--color-rule); }
   .on-dark .rule-top { border-top-color: var(--color-rule-dark); }
   .on-dark .rule-bottom { border-bottom-color: var(--color-rule-dark); }
 
-  /* Section number in the left margin. Does the job of an eyebrow label
-     without being an ALL-CAPS eyebrow label. */
+  /* Section number in the left margin. Monospaced figures so the column of
+     numbers down the page lines up optically. */
   .margin-number {
     font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     font-variant-numeric: tabular-nums;
     color: var(--color-muted);
   }
   .on-dark .margin-number { color: var(--color-muted-dark); }
 
+  /* A small pill for labelling a thing without shouting. Replaces nothing -
+     it is new, and it is the only place small caps appear. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--color-muted);
+    box-shadow: var(--shadow-sm);
+  }
+  .on-dark .chip {
+    background: var(--color-secondary-dark);
+    border-color: var(--color-rule-dark);
+    color: var(--color-muted-dark);
+    box-shadow: none;
+  }
+
+  .card {
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-brand);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-raised { box-shadow: var(--shadow-lg); }
+
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: 16px;
+    font-weight: 550;
+    font-size: 15.5px;
+    letter-spacing: -0.006em;
     line-height: 1;
-    padding: 15px 26px;
-    border-radius: var(--radius-brand);
+    padding: 14px 22px;
+    border-radius: var(--radius-sm);
     border: 1px solid transparent;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+    transition: background-color 130ms ease, border-color 130ms ease,
+      box-shadow 130ms ease, transform 130ms ease;
   }
+  .btn:active { transform: translateY(0.5px); }
+
+  /* Amber is the call to action and almost nothing else. Near-black text on it
+     rather than white: white on #f59b0a is 2.1:1 and fails outright. */
   .btn-primary {
-    background: var(--color-espresso);
-    color: var(--color-cream);
+    background: var(--color-amber);
+    color: #1a1204;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   }
-  .btn-primary:hover { background: #12100e; }
-  .on-dark .btn-primary {
-    background: var(--color-warmwhite);
-    color: var(--color-charcoal);
-  }
-  .on-dark .btn-primary:hover { background: #ffffff; }
+  .btn-primary:hover { background: #ffa722; box-shadow: var(--shadow-md); }
+  .on-dark .btn-primary { background: var(--color-amber-dark); color: #1a1204; }
+  .on-dark .btn-primary:hover { background: #ffcc4d; }
 
   .btn-quiet {
-    background: transparent;
+    background: var(--color-paper);
     color: var(--color-espresso);
-    border-color: var(--color-rule);
+    border-color: var(--color-taupe);
+    box-shadow: var(--shadow-sm);
   }
-  .btn-quiet:hover { background: var(--color-sand); }
+  .btn-quiet:hover { background: var(--color-sand); border-color: #c2c7d2; }
   .on-dark .btn-quiet {
+    background: var(--color-secondary-dark);
     color: var(--color-warmwhite);
     border-color: var(--color-rule-dark);
+    box-shadow: none;
   }
-  .on-dark .btn-quiet:hover { background: var(--color-secondary-dark); }
+  .on-dark .btn-quiet:hover { background: #29303d; }
 
-  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  /* Form controls on the charcoal band. */
+  /* --- Form controls on the charcoal band ------------------------------- */
   .field-label {
     display: block;
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 550;
+    letter-spacing: -0.004em;
     color: var(--color-warmwhite);
-    margin-bottom: 7px;
+    margin-bottom: 8px;
   }
-  .field-hint {
-    font-size: 14px;
-    color: var(--color-muted-dark);
-    margin-top: 6px;
-  }
-  .field-error {
-    font-size: 14px;
-    color: #ffb4b4;
-    margin-top: 6px;
-  }
+  .field-hint { font-size: 13.5px; color: var(--color-muted-dark); margin-top: 8px; }
+  .field-error { font-size: 13.5px; color: #ff9a92; margin-top: 8px; font-weight: 500; }
   .field {
     width: 100%;
     background: var(--color-card-dark);
     border: 1px solid var(--color-rule-dark);
-    border-radius: var(--radius-brand);
+    border-radius: var(--radius-sm);
     color: var(--color-warmwhite);
     font-family: var(--font-sans);
     font-size: 16px;   /* 16px stops iOS Safari zooming the page on focus */
     line-height: 1.4;
-    padding: 14px 15px;
+    padding: 13px 14px;
     appearance: none;
+    transition: border-color 130ms ease, box-shadow 130ms ease;
   }
-  .field::placeholder { color: #8e7d72; }
-  .field:hover { border-color: #5a504a; }
-  .field[aria-invalid='true'] { border-color: #e07575; }
+  .field::placeholder { color: #6b7688; }
+  .field:hover { border-color: #38404f; }
+  .field:focus { border-color: var(--color-amber-dark); box-shadow: 0 0 0 3px rgba(251, 189, 35, 0.16); }
+  .field[aria-invalid='true'] { border-color: #e5645b; }
 
   select.field {
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23B8A394' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%239AA3B2' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 42px;
+    background-position: right 14px center;
+    padding-right: 40px;
   }
 
-  /* The one animated thing on the whole page: the amber dot that says the
-     draft just landed. Everything else is still, by design. */
+  /* The one animated thing on the page: the amber dot that says the draft
+     landed. Everything else is still, by design. */
   .live-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 999px;
     background: var(--color-amber);
     flex: none;
+    box-shadow: 0 0 0 3px rgba(245, 155, 10, 0.18);
     animation: pulse 2.4s ease-in-out infinite;
   }
   @keyframes pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
+    50% { opacity: 0.4; }
   }
 }
 
-/* Respect the setting. This kills the only animation and the smooth scroll. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -209,4 +271,5 @@
     transition-duration: 0.001ms !important;
   }
   .live-dot { animation: none; opacity: 1; }
+  .btn:active { transform: none; }
 }

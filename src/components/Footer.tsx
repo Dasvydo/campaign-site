@@ -18,7 +18,7 @@ export function Footer({ c }: { c: Content }) {
       <div className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-8">
         <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div>
-            <p className="font-sans text-[1.1rem] font-bold">
+            <p className="font-sans text-[15px] font-bold">
               <span style={{ color: '#5FA9B8' }}>Dovi</span>
               <span style={{ color: '#F0844A' }}>Loop</span>
             </p>
