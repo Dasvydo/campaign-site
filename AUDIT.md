@@ -122,7 +122,7 @@ placeholder swaps itself out. Dovy's step is one file copy, no code change.
 ## 7. What this batch will not touch
 
 - Supabase project `kngcxwcybozgqgnoweyt`: untouched, never contacted. *Note, 2026-09-06: Dovy has
-  since confirmed the campaign ledger lives in Supabase project `oqpeebtwtikdzorgouxd`, schema
+  since confirmed the campaign ledger lives in Supabase project `yheilbuunzdugfnermfb`, schema
   `campaign`. The ID above is what the audit recorded on 2026-09-03 and is left as a record. This
   repo contacts neither; ledger writes stay with Batch F.*
 - No database migration written or applied.

@@ -148,7 +148,7 @@ Four campaign-wide decisions landed. Checked each of the eight entries above aga
 - **Reply sentiment taxonomy** (interested, not_now, not_a_fit, referred, objection,
   unsubscribe). Not referenced in this repo. Entry 5 is about Batch E's *objection* taxonomy,
   which is a different list, so entry 5 stays open.
-- **Ledger is Supabase project `oqpeebtwtikdzorgouxd`, schema `campaign`.** Entry 4 was never
+- **Ledger is Supabase project `yheilbuunzdugfnermfb`, schema `campaign`.** Entry 4 was never
   blocked on *where* the ledger lives, only on the live `VITE_LEAD_WEBHOOK_URL` value, which
   still does not exist. Entry 4 stays open for that reason alone. `AUDIT.md` section 7, which
   named a different project ID, is annotated.

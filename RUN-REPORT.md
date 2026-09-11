@@ -344,7 +344,7 @@ for "sentiment"; this repo does not reference the taxonomy. The five
 `objections` blocks are a different thing (Batch E's objection list) and are
 unaffected.
 
-**4. The campaign ledger lives in Supabase project `oqpeebtwtikdzorgouxd`,
+**4. The campaign ledger lives in Supabase project `yheilbuunzdugfnermfb`,
 schema `campaign`.** *Changed here:* `AUDIT.md` section 7 named a different
 project ID as of 2026-09-03; that line is now annotated with the confirmed
 project and schema. This repo still never contacts Supabase; ledger writes
