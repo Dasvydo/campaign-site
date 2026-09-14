@@ -1,6 +1,42 @@
 import { chromium } from './node_modules/playwright-core/index.mjs';
-import { readFileSync } from 'node:fs';
-const URL='file:///tmp/claude-0/-home-user/fd7dbc40-f8a7-5f86-88a5-82bfe161aa07/scratchpad/dir-c5.full.html';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+/* usage: node gates.mjs [page.html] [fonts-dir]
+   playwright-core and axe-core resolve from ./node_modules, so run this from
+   wherever those are installed. */
+const SRC   = resolve(process.argv[2] || 'paper-desk.html');
+const FONTS = process.argv[3] || '';
+
+/* paper-desk.html is artifact page content, not a document: no doctype, no
+   html element, no head. Without a lang attribute axe reports a html-has-lang
+   violation that belongs to the harness rather than to the page, so the shell
+   is built here instead of being left to whoever runs this. The real site sets
+   lang per locale from content.htmlLang. */
+const faces = ['Playfair Display:400:playfair-display-latin-400-normal',
+               'Playfair Display:600:playfair-display-latin-600-normal',
+               'Playfair Display:700:playfair-display-latin-600-normal',
+               'DM Sans:400:dm-sans-latin-400-normal',
+               'DM Sans:500:dm-sans-latin-500-normal',
+               'DM Sans:700:dm-sans-latin-700-normal'];
+const page = readFileSync(SRC,'utf8').replace(/<link[^>]*fonts\.(googleapis|gstatic)\.com[^>]*>/g,'');
+const localFonts = FONTS ? `<style>${faces.map(f=>{
+  const [fam,wt,file] = f.split(':');
+  return `@font-face{font-family:'${fam}';font-weight:${wt};font-style:normal;font-display:block;`
+       + `src:url('${pathToFileURL(join(resolve(FONTS), file + '.woff2')).href}') format('woff2')}`;
+}).join('')}</style>` : '';
+
+const SHELL = join(tmpdir(), 'paper-desk.gates.html');
+writeFileSync(SHELL, `<!doctype html><html lang="en"><head><meta charset="utf8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px system-ui,sans-serif}
+img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+${localFonts}</head><body>\n${page}\n</body></html>`);
+const URL = pathToFileURL(SHELL).href;
+console.log(`page: ${SRC}${FONTS ? '' : '  (no fonts dir given, falling back to system faces)'}`);
+
 const axe = readFileSync('./node_modules/axe-core/axe.min.js','utf8');
 const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',args:['--no-sandbox']});
 
@@ -54,8 +90,7 @@ g(v.tbt<50,'TBT', Math.round(v.tbt)+'ms', '< 50ms');
 await pg2.close();
 
 // ---- JS weight ----
-const html = readFileSync('./dir-c5.html','utf8');
-const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('');
+const scripts=[...page.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('');
 const { gzipSync } = await import('node:zlib');
 console.log('\n=== GATE: JS weight ===');
 const kb = gzipSync(Buffer.from(scripts)).length/1024;

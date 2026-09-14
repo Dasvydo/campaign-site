@@ -668,10 +668,6 @@ a{color:inherit}
   color:var(--muted,#70635C);
   font-variant-numeric:tabular-nums lining;
 }
-@media (min-width:1240px){
-  .who-folio{ position:absolute; left:10px; top:4px; margin:0 }
-}
-
 .who-head{ grid-column:1/-1 }
 @media (min-width:1024px){ .who-head{ grid-column:1/9 } }
 
@@ -834,7 +830,8 @@ a{color:inherit}
     grid-template-columns:repeat(12,minmax(0,1fr));
     column-gap:24px;
   }
-  .who-note-a{ grid-column:1/8 }
+  .who-note-a{ grid-column:1/7 }
+  .who-note-b{ grid-column:7/13 }
 }
 
 .who-note{
@@ -1006,6 +1003,41 @@ a{color:inherit}
 .demo-nojs{
   margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--muted);max-width:46ch;
 }
+
+/* the picker. Index tabs on a folder: the live one sits forward and joins the
+   paper below it, the other two sit back. Hidden without script, because with
+   no script there is one scenario and three controls that would do nothing. */
+.demo-pick{margin-top:40px}
+.demo-pick-lead{
+  margin:0 0 14px;font-size:14px;font-weight:500;letter-spacing:.02em;color:var(--muted);
+}
+.demo-tabs{
+  display:flex;flex-wrap:wrap;gap:6px;
+  border-bottom:1px solid var(--taupe);
+}
+.demo-tab{
+  appearance:none;-webkit-appearance:none;
+  margin:0 0 -1px;padding:12px 18px 13px;
+  font:inherit;font-size:15.5px;font-weight:500;line-height:1.2;color:var(--muted);
+  background:transparent;border:1px solid transparent;border-bottom:none;
+  border-radius:3px 3px 0 0;cursor:pointer;
+  transition:color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1)),
+             background-color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1));
+}
+.demo-tab:hover{color:var(--ink);background:var(--sand,rgba(37,29,24,.04))}
+.demo-tab[aria-selected="true"]{
+  color:var(--ink);background:var(--card);
+  border-color:var(--taupe);
+  box-shadow:0 -1px 0 var(--card) inset, 0 -2px 0 var(--amber-text) inset;
+}
+.demo-tab:focus-visible{outline:3px solid var(--hero-focus,var(--amber-text));outline-offset:-3px}
+.demo-tab:active{transform:translateY(1px)}
+/* three tabs on one row at 360px, rather than one orphan on a second row. */
+@media (max-width:399px){
+  .demo-tab{padding:12px 11px 13px;font-size:14.5px}
+  .demo-tabs{gap:4px}
+}
+#demo:not([data-js="on"]) .demo-pick{display:none}
 
 .demo-beats{
   margin-top:48px;
@@ -1387,333 +1419,6 @@ a{color:inherit}
   .demo-v.demo-struck{background-size:100% .34em}
   .demo-v.demo-enter{opacity:1}
   .demo-circ.demo-drawn{background-size:100% 100%}
-}
-
-/* ============================================================
-   SECTION: how, "How it actually works"
-   ============================================================ */
-
-#how{
-  --how-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='hf'><feTurbulence type='fractalNoise' baseFrequency='.74 .88' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .47  0 0 0 0 .42  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23hf)'/></svg>");
-  --how-blotch:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='hb'><feTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .47  0 0 0 0 .42  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23hb)'/></svg>");
-
-  --how-sh-flat:0 1px 1px rgba(37,29,24,.16), 0 2px 4px -1px rgba(37,29,24,.10), inset 1px 1px 0 var(--edge);
-  --how-sh-lift:1px 2px 2px -1px rgba(37,29,24,.18), 2px 6px 12px -4px rgba(37,29,24,.16), inset 1px 1px 0 var(--edge);
-
-  --how-pullx:0px;
-  --how-spine:22px;
-
-  position:relative;
-  max-width:1280px;
-  margin-inline:auto;
-  padding-inline:clamp(22px,4vw,48px);
-  padding-block:56px 48px;
-  overflow-x:clip;
-  color:var(--ink);
-  font-variant-numeric:tabular-nums lining-nums;
-}
-@media (min-width:1024px){ #how{ padding-block:96px 80px } }
-
-#how :focus-visible{
-  outline:2px solid var(--amber-text,#8A5200);
-  outline-offset:2px;
-  border-radius:2px;
-}
-
-.how-folio{
-  margin:0 0 12px;
-  font-size:12.5px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--muted); font-variant-numeric:tabular-nums lining-nums;
-  margin-right:-.16em;
-}
-h2.how-h{
-  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
-  font-weight:400; margin:0 0 48px; margin-left:-.02em;
-  font-size:clamp(32px,4.4vw,54px); line-height:1.04; letter-spacing:-.014em;
-  text-wrap:balance; color:var(--ink);
-}
-
-.how-stations{
-  list-style:none; margin:0; padding:0;
-  display:grid; row-gap:48px;
-}
-.how-station{ position:relative }
-
-.how-station::after{
-  content:""; position:absolute; left:var(--how-spine); top:100%;
-  margin-top:9px; height:30px; border-left:1px dashed var(--taupe);
-}
-.how-station:last-child::after{ content:none }
-
-.how-fig{ position:relative; padding-top:34px }
-.how-num{
-  position:absolute; left:0; top:0; z-index:0;
-  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
-  /* deliberate ghost numeral, as .hero-numeral: the ordering is carried by the
-     <ol> and by the step headings, so this is paper texture, not a label. */
-  font-weight:400; font-size:54px; line-height:.8; color:var(--taupe);
-  font-variant-numeric:tabular-nums lining-nums; letter-spacing:-.01em;
-}
-.how-obj{
-  position:relative; z-index:1;
-  max-width:100%;
-  transform:rotate(var(--r,0deg));
-  transform-origin:52% 100%;
-}
-
-.how-paper{
-  background-color:var(--card);
-  background-image:var(--how-fibre),var(--how-blotch);
-  background-size:170px 170px,520px 520px;
-  background-blend-mode:multiply,multiply;
-  border:1px solid var(--border);
-  border-radius:2px;
-  box-shadow:var(--how-sh-flat);
-}
-
-.how-bar{
-  display:block; flex:none;
-  height:3px; border-radius:2px; background:var(--sand);
-  margin-bottom:13px; position:relative; width:90%;
-}
-.how-bar-h{ height:4px; background:var(--taupe); width:44%; margin-bottom:18px }
-.how-bar:last-of-type{ margin-bottom:0 }
-
-.how-note{ padding:20px 20px 24px; width:88% }
-.how-clip{
-  position:absolute; top:-9px; left:50%; transform:translateX(-50%);
-  width:54px; height:17px; border-radius:3px;
-  background:var(--taupe); border:1px solid rgba(37,29,24,.14);
-  box-shadow:0 1px 1px rgba(37,29,24,.16), inset 1px 1px 0 var(--edge);
-}
-.how-clip::after{
-  content:""; position:absolute; left:50%; top:5px; transform:translateX(-50%);
-  width:30px; height:5px; border-radius:2px; background:var(--sand);
-}
-.how-hl{
-  position:absolute; left:var(--x); width:var(--w); top:-7px; height:15px;
-  background:var(--amber); opacity:.42; mix-blend-mode:multiply; border-radius:2px;
-  transform:skewX(-8deg) rotate(-.6deg); transform-origin:left center;
-  clip-path:inset(0 -2% 0 0);
-  pointer-events:none;
-}
-
-.how-index{ width:100%; padding-bottom:16px }
-.how-drawer{ position:relative; height:146px }
-.how-card{
-  position:absolute; left:0; right:0; top:calc(var(--n) * 34px);
-  height:42px; z-index:calc(var(--n) + 1);
-  display:flex; align-items:center; padding:0 12px;
-}
-.how-card::before{
-  content:""; position:absolute; left:12px; right:12px; bottom:9px;
-  height:1px; background:var(--border);
-}
-.how-cap{
-  font-size:12.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--muted); margin-right:-.14em; line-height:1;
-}
-.how-card-out{
-  z-index:9;
-  border-left:3px solid var(--amber-text);
-  box-shadow:var(--how-sh-lift);
-  transform:translate(var(--how-pullx),-10px) rotate(-1.4deg);
-  transform-origin:12% 50%;
-}
-.how-card-out .how-cap{ color:var(--ink) }
-.how-lip{
-  position:absolute; left:0; right:0; bottom:0; height:16px;
-  background-color:var(--sand); background-image:var(--how-fibre); background-size:170px 170px;
-  background-blend-mode:multiply;
-  border:1px solid var(--border); border-radius:2px;
-  box-shadow:var(--how-sh-flat);
-}
-.how-lip::after{
-  content:""; position:absolute; left:50%; top:5px; transform:translateX(-50%);
-  width:34px; height:5px; border-radius:3px; background:var(--taupe);
-}
-
-.how-sheet{
-  width:80%; min-height:250px; padding:18px 20px 20px;
-  box-shadow:var(--how-sh-lift);
-  display:flex; flex-direction:column;
-}
-.how-letterhead{
-  display:flex; align-items:center; gap:8px; flex:none;
-  padding-bottom:12px; margin-bottom:18px; border-bottom:1px solid var(--border);
-}
-.how-mk{ width:11px; height:11px; border-radius:2px; background:var(--taupe); flex:none }
-.how-rule{ display:block; height:3px; width:30%; border-radius:2px; background:var(--sand) }
-.how-caret{
-  position:absolute; right:-9px; top:-6px; width:2px; height:15px;
-  background:var(--ink); border-radius:1px; opacity:.72;
-}
-.how-foot{
-  display:block; flex:none; margin-top:20px; padding-top:0;
-  border-top:1px dashed var(--taupe);
-}
-.how-emboss{
-  position:absolute; right:16px; bottom:14px; width:44px; height:44px;
-  opacity:.55; pointer-events:none;
-}
-.how-emboss path{
-  fill:var(--card);
-  filter:drop-shadow(-1px -1px 0 rgba(253,249,247,.9)) drop-shadow(1px 1.5px 1px rgba(37,29,24,.18));
-}
-
-.how-arrow{ display:none }
-.how-arrow path{
-  fill:none; stroke:var(--amber-text); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
-  mix-blend-mode:multiply;
-  stroke-dasharray:var(--len,56); stroke-dashoffset:0;
-}
-
-.how-copy{ margin-top:20px }
-h3.how-step{
-  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
-  font-weight:400; margin:0 0 10px;
-  font-size:clamp(23px,2.2vw,30px); line-height:1.12; letter-spacing:-.01em;
-  color:var(--ink); text-wrap:balance;
-}
-.how-say{
-  margin:0; font-size:17px; line-height:1.62; color:var(--ink); max-width:62ch;
-}
-
-.how-tech{
-  margin:56px 0 0; max-width:62ch;
-  padding-top:22px; border-top:1px dashed var(--taupe);
-  font-size:17px; line-height:1.6; color:var(--ink);
-}
-.how-mark{
-  background-image:linear-gradient(var(--amber-text),var(--amber-text));
-  background-size:100% 3px; background-position:0 1.04em; background-repeat:no-repeat;
-  -webkit-box-decoration-break:clone; box-decoration-break:clone;
-  padding-bottom:.06em;
-}
-
-@media (min-width:680px){
-  #how{ --how-spine:26px }
-  .how-station{
-    display:grid; grid-template-columns:minmax(0,210px) minmax(0,1fr);
-    column-gap:32px; align-items:start;
-  }
-  .how-copy{ margin-top:34px }
-}
-
-@media (min-width:1024px){
-  #how{ --how-pullx:-10px }
-  .how-stations{
-    grid-template-columns:repeat(12,minmax(0,1fr));
-    column-gap:24px; row-gap:0;
-  }
-  .how-station{
-    display:block; grid-row:1; column-gap:0;
-  }
-  .how-st1{ grid-column:1 / span 4 }
-  .how-st2{ grid-column:5 / span 4 }
-  .how-st3{ grid-column:9 / span 4 }
-  .how-station::after{ content:none }
-  .how-copy{ margin-top:24px }
-  .how-arrow{
-    display:block; position:absolute; right:-34px; bottom:26px;
-    width:58px; height:44px; overflow:visible; z-index:2; pointer-events:none;
-  }
-  .how-st3 .how-arrow{ display:none }
-  .how-tech{ margin-top:64px }
-}
-
-@supports (grid-template-rows:subgrid){
-  @media (min-width:1024px){
-    .how-stations{ grid-template-rows:auto auto; position:relative }
-    .how-station{
-      grid-row:1 / span 2; display:grid; grid-template-rows:subgrid; row-gap:0;
-    }
-    .how-fig{ align-self:end }
-    .how-copy{ margin-top:0; padding-top:24px }
-    .how-stations::after{
-      content:""; grid-column:1 / -1; grid-row:1; align-self:end;
-      height:1px; background:var(--taupe); z-index:0;
-    }
-    .how-stations::before{
-      content:""; grid-column:1 / -1; grid-row:1; align-self:end;
-      height:10px; margin-bottom:-10px; z-index:0;
-      background:linear-gradient(rgba(37,29,24,.07),rgba(37,29,24,0));
-    }
-  }
-}
-
-@media (max-width:400px){
-  .how-note{ width:100% }
-  .how-sheet{ width:100% }
-  .how-num{ font-size:44px }
-  .how-fig{ padding-top:30px }
-}
-
-@keyframes how-land{
-  0%{
-    transform:translateY(-24px) rotate(calc(var(--r,0deg) - 3.2deg)); opacity:0;
-    animation-timing-function:var(--e-in,cubic-bezier(.55,.06,.68,.19));
-  }
-  10%{ opacity:1 }
-  72%{
-    transform:translateY(0) rotate(calc(var(--r,0deg) + 1.1deg));
-    animation-timing-function:var(--e-out,cubic-bezier(.2,.8,.3,1));
-  }
-  100%{ transform:translateY(0) rotate(var(--r,0deg)); opacity:1 }
-}
-@keyframes how-sweep{
-  from{ clip-path:inset(0 100% 0 0) }
-  to{ clip-path:inset(0 -2% 0 0) }
-}
-@keyframes how-soak{
-  from{ opacity:.42 }
-  to{ opacity:.52 }
-}
-
-#how.how-js .how-obj{ opacity:0 }
-#how.how-js .how-hl{ clip-path:inset(0 100% 0 0) }
-#how.how-js .how-card-out{ transform:translate(0,0) rotate(0deg) }
-#how.how-js .how-arrow path{ stroke-dashoffset:var(--len,56) }
-#how.how-js .how-mark{ background-size:0 3px }
-
-#how.how-js .how-in .how-obj{
-  animation:how-land var(--t-settle,520ms) both;
-  animation-delay:calc(var(--i,0) * var(--stag,74ms));
-}
-#how.how-js .how-in .how-hl{
-  animation:
-    how-sweep var(--t-mark,340ms) var(--e-hand,cubic-bezier(.33,.06,.28,1)) both,
-    how-soak 480ms var(--e-soak) both;
-  animation-delay:
-    calc(360ms + var(--i,0) * var(--stag,74ms)),
-    calc(560ms + var(--i,0) * var(--stag,74ms));
-}
-#how.how-js .how-in .how-card-out{
-  transform:translate(var(--how-pullx),-10px) rotate(-1.4deg);
-  transition:transform var(--t-in,260ms) var(--e-out,cubic-bezier(.2,.8,.3,1)) 540ms;
-}
-#how.how-js .how-arrow path{
-  transition:
-    stroke-dashoffset var(--dur,320ms) var(--e-hand,cubic-bezier(.33,.06,.28,1)) var(--ad,0ms),
-    stroke-width calc(var(--dur,320ms) * 1.4) var(--e-out,cubic-bezier(.2,.8,.3,1)) var(--ad,0ms);
-}
-#how.how-js .how-in .how-arrow path{ stroke-dashoffset:0; stroke-width:2.7 }
-.how-st1 .how-arrow path{ --ad:640ms }
-.how-st1 .how-arrow .how-head{ --ad:770ms }
-.how-st2 .how-arrow path{ --ad:800ms }
-.how-st2 .how-arrow .how-head{ --ad:930ms }
-
-#how.how-js .how-mark{
-  transition:background-size var(--t-mark,340ms) var(--e-hand,cubic-bezier(.33,.06,.28,1));
-}
-#how.how-js .how-tech.how-in .how-mark{ background-size:100% 3px }
-
-@media (prefers-reduced-motion:reduce){
-  #how .how-obj{ opacity:1!important; transform:rotate(var(--r,0deg))!important }
-  #how .how-hl{ clip-path:inset(0 -2% 0 0)!important; opacity:.52!important }
-  #how .how-card-out{ transform:translate(var(--how-pullx),-10px) rotate(-1.4deg)!important }
-  #how .how-arrow path{ stroke-dashoffset:0!important; stroke-width:2.7!important }
-  #how .how-mark{ background-size:100% 3px!important }
 }
 
 /* ==========================================================================
@@ -3250,7 +2955,6 @@ h3.how-step{
 
       <nav class="hero-nav" aria-label="Sections">
         <a href="#demo">Example</a>
-        <a href="#how">How</a>
         <a href="#price">What it costs</a>
         <a href="#fit">Fit</a>
       </nav>
@@ -3347,7 +3051,16 @@ h3.how-step{
       <p class="demo-nojs">Needs JavaScript. The message, draft and gate read the same either way.</p>
     </header>
 
-    <div class="demo-beats">
+    <div class="demo-pick">
+      <p class="demo-pick-lead" id="demo-pick-lead">Pick the desk nearest yours.</p>
+      <div class="demo-tabs" role="tablist" aria-labelledby="demo-pick-lead">
+        <button type="button" role="tab" class="demo-tab" id="demo-tab-property" data-scenario="property" aria-controls="demo-panel" aria-selected="true">Property</button>
+        <button type="button" role="tab" class="demo-tab" id="demo-tab-accounting" data-scenario="accounting" aria-controls="demo-panel" aria-selected="false" tabindex="-1">Accounting</button>
+        <button type="button" role="tab" class="demo-tab" id="demo-tab-insurance" data-scenario="insurance" aria-controls="demo-panel" aria-selected="false" tabindex="-1">Insurance</button>
+      </div>
+    </div>
+
+    <div class="demo-beats" id="demo-panel">
 
       <div class="demo-beat demo-beat--a">
         <h3 class="demo-beat-h" id="demo-beat-a">What came in, 08:40</h3>
@@ -3509,96 +3222,17 @@ h3.how-step{
 
     <div class="who-notes">
       <p class="who-note who-note-a">This offer starts at <span class="who-pen" data-who-draw><svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1 6 C 20 3, 45 8, 62 5 S 90 4, 99 6"/></svg>10 seats</span>. Below that, the plan on <a class="who-link" href="https://doviloop.dev">doviloop.dev</a> does the same drafting and costs a great deal less.</p>
+      <p class="who-note who-note-b">No developer, no change of email. If you are in Outlook, <span class="who-pen" data-who-draw><svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M1 6 C 22 4, 44 8, 63 5 S 88 3, 99 6"/></svg>setup is our job</span>.</p>
     </div>
   </div>
 </section>
 
 
-<section id="how" aria-labelledby="how-h">
-  <p class="how-folio" aria-hidden="true">04</p>
-  <h2 class="how-h" id="how-h">How it actually works</h2>
-
-  <ol class="how-stations" role="list">
-
-    <li class="how-station how-st1" style="--i:0">
-      <div class="how-fig" aria-hidden="true">
-        <span class="how-num">01</span>
-        <div class="how-obj how-paper how-note" style="--r:-1.8deg">
-          <span class="how-clip"></span>
-          <i class="how-bar how-bar-h"></i>
-          <i class="how-bar" style="width:93%"><b class="how-hl" style="--x:2%;--w:41%;--i:0"></b></i>
-          <i class="how-bar" style="width:86%"></i>
-          <i class="how-bar" style="width:90%"><b class="how-hl" style="--x:33%;--w:46%;--i:1"></b></i>
-          <i class="how-bar" style="width:79%"></i>
-          <i class="how-bar" style="width:58%"><b class="how-hl" style="--x:4%;--w:34%;--i:2"></b></i>
-        </div>
-        <svg class="how-arrow" viewBox="0 0 58 44" width="58" height="44" aria-hidden="true" focusable="false">
-          <path data-how-draw d="M2 34 C 15 33.5, 27 27, 46 11"/>
-          <path class="how-head" data-how-draw d="M36 12.5 L46 10.5 L45.5 20.5"/>
-        </svg>
-      </div>
-      <div class="how-copy">
-        <h3 class="how-step">It reads the message</h3>
-        <p class="how-say">Who wrote, what they want, and what they were told last time.</p>
-      </div>
-    </li>
-
-    <li class="how-station how-st2" style="--i:1">
-      <div class="how-fig" aria-hidden="true">
-        <span class="how-num">02</span>
-        <div class="how-obj how-index" style="--r:.7deg">
-          <div class="how-drawer">
-            <span class="how-card how-paper" style="--n:0"><span class="how-cap">Past replies</span></span>
-            <span class="how-card how-paper" style="--n:1"><span class="how-cap">Fee schedule</span></span>
-            <span class="how-card how-paper how-card-out" style="--n:2"><span class="how-cap">Deposit rules</span></span>
-            <span class="how-card how-paper" style="--n:3"><span class="how-cap">Signed off, March</span></span>
-          </div>
-          <span class="how-lip"></span>
-        </div>
-        <svg class="how-arrow" viewBox="0 0 58 44" width="58" height="44" aria-hidden="true" focusable="false">
-          <path data-how-draw d="M2 34 C 15 33.5, 27 27, 46 11"/>
-          <path class="how-head" data-how-draw d="M36 12.5 L46 10.5 L45.5 20.5"/>
-        </svg>
-      </div>
-      <div class="how-copy">
-        <h3 class="how-step">It pulls what your firm actually knows</h3>
-        <p class="how-say">Your rules, your fee schedule, your past replies. Not the internet.</p>
-      </div>
-    </li>
-
-    <li class="how-station how-st3" style="--i:2">
-      <div class="how-fig" aria-hidden="true">
-        <span class="how-num">03</span>
-        <div class="how-obj how-paper how-sheet" style="--r:-.9deg">
-          <span class="how-letterhead"><i class="how-mk"></i><i class="how-rule"></i></span>
-          <i class="how-bar how-bar-h" style="width:37%"></i>
-          <i class="how-bar" style="width:95%"></i>
-          <i class="how-bar" style="width:88%"></i>
-          <i class="how-bar" style="width:93%"></i>
-          <i class="how-bar" style="width:44%"><b class="how-caret"></b></i>
-          <span class="how-foot"></span>
-          <svg class="how-emboss" viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
-            <path fill-rule="evenodd" d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"/>
-            <path d="M215 250 H372 V630 H550 V762 H215 Z"/>
-          </svg>
-        </div>
-      </div>
-      <div class="how-copy">
-        <h3 class="how-step">It writes the reply in your voice</h3>
-        <p class="how-say">Your tone, the real details, then it stops and waits for a person.</p>
-      </div>
-    </li>
-
-  </ol>
-
-  <p class="how-tech">No developer, no change of email. If you are in Outlook, <span class="how-mark">setup is our job</span>.</p>
-</section>
-
 <section id="numbers" aria-labelledby="numbers-h">
   <div class="numbers-wrap">
 
     <header class="numbers-head">
-      <span class="numbers-folio" aria-hidden="true">05</span>
+      <span class="numbers-folio" aria-hidden="true">04</span>
       <p class="numbers-eyebrow">Our own arithmetic</p>
       <h2 class="numbers-h" id="numbers-h">What it is worth</h2>
     </header>
@@ -3665,7 +3299,7 @@ h3.how-step{
 <section id="price" class="price" aria-labelledby="price-h">
   <div class="price-wrap">
 
-    <p class="price-folio" aria-hidden="true">06</p>
+    <p class="price-folio" aria-hidden="true">05</p>
     <div class="price-rule" aria-hidden="true"></div>
 
     <header class="price-head">
@@ -3797,7 +3431,7 @@ h3.how-step{
 
     <div class="qualifier-head" id="fit" tabindex="-1">
       <p class="qualifier-kicker">
-        <span class="qualifier-folio" aria-hidden="true">07</span>
+        <span class="qualifier-folio" aria-hidden="true">06</span>
         <span class="qualifier-kicker-rule" aria-hidden="true"></span>
         <span class="qualifier-eyebrow">What do I do now</span>
       </p>
@@ -3921,7 +3555,7 @@ h3.how-step{
 <footer id="footer" role="contentinfo" aria-labelledby="footer-h">
   <div class="footer-wrap">
 
-    <p class="footer-folio" aria-hidden="true">08</p>
+    <p class="footer-folio" aria-hidden="true">07</p>
     <div class="footer-rule" aria-hidden="true"></div>
 
     <div class="footer-grid">
@@ -4267,17 +3901,9 @@ h3.how-step{
     b.removeAttribute('aria-disabled');
   });
 
+  /* the five per source lines live on each scenario, because they name that
+     scenario's facts. Everything here is true of all three. */
   var COPY = {
-    rules:      { off: 'Deposit rules off. The draft stops naming the three week rule.',
-                  on:  'Deposit rules on. The three week rule is back in the draft.' },
-    deadline:   { off: 'Deadline off. The date drops out of the draft.',
-                  on:  'Deadline on. The 21st is back in the draft.' },
-    file:       { off: 'File off. The tenant name and the account drop out of the draft.',
-                  on:  'File on. The tenant name and the account are back in the draft.' },
-    deductions: { off: 'Deductions log off. Two figures removed from the draft.',
-                  on:  'Deductions log on. Two figures are back in the draft.' },
-    tone:       { off: 'House tone off. Same facts, stiffer wording.',
-                  on:  'House tone on. The draft reads in the office voice again.' },
     allOff:  'Nothing left on. The draft is four generic lines.',
     restore: 'All five back on. The draft is whole again.',
     deal:    'A new letter on the desk. The draft is back to where it started.',
@@ -4311,6 +3937,11 @@ h3.how-step{
   var btnDeal     = root.querySelector('.demo-btn--deal');
   var stampDraft  = root.querySelector('.demo-stamp--draft');
   var stampSent   = root.querySelector('.demo-stamp--sent');
+  var letter      = root.querySelector('.demo-letter');
+  var salut       = root.querySelector('.demo-salut');
+  var replyRef    = root.querySelector('.demo-ref');
+  var tablist     = root.querySelector('.demo-tabs');
+  var panel       = document.getElementById('demo-panel');
 
   if (!body || !group || !reply) return;
 
@@ -4481,7 +4112,7 @@ h3.how-step{
     state[key] = !state[key];
     paint(btn);
     var everythingOff = render(key);
-    if (announce !== false) say(everythingOff ? COPY.allOff : COPY[key][state[key] ? 'on' : 'off']);
+    if (announce !== false) say(everythingOff ? COPY.allOff : current.copy[key][state[key] ? 'on' : 'off']);
   }
 
   function switchesFor(key) {
@@ -4637,31 +4268,41 @@ h3.how-step{
     });
   }
 
+  /* dealing the next letter and changing desk are the same reset with different
+     paper, so the reset is written once. */
+  function drawRing() {
+    var ring = reply.querySelector('.demo-circ');
+    if (!ring || !arrived) return;
+    if (mqReduce.matches) { ring.classList.add('demo-drawn'); return; }
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { ring.classList.add('demo-drawn'); });
+    });
+  }
+
+  function resetDraft() {
+    if (editing) setEditing(false);
+    collectClauses();
+    measure(reply);
+    KEYS.forEach(function (k) { state[k] = true; });
+    switches.forEach(paint);
+    clearPin();
+    render(null);
+    sent = false;
+    if (stampDraft) stampDraft.hidden = false;
+    if (stampSent) stampSent.hidden = true;
+    if (clock) clock.textContent = '08:40';
+    if (controls) controls.hidden = false;
+    if (doneBlock) doneBlock.hidden = true;
+    if (payoff) payoff.hidden = true;
+    if (editNote) editNote.hidden = true;
+    if (sendStatus) sendStatus.textContent = '';
+    drawRing();
+  }
+
   if (btnDeal) {
     btnDeal.addEventListener('click', function () {
       body.innerHTML = pristine;
-      collectClauses();
-      measure(body);
-      KEYS.forEach(function (k) { state[k] = true; });
-      switches.forEach(paint);
-      clearPin();
-      render(null);
-      sent = false;
-      if (stampDraft) stampDraft.hidden = false;
-      if (stampSent) stampSent.hidden = true;
-      if (clock) clock.textContent = '08:40';
-      if (controls) controls.hidden = false;
-      if (doneBlock) doneBlock.hidden = true;
-      if (payoff) payoff.hidden = true;
-      if (editNote) editNote.hidden = true;
-      if (sendStatus) sendStatus.textContent = '';
-      var ring = body.querySelector('.demo-circ');
-      if (ring && arrived) {
-        if (mqReduce.matches) ring.classList.add('demo-drawn');
-        else requestAnimationFrame(function () {
-          requestAnimationFrame(function () { ring.classList.add('demo-drawn'); });
-        });
-      }
+      resetDraft();
       say(COPY.deal);
       if (btnSend) btnSend.focus();
     });
@@ -4695,63 +4336,180 @@ h3.how-step{
     setTimeout(function () { ring.classList.add('demo-drawn'); }, 260);
   });
 
+  /* ------------------------------------------------------------------ desks
+
+     Three verticals, one machine. The five sources are the same five in every
+     firm, which is the argument: a rule, a date, the file, the figures, and the
+     voice. Only the paper changes.
+
+     The property desk is not written out here. It is the one in the markup, so
+     that a page whose script never ran still shows a whole worked example, and
+     it is read back off the DOM at boot rather than duplicated in JavaScript
+     where the two copies could drift apart.
+
+     Every sender, figure and date below is invented, as the slug under the
+     heading says. Nothing here is a customer.                                */
+
+  var SCENARIOS = {
+    property: { tab: 'Property' },
+
+    accounting: {
+      tab: 'Accounting',
+      from: 'Mark Adeyemi, Harlow Joinery',
+      subject: 'VAT return, are we late?',
+      letter: 'Our bookkeeper left in August and I have no idea where we stand. Has the return for the quarter gone in, and do we owe anything? I would rather hear it straight than get a letter about it.',
+      sw: {
+        rules:      { label: 'the filing rules',          count: '1 line',       name: 'the filing rules' },
+        deadline:   { label: 'the quarter deadline',      count: '1 date',       name: 'the quarter deadline' },
+        file:       { label: 'the file on that client',   count: '2 lines',      name: 'the file on that client' },
+        deductions: { label: 'the figures already posted',count: '3 figures',    name: 'the figures already posted' },
+        tone:       { label: 'the way the office writes', count: 'the register', name: 'the way the office writes' }
+      },
+      copy: {
+        rules:      { off: 'Filing rules off. The draft stops naming the deadline rule.',
+                      on:  'Filing rules on. The one month and seven days rule is back in the draft.' },
+        deadline:   { off: 'Deadline off. The date drops out of the draft.',
+                      on:  'Deadline on. The 7th is back in the draft.' },
+        file:       { off: 'File off. The client name and the direct debit drop out of the draft.',
+                      on:  'File on. The client name and the direct debit are back in the draft.' },
+        deductions: { off: 'Posted figures off. Three figures removed from the draft.',
+                      on:  'Posted figures on. Three figures are back in the draft.' },
+        tone:       { off: 'House tone off. Same facts, stiffer wording.',
+                      on:  'House tone on. The draft reads in the office voice again.' }
+      },
+      salut: '<span class="demo-clause" data-clause="file"><span class="demo-v" data-v="on">Dear Mark,</span><span class="demo-v" data-v="off" hidden>Dear client,</span></span>',
+      body: '<p><span class="demo-clause" data-clause="tone"><span class="demo-v" data-v="on">Thank you for asking straight out, it is easier for both of us.</span><span class="demo-v" data-v="off" hidden>Please be advised that your enquiry has been received.</span></span> <span class="demo-clause" data-clause="rules"><span class="demo-v" data-v="on">Your return for the quarter to 31 July is due one calendar month and seven days after the quarter end</span><span class="demo-v" data-v="tone" hidden>The return for the quarter to 31 July is due one calendar month and seven days after the quarter end</span><span class="demo-v" data-v="off" hidden>Your return is due in line with the usual timescales</span></span>, <span class="demo-clause" data-clause="deadline"><span class="demo-v" data-v="on">which puts your filing date at <span class="demo-circ" data-draw>the 7th</span>.</span><span class="demo-v" data-v="tone" hidden>which places the filing date at the 7th.</span><span class="demo-v" data-v="off" hidden>but I cannot give you the date without checking.</span></span> <span class="demo-clause" data-clause="deductions"><span class="demo-v" data-v="on">Everything is posted to the end of July: 41,280 EUR of sales VAT against 12,940 EUR reclaimed, which leaves 28,340 EUR to pay from</span><span class="demo-v" data-v="tone" hidden>All entries are posted to 31 July: sales VAT of 41,280 EUR against 12,940 EUR reclaimed, leaving 28,340 EUR payable from</span><span class="demo-v" data-v="off" hidden>There may be something to pay. I will confirm the amount once I have checked.</span></span> <span class="demo-clause" data-clause="file" data-dep="deductions"><span class="demo-v" data-v="on">the account we hold, by direct debit.</span><span class="demo-v" data-v="tone" hidden>the account held on record, by direct debit.</span><span class="demo-v" data-v="off" hidden>your account.</span></span></p>'
+    },
+
+    insurance: {
+      tab: 'Insurance',
+      from: 'Greta Poulsen, policy 4471-C',
+      subject: 'Water damage, still no answer',
+      letter: 'The kitchen floor came up on the 2nd and your adjuster came out a week later. Nobody has told me what is covered. Am I paying the excess or are you, and when does any of it actually get paid?',
+      sw: {
+        rules:      { label: 'the policy wording',         count: '1 section',    name: 'the policy wording' },
+        deadline:   { label: 'the fourteen day standard',  count: '1 date',       name: 'the fourteen day standard' },
+        file:       { label: 'the file on that claim',     count: '2 lines',      name: 'the file on that claim' },
+        deductions: { label: 'the amounts already agreed', count: '3 figures',    name: 'the amounts already agreed' },
+        tone:       { label: 'the way the office writes',  count: 'the register', name: 'the way the office writes' }
+      },
+      copy: {
+        rules:      { off: 'Policy wording off. The draft stops naming the section and the excess.',
+                      on:  'Policy wording on. Section 4 and the excess are back in the draft.' },
+        deadline:   { off: 'Deadline off. The date drops out of the draft.',
+                      on:  'Deadline on. The 18th is back in the draft.' },
+        file:       { off: 'File off. The claimant name and the account drop out of the draft.',
+                      on:  'File on. The claimant name and the account are back in the draft.' },
+        deductions: { off: 'Agreed amounts off. Three figures removed from the draft.',
+                      on:  'Agreed amounts on. Three figures are back in the draft.' },
+        tone:       { off: 'House tone off. Same facts, stiffer wording.',
+                      on:  'House tone on. The draft reads in the office voice again.' }
+      },
+      salut: '<span class="demo-clause" data-clause="file"><span class="demo-v" data-v="on">Dear Ms Poulsen,</span><span class="demo-v" data-v="off" hidden>Dear policyholder,</span></span>',
+      body: '<p><span class="demo-clause" data-clause="tone"><span class="demo-v" data-v="on">Thank you for chasing this, and sorry you have had to.</span><span class="demo-v" data-v="off" hidden>Please be advised that your enquiry has been received.</span></span> <span class="demo-clause" data-clause="rules"><span class="demo-v" data-v="on">Escape of water is covered under section 4 of your policy, with the excess at 350 EUR</span><span class="demo-v" data-v="tone" hidden>Escape of water falls under section 4 of the policy, excess 350 EUR</span><span class="demo-v" data-v="off" hidden>Water damage is covered in the usual way</span></span>, <span class="demo-clause" data-clause="deadline"><span class="demo-v" data-v="on">and we answer on cover within fourteen days of the adjuster&#39;s report, which is <span class="demo-circ" data-draw>the 18th</span>.</span><span class="demo-v" data-v="tone" hidden>and cover is confirmed within fourteen days of the adjuster&#39;s report, being the 18th.</span><span class="demo-v" data-v="off" hidden>but I cannot give you the date without checking.</span></span> <span class="demo-clause" data-clause="deductions"><span class="demo-v" data-v="on">The adjuster has agreed 6,200 EUR for the floor and 1,150 EUR for the drying, so after the excess 7,000 EUR goes to</span><span class="demo-v" data-v="tone" hidden>The adjuster has agreed 6,200 EUR for the floor and 1,150 EUR for drying; net of the excess, 7,000 EUR is payable to</span><span class="demo-v" data-v="off" hidden>There may be something to pay out. I will confirm the amounts once I have checked.</span></span> <span class="demo-clause" data-clause="file" data-dep="deductions"><span class="demo-v" data-v="on">the account we hold.</span><span class="demo-v" data-v="tone" hidden>the account held on record.</span><span class="demo-v" data-v="off" hidden>your account.</span></span></p>'
+    }
+  };
+
+  var metaDd  = letter ? letter.querySelectorAll('.demo-meta dd') : [];
+  var fromEl  = metaDd[0] || null;
+  var subjEl  = metaDd[1] || null;
+  var letterP = letter ? letter.querySelector('.demo-letter-body') : null;
+
+  /* read the markup's own scenario back into the table, so it is described in
+     exactly one place. */
+  (function capture() {
+    var sc = SCENARIOS.property;
+    sc.from    = fromEl  ? fromEl.textContent  : '';
+    sc.subject = subjEl  ? subjEl.textContent  : '';
+    sc.letter  = letterP ? letterP.textContent : '';
+    sc.salut   = salut ? salut.innerHTML : '';
+    sc.body    = body.innerHTML;
+    sc.sw = {};
+    switches.forEach(function (b) {
+      var lab = b.querySelector('.demo-sw-label');
+      var cnt = b.querySelector('.demo-sw-count');
+      sc.sw[b.getAttribute('data-src')] = {
+        label: lab ? lab.textContent : '',
+        count: cnt ? cnt.textContent : '',
+        name:  b.getAttribute('data-name') || ''
+      };
+    });
+    sc.copy = {
+      rules:      { off: 'Deposit rules off. The draft stops naming the three week rule.',
+                    on:  'Deposit rules on. The three week rule is back in the draft.' },
+      deadline:   { off: 'Deadline off. The date drops out of the draft.',
+                    on:  'Deadline on. The 21st is back in the draft.' },
+      file:       { off: 'File off. The tenant name and the account drop out of the draft.',
+                    on:  'File on. The tenant name and the account are back in the draft.' },
+      deductions: { off: 'Deductions log off. Two figures removed from the draft.',
+                    on:  'Deductions log on. Two figures are back in the draft.' },
+      tone:       { off: 'House tone off. Same facts, stiffer wording.',
+                    on:  'House tone on. The draft reads in the office voice again.' }
+    };
+  }());
+
+  var current = SCENARIOS.property;
+  pristine = current.body;
+
+  var tabs = tablist ? Array.prototype.slice.call(tablist.querySelectorAll('.demo-tab')) : [];
+
+  function setDesk(id, focusTab) {
+    var sc = SCENARIOS[id];
+    if (!sc || sc === current) return;
+    current = sc;
+    pristine = sc.body;
+
+    if (fromEl)   fromEl.textContent   = sc.from;
+    if (subjEl)   subjEl.textContent   = sc.subject;
+    if (letterP)  letterP.textContent  = sc.letter;
+    if (replyRef) replyRef.textContent = sc.subject;
+    if (salut)    salut.innerHTML      = sc.salut;
+    body.innerHTML = sc.body;
+
+    switches.forEach(function (b) {
+      var d = sc.sw[b.getAttribute('data-src')];
+      if (!d) return;
+      var lab = b.querySelector('.demo-sw-label');
+      var cnt = b.querySelector('.demo-sw-count');
+      if (lab) lab.textContent = d.label;
+      if (cnt) cnt.textContent = d.count;
+      b.setAttribute('data-name', d.name);
+    });
+
+    tabs.forEach(function (t) {
+      var on = t.getAttribute('data-scenario') === id;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) { t.removeAttribute('tabindex'); if (panel) panel.setAttribute('aria-labelledby', t.id); }
+      else t.setAttribute('tabindex', '-1');
+      if (on && focusTab) t.focus();
+    });
+
+    resetDraft();
+    say(sc.tab + ' desk. A different message, the same five sources.');
+  }
+
+  if (tabs.length) {
+    if (panel) {
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', 'demo-tab-property');
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { setDesk(t.getAttribute('data-scenario'), false); });
+      t.addEventListener('keydown', function (e) {
+        var n = -1;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = (i + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') n = 0;
+        else if (e.key === 'End') n = tabs.length - 1;
+        if (n < 0) return;
+        e.preventDefault();
+        setDesk(tabs[n].getAttribute('data-scenario'), true);
+      });
+    });
+  }
+
   render(null);
 }());
-
-/* ---------------------------------------------------------------- HOW */
-(function () {
-  var root = document.getElementById('how');
-  if (!root) return;
-
-  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var wide = window.matchMedia('(min-width: 1024px)');
-  var bench = root.querySelector('.how-stations');
-  var tech = root.querySelector('.how-tech');
-  var io = null;
-
-  function measure() {
-    var paths = root.querySelectorAll('[data-how-draw]');
-    for (var i = 0; i < paths.length; i++) {
-      var len;
-      try { len = paths[i].getTotalLength(); } catch (e) { continue; }
-      if (!(len > 0)) continue;
-      paths[i].style.setProperty('--len', len.toFixed(1));
-      paths[i].style.setProperty('--dur', Math.max(240, Math.min(620, Math.round(len * 2.1))) + 'ms');
-    }
-  }
-
-  function settle() {
-    if (io) { io.disconnect(); io = null; }
-    root.classList.remove('how-js');
-    if (bench) bench.classList.add('how-in');
-    if (tech) tech.classList.add('how-in');
-  }
-
-  function start() {
-    measure();
-    root.classList.add('how-js');
-    io = new IntersectionObserver(function (entries, obs) {
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) {
-          entries[i].target.classList.add('how-in');
-          obs.unobserve(entries[i].target);
-        }
-      }
-    }, { threshold: 0, rootMargin: '-12% 0px -18% 0px' });
-    if (bench) io.observe(bench);
-    if (tech) io.observe(tech);
-
-    function onWide() { if (wide.matches) measure(); }
-    if (wide.addEventListener) wide.addEventListener('change', onWide);
-    else if (wide.addListener) wide.addListener(onWide);
-  }
-
-  if (!mq.matches && 'IntersectionObserver' in window) start();
-
-  function onChange() { if (mq.matches) settle(); }
-  if (mq.addEventListener) mq.addEventListener('change', onChange);
-  else if (mq.addListener) mq.addListener(onChange);
-})();
 
 /* ---------------------------------------------------------------- NUMBERS */
 (function () {
