@@ -9,11 +9,35 @@ import { Section } from './Section';
  * going to spend this leaves here instead of on a call, which is the outcome
  * we want.
  *
- * Fires `pricing_view` once, when the band is genuinely on screen.
+ * Two separate view signals, on purpose.
+ *
+ * `onView` fires `pricing_view` to PostHog as soon as 35% of the band is on
+ * screen. It is a product metric and its meaning is two months old, so its
+ * threshold is left exactly as it was.
+ *
+ * `onSeen` is the stricter one, and it feeds Meta. It needs 50% of the band
+ * visible CONTINUOUSLY for two seconds, per campaigns/pixel-install.md in the
+ * ad-engine repo. That dwell is the whole point: the pixel audience it builds
+ * is the campaign's only high-intent pool, and counting everyone who scrolled
+ * past the price on the way to the form would dilute it until it means nothing.
+ * Scrolling away before the two seconds are up cancels it.
+ *
+ * Both fire at most once per page load.
  */
-export function Price({ c, onView, onCta }: { c: Content; onView: () => void; onCta: () => void }) {
+export function Price({
+  c,
+  onView,
+  onSeen,
+  onCta,
+}: {
+  c: Content;
+  onView: () => void;
+  onSeen?: () => void;
+  onCta: () => void;
+}) {
   const ref = useRef<HTMLDivElement | null>(null);
   const fired = useRef(false);
+  const seenFired = useRef(false);
 
   useEffect(() => {
     const node = ref.current;
@@ -41,6 +65,39 @@ export function Price({ c, onView, onCta }: { c: Content; onView: () => void; on
     obs.observe(node);
     return () => obs.disconnect();
   }, [onView]);
+
+  /* The dwell signal. Separate observer because it needs a different threshold
+     and has to survive the first one disconnecting itself. */
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || !onSeen) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (seenFired.current) return;
+          if (e.isIntersecting) {
+            timer ??= setTimeout(() => {
+              seenFired.current = true;
+              onSeen();
+              obs.disconnect();
+            }, 2000);
+          } else {
+            clearTimeout(timer);
+            timer = undefined;
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    obs.observe(node);
+    return () => {
+      clearTimeout(timer);
+      obs.disconnect();
+    };
+  }, [onSeen]);
 
   return (
     <Section id="price" n="06" title={c.price.title} rule={false} className="bg-sand">

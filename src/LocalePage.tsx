@@ -94,6 +94,17 @@ export function LocalePage({ locale }: { locale: Locale }) {
         <Price
           c={c}
           onView={() => track('pricing_view')}
+          /* Decision P-6, settled 2026-09-14: the pricing band feeds Meta.
+             Without this, ad-engine's audience 3 (pricing viewers, 90 days)
+             cannot be built at all - it was documented as available while
+             nothing on the page ever sent the event it keys on. Dwell-gated
+             in <Price /> so it stays a high-intent pool. */
+          onSeen={() =>
+            pixelTrack('ViewContent', {
+              content_name: 'pricing',
+              content_category: 'teams_landing',
+            })
+          }
           onCta={() => track('booking_click', { placement: 'price' })}
         />
 
