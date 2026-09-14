@@ -70,6 +70,13 @@ const isShared = (v) =>
    are identical in all three files on purpose. Not a translation gap. */
 const isEndonym = (path) => path.startsWith('nav.localeNames.');
 
+/* The company block is what the Estonian business register says, and it is the
+   same three strings on every locale by law: you do not translate a registered
+   entity name, a registry code, or the address they are registered at. A
+   Danish rendering of "Sepapaja 6, 15551 Tallinn, Estonia" would be a wrong
+   legal disclosure, not a better one. Identical here is correct, not a gap. */
+const isRegistryFact = (path) => path.startsWith('footer.company.');
+
 async function loadContent() {
   const work = mkdtempSync(join(tmpdir(), 'locale-audit-'));
   try {
@@ -122,7 +129,9 @@ for (const loc of TARGETS) {
   }
 
   /* 4. blank strings: present as a key, empty as copy, which is a gap that
-        reads as completeness. footer.company is deliberately unfilled. */
+        reads as completeness. footer.company is exempt because it renders only
+        when filled; it is now filled, so this exemption is a safety net rather
+        than the live case it used to describe. */
   const blank = locLeaves
     .filter(([p, v]) => typeof v === 'string' && v.trim() === '' &&
       !p.startsWith('footer.company') && p !== 'nativeCheck')
@@ -133,7 +142,8 @@ for (const loc of TARGETS) {
         shared proper noun is fine and only a person can judge the rest. */
   const enByPath = new Map(enLeaves);
   const same = locLeaves
-    .filter(([p, v]) => enByPath.get(p) === v && !isShared(v) && !isEndonym(p))
+    .filter(([p, v]) => enByPath.get(p) === v && !isShared(v) && !isEndonym(p) &&
+      !isRegistryFact(p))
     .map(([p, v]) => `${p}=${JSON.stringify(String(v).slice(0, 40))}`);
   report(same.length === 0, `no en string is left untranslated in ${loc}`,
     same.length ? `${same.length}: ${same.join(', ')}` : 'none');

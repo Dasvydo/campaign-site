@@ -252,7 +252,7 @@ export const en: Content = {
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',
-      address: '',
+      address: 'Sepapaja 6, 15551 Tallinn, Estonia',
     },
   },
 };
