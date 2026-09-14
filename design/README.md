@@ -27,8 +27,10 @@ Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8c
 5. The headline became a proposition, the demo moved to position two, and the
    page gained a tonal rhythm.
 6. The worked example became three desks, property, accounting and insurance,
-   behind a tab picker; "How it actually works" was deleted; copy fell again to
-   718 visible words.
+   behind a tab picker; "How it actually works" was deleted; copy fell to 718
+   visible words.
+7. The closing call to action became a full width door with its risk reversal
+   attached, and the page gained a scroll rail. 728 visible words.
 
 ## Decisions that are settled, and why
 
@@ -64,6 +66,26 @@ Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8c
   cream and already had a half-empty note grid. It cannot go in the price
   section: that ground is charcoal, and the safe amber (`#8A5200`) is a
   cream-only colour.
+
+- **The last call to action is a door, not a third button.** The same six words
+  appear in the masthead tab, in the hero, and once more at the foot of the
+  price section. Only the last has nothing after it, so it is full width and
+  58px tall rather than an inline button, and the one thing a person wants to
+  know before pressing it, "two weeks free, stop inside them and you pay
+  nothing", is attached to it rather than left six hundred pixels up the page
+  on the timeline. The wording stays identical in all three places: a promise
+  that changes its phrasing three times reads as three different offers.
+
+- **There is a scroll rail.** Three pixels, brand amber, fixed to the top of
+  the viewport. The page is around 7,500px and the browser's own scrollbar is
+  an overlay that fades, so an impatient reader has no way of knowing how much
+  is left. It is `aria-hidden`: it says nothing a screen reader does not
+  already have, and a `progressbar` role would announce a number on every
+  scroll tick. It carries no transition, so it tracks the scroll position
+  exactly rather than chasing it, which is also why reduced motion leaves it
+  alone; it moves only when the reader moves. It lives outside `<main>`,
+  because several sections set `overflow-x:clip` and a clip context captures
+  fixed descendants.
 
 - **Payback is "about 40 days"**, matching `src/content/en.ts`. The generated
   page had drifted to "about 10 days", which is the ten-seat reading and makes
@@ -113,7 +135,7 @@ Current results:
 | Initial JS | < 100KB gzip | 13.3KB |
 | Frame rate at 4x CPU throttle | 60fps | 53-56fps |
 | axe WCAG 2.2 AA | 0 violations | 1, see above |
-| Visible words | fewer than before | 718, from 782 |
+| Visible words | fewer than before | 728, from 782 |
 
 **Read TBT and frame rate with care.** Those two were 31ms and 61.0fps when this
 page was first measured, and the numbers above look like a regression. They are
@@ -124,7 +146,10 @@ three-desk version is marginally faster on frames and level on TBT. Anyone
 adopting these as CI gates should re-baseline on the CI runner rather than
 trusting the numbers in this table.
 
-Also verified in Chromium, not asserted: changing desk swaps the message, the
+Also verified in Chromium, not asserted: the rail reads 0 at the top and 1.0000
+at the foot, stays pinned at y=0 over the clipped price section, and remeasures
+when a disclosure changes the page height; the closing call to action clears the
+standing price bar at 390px; changing desk swaps the message, the
 five source labels, the salutation and the draft, resets a sent letter back to
 a draft, and re-draws the circled date; the tab picker follows the tablist
 pattern, so arrow keys move the selection, Tab leaves the strip after one stop,
