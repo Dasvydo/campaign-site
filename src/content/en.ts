@@ -70,6 +70,44 @@ export const en: Content = {
     ],
   },
 
+  sequence: {
+    ariaLabel: 'How one reply gets written',
+    srIntro:
+      'The same message and draft as above, told as four steps. Each step is described in full below, so nothing here depends on scrolling.',
+    steps: [
+      {
+        label: 'the message lands',
+        head: 'One minute, in full.',
+        say: 'Scroll to watch the whole thing. Nothing here is sped up, and nothing here sends on its own.',
+      },
+      {
+        label: 'your knowledge, not the internet',
+        head: 'It reads what your team already knows.',
+        say: 'The deposit rules, the three week deadline, the file on that flat, the deductions already logged, and the way your office writes.',
+      },
+      {
+        label: 'the draft',
+        head: 'Eleven seconds later there is a reply.',
+        say: 'Written from your own material, in your tone, with the real figures in it. Not a template with the name swapped.',
+      },
+      {
+        label: 'the gate',
+        head: 'Then it stops and waits for a person.',
+        say: 'There is no automatic send anywhere in this product. Someone reads it, changes what they want, and sends it themselves.',
+      },
+    ],
+    knowledge: [
+      'Deposit rules',
+      'Three week deadline',
+      'The file on flat 214',
+      'Deductions log',
+      'House tone',
+    ],
+    sendLabel: 'Send',
+    editLabel: 'Edit',
+    gate: 'A person clicks this. It is the only way anything leaves your office.',
+  },
+
   demo: {
     title: 'Watch it work',
     lead: 'Two minutes, real mail, no slides.',

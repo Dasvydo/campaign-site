@@ -7,6 +7,7 @@ import { initMetaPixel, pixelTrack } from './lib/pixel';
 import { flushLeadQueue } from './lib/lead';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { Sequence } from './components/Sequence';
 import { HowItWorks } from './components/HowItWorks';
 import { Demo } from './components/Demo';
 import { Numbers } from './components/Numbers';
@@ -76,6 +77,8 @@ export function LocalePage({ locale }: { locale: Locale }) {
         <Hero c={c} onCta={() => track('booking_click', { placement: 'hero' })} />
 
         <HowItWorks c={c} />
+
+        <Sequence c={c} />
 
         <Demo
           c={c}

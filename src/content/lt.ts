@@ -73,6 +73,44 @@ export const lt: Content = {
     ],
   },
 
+  sequence: {
+    ariaLabel: 'Kaip parengiamas vienas atsakymas',
+    srIntro:
+      'Ta pati žinutė ir juodraštis kaip viršuje, papasakoti keturiais žingsniais. Kiekvienas žingsnis išsamiai aprašytas žemiau, todėl niekas čia nepriklauso nuo slinkimo.',
+    steps: [
+      {
+        label: 'žinutė ateina',
+        head: 'Viena minutė, nuo pradžios iki galo.',
+        say: 'Slinkite ir stebėkite viską. Niekas čia nepagreitinta ir niekas neišsiunčiama savaime.',
+      },
+      {
+        label: 'Jūsų žinios, ne internetas',
+        head: 'Ji perskaito tai, ką Jūsų komanda jau žino.',
+        say: 'Užstato taisykles, trijų savaičių terminą, to buto bylą, jau užfiksuotus išskaičiavimus ir tai, kaip rašo Jūsų biuras.',
+      },
+      {
+        label: 'juodraštis',
+        head: 'Po vienuolikos sekundžių atsakymas jau parengtas.',
+        say: 'Parašytas iš Jūsų pačių medžiagos, Jūsų tonu, su tikrais skaičiais. Ne šablonas su pakeista pavarde.',
+      },
+      {
+        label: 'sustojimas',
+        head: 'Tada ji sustoja ir laukia žmogaus.',
+        say: 'Šiame produkte nėra jokio automatinio siuntimo. Žmogus perskaito, pataiso ką nori, ir išsiunčia pats.',
+      },
+    ],
+    knowledge: [
+      'Užstato taisyklės',
+      'Trijų savaičių terminas',
+      'Buto 214 byla',
+      'Išskaičiavimų sąrašas',
+      'Biuro tonas',
+    ],
+    sendLabel: 'Siųsti',
+    editLabel: 'Taisyti',
+    gate: 'Žmogus paspaudžia čia. Tai vienintelis kelias, kuriuo kas nors palieka Jūsų biurą.',
+  },
+
   demo: {
     title: 'Pažiūrėkite, kaip veikia',
     lead: 'Dvi minutės, tikri laiškai, jokių skaidrių.',

@@ -29,6 +29,12 @@
   --color-rule: #e4d7cd;
   --color-amber: #f59b0a;
 
+  /* Amber as TEXT on the cream ground. #f59b0a itself is 1.97:1 there and the
+     identity guide's own 'text on amber' #fffbeb is 2.11:1; both fail outright.
+     This is the darkened amber that carries a letterform: 5.73:1 on cream.
+     Amber's other uses stay decorative - a dot, a rule, a focus ring. */
+  --color-amber-text: #8a5200;
+
   /* Supporting warm neutrals, light ground */
   --color-paper: #fdf9f7;
   --color-peach: #fbebda;
@@ -201,8 +207,22 @@
     padding-right: 42px;
   }
 
-  /* The one animated thing on the whole page: the amber dot that says the
-     draft just landed. Everything else is still, by design. */
+  /* The typing caret in the scroll sequence. Steps rather than a fade, because
+     a real text cursor does not dissolve. */
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.05em;
+    background: var(--color-amber);
+    vertical-align: text-bottom;
+    animation: blink 1.05s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* The amber dot that says the draft just landed. Apart from the sequence,
+     which is deliberate and scroll-driven, this is the only motion here. */
   .live-dot {
     width: 8px;
     height: 8px;
@@ -226,4 +246,5 @@
     transition-duration: 0.001ms !important;
   }
   .live-dot { animation: none; opacity: 1; }
+  .caret { animation: none; opacity: 1; }
 }

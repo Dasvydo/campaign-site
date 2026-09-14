@@ -16,6 +16,14 @@ export interface StepCopy {
   body: string;
 }
 
+/** One beat of the scroll sequence. The clock is derived from hero.clockIn
+    rather than stored here, so the time appears in exactly one place. */
+export interface SeqBeat {
+  label: string;
+  head: string;
+  say: string;
+}
+
 export interface NumberRow {
   figure: string;
   label: string;
@@ -82,6 +90,19 @@ export interface Content {
     title: string;
     lead: string;
     steps: [StepCopy, StepCopy, StepCopy];
+  };
+
+  /** The scroll sequence. Deliberately holds no message or draft copy of its
+      own: it renders hero.message and hero.draft, so the example exists once
+      per locale and cannot drift between the two places that show it. */
+  sequence: {
+    ariaLabel: string;
+    srIntro: string;
+    steps: [SeqBeat, SeqBeat, SeqBeat, SeqBeat];
+    knowledge: [string, string, string, string, string];
+    sendLabel: string;
+    editLabel: string;
+    gate: string;
   };
 
   demo: {

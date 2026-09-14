@@ -73,6 +73,44 @@ export const da: Content = {
     ],
   },
 
+  sequence: {
+    ariaLabel: 'Sådan bliver et svar skrevet',
+    srIntro:
+      'Samme besked og udkast som ovenfor, fortalt i fire trin. Hvert trin er beskrevet fuldt ud herunder, så intet her afhænger af at scrolle.',
+    steps: [
+      {
+        label: 'beskeden lander',
+        head: 'Et minut, hele vejen igennem.',
+        say: 'Scroll for at se det hele. Intet her er sat op i fart, og intet her sender af sig selv.',
+      },
+      {
+        label: 'jeres viden, ikke internettets',
+        head: 'Den læser det, jeres team allerede ved.',
+        say: 'Reglerne for depositum, fristen på tre uger, sagen på den lejlighed, de fradrag der allerede er noteret, og den måde jeres kontor skriver på.',
+      },
+      {
+        label: 'udkastet',
+        head: 'Elleve sekunder senere ligger der et svar.',
+        say: 'Skrevet ud fra jeres eget materiale, i jeres tone, med de rigtige tal i. Ikke en skabelon med et andet navn sat ind.',
+      },
+      {
+        label: 'stoppet',
+        head: 'Så stopper den og venter på et menneske.',
+        say: 'Der findes ingen automatisk afsendelse nogen steder i produktet. Nogen læser udkastet, retter det de vil, og sender det selv.',
+      },
+    ],
+    knowledge: [
+      'Regler for depositum',
+      'Fristen på tre uger',
+      'Sagen på lejlighed 214',
+      'Oversigt over fradrag',
+      'Husets tone',
+    ],
+    sendLabel: 'Send',
+    editLabel: 'Rediger',
+    gate: 'Et menneske trykker her. Det er den eneste vej ud af jeres kontor.',
+  },
+
   demo: {
     title: 'Se det virke',
     lead: 'To minutter, rigtige mails, ingen slides.',

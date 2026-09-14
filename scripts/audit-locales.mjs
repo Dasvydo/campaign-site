@@ -55,8 +55,11 @@ function arrayLengths(node, prefix = '', out = new Map()) {
 
 /* Strings that are the same in every language on purpose. Brand names, the
    product's own words, prices, and the machine-readable option values that the
-   payload contract pins. Flagging these as "English left in" would be noise. */
-const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn)$/;
+   payload contract pins. Flagging these as "English left in" would be noise.
+   "Send" is on the list because the Danish for it is also "Send" - the mail
+   client's own button says so - and the rule cannot tell a real collision from
+   a missed translation. Exact match only, so "Send it" is still flagged. */
+const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send)$/;
 const isShared = (v) =>
   typeof v !== 'string' ||
   SHARED.test(v.trim()) ||
