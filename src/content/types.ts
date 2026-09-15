@@ -331,8 +331,29 @@ export interface Content {
     startOver: string;
   };
 
+  /** The consent notice. Two categories, because the page loads exactly two
+      non-essential things, and a category nobody uses is a category that
+      teaches visitors the notice is decoration. */
+  consent: {
+    title: string;
+    body: string;
+    accept: string;
+    decline: string;
+    detailsLabel: string;
+    items: { name: string; body: string }[];
+    note: string;
+    privacyLabel: string;
+    /** Shown in the footer next to the reopen control. */
+    statusGranted: string;
+    statusDenied: string;
+    statusUnset: string;
+    reopenLabel: string;
+  };
+
   footer: {
     tagline: string;
+    /** Term for the footer row that reopens the consent notice. */
+    consentLink: string;
     officeLabel: string;
     elsewhereLabel: string;
     productLink: string;

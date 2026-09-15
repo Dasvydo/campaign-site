@@ -1,6 +1,7 @@
 import type { Content } from '../content/types';
 import { FALLBACK_CONTACT_EMAIL } from '../lib/env';
 import { Mark } from './Hero';
+import { ConsentStatus } from './Consent';
 
 /**
  * The colophon: the last sheet in the ream.
@@ -99,6 +100,12 @@ export function Footer({ c }: { c: Content }) {
                 >
                   {c.footer.privacyLink}
                 </a>
+              </li>
+              <li>
+                <span className="footer-term" id="footer-t4">
+                  {c.footer.consentLink}
+                </span>
+                <ConsentStatus c={c} />
               </li>
               <li>
                 <span className="footer-term" id="footer-t3">

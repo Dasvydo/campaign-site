@@ -7,6 +7,7 @@
  * Use track() and the properties come along automatically.
  */
 import { env } from './env';
+import { consentDecided, consentGranted } from './consent';
 import type { Locale, Market, Utm } from './contract';
 
 /** The eight event names, exactly as the spec lists them. */
@@ -35,13 +36,28 @@ let ctx: Context | null = null;
 let started = false;
 let ph: PostHog | null = null;
 /* Events fired before the library finishes loading are held here, not dropped.
-   page_view in particular fires on the first frame and would otherwise be lost. */
+   page_view in particular fires on the first frame and would otherwise be lost.
+   The same queue covers the wait for a consent decision: an event raised while
+   the notice is still up stays in this array, in memory, and is either flushed
+   on Accept or discarded on Decline. Nothing is written to the device and
+   nothing leaves the page until there is a yes. */
 let pending: Array<{ name: EventName; props: Record<string, unknown> }> = [];
 
 export function initAnalytics(context: Context): void {
   ctx = context;
+  maybeStart();
+}
 
+/**
+ * Boots PostHog if, and only if, there is both a key and a granted consent.
+ * Called on mount and again from applyConsent(), so an Accept that arrives
+ * after first paint starts the library at that moment rather than never.
+ */
+function maybeStart(): void {
   if (started) return;
+  /* The gate. PostHog is configured with persistence 'localStorage+cookie'
+     below, so initialising it at all writes to the visitor's device. */
+  if (!consentGranted()) return;
   started = true;
 
   if (!env.posthogKey) {
@@ -86,6 +102,21 @@ export function initAnalytics(context: Context): void {
     });
 }
 
+/**
+ * Re-reads the consent store after the visitor answers the notice.
+ *
+ * Accept starts the library and flushes whatever was held. Decline throws the
+ * held events away: they were never sent and are not kept for a later change of
+ * mind, because that is not what declining means.
+ */
+export function applyConsent(): void {
+  if (consentGranted()) {
+    maybeStart();
+    return;
+  }
+  if (consentDecided()) pending = [];
+}
+
 /** Keeps market and locale current when the visitor switches language. */
 export function setAnalyticsContext(context: Context): void {
   ctx = context;
@@ -108,6 +139,13 @@ export function track(name: EventName, props: Record<string, unknown> = {}): voi
     : {};
 
   const payload = { ...base, ...props };
+
+  /* An answered no is final for this event. An unanswered notice falls through
+     to the pending queue below, which is memory only. */
+  if (consentDecided() && !consentGranted()) {
+    if (import.meta.env.DEV) console.info('[analytics] declined, dropped', name, payload);
+    return;
+  }
 
   if (!env.posthogKey) {
     if (import.meta.env.DEV) console.info('[analytics]', name, payload);

@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { content, pathFor, LOCALES } from './content';
 import type { Locale, QualifierPayload } from './lib/contract';
 import { captureUtm, resolveMarket, resolveSource } from './lib/attribution';
-import { initAnalytics, setAnalyticsContext, track } from './lib/analytics';
-import { initMetaPixel, pixelTrack } from './lib/pixel';
+import { applyConsent, initAnalytics, setAnalyticsContext, track } from './lib/analytics';
+import { initMetaPixel, pixelTrack, revokeMetaPixel } from './lib/pixel';
+import { onConsentChange } from './lib/consent';
 import { flushLeadQueue } from './lib/lead';
+import { Consent } from './components/Consent';
 import { Rail } from './components/Rail';
 import { Hero } from './components/Hero';
 import { Demo } from './components/Demo';
@@ -50,7 +52,24 @@ export function LocalePage({ locale }: { locale: Locale }) {
     setAlternate('x-default', SITE_ORIGIN + '/');
   }, [c, locale]);
 
-  /* Analytics, pixel, and the recovery queue. Once per load, not per route. */
+  /* Consent can be answered long after first paint, so the two gated loaders
+     are re-run on every change rather than only on mount. Withdrawing clears
+     what the pixel wrote; see revokeMetaPixel for what that can and cannot
+     promise. */
+  useEffect(
+    () =>
+      onConsentChange((choice) => {
+        applyConsent();
+        if (choice === 'granted') initMetaPixel();
+        else revokeMetaPixel();
+      }),
+    [],
+  );
+
+  /* Analytics, pixel, and the recovery queue. Once per load, not per route.
+     The first two no-op until there is a consent decision; the lead queue does
+     not, because replaying a lead the visitor typed themselves is the service
+     they asked for, not tracking. */
   useEffect(() => {
     const ctx = { market, locale, utm };
     if (!booted.current) {
@@ -69,6 +88,10 @@ export function LocalePage({ locale }: { locale: Locale }) {
 
   return (
     <>
+      {/* First in the document on purpose: a keyboard reaches the notice before
+          the page it is asking about. */}
+      <Consent c={c} />
+
       <Rail />
 
       <main id="main">

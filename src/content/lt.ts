@@ -571,8 +571,33 @@ export const lt: Content = {
     startOver: 'Pakeisti atsakymą',
   },
 
+  consent: {
+    title: 'Slapukai šiame puslapyje',
+    body: 'Du dalykai čia įrašo kai ką į Jūsų įrenginį: apsilankymų skaičiavimas ir reklama. Nė vienas neveikia, kol nesutinkate.',
+    accept: 'Sutinku',
+    decline: 'Nesutinku',
+    detailsLabel: 'Ką daro kiekvienas',
+    items: [
+      {
+        name: 'Apsilankymų skaičiavimas',
+        body: '„PostHog“, talpinama ES. Kurios dalys skaitomos ir kiek toli žemyn nuslenkama. Jokių sesijų įrašų, jokių šilumos žemėlapių.',
+      },
+      {
+        name: 'Reklama',
+        body: '„Meta“ pikselis. Leidžia rodyti reklamą „Facebook“ ir „Instagram“ tiems, kurie lankėsi šiame puslapyje.',
+      },
+    ],
+    note: 'Nesutikimas nieko nekeičia nei puslapyje, nei skaičiuotame pavyzdyje, nei formoje. Apsigalvoti galite puslapio apačioje.',
+    privacyLabel: 'Privatumo politika',
+    statusGranted: 'Sutikta',
+    statusDenied: 'Nesutikta',
+    statusUnset: 'Nepasirinkta',
+    reopenLabel: 'Keisti slapukų pasirinkimą',
+  },
+
   footer: {
     tagline: 'Laiškų atsakymai komandoms, gyvenančioms pašto dėžutėje.',
+    consentLink: 'Slapukai',
     officeLabel: 'Registruota buveinė',
     elsewhereLabel: 'Kitur',
     productLink: 'Produkto svetainė',

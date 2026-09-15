@@ -58,8 +58,11 @@ function arrayLengths(node, prefix = '', out = new Map()) {
    payload contract pins. Flagging these as "English left in" would be noise.
    "Send" is on the list because the Danish for it is also "Send" - the mail
    client's own button says so - and the rule cannot tell a real collision from
-   a missed translation. Exact match only, so "Send it" is still flagged. */
-const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send)$/;
+   a missed translation. "Cookies" is there for the same reason: it is the word
+   Danish uses, and a consent notice that invented a native-sounding synonym
+   would be less clear, not more. Exact match only, so "Send it" is still
+   flagged. */
+const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send|Cookies)$/;
 const isShared = (v) =>
   typeof v !== 'string' ||
   SHARED.test(v.trim()) ||
