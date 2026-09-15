@@ -2347,6 +2347,13 @@
 #qualifier:not([data-js="on"]) .qualifier-form{display:none}
 
 .qualifier-form{ margin:0 }
+/* The form's own lede. Not in the prototype, which carried a single line of
+   small print instead; the real form says up front that this can end in a no,
+   which is the point of asking six questions rather than booking straight in. */
+.qualifier-lead{
+  margin:0 0 40px; max-width:54ch;
+  font-size:17px; line-height:1.6; color:var(--muted);
+}
 .qualifier-field{
   display:grid;
   grid-template-columns:var(--qualifier-rail) minmax(0,1fr);

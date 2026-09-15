@@ -178,7 +178,7 @@ export const da: Content = {
           },
           {
             key: 'deadline',
-            on: { text: 'hvilket vil sige senest ', circle: 'den 21.' },
+            on: { text: 'hvilket vil sige senest ', circle: 'den 21', tail: '.' },
             tone: { text: 'hvilket vil sige senest den 21.' },
             off: { text: 'men jeg kan ikke oplyse datoen uden at undersøge det.' },
           },
@@ -269,7 +269,7 @@ export const da: Content = {
           },
           {
             key: 'deadline',
-            on: { text: 'hvilket giver jer frist ', circle: 'den 7.' },
+            on: { text: 'hvilket giver jer frist ', circle: 'den 7', tail: '.' },
             tone: { text: 'hvilket giver fristen den 7.' },
             off: { text: 'men jeg kan ikke oplyse datoen uden at undersøge det.' },
           },
@@ -360,7 +360,7 @@ export const da: Content = {
           },
           {
             key: 'deadline',
-            on: { text: 'og vi melder tilbage om dækningen senest fjorten dage efter taksatorrapporten, altså ', circle: 'den 18.' },
+            on: { text: 'og vi melder tilbage om dækningen senest fjorten dage efter taksatorrapporten, altså ', circle: 'den 18', tail: '.' },
             tone: { text: 'og dækningen bekræftes senest fjorten dage efter taksatorrapporten, altså den 18.' },
             off: { text: 'men jeg kan ikke oplyse datoen uden at undersøge det.' },
           },
@@ -487,8 +487,11 @@ export const da: Content = {
   },
 
   form: {
+    eyebrow: 'Hvad gør jeg nu',
     title: 'Seks spørgsmål. Under et minut.',
     lead: 'Sådan finder vi ud af, om et møde er din tid værd. Er det ikke det, siger den her side det i stedet for at booke dig.',
+    formNo: 'Pasformstjek',
+    optional: 'Valgfrit',
     companyLabel: 'Virksomhedens navn',
     companyPlaceholder: 'Navnet på jeres fakturaer',
     emailLabel: 'Arbejdsmail',
@@ -563,9 +566,12 @@ export const da: Content = {
 
   footer: {
     tagline: 'Mailsvar til teams, der lever i indbakken.',
+    officeLabel: 'Hjemsted',
+    elsewhereLabel: 'Andre steder',
     productLink: 'Produktsiden',
     privacyLink: 'Privatliv',
     contactLink: 'Kontakt os',
+    setIn: 'Sat i Playfair Display og DM Sans',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',

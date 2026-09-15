@@ -67,7 +67,8 @@ const isShared = (v) =>
   /^\d{1,2}:\d{2}$/.test(v.trim()) ||    // a clock reading: 08:40
   /^[\d\s.,]+ ?(USD|EUR|DKK|kr\.?|€|\$)$/.test(v.trim()) ||   // 89 USD
   /^[a-z0-9_]+$/.test(v) ||              // option values: owner_partner, 10-24
-  /^(https?:|mailto:|\/|#)/.test(v);     // urls, anchors, mail links
+  /^(https?:|mailto:|\/|#)/.test(v) ||   // urls, anchors, mail links
+  /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(v.trim());  // a bare domain used as a link label
 
 /* A language switcher names each language in its own language, so these three
    are identical in all three files on purpose. Not a translation gap. */

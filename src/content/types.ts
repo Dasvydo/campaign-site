@@ -277,8 +277,13 @@ export interface Content {
   };
 
   form: {
+    eyebrow: string;
     title: string;
     lead: string;
+    /** The form number on the letterhead. */
+    formNo: string;
+    /** Marks the one field that is not required. */
+    optional: string;
     companyLabel: string;
     companyPlaceholder: string;
     emailLabel: string;
@@ -328,10 +333,15 @@ export interface Content {
 
   footer: {
     tagline: string;
+    officeLabel: string;
+    elsewhereLabel: string;
     productLink: string;
     privacyLink: string;
     contactLink: string;
-    /** Left empty until Dovy supplies them. Empty fields are not rendered. */
+    setIn: string;
+    /** Registry facts. Identical in every locale on purpose: a company number
+        and a street address are not translated, and scripts/audit-locales.mjs
+        enforces that they stay identical. */
     company: {
       legalName: string;
       registrationNumber: string;

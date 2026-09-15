@@ -484,8 +484,11 @@ export const en: Content = {
   },
 
   form: {
+    eyebrow: 'What do I do now',
     title: 'Six questions. Under a minute.',
     lead: 'This is how we work out whether a call is worth your time. If it is not, this page will say so instead of booking you in.',
+    formNo: 'Fit check',
+    optional: 'Optional',
     companyLabel: 'Company name',
     companyPlaceholder: 'The name on your invoices',
     emailLabel: 'Work email',
@@ -560,9 +563,12 @@ export const en: Content = {
 
   footer: {
     tagline: 'Email drafting for teams who live in their inbox.',
+    officeLabel: 'Registered office',
+    elsewhereLabel: 'Elsewhere',
     productLink: 'The product site',
     privacyLink: 'Privacy',
     contactLink: 'Contact us',
+    setIn: 'Set in Playfair Display and DM Sans',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',

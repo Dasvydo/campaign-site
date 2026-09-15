@@ -1,64 +1,127 @@
 import type { Content } from '../content/types';
 import { FALLBACK_CONTACT_EMAIL } from '../lib/env';
+import { Mark } from './Hero';
 
 /**
- * Company details, privacy, contact.
+ * The colophon: the last sheet in the ream.
  *
- * The legal fields render only when they are filled. They live in a single
- * `company` block per locale file, so filling them is one edit and no code
- * change. This matters before any ad money is spent into an EU audience.
- * See BLOCKED.md entry 7.
+ * The registered office is set as a compliment slip with a torn edge, because
+ * it is a registry fact rather than marketing copy and should not read like
+ * marketing copy. Those three fields are identical in every locale, which
+ * scripts/audit-locales.mjs enforces: a company number and a street address are
+ * not translated, and a locale that "translated" them would be filing a
+ * different company.
+ *
+ * Every field renders only when it is filled, so the block can stay empty
+ * without leaving a gap. See BLOCKED.md entry 7.
  */
 export function Footer({ c }: { c: Content }) {
   const { legalName, registrationNumber, address } = c.footer.company;
-  const details = [legalName, registrationNumber, address].filter(Boolean);
+  /* "Sepapaja 6, 15551 Tallinn, Estonia" is one field in the contract because
+     it is one fact, and a slip sets it a line at a time. */
+  const addressLines = address
+    .split(',')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const hasOffice = Boolean(legalName || registrationNumber || address);
 
   return (
-    <footer className="on-dark rule-top border-t-rule-dark bg-charcoal text-warmwhite">
-      <div className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-8">
-        <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-          <div>
-            <p className="font-sans text-[1.1rem] font-bold">
-              <span style={{ color: '#5FA9B8' }}>Dovi</span>
-              <span style={{ color: '#F0844A' }}>Loop</span>
-            </p>
-            <p className="mt-2 max-w-[42ch] text-[15px] text-muted-dark">{c.footer.tagline}</p>
+    <footer id="footer" role="contentinfo" aria-labelledby="footer-h">
+      <div className="footer-wrap">
+        <p className="footer-folio" aria-hidden="true">
+          07
+        </p>
+        <div className="footer-rule" aria-hidden="true" />
 
-            {details.length > 0 ? (
-              <address className="mt-5 not-italic text-[14px] leading-relaxed text-muted-dark">
-                {details.map((d) => (
-                  <span key={d} className="block">
-                    {d}
-                  </span>
-                ))}
-              </address>
-            ) : null}
+        <div className="footer-grid">
+          <div className="footer-sign">
+            <h2 className="footer-h" id="footer-h">
+              <Mark gradientId="footer-dl-d" />
+              <span>DoviLoop</span>
+            </h2>
+            <p className="footer-tag">{c.footer.tagline}</p>
           </div>
 
-          <nav aria-label={c.footer.contactLink} className="flex flex-wrap gap-x-7 gap-y-3">
-            <a
-              className="text-[15px] text-warmwhite underline underline-offset-4 hover:opacity-80"
-              href="https://doviloop.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {c.footer.productLink}
-            </a>
-            <a
-              className="text-[15px] text-warmwhite underline underline-offset-4 hover:opacity-80"
-              href="https://doviloop.dev/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {c.footer.privacyLink}
-            </a>
-            <a
-              className="text-[15px] text-warmwhite underline underline-offset-4 hover:opacity-80"
-              href={`mailto:${FALLBACK_CONTACT_EMAIL}`}
-            >
-              {c.footer.contactLink}
-            </a>
-          </nav>
+          {hasOffice ? (
+            <div className="footer-co">
+              <h3 className="footer-label">{c.footer.officeLabel}</h3>
+              <div className="footer-slipwrap">
+                <div className="footer-slip">
+                  <svg viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
+                    <path
+                      fillRule="evenodd"
+                      d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"
+                    />
+                    <path d="M215 250 H372 V630 H550 V762 H215 Z" />
+                  </svg>
+                  <address className="footer-addr">
+                    {legalName ? <span className="footer-entity">{legalName}</span> : null}
+                    {registrationNumber ? (
+                      <span className="footer-reg">{registrationNumber}</span>
+                    ) : null}
+                    {addressLines.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </address>
+                </div>
+                <div className="footer-cut" aria-hidden="true" />
+              </div>
+            </div>
+          ) : null}
+
+          <div className="footer-links">
+            <h3 className="footer-label">{c.footer.elsewhereLabel}</h3>
+            <ul className="footer-list">
+              <li>
+                <span className="footer-term" id="footer-t1">
+                  {c.footer.productLink}
+                </span>
+                <a
+                  className="footer-a"
+                  href="https://doviloop.dev"
+                  aria-describedby="footer-t1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  doviloop.dev
+                </a>
+              </li>
+              <li>
+                <span className="footer-term" id="footer-t2">
+                  {c.footer.privacyLink}
+                </span>
+                <a
+                  className="footer-a"
+                  href="https://doviloop.dev/privacy"
+                  aria-describedby="footer-t2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {c.footer.privacyLink}
+                </a>
+              </li>
+              <li>
+                <span className="footer-term" id="footer-t3">
+                  {c.footer.contactLink}
+                </span>
+                <a
+                  className="footer-a"
+                  href={`mailto:${FALLBACK_CONTACT_EMAIL}`}
+                  aria-describedby="footer-t3"
+                >
+                  {FALLBACK_CONTACT_EMAIL}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="footer-foot">
+          <p className="footer-legal">
+            <span aria-hidden="true">&copy;</span> {new Date().getFullYear()}{' '}
+            {legalName || 'DoviLoop'}
+          </p>
+          <p className="footer-set">{c.footer.setIn}</p>
         </div>
       </div>
     </footer>

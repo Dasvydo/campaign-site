@@ -14,7 +14,13 @@ import { Price } from './components/Price';
 import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
 
-const SITE_ORIGIN = 'https://teams.doviloop.dev';
+/* teams.doviloop.dev 301s to www.doviloop.dev: it is not dead, which is worse
+   than dead. Ads pointing there would have returned 200 and landed every paid
+   click on the product homepage, with no qualifier and no instrumentation. The
+   ad-engine repo was repointed at the deployment on 2026-09-14 and this is the
+   same correction: canonical, og:url and every hreflang alternate now name the
+   origin the page is actually served from. */
+const SITE_ORIGIN = 'https://campaign-site-azure.vercel.app';
 
 export function LocalePage({ locale }: { locale: Locale }) {
   const c = content[locale];

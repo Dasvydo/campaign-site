@@ -487,8 +487,11 @@ export const lt: Content = {
   },
 
   form: {
+    eyebrow: 'Ką man daryti dabar',
     title: 'Šeši klausimai. Mažiau nei minutė.',
     lead: 'Taip išsiaiškiname, ar pokalbis vertas Jūsų laiko. Jei ne, šis puslapis taip ir pasakys, užuot Jus užregistravęs.',
+    formNo: 'Tinkamumo patikra',
+    optional: 'Neprivaloma',
     companyLabel: 'Įmonės pavadinimas',
     companyPlaceholder: 'Pavadinimas, nurodomas Jūsų sąskaitose',
     emailLabel: 'Darbo el. paštas',
@@ -563,9 +566,12 @@ export const lt: Content = {
 
   footer: {
     tagline: 'Laiškų atsakymai komandoms, gyvenančioms pašto dėžutėje.',
+    officeLabel: 'Registruota buveinė',
+    elsewhereLabel: 'Kitur',
     productLink: 'Produkto svetainė',
     privacyLink: 'Privatumas',
     contactLink: 'Susisiekite',
+    setIn: 'Rinkta Playfair Display ir DM Sans šriftais',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',
