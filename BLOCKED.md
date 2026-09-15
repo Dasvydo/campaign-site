@@ -102,6 +102,14 @@ find and replace.
 Lithuanian uses the formal *Jūs* register throughout. Each file is headed `NEEDS NATIVE CHECK`
 and the marker also appears in `AUDIT.md` and `RUN-REPORT.md`.
 
+**The part that most needs the check** is the worked example in section 2. Its draft is cut
+into clauses that swap between three readings as the reader turns the five sources on and off,
+so every combination has to stay grammatical, not just every clause. Danish is V2 and Lithuanian
+is inflected, which means a clause that reads correctly on its own can still leave the sentence
+broken once the clause before it changes. Both were written as whole letters and then cut, but
+a native reader should turn each of the five switches off on each of the three desks and read
+what is left.
+
 **Unblocks it:** Dovy sends `src/content/da.ts` and `src/content/lt.ts` out for review. It is on
 his own landing checklist in `00-START-HERE.md`.
 

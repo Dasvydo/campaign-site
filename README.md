@@ -189,34 +189,31 @@ Settings > Git if you are not merging to `main`.
    Cloudflare's orange cloud on the first issuance or the TLS challenge fails.
 4. Wait for the domain to go green in Vercel. The certificate is automatic and
    usually takes under two minutes once DNS propagates.
-5. Open `https://teams.doviloop.dev/`, `/da` and `/lt` and check all three load.
+5. Open the deployment at `/`, `/da` and `/lt` and check all three load.
 
 `vercel.json` already contains the SPA rewrite that makes `/da` and `/lt` work
 on a hard refresh, and one-year immutable cache headers for `/fonts` and
 `/assets`.
 
-### 5. Drop in the demo video
+### 5. Replace the invented example messages
 
-There is no video file in this repo. Section 2 of the page renders a labelled
-placeholder that reserves the exact 16:9 box, so adding the file does not move
-the layout by a pixel.
+Section 2 is a worked example across three desks, property, accounting and
+insurance. Every sender, figure and date on all three is invented, which the
+slug under the heading says out loud. Real ones would be the single largest
+improvement available to the page, and swapping them in is a content change and
+not a code change: three entries in `demo.desks` per locale file.
 
-```bash
-cp /path/to/demo.mp4        public/demo.mp4
-cp /path/to/demo-poster.jpg public/demo-poster.jpg   # optional but reduces flash
-git add public/demo.mp4 public/demo-poster.jpg && git commit -m "add demo video"
-```
-
-The component probes for the file at runtime and swaps itself for a real
-`<video>`. No code change, no env var. If the file is much over 20 MB, put it on
-a CDN instead and change `VIDEO_SRC` in `src/components/Demo.tsx` to the URL.
+There is no demo video and the page no longer has a place for one. The earlier
+design reserved a 16:9 box for `public/demo.mp4`, which never arrived; the
+interactive example replaces it and the `video_play` event became `demo_desk`.
 
 ### 6. Add the logo, if you want the monogram
 
-There is no logo file anywhere. The header and footer render the wordmark as
-live text in the brand two-tone, which brand-lock permits. To use the monogram,
-drop the transparent PNG at `public/logo.png` and uncomment the one-line `<img>`
-in `src/components/Header.tsx`.
+The monogram is drawn as inline SVG in `src/components/Hero.tsx` and reused by
+the fit check and the colophon, each with its own gradient id. `design/` also
+holds the real 1024px PNG pulled from the product site and a clean SVG redraw of
+it, neither of which ships. To use a supplied file instead, drop it at
+`public/logo.png` and swap the `<Mark />` call.
 
 ---
 

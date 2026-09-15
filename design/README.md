@@ -1,9 +1,15 @@
 # Landing page redesign, "paper desk"
 
 Working design for the campaign landing page, approved in direction by Dovy and
-not yet ported into `src/`. Everything here is a prototype: it is plain HTML and
+**now ported into `src/`**. Everything here is a prototype: it is plain HTML and
 vanilla JS so it can be judged in a browser without a build step. **No file in
 this folder ships to visitors.**
+
+The port kept this folder rather than deleting it, because the numbers in this
+file were measured against this file. It is the reference the React version is
+checked against: the hero's geometry at 1280 is pixel identical to the prototype's
+and the same axe result holds in all three locales. When the two disagree, the
+app is what ships and this is what it was supposed to look like.
 
 Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8cbdba
 
@@ -192,9 +198,15 @@ every end state readable, and there is zero horizontal overflow at 360, 390,
 
 ## Not done yet
 
-- **Porting into `src/`.** This is still a prototype. The port must keep all
-  three locales, and `src/lib/contract.ts` and the live intake are not to be
-  touched: WF-C1 parses that payload shape.
+- ~~**Porting into `src/`.**~~ Done. Six commits, section by section, each one
+  building and rendering the whole page. `src/lib/contract.ts` was not touched
+  and the qualifier's logic came across unchanged, so the payload WF-C1 parses
+  is byte for byte what it was. Three things in the prototype were deliberately
+  not followed, and each is recorded in the commit that dropped it: the phone
+  field's Optional marker, which the live form contradicts; the no-script line,
+  which described a prototype rather than a single page app; and the absence of
+  a language switch, which one page in one language did not need and three
+  locales do.
 - **Three real example messages**, one accounting, one insurance, one property,
   each with the reply that actually went out. The picker across the three
   verticals now exists; the paper in it is invented. Swapping invented paper for
