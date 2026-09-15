@@ -75,77 +75,52 @@ export const en: Content = {
   },
 
   numbers: {
+    eyebrow: 'Our own arithmetic',
     title: 'What it is worth',
-    lead: 'Three figures, and the sum behind each one.',
+    about: 'about\u00a0',
     rows: [
+      { amount: '5', unit: 'x', label: 'return on the seat cost' },
+      { amount: '400', unit: '\u00a0EUR', label: 'saved per month, per seat' },
+      { amount: '40', unit: '\u00a0days', label: 'to pay back setup and the first month' },
+    ],
+    lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
+    moreLabel: 'Show the arithmetic',
+    basis: [
+      { term: 'about 5x', def: 'Assumed time saved, against the seat cost.' },
+      { term: 'about 400 EUR', def: 'Assumed hours saved, at a mid level salary.' },
       {
-        figure: 'about 5x',
-        label: 'return on the seat cost',
-        basis: 'The time we assume a seat saves, costed against what that seat costs you per month.',
-      },
-      {
-        figure: 'about 400 EUR',
-        label: 'saved per month, per seat',
-        basis: 'The hours we assume stop going into rewriting repeat replies, costed at a mid level salary.',
-      },
-      {
-        figure: 'about 40 days',
-        label: 'to pay back the setup fee',
-        basis: 'Counting the 500 dollar setup fee and the first month of seats.',
+        term: 'about 40 days',
+        def: 'The 500 USD setup fee and the first month of seats, against the saving above.',
       },
     ],
-    caveat:
-      'These are a model, not a measurement. We assume how much time repeat replies take, cost it at a mid level salary, and do the arithmetic. They have not yet been checked against a real customer. Your number depends on how much of your mail is repeat work. We will do the sum with your own figures on the call, and if it does not clear we will say so.',
+    notes: [
+      'Never yet checked against a real customer. Your number depends on how much of your mail is repeat work.',
+      'We will do the sum on your figures on the call, and say so if it does not clear.',
+    ],
   },
 
   who: {
+    eyebrow: 'Filed under',
     title: 'Who this is for',
-    lead: 'Three kinds of office, all with the same problem: a lot of mail, and every reply has to be right.',
     groups: [
-      {
-        title: 'Accounting firms',
-        body: 'The same client questions, in every one of the four weeks before a filing deadline. Fee queries, missing documents, what happens if we are late.',
-      },
-      {
-        title: 'Insurance brokers',
-        body: 'Claims correspondence where the answer is usually already in the policy, and the delay is in someone writing it out clearly.',
-      },
-      {
-        title: 'Administrative firms',
-        body: 'Housing associations, student accommodation, property and facility admin. Tenant mail, deposits, maintenance requests, in volume, all year.',
-      },
+      { tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
+      { tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
+      { tab: 'Administrative firms', line: 'Tenant mail, deposits and maintenance. All year.' },
     ],
-    seatMinimum:
-      'This offer starts at 10 seats. Below that, the plan on doviloop.dev does the same drafting and costs a great deal less.',
-    noTech:
-      'You do not need a developer, and you do not need to change your email. If your team is in Outlook, the setup is our job.',
-  },
-
-  objections: {
-    title: 'Five things people ask before they book',
-    lead: 'The answers we would give you on the call anyway.',
-    items: [
-      {
-        q: 'It will sound like a robot.',
-        a: 'It sounds like whoever wrote your last few hundred replies, because that is what it works from. And a person reads every draft before it goes. When one sounds wrong you fix it, and the next one is closer. Two weeks in, most teams stop editing the routine ones at all.',
+    notes: {
+      seats: {
+        before: 'This offer starts at ',
+        mark: '10 seats',
+        mid: '. Below that, the plan on ',
+        link: 'doviloop.dev',
+        after: ' does the same drafting and costs a great deal less.',
       },
-      {
-        q: 'Our data is confidential.',
-        a: 'Your material stays yours. It is used to answer your mail and nothing else. It is not used to train a shared model, it is not visible to any other customer, and it is stored in the EU. You get the data processing agreement before the pilot starts, not after.',
+      setup: {
+        before: 'No developer, no change of email. If you are in Outlook, ',
+        mark: 'setup is our job',
+        after: '.',
       },
-      {
-        q: 'My team will not adopt it.',
-        a: 'That is the usual reason tools like this fail, which is what the setup fee is for. We run a workshop with your team using their own real mail, and we stay until they can run it without us. Getting your team to use it is our job in week one, not yours.',
-      },
-      {
-        q: 'We already have Copilot.',
-        a: 'Copilot writes well and it does not know your firm. Ask it for your deposit terms or your fee schedule and it will produce something polite and wrong. This answers from your documents and your own past replies. Several teams run both, Copilot for general writing and this for the mail that has to be correct.',
-      },
-      {
-        q: 'What happens when it gets one wrong.',
-        a: 'Nothing sends by itself. A wrong draft is a draft you delete, and it cost you the ten seconds you would have spent staring at a blank reply. There is no route where a bad answer reaches your client without one of your people reading it and pressing send.',
-      },
-    ],
+    },
   },
 
   price: {

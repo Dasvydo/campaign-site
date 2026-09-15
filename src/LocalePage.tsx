@@ -10,7 +10,6 @@ import { Hero } from './components/Hero';
 import { Demo } from './components/Demo';
 import { Numbers } from './components/Numbers';
 import { WhoFor } from './components/WhoFor';
-import { Objections } from './components/Objections';
 import { Price } from './components/Price';
 import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
@@ -86,11 +85,9 @@ export function LocalePage({ locale }: { locale: Locale }) {
           }}
         />
 
-        <Numbers c={c} />
-
         <WhoFor c={c} />
 
-        <Objections c={c} />
+        <Numbers c={c} />
 
         <Price
           c={c}

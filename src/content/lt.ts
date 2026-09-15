@@ -78,77 +78,52 @@ export const lt: Content = {
   },
 
   numbers: {
+    eyebrow: 'Mūsų pačių skaičiavimas',
     title: 'Kiek tai verta',
-    lead: 'Trys skaičiai ir skaičiavimas, iš kurio kiekvienas jų gautas.',
+    about: 'apie\u00a0',
     rows: [
+      { amount: '5', unit: 'x', label: 'grąža nuo vienos vietos kainos' },
+      { amount: '400', unit: '\u00a0EUR', label: 'sutaupoma per mėnesį vienai vietai' },
+      { amount: '40', unit: '\u00a0dienų', label: 'kol atsiperka įdiegimas ir pirmas mėnuo' },
+    ],
+    lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
+    moreLabel: 'Parodyti skaičiavimą',
+    basis: [
+      { term: 'apie 5x', def: 'Numanomas sutaupytas laikas, palyginti su vietos kaina.' },
+      { term: 'apie 400 EUR', def: 'Numanomos sutaupytos valandos, esant vidutiniam atlyginimui.' },
       {
-        figure: 'apie 5 kartus',
-        label: 'grąža nuo vienos vietos kainos',
-        basis: 'Laikas, kurį, mūsų prielaida, sutaupo viena vieta, palygintas su tuo, kiek ta vieta Jums kainuoja per mėnesį.',
-      },
-      {
-        figure: 'apie 400 EUR',
-        label: 'sutaupoma per mėnesį vienai vietai',
-        basis: 'Valandos, kurių, mūsų prielaida, nebereikia tiems patiems atsakymams perrašyti, įvertintos vidutinio lygio atlyginimu.',
-      },
-      {
-        figure: 'apie 40 dienų',
-        label: 'kol atsiperka paruošimo mokestis',
-        basis: 'Įskaičiuotas 500 dolerių paruošimo mokestis ir pirmas vietų mėnuo.',
+        term: 'apie 40 dienų',
+        def: '500 USD įdiegimo mokestis ir pirmas vietų mėnuo, palyginti su aukščiau nurodytu sutaupymu.',
       },
     ],
-    caveat:
-      'Tai modelis, o ne matavimas. Darome prielaidą, kiek laiko užima pasikartojantys atsakymai, įvertiname jį vidutinio lygio atlyginimu ir suskaičiuojame. Šie skaičiai dar nėra patikrinti su tikru klientu. Rezultatas priklauso nuo to, kokia Jūsų pašto dalis kartojasi. Skaičiavimą atliksime su Jūsų pačių skaičiais pokalbio metu, o jei jis neapsimoka, taip ir pasakysime.',
+    notes: [
+      'Dar nė karto nepatikrinta su tikru klientu. Jūsų skaičius priklauso nuo to, kiek Jūsų laiškų yra pasikartojantis darbas.',
+      'Pokalbio metu suskaičiuosime pagal Jūsų duomenis ir pasakysime, jei nesueina.',
+    ],
   },
 
   who: {
+    eyebrow: 'Registruota',
     title: 'Kam tai skirta',
-    lead: 'Trijų rūšių biurai su ta pačia problema: labai daug laiškų, ir kiekvienas atsakymas turi būti tikslus.',
     groups: [
-      {
-        title: 'Apskaitos įmonės',
-        body: 'Tie patys klientų klausimai kiekvieną iš keturių savaičių prieš deklaravimo terminą. Klausimai apie mokestį, trūkstamus dokumentus, kas bus, jei pavėluosime.',
-      },
-      {
-        title: 'Draudimo brokeriai',
-        body: 'Žalų susirašinėjimas, kai atsakymas paprastai jau yra polise, o vėlavimas kyla dėl to, kad reikia jį aiškiai išdėstyti.',
-      },
-      {
-        title: 'Administravimo įmonės',
-        body: 'Būsto bendrijos, bendrabučiai, nekilnojamojo turto ir ūkio administravimas. Gyventojų laiškai, užstatai, remonto prašymai, dideliais kiekiais, ištisus metus.',
-      },
+      { tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
+      { tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
+      { tab: 'Administravimo įmonėms', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
     ],
-    seatMinimum:
-      'Šis pasiūlymas prasideda nuo 10 vietų. Jei Jūsų mažiau, planas doviloop.dev svetainėje daro tą patį ir kainuoja gerokai mažiau.',
-    noTech:
-      'Jums nereikia programuotojo ir nereikia keisti pašto. Jei komanda dirba su Outlook, paruošimas yra mūsų darbas.',
-  },
-
-  objections: {
-    title: 'Penki klausimai, kurių žmonės klausia prieš užsisakydami pokalbį',
-    lead: 'Atsakymai, kuriuos vis tiek pasakytume pokalbio metu.',
-    items: [
-      {
-        q: 'Skambės kaip robotas.',
-        a: 'Skamba taip, kaip rašė tas, kuris parašė paskutinius kelis šimtus Jūsų atsakymų, nes būtent iš jų ir mokomasi. Ir kiekvieną juodraštį prieš išsiuntimą perskaito žmogus. Jei kuris nors skamba ne taip, jį pataisote, o kitas jau bus artimesnis. Po dviejų savaičių dauguma komandų įprastų atsakymų nebetaiso visai.',
+    notes: {
+      seats: {
+        before: 'Šis pasiūlymas prasideda nuo ',
+        mark: '10 vietų',
+        mid: '. Mažesnėms komandoms planas svetainėje ',
+        link: 'doviloop.dev',
+        after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
       },
-      {
-        q: 'Mūsų duomenys yra konfidencialūs.',
-        a: 'Jūsų medžiaga lieka Jūsų. Ji naudojama tik Jūsų laiškams atsakyti ir niekam kitam. Ji nenaudojama bendram modeliui mokyti, jos nemato joks kitas klientas, ir ji saugoma Europos Sąjungoje. Duomenų tvarkymo sutartį gaunate prieš bandomąjį laikotarpį, o ne po jo.',
+      setup: {
+        before: 'Nereikia programuotojo, nereikia keisti pašto. Jei dirbate su Outlook, ',
+        mark: 'įdiegimas yra mūsų darbas',
+        after: '.',
       },
-      {
-        q: 'Mano komanda tuo nesinaudos.',
-        a: 'Būtent dėl to tokie įrankiai paprastai ir žlunga, ir būtent tam skirtas paruošimo mokestis. Surengiame dirbtuves su Jūsų komanda, dirbdami su jų pačių tikrais laiškais, ir liekame tol, kol jie moka dirbti be mūsų. Padaryti taip, kad Jūsų žmonės tuo naudotųsi, yra mūsų darbas pirmą savaitę, ne Jūsų.',
-      },
-      {
-        q: 'Mes jau turime Copilot.',
-        a: 'Copilot rašo gerai, bet nepažįsta Jūsų įmonės. Paklauskite jo apie Jūsų užstato taisykles ar kainoraštį, ir gausite kažką mandagaus ir neteisingo. Šis įrankis atsako remdamasis Jūsų dokumentais ir Jūsų ankstesniais atsakymais. Ne viena komanda naudoja abu: Copilot bendram rašymui, o šį tam paštui, kuris turi būti tikslus.',
-      },
-      {
-        q: 'Kas bus, kai jis suklys.',
-        a: 'Niekas neišsiunčiama savaime. Klaidingas juodraštis yra juodraštis, kurį ištrinate, ir jis Jums kainavo tas dešimt sekundžių, kurias vis tiek būtumėte praleidę žiūrėdami į tuščią laišką. Nėra kelio, kuriuo blogas atsakymas pasiektų Jūsų klientą, jei jo neperskaitė ir nepaspaudė siųsti Jūsų žmogus.',
-      },
-    ],
+    },
   },
 
   price: {

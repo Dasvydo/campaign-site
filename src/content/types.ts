@@ -11,19 +11,24 @@
  */
 
 export interface NumberRow {
-  figure: string;
+  /** The figure itself, without the hedge and without the unit. */
+  amount: string;
+  /** What follows it: "x", " EUR", " days". Leading space where one is wanted. */
+  unit: string;
   label: string;
-  basis: string;
+}
+
+/** One line of the arithmetic behind a figure. */
+export interface BasisRow {
+  term: string;
+  def: string;
 }
 
 export interface AudienceCopy {
-  title: string;
-  body: string;
-}
-
-export interface ObjectionCopy {
-  q: string;
-  a: string;
+  /** The index tab on the folder. */
+  tab: string;
+  /** The single line on the sheet below it. */
+  line: string;
 }
 
 export interface SelectOption {
@@ -106,24 +111,28 @@ export interface Content {
   };
 
   numbers: {
+    eyebrow: string;
     title: string;
-    lead: string;
+    /** "about ", set before every figure, so the hedge is written once. */
+    about: string;
     rows: [NumberRow, NumberRow, NumberRow];
-    caveat: string;
+    /** "These are a model, not a measurement." The mark is highlighted. */
+    lede: { before: string; mark: string; after: string };
+    /** The disclosure that carries the basis of every figure above. */
+    moreLabel: string;
+    basis: [BasisRow, BasisRow, BasisRow];
+    notes: [string, string];
   };
 
   who: {
+    eyebrow: string;
     title: string;
-    lead: string;
     groups: [AudienceCopy, AudienceCopy, AudienceCopy];
-    seatMinimum: string;
-    noTech: string;
-  };
-
-  objections: {
-    title: string;
-    lead: string;
-    items: ObjectionCopy[];
+    notes: {
+      /** Both notes carry a hand-drawn underline under `mark`. */
+      seats: { before: string; mark: string; mid: string; link: string; after: string };
+      setup: { before: string; mark: string; after: string };
+    };
   };
 
   price: {

@@ -78,77 +78,52 @@ export const da: Content = {
   },
 
   numbers: {
+    eyebrow: 'Vores eget regnestykke',
     title: 'Hvad det er værd',
-    lead: 'Tre tal, og regnestykket bag hvert af dem.',
+    about: 'cirka\u00a0',
     rows: [
+      { amount: '5', unit: 'x', label: 'i afkast af prisen per plads' },
+      { amount: '400', unit: '\u00a0EUR', label: 'sparet om måneden, per plads' },
+      { amount: '40', unit: '\u00a0dage', label: 'til at tjene opsætning og første måned hjem' },
+    ],
+    lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
+    moreLabel: 'Vis regnestykket',
+    basis: [
+      { term: 'cirka 5x', def: 'Antaget sparet tid, holdt op mod prisen per plads.' },
+      { term: 'cirka 400 EUR', def: 'Antaget sparede timer, ved en mellemlønning.' },
       {
-        figure: 'cirka 5x',
-        label: 'i afkast på prisen per bruger',
-        basis: 'Den tid vi antager en bruger sparer, holdt op mod hvad den bruger koster jer om måneden.',
-      },
-      {
-        figure: 'cirka 400 EUR',
-        label: 'sparet om måneden, per bruger',
-        basis: 'De timer vi antager ikke længere går med at skrive de samme svar igen, sat til en løn på mellemniveau.',
-      },
-      {
-        figure: 'cirka 40 dage',
-        label: 'før opstartsgebyret er tjent hjem',
-        basis: 'Med opstartsgebyret på 500 dollar og den første måneds brugere regnet med.',
+        term: 'cirka 40 dage',
+        def: 'Opsætningen på 500 USD og første måneds pladser, holdt op mod besparelsen ovenfor.',
       },
     ],
-    caveat:
-      'Det er en model, ikke en måling. Vi antager, hvor lang tid gengangerne tager, sætter tiden til en løn på mellemniveau og regner efter. Tallene er endnu ikke efterprøvet hos en rigtig kunde. Hvad I får ud af det afhænger af, hvor stor en del af jeres post der er gengangere. Vi laver regnestykket med jeres egne tal på mødet, og hvis det ikke holder, siger vi det.',
+    notes: [
+      'Endnu aldrig efterprøvet hos en rigtig kunde. Jeres tal afhænger af, hvor meget af jeres post der er gentagelsesarbejde.',
+      'Vi regner det igennem på jeres egne tal på mødet og siger det, hvis det ikke går op.',
+    ],
   },
 
   who: {
+    eyebrow: 'Arkiveret under',
     title: 'Hvem det er til',
-    lead: 'Tre slags kontorer med det samme problem: rigtig meget post, og hvert svar skal være rigtigt.',
     groups: [
-      {
-        title: 'Revisionsfirmaer',
-        body: 'De samme spørgsmål fra kunderne, i hver eneste af de fire uger op til en frist. Spørgsmål om honorar, manglende bilag, hvad der sker hvis vi kommer for sent.',
-      },
-      {
-        title: 'Forsikringsmæglere',
-        body: 'Skadesbehandling hvor svaret som regel allerede står i policen, og forsinkelsen ligger i at få det skrevet klart.',
-      },
-      {
-        title: 'Administration og boligselskaber',
-        body: 'Boligforeninger, kollegier, ejendoms- og facilityadministration. Beboerpost, depositum, vedligeholdelsessager, i mængder, hele året.',
-      },
+      { tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
+      { tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
+      { tab: 'Administrationsfirmaer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
     ],
-    seatMinimum:
-      'Det her tilbud starter ved 10 brugere. Er I færre, laver planen på doviloop.dev det samme og koster væsentligt mindre.',
-    noTech:
-      'I skal ikke bruge en udvikler, og I skal ikke skifte mail. Sidder teamet i Outlook, er opsætningen vores opgave.',
-  },
-
-  objections: {
-    title: 'Fem ting folk spørger om, før de booker',
-    lead: 'De svar vi alligevel ville give jer på mødet.',
-    items: [
-      {
-        q: 'Det kommer til at lyde som en robot.',
-        a: 'Det lyder som den, der skrev jeres sidste par hundrede svar, for det er det, den arbejder ud fra. Og et menneske læser hvert udkast, før det går. Lyder et af dem forkert, retter I det, og det næste rammer tættere. Efter fjorten dage holder de fleste teams op med at rette de rutineprægede overhovedet.',
+    notes: {
+      seats: {
+        before: 'Tilbuddet starter ved ',
+        mark: '10 pladser',
+        mid: '. Under det gør planen på ',
+        link: 'doviloop.dev',
+        after: ' det samme arbejde og koster væsentligt mindre.',
       },
-      {
-        q: 'Vores data er fortrolige.',
-        a: 'Jeres materiale forbliver jeres. Det bruges til at besvare jeres post og ingenting andet. Det bruges ikke til at træne en fælles model, det er ikke synligt for andre kunder, og det ligger i EU. I får databehandleraftalen, før pilotperioden går i gang, ikke bagefter.',
+      setup: {
+        before: 'Ingen udvikler, ingen ny mailadresse. Sidder I i Outlook, ',
+        mark: 'er opsætningen vores opgave',
+        after: '.',
       },
-      {
-        q: 'Mit team kommer ikke til at bruge det.',
-        a: 'Det er den almindelige grund til, at den slags værktøjer falder til jorden, og det er præcis det, opstartsgebyret dækker. Vi holder en workshop med jeres team i deres egen rigtige post, og vi bliver, til de kan køre det uden os. At få jeres folk til at bruge det er vores opgave i uge et, ikke jeres.',
-      },
-      {
-        q: 'Vi har allerede Copilot.',
-        a: 'Copilot skriver godt, og den kender ikke jeres virksomhed. Spørg den om jeres depositumregler eller jeres prisliste, og du får noget høfligt og forkert. Det her svarer ud fra jeres dokumenter og jeres egne tidligere svar. Flere teams kører begge dele, Copilot til almindelig skrivning og det her til den post, der skal være korrekt.',
-      },
-      {
-        q: 'Hvad sker der, når den rammer forkert.',
-        a: 'Der sendes ikke noget af sig selv. Et forkert udkast er et udkast, du sletter, og det kostede dig de ti sekunder, du ellers havde brugt på at stirre på en tom mail. Der findes ingen vej, hvor et dårligt svar når frem til jeres kunde, uden at en af jeres folk har læst det og trykket send.',
-      },
-    ],
+    },
   },
 
   price: {

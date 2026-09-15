@@ -1,33 +1,103 @@
+import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
-import { Section } from './Section';
+import { Pen } from './Pen';
 
 /**
- * The seat minimum is said out loud here on purpose. It pre-qualifies, and it
- * saves both sides a call that was never going to close.
+ * Three folders on a desk, and the two things worth saying beside them.
+ *
+ * The cards lift into place once, staggered, when the strip arrives. The
+ * hidden state is worn only while the script is driving it and comes off on a
+ * safety timer, so a page whose observer never fires shows three cards rather
+ * than three blanks.
  */
 export function WhoFor({ c }: { c: Content }) {
-  return (
-    <Section id="who" n="04" title={c.who.title} lead={c.who.lead}>
-      <div className="grid gap-x-9 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-        {c.who.groups.map((g) => (
-          <div key={g.title} className="rule-top pt-5">
-            <h3 className="text-[1.22rem]">{g.title}</h3>
-            <p className="mt-2.5 text-[15.5px] leading-relaxed opacity-85">{g.body}</p>
-          </div>
-        ))}
-      </div>
+  const rootRef = useRef<HTMLElement | null>(null);
+  const stripRef = useRef<HTMLUListElement | null>(null);
 
-      <div className="mt-12 grid gap-4 rule-top pt-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10">
-        <p className="flex items-start gap-3 text-[1.02rem] leading-relaxed">
-          <span
-            aria-hidden="true"
-            className="mt-2.5 h-1.5 w-1.5 flex-none rounded-full"
-            style={{ background: 'var(--color-amber)' }}
-          />
-          <span>{c.who.seatMinimum}</span>
+  useEffect(() => {
+    const root = rootRef.current;
+    const strip = stripRef.current;
+    if (!root || !strip) return;
+
+    const reveal = () => {
+      root.classList.remove('who-js');
+      strip.classList.add('who-in');
+    };
+
+    if (
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !('IntersectionObserver' in window)
+    ) {
+      reveal();
+      return;
+    }
+
+    root.classList.add('who-js');
+    const safety = window.setTimeout(reveal, 2000);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          strip.classList.add('who-in');
+          io.disconnect();
+        }
+      },
+      { threshold: 0, rootMargin: '-10% 0px -18% 0px' },
+    );
+    io.observe(strip);
+
+    return () => {
+      window.clearTimeout(safety);
+      io.disconnect();
+    };
+  }, []);
+
+  const n = c.who.notes;
+
+  return (
+    <section id="who" aria-labelledby="who-h" ref={rootRef}>
+      <div className="who-wrap">
+        <p className="who-folio" aria-hidden="true">
+          03
         </p>
-        <p className="text-[1.02rem] leading-relaxed opacity-85">{c.who.noTech}</p>
+
+        <header className="who-head">
+          <p className="who-eyebrow">{c.who.eyebrow}</p>
+          <h2 className="who-h" id="who-h">
+            {c.who.title}
+          </h2>
+        </header>
+
+        <ul className="who-strip" role="list" ref={stripRef}>
+          {c.who.groups.map((g) => (
+            <li className="who-item" key={g.tab}>
+              <div className="who-lift">
+                <h3 className="who-tab">{g.tab}</h3>
+                <div className="who-sheet">
+                  <p className="who-line">{g.line}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="who-notes">
+          <p className="who-note who-note-a">
+            {n.seats.before}
+            <Pen d="M1 6 C 20 3, 45 8, 62 5 S 90 4, 99 6">{n.seats.mark}</Pen>
+            {n.seats.mid}
+            <a className="who-link" href="https://doviloop.dev" rel="noopener">
+              {n.seats.link}
+            </a>
+            {n.seats.after}
+          </p>
+          <p className="who-note who-note-b">
+            {n.setup.before}
+            <Pen d="M1 6 C 22 4, 44 8, 63 5 S 88 3, 99 6">{n.setup.mark}</Pen>
+            {n.setup.after}
+          </p>
+        </div>
       </div>
-    </Section>
+    </section>
   );
 }
