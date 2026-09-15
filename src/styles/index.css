@@ -1,6 +1,10 @@
 @import './fonts.css';
 @import 'tailwindcss';
 
+/* The composition, ported from the measured prototype. Unlayered on purpose,
+   so it outranks the utility and base layers below without !important. */
+@import './paper.css';
+
 /* ==========================================================================
    Design tokens. Every colour is from brand-lock.md and is authoritative,
    not provisional. See AUDIT.md section 2 and DESIGN-PLAN.md section 2.

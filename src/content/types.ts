@@ -10,20 +10,6 @@
  *   - Do not invent testimonials, named customers or pilots. None exist.
  */
 
-export interface StepCopy {
-  n: string;
-  title: string;
-  body: string;
-}
-
-/** One beat of the scroll sequence. The clock is derived from hero.clockIn
-    rather than stored here, so the time appears in exactly one place. */
-export interface SeqBeat {
-  label: string;
-  head: string;
-  say: string;
-}
-
 export interface NumberRow {
   figure: string;
   label: string;
@@ -66,43 +52,48 @@ export interface Content {
   hero: {
     clockIn: string;
     clockOut: string;
-    opening: string;
-    subOpening: string;
-    claim: string;
+
+    /** Masthead. The section links are in-page anchors; the hrefs live in the
+        component because they are structural, not translatable. */
+    skip: string;
+    dateline: string;
+    nav: { example: string; price: string; fit: string };
+    tab: string;
+
+    /** The headline is split so the highlighter can fall on the right phrase in
+        each language rather than on a fixed word count. */
+    title: { before: string; mark: string; after: string };
+    /** The deck is split around hero.clockIn, so the time is written once. */
+    deck: { before: string; after: string };
+
     cta: string;
     ctaNote: string;
-    exampleCaption: string;
+
+    /** The pile of letters, and the one dealt off the top of it. */
+    pileAlt: string;
+    deal: {
+      exampleLabel: string;
+      from: string;
+      subjectLabel: string;
+      subject: string;
+      sr: string;
+    };
+
+    /** The standing price bar on phones. */
+    bar: { text: string; cta: string };
+
+    /** The worked example's own paper. The demo reads these for its first desk,
+        so the property scenario exists once per locale. */
     message: {
       from: string;
       subject: string;
       body: string;
     };
-    draftReady: string;
     draft: {
       greeting: string;
       body: string;
       signoff: string;
     };
-    afterLine: string;
-  };
-
-  how: {
-    title: string;
-    lead: string;
-    steps: [StepCopy, StepCopy, StepCopy];
-  };
-
-  /** The scroll sequence. Deliberately holds no message or draft copy of its
-      own: it renders hero.message and hero.draft, so the example exists once
-      per locale and cannot drift between the two places that show it. */
-  sequence: {
-    ariaLabel: string;
-    srIntro: string;
-    steps: [SeqBeat, SeqBeat, SeqBeat, SeqBeat];
-    knowledge: [string, string, string, string, string];
-    sendLabel: string;
-    editLabel: string;
-    gate: string;
   };
 
   demo: {

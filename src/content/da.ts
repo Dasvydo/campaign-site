@@ -29,86 +29,42 @@ export const da: Content = {
   hero: {
     clockIn: '08:40',
     clockOut: '08:41',
-    opening: 'Klokken er 08:40, og fyrre mails venter.',
-    subOpening:
-      'De skal alle sammen have et ordentligt svar. De fleste af dem ligner de fyrre foregående. Lige om lidt bruger en på kontoret hele formiddagen på at skrive dem igen.',
-    claim:
-      'DoviLoop skriver det første udkast til hver eneste. Dit team læser det, retter det, de vil, og sender. Der går intet ud af huset, som et menneske ikke har godkendt.',
-    cta: 'Book et møde',
-    ctaNote: 'Teams på 10 eller flere. Tyve minutter, og vi siger det på mødet, hvis det ikke passer.',
-    exampleCaption: 'Et eksempel på en mail og det udkast, den gav.',
+
+    skip: 'Spring til indholdet',
+    dateline: 'Teams-udgaven. Ti pladser og opefter.',
+    nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
+    tab: 'Se om vi passer sammen',
+
+    title: { before: 'Skrevet ud fra ', mark: 'jeres egne sager', after: '. Sendt af jeres folk.' },
+    deck: { before: 'Klokken er ', after: '. Fyrre mails venter. De har alle sammen allerede et udkast.' },
+
+    cta: 'Se om vi passer sammen',
+    ctaNote: 'Fra 890 USD om måneden. De første to uger er gratis.',
+
+    pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
+    deal: {
+      exampleLabel: 'Eksempel på en mail',
+      from: 'Fra en beboer i lejlighed 214',
+      subjectLabel: 'Emne',
+      subject: 'Fraflytningsopgørelse, stadig intet',
+      sr: 'Læs den i det gennemgåede eksempel.',
+    },
+
+    bar: {
+      text: 'Fra 890 USD om måneden for ti pladser, plus 500 USD i opsætning én gang. De første to uger er gratis.',
+      cta: 'Se om det passer',
+    },
+
     message: {
       from: 'Hanne Jensen, lejlighed 214',
       subject: 'Fraflytningsopgørelse, stadig intet',
       body: 'Jeg flyttede ud den 30. i sidste måned, og jeg har stadig ikke fået opgørelsen. Nøglerne blev afleveret til tiden, og lejligheden var rengjort. Hvornår får jeg mit depositum, og hvor meget er der tilbage af det?',
     },
-    draftReady: 'Udkast klar',
     draft: {
       greeting: 'Kære Hanne Jensen,',
-      body: 'Tak fordi du rykker, og undskyld at det har været nødvendigt. Opgørelsen skal være hos dig senest tre uger efter afleveringen, altså den 21. Jeg kan se, at lejligheden blev afleveret den 30., og at nøglerne kom retur samme dag. De to fradrag, der er rejst indtil nu, er flytterengøring på 850 og pletmaling af væggen i entreen på 400. Der resterer dermed 4.750 af dit depositum, som betales tilbage til den konto, vi har registreret.',
+      body: 'Tak fordi du rykker, og undskyld at det har været nødvendigt. Opgørelsen skal være hos dig senest tre uger efter afleveringen, altså den 21. De to fradrag, der er rejst indtil nu, er flytterengøring på 850 EUR og pletmaling af væggen i entreen på 400 EUR. Der resterer dermed 4.750 EUR af dit depositum, som betales tilbage til den konto, vi har registreret.',
       signoff: 'Jeg sender den fulde opgørelse, så snart den sidste aflæsning er inde.',
     },
-    afterLine: 'Du læser det. Du sender det. Det tog elleve sekunder i stedet for ni minutter.',
-  },
-
-  how: {
-    title: 'Sådan fungerer det i praksis',
-    lead: 'Der sker tre ting, fra mailen lander, til udkastet står klar. Ingen af dem kræver nogen teknisk.',
-    steps: [
-      {
-        n: '01',
-        title: 'Den læser mailen',
-        body: 'Hvem der skriver, hvad de spørger om, og hvad de fik at vide sidste gang de skrev. Præcis det gennemsyn en god kollega laver, før hun begynder at skrive.',
-      },
-      {
-        n: '02',
-        title: 'Den henter det, I faktisk ved',
-        body: 'Jeres regler for depositum. Jeres prisliste. Den formulering, partneren godkendte i marts. Den svarer ud fra jeres eget materiale og jeres egne tidligere svar, ikke ud fra noget den fandt på nettet.',
-      },
-      {
-        n: '03',
-        title: 'Den skriver svaret i jeres tone',
-        body: 'I den tone, I allerede bruger, med detaljerne sat ind. Så stopper den og venter på et menneske. Dit team læser udkastet, retter det, de vil, og trykker send.',
-      },
-    ],
-  },
-
-  sequence: {
-    ariaLabel: 'Sådan bliver et svar skrevet',
-    srIntro:
-      'Samme besked og udkast som ovenfor, fortalt i fire trin. Hvert trin er beskrevet fuldt ud herunder, så intet her afhænger af at scrolle.',
-    steps: [
-      {
-        label: 'beskeden lander',
-        head: 'Et minut, hele vejen igennem.',
-        say: 'Scroll for at se det hele. Intet her er sat op i fart, og intet her sender af sig selv.',
-      },
-      {
-        label: 'jeres viden, ikke internettets',
-        head: 'Den læser det, jeres team allerede ved.',
-        say: 'Reglerne for depositum, fristen på tre uger, sagen på den lejlighed, de fradrag der allerede er noteret, og den måde jeres kontor skriver på.',
-      },
-      {
-        label: 'udkastet',
-        head: 'Elleve sekunder senere ligger der et svar.',
-        say: 'Skrevet ud fra jeres eget materiale, i jeres tone, med de rigtige tal i. Ikke en skabelon med et andet navn sat ind.',
-      },
-      {
-        label: 'stoppet',
-        head: 'Så stopper den og venter på et menneske.',
-        say: 'Der findes ingen automatisk afsendelse nogen steder i produktet. Nogen læser udkastet, retter det de vil, og sender det selv.',
-      },
-    ],
-    knowledge: [
-      'Regler for depositum',
-      'Fristen på tre uger',
-      'Sagen på lejlighed 214',
-      'Oversigt over fradrag',
-      'Husets tone',
-    ],
-    sendLabel: 'Send',
-    editLabel: 'Rediger',
-    gate: 'Et menneske trykker her. Det er den eneste vej ud af jeres kontor.',
   },
 
   demo: {

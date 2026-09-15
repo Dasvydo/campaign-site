@@ -29,86 +29,42 @@ export const lt: Content = {
   hero: {
     clockIn: '08:40',
     clockOut: '08:41',
-    opening: 'Yra 08:40, ir laukia keturiasdešimt laiškų.',
-    subOpening:
-      'Kiekvienam iš jų reikia rimto atsakymo. Dauguma jų panašūs į ankstesnius keturiasdešimt. Netrukus kažkas biure praleis visą rytą juos vėl perrašinėdamas.',
-    claim:
-      'DoviLoop parašo pirmą kiekvieno atsakymo juodraštį. Jūsų žmogus jį perskaito, pataiso, ką nori, ir išsiunčia. Iš biuro neišeina niekas, ko nepatvirtino žmogus.',
-    cta: 'Užsisakykite pokalbį',
-    ctaNote: 'Komandoms nuo 10 žmonių. Dvidešimt minučių, ir pokalbio metu pasakysime, jei netinkame.',
-    exampleCaption: 'Pavyzdys: laiškas ir juodraštis, kurį jis sukūrė.',
+
+    skip: 'Pereiti prie turinio',
+    dateline: 'Komandų leidimas. Nuo dešimties vietų.',
+    nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
+    tab: 'Pažiūrėkite, ar tinkame',
+
+    title: { before: 'Parašyta iš ', mark: 'jūsų pačių bylų', after: '. Išsiųsta jūsų žmonių.' },
+    deck: { before: 'Dabar ', after: '. Laukia keturiasdešimt laiškų. Kiekvienas jau turi juodraštį.' },
+
+    cta: 'Pažiūrėkite, ar tinkame',
+    ctaNote: 'Nuo 890 USD per mėnesį. Pirmos dvi savaitės nemokamai.',
+
+    pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
+    deal: {
+      exampleLabel: 'Laiško pavyzdys',
+      from: 'Nuo gyventojos iš 214 buto',
+      subjectLabel: 'Tema',
+      subject: 'Atsiskaitymas už užstatą, vis dar nieko',
+      sr: 'Perskaitykite jį išnagrinėtame pavyzdyje.',
+    },
+
+    bar: {
+      text: 'Nuo 890 USD per mėnesį dešimčiai vietų, plius 500 USD vienkartinis įdiegimas. Pirmos dvi savaitės nemokamai.',
+      cta: 'Patikrinkite, ar tinkame',
+    },
+
     message: {
       from: 'Rasa Jankauskienė, butas 214',
       subject: 'Atsiskaitymas už užstatą, vis dar nieko',
       body: 'Išsikrausčiau praėjusio mėnesio 30 dieną ir vis dar negavau atsiskaitymo. Raktus grąžinau laiku, butas buvo švarus. Kada atgausiu užstatą ir kiek jo liko?',
     },
-    draftReady: 'Juodraštis paruoštas',
     draft: {
       greeting: 'Gerbiama p. Jankauskiene,',
-      body: 'Ačiū, kad priminėte, ir atsiprašome, kad teko. Atsiskaitymą privalome pateikti per tris savaites nuo buto perdavimo, taigi jis pasieks Jus iki 21 dienos. Matau, kad butas perduotas 30 dieną, o raktai grąžinti tą pačią dieną. Iki šiol užfiksuoti du atskaitymai: valymas po išsikraustymo 850 ir koridoriaus sienos pertepimas 400. Vadinasi, Jums grąžintina 4 750 užstato dalis, ji bus pervesta į mūsų turimą sąskaitą.',
+      body: 'Ačiū, kad priminėte, ir atsiprašome, kad teko. Atsiskaitymą privalome pateikti per tris savaites nuo buto perdavimo, taigi jis pasieks Jus iki 21 dienos. Iki šiol užfiksuoti du atskaitymai: valymas po išsikraustymo 850 EUR ir koridoriaus sienos pertepimas 400 EUR. Vadinasi, Jums grąžintina 4 750 EUR užstato dalis, ji bus pervesta į mūsų turimą sąskaitą.',
       signoff: 'Visą atsiskaitymą atsiųsiu, kai tik gausime paskutinius skaitiklių rodmenis.',
     },
-    afterLine: 'Jūs perskaitote. Jūs išsiunčiate. Tai užtruko vienuolika sekundžių, o ne devynias minutes.',
-  },
-
-  how: {
-    title: 'Kaip tai veikia iš tikrųjų',
-    lead: 'Nuo laiško gavimo iki paruošto juodraščio įvyksta trys dalykai. Nė vienam iš jų nereikia techninių žinių.',
-    steps: [
-      {
-        n: '01',
-        title: 'Jis perskaito laišką',
-        body: 'Kas rašo, ko klausia ir ką jam atsakėte praėjusį kartą. Toks pat peržvelgimas, kokį atlieka geras kolega prieš pradėdamas rašyti.',
-      },
-      {
-        n: '02',
-        title: 'Jis paima tai, ką Jūsų įmonė iš tikrųjų žino',
-        body: 'Jūsų užstato taisyklės. Jūsų kainoraštis. Formuluotė, kurią partneris patvirtino kovą. Jis atsako remdamasis Jūsų pačių medžiaga ir Jūsų ankstesniais atsakymais, o ne tuo, ką rado internete.',
-      },
-      {
-        n: '03',
-        title: 'Jis parašo atsakymą Jūsų tonu',
-        body: 'Tokiu tonu, kokį Jūsų įmonė jau naudoja, su suvestomis detalėmis. Tada sustoja ir laukia žmogaus. Jūsų darbuotojas perskaito juodraštį, pataiso, ką nori, ir paspaudžia siųsti.',
-      },
-    ],
-  },
-
-  sequence: {
-    ariaLabel: 'Kaip parengiamas vienas atsakymas',
-    srIntro:
-      'Ta pati žinutė ir juodraštis kaip viršuje, papasakoti keturiais žingsniais. Kiekvienas žingsnis išsamiai aprašytas žemiau, todėl niekas čia nepriklauso nuo slinkimo.',
-    steps: [
-      {
-        label: 'žinutė ateina',
-        head: 'Viena minutė, nuo pradžios iki galo.',
-        say: 'Slinkite ir stebėkite viską. Niekas čia nepagreitinta ir niekas neišsiunčiama savaime.',
-      },
-      {
-        label: 'Jūsų žinios, ne internetas',
-        head: 'Ji perskaito tai, ką Jūsų komanda jau žino.',
-        say: 'Užstato taisykles, trijų savaičių terminą, to buto bylą, jau užfiksuotus išskaičiavimus ir tai, kaip rašo Jūsų biuras.',
-      },
-      {
-        label: 'juodraštis',
-        head: 'Po vienuolikos sekundžių atsakymas jau parengtas.',
-        say: 'Parašytas iš Jūsų pačių medžiagos, Jūsų tonu, su tikrais skaičiais. Ne šablonas su pakeista pavarde.',
-      },
-      {
-        label: 'sustojimas',
-        head: 'Tada ji sustoja ir laukia žmogaus.',
-        say: 'Šiame produkte nėra jokio automatinio siuntimo. Žmogus perskaito, pataiso ką nori, ir išsiunčia pats.',
-      },
-    ],
-    knowledge: [
-      'Užstato taisyklės',
-      'Trijų savaičių terminas',
-      'Buto 214 byla',
-      'Išskaičiavimų sąrašas',
-      'Biuro tonas',
-    ],
-    sendLabel: 'Siųsti',
-    editLabel: 'Taisyti',
-    gate: 'Žmogus paspaudžia čia. Tai vienintelis kelias, kuriuo kas nors palieka Jūsų biurą.',
   },
 
   demo: {

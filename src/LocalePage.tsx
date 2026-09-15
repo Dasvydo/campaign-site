@@ -5,10 +5,8 @@ import { captureUtm, resolveMarket, resolveSource } from './lib/attribution';
 import { initAnalytics, setAnalyticsContext, track } from './lib/analytics';
 import { initMetaPixel, pixelTrack } from './lib/pixel';
 import { flushLeadQueue } from './lib/lead';
-import { Header } from './components/Header';
+import { Rail } from './components/Rail';
 import { Hero } from './components/Hero';
-import { Sequence } from './components/Sequence';
-import { HowItWorks } from './components/HowItWorks';
 import { Demo } from './components/Demo';
 import { Numbers } from './components/Numbers';
 import { WhoFor } from './components/WhoFor';
@@ -62,23 +60,23 @@ export function LocalePage({ locale }: { locale: Locale }) {
     track('page_view', { path: pathFor(locale) });
   }, [locale, market, utm]);
 
+  const localeNames = LOCALES.map((l) => ({ code: l, label: c.nav.localeNames[l] }));
+
   return (
     <>
-      <a
-        href="#main"
-        className="btn btn-primary sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
-      >
-        {c.nav.skipToContent}
-      </a>
-
-      <Header c={c} locale={locale} onCta={() => track('booking_click', { placement: 'header' })} />
+      <Rail />
 
       <main id="main">
-        <Hero c={c} onCta={() => track('booking_click', { placement: 'hero' })} />
-
-        <HowItWorks c={c} />
-
-        <Sequence c={c} />
+        {/* The masthead, the skip link and the standing price bar all belong to
+            the hero's own composition and are positioned against it, so the
+            hero owns them rather than a separate chrome component. */}
+        <Hero
+          c={c}
+          locale={locale}
+          localeNames={localeNames}
+          pathFor={(code) => pathFor(code as Locale)}
+          onCta={() => track('booking_click', { placement: 'hero' })}
+        />
 
         <Demo
           c={c}

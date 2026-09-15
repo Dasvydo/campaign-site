@@ -26,86 +26,42 @@ export const en: Content = {
   hero: {
     clockIn: '08:40',
     clockOut: '08:41',
-    opening: 'It is 08:40 and forty messages are waiting.',
-    subOpening:
-      'Every one of them needs a careful reply. Most of them sound a lot like the last forty. Someone in your office is about to spend the morning writing them out again.',
-    claim:
-      'DoviLoop writes the first draft of each one. Your team reads it, changes what they want, and sends it. Nothing leaves the office that a person has not approved.',
-    cta: 'Book a call',
-    ctaNote: 'Teams of 10 or more. Twenty minutes, and we tell you on the call if it is not a fit.',
-    exampleCaption: 'An example of the same message and the draft it produced.',
+
+    skip: 'Skip to content',
+    dateline: 'Teams edition. Ten seats and up.',
+    nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
+    tab: 'Check if we are a fit',
+
+    title: { before: 'Written from ', mark: 'your files', after: '. Sent by your people.' },
+    deck: { before: 'It is ', after: '. Forty messages are waiting. Every one already has a draft.' },
+
+    cta: 'Check if we are a fit',
+    ctaNote: 'From 890 USD a month. First two weeks free.',
+
+    pileAlt: 'A pile of forty letters waiting on a desk.',
+    deal: {
+      exampleLabel: 'Example message',
+      from: 'From a resident in flat 214',
+      subjectLabel: 'Subject',
+      subject: 'Deposit statement, still nothing',
+      sr: 'Read this one in the worked example.',
+    },
+
+    bar: {
+      text: 'From 890 USD a month for ten seats, plus 500 USD setup once. First two weeks free.',
+      cta: 'Check the fit',
+    },
+
     message: {
       from: 'Hanne Jensen, flat 214',
       subject: 'Deposit statement, still nothing',
       body: 'I moved out on the 30th of last month and I still have not had the statement. The keys went back on time and the flat was clean. When am I getting my deposit and how much of it is left?',
     },
-    draftReady: 'Draft ready',
     draft: {
       greeting: 'Dear Ms Jensen,',
-      body: 'Thank you for chasing this, and sorry you have had to. Your statement is due within three weeks of handover, which puts it with you by the 21st. I can see the flat was handed back on the 30th with the keys returned on the day. The two deductions raised so far are the end of tenancy clean at 850 and the touch up to the hallway wall at 400. That leaves 4,750 of your deposit to be paid back to the account we hold.',
+      body: 'Thank you for chasing this, and sorry you have had to. Your statement is due within three weeks of handover, which puts it with you by the 21st. The two deductions raised so far are the end of tenancy clean at 850 EUR and the touch up to the hallway wall at 400 EUR. That leaves 4,750 EUR of your deposit to be paid back to the account we hold.',
       signoff: 'I will send the full statement as soon as the final reading is in.',
     },
-    afterLine: 'You read it. You send it. It took eleven seconds instead of nine minutes.',
-  },
-
-  how: {
-    title: 'How it actually works',
-    lead: 'Three things happen between the message arriving and the draft appearing. None of them need anyone technical.',
-    steps: [
-      {
-        n: '01',
-        title: 'It reads the message',
-        body: 'Who sent it, what they are asking for, and what they were told the last time they wrote in. The same read a good colleague does before they start typing.',
-      },
-      {
-        n: '02',
-        title: 'It pulls what your firm actually knows',
-        body: 'Your deposit rules. Your fee schedule. The wording your senior partner signed off in March. It answers from your own material and your own past replies, not from something it found on the internet.',
-      },
-      {
-        n: '03',
-        title: 'It writes the reply in your voice',
-        body: 'In the tone your firm already uses, with the details filled in. Then it stops and waits for a person. Your team reads the draft, changes what they want, and presses send.',
-      },
-    ],
-  },
-
-  sequence: {
-    ariaLabel: 'How one reply gets written',
-    srIntro:
-      'The same message and draft as above, told as four steps. Each step is described in full below, so nothing here depends on scrolling.',
-    steps: [
-      {
-        label: 'the message lands',
-        head: 'One minute, in full.',
-        say: 'Scroll to watch the whole thing. Nothing here is sped up, and nothing here sends on its own.',
-      },
-      {
-        label: 'your knowledge, not the internet',
-        head: 'It reads what your team already knows.',
-        say: 'The deposit rules, the three week deadline, the file on that flat, the deductions already logged, and the way your office writes.',
-      },
-      {
-        label: 'the draft',
-        head: 'Eleven seconds later there is a reply.',
-        say: 'Written from your own material, in your tone, with the real figures in it. Not a template with the name swapped.',
-      },
-      {
-        label: 'the gate',
-        head: 'Then it stops and waits for a person.',
-        say: 'There is no automatic send anywhere in this product. Someone reads it, changes what they want, and sends it themselves.',
-      },
-    ],
-    knowledge: [
-      'Deposit rules',
-      'Three week deadline',
-      'The file on flat 214',
-      'Deductions log',
-      'House tone',
-    ],
-    sendLabel: 'Send',
-    editLabel: 'Edit',
-    gate: 'A person clicks this. It is the only way anything leaves your office.',
   },
 
   demo: {
