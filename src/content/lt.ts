@@ -432,18 +432,58 @@ export const lt: Content = {
   },
 
   price: {
-    title: 'Kiek tai kainuoja',
-    perSeat: '89 USD',
-    perSeatNote: 'už vieną vietą per mėnesį',
-    setup: '500 USD',
-    setupNote: 'paruošimas, vieną kartą. Dirbtuvės ir įvedimas įskaičiuoti.',
-    lines: [
-      'Pirmos dvi savaitės nemokamos, visiškai. Įskaitant dirbtuves ir paruošimą.',
-      'Kortelė pridedama iš karto, o nuskaitoma 14 dieną, kai bandomasis laikotarpis baigiasi. Ne anksčiau.',
-      'Jei sustojate per tas dvi savaites, nenuskaitoma visiškai nieko.',
-      'Mažiausiai 10 vietų. Vietas galite pridėti arba atimti kas mėnesį.',
+    eyebrow: 'Kiek kainuoja ir kuo rizikuojate',
+    title: 'Kiek kainuoja',
+
+    feesTitle: 'Kainos',
+    fees: [
+      { term: 'Už vietą', figure: '89 USD', per: 'per mėnesį', note: 'Mažiausiai 10 vietų.' },
+      { term: 'Įdiegimas', figure: '500 USD', per: 'vieną kartą', note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.' },
     ],
-    cta: 'Patikrinkite, ar tinkame',
+
+    freeTitle: 'Pirmos dvi savaitės nemokamos',
+    freeNote: 'Skiriate laiko užsiėmimui, daugiau nieko.',
+    termsLabel: 'Parodyti sąlygas',
+    terms: [
+      { t: 'Užsiėmimas ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
+      { t: 'Kortelė pridedama pačioje pradžioje.', n: 'Dvi savaites ji neliečiama.' },
+      { t: 'Sustoję per dvi savaites nemokate nieko.', n: 'Jokio mokesčio už vietas, jokio įdiegimo, jokios sąskaitos.' },
+      { t: 'Vietos mokamos mėnesiui.', n: 'Įjungiamos ir išjungiamos keičiantis komandai.' },
+    ],
+
+    whenTitle: 'Kas vyksta ir kada',
+    stops: [
+      {
+        day: '0 diena',
+        note: 'Kortelė pridėta. Nieko nenuskaityta.',
+        state: 'Pridėta, nenuskaityta',
+        say: '0 diena. Kortelė pridėta ir niekas nenuskaitoma.',
+      },
+      {
+        day: '14 diena',
+        note: 'Pirmas nuskaitymas.',
+        state: 'Nuskaitoma nuo čia',
+        say: '14 diena. Įvyksta pirmas nuskaitymas. Mėnesio suma 890 USD.',
+      },
+      {
+        day: 'Sustokite čia',
+        note: 'Bet kada per dvi savaites.',
+        state: 'Visai nenuskaitoma',
+        say: 'Sustokite čia. Mėnesio suma perbraukta ir lygi 0 USD.',
+      },
+    ],
+    total: {
+      term: '10 vietų',
+      sub: 'Mažiausia komanda, kurią priimame.',
+      figure: '890 USD',
+      per: 'per mėnesį',
+      zero: '0 USD',
+    },
+
+    askEyebrow: 'Prieš užsakydami',
+    ask: { before: 'Šis pasiūlymas prasideda nuo 10 vietų. Mažesnėms komandoms planas svetainėje ', link: 'doviloop.dev', after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.' },
+    cta: 'Pažiūrėkite, ar tinkame',
+    ctaNote: 'Dvi savaitės nemokamai. Sustoję per jas nemokate nieko.',
   },
 
   form: {

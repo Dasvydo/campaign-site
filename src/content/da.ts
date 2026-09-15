@@ -432,18 +432,58 @@ export const da: Content = {
   },
 
   price: {
+    eyebrow: 'Hvad det koster, og hvad I risikerer',
     title: 'Hvad det koster',
-    perSeat: '89 USD',
-    perSeatNote: 'per bruger, per måned',
-    setup: '500 USD',
-    setupNote: 'i opstart, én gang. Workshop og onboarding er med.',
-    lines: [
-      'De første fjorten dage er gratis, hele vejen. Workshop og opsætning er med.',
-      'Kortet lægges ind fra start og trækkes på dag 14, når pilotperioden er slut. Ikke før.',
-      'Stopper I inden for de fjorten dage, bliver der ikke trukket noget som helst.',
-      'Minimum 10 brugere. I kan lægge til og trække fra måned for måned.',
+
+    feesTitle: 'Priserne',
+    fees: [
+      { term: 'Per plads', figure: '89 USD', per: 'om måneden', note: 'Mindst 10 pladser.' },
+      { term: 'Opsætning', figure: '500 USD', per: 'én gang', note: 'En workshop på jeres egen rigtige post.' },
     ],
+
+    freeTitle: 'De første to uger er gratis',
+    freeNote: 'I bruger tiden på workshoppen, intet andet.',
+    termsLabel: 'Vis vilkårene',
+    terms: [
+      { t: 'Workshop og opsætning er med.', n: 'Ingen af delene faktureres bagefter.' },
+      { t: 'Kortet lægges ind fra start.', n: 'Det røres ikke, mens de fjorten dage løber.' },
+      { t: 'Stopper I inden for de to uger, betaler I intet.', n: 'Ingen pladspris, ingen opsætning, ingen faktura.' },
+      { t: 'Pladser er måned til måned.', n: 'Til og fra, efterhånden som holdet ændrer sig.' },
+    ],
+
+    whenTitle: 'Hvad der sker, og hvornår',
+    stops: [
+      {
+        day: 'Dag 0',
+        note: 'Kortet er lagt ind. Intet er trukket.',
+        state: 'Lagt ind, ikke trukket',
+        say: 'Dag 0. Kortet er lagt ind, og der trækkes intet.',
+      },
+      {
+        day: 'Dag 14',
+        note: 'Første træk.',
+        state: 'Trækkes herfra',
+        say: 'Dag 14. Første træk sker. Månedsprisen er 890 USD.',
+      },
+      {
+        day: 'Stop her',
+        note: 'Når som helst inden for de fjorten dage.',
+        state: 'Trækkes slet ikke',
+        say: 'Stop her. Månedsprisen er streget ud og lyder på 0 USD.',
+      },
+    ],
+    total: {
+      term: '10 pladser',
+      sub: 'Det mindste hold, vi tager.',
+      figure: '890 USD',
+      per: 'om måneden',
+      zero: '0 USD',
+    },
+
+    askEyebrow: 'Inden I booker',
+    ask: { before: 'Tilbuddet starter ved 10 pladser. Under det gør planen på ', link: 'doviloop.dev', after: ' det samme arbejde og koster væsentligt mindre.' },
     cta: 'Se om vi passer sammen',
+    ctaNote: 'To uger gratis. Stopper I inden for dem, betaler I intet.',
   },
 
   form: {

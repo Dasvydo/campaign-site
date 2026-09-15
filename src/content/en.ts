@@ -429,18 +429,58 @@ export const en: Content = {
   },
 
   price: {
+    eyebrow: 'What it costs, and what you risk',
     title: 'What it costs',
-    perSeat: '89 USD',
-    perSeatNote: 'per seat, per month',
-    setup: '500 USD',
-    setupNote: 'setup, once. Workshop and onboarding included.',
-    lines: [
-      'The first two weeks are free, in full. That includes the workshop and the setup.',
-      'Your card goes on at the start and is charged on day 14, once the pilot is done. Not before.',
-      'Stop inside the two weeks and you are not charged anything at all.',
-      'Minimum 10 seats. Add or remove seats month to month.',
+
+    feesTitle: 'The fees',
+    fees: [
+      { term: 'Per seat', figure: '89 USD', per: 'per month', note: 'Minimum 10 seats.' },
+      { term: 'Setup', figure: '500 USD', per: 'once', note: 'A workshop on your team’s own real mail.' },
     ],
+
+    freeTitle: 'The first two weeks are free',
+    freeNote: 'You spend the workshop time, nothing else.',
+    termsLabel: 'Show the terms',
+    terms: [
+      { t: 'Workshop and setup included.', n: 'Neither is billed afterwards.' },
+      { t: 'Your card goes on at the start.', n: 'Untouched while the fortnight runs.' },
+      { t: 'Stop inside the two weeks and you pay nothing.', n: 'No seat fee, no setup fee, no invoice.' },
+      { t: 'Seats are month to month.', n: 'On or off as the team changes.' },
+    ],
+
+    whenTitle: 'What happens, and when',
+    stops: [
+      {
+        day: 'Day 0',
+        note: 'Card on file. Nothing taken.',
+        state: 'On file, not charged',
+        say: 'Day 0. The card is on file and nothing is charged.',
+      },
+      {
+        day: 'Day 14',
+        note: 'The first charge.',
+        state: 'Charged from here',
+        say: 'Day 14. The first charge is taken. The monthly total is 890 USD.',
+      },
+      {
+        day: 'Stop here',
+        note: 'Any time inside the fortnight.',
+        state: 'Not charged at all',
+        say: 'Stop here. The monthly total is struck out and reads 0 USD.',
+      },
+    ],
+    total: {
+      term: '10 seats',
+      sub: 'The smallest team we take.',
+      figure: '890 USD',
+      per: 'per month',
+      zero: '0 USD',
+    },
+
+    askEyebrow: 'Before you book',
+    ask: { before: 'This offer starts at 10 seats. Below that, the plan on ', link: 'doviloop.dev', after: ' does the same drafting and costs a great deal less.' },
     cta: 'Check if we are a fit',
+    ctaNote: 'Two weeks free. Stop inside them and you pay nothing.',
   },
 
   form: {

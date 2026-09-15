@@ -83,6 +83,27 @@ export interface AudienceCopy {
   line: string;
 }
 
+export interface PriceFee {
+  term: string;
+  figure: string;
+  per: string;
+  note: string;
+}
+
+export interface PriceTerm {
+  t: string;
+  n: string;
+}
+
+/** One stop on the timeline: its label, the line under it, the state the total
+    shows while it is selected, and what the live region says. */
+export interface PriceStop {
+  day: string;
+  note: string;
+  state: string;
+  say: string;
+}
+
 export interface SelectOption {
   value: string;
   label: string;
@@ -232,13 +253,27 @@ export interface Content {
   };
 
   price: {
+    eyebrow: string;
     title: string;
-    perSeat: string;
-    perSeatNote: string;
-    setup: string;
-    setupNote: string;
-    lines: string[];
+
+    feesTitle: string;
+    fees: [PriceFee, PriceFee];
+
+    freeTitle: string;
+    freeNote: string;
+    termsLabel: string;
+    terms: [PriceTerm, PriceTerm, PriceTerm, PriceTerm];
+
+    whenTitle: string;
+    /** Three stops on the timeline. The last one is the one that strikes the
+        monthly total out and replaces it with nothing. */
+    stops: [PriceStop, PriceStop, PriceStop];
+    total: { term: string; sub: string; figure: string; per: string; zero: string };
+
+    askEyebrow: string;
+    ask: { before: string; link: string; after: string };
     cta: string;
+    ctaNote: string;
   };
 
   form: {
