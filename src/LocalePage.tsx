@@ -77,13 +77,9 @@ export function LocalePage({ locale }: { locale: Locale }) {
           onCta={() => track('booking_click', { placement: 'hero' })}
         />
 
-        <Demo
-          c={c}
-          onPlay={() => {
-            track('video_play');
-            pixelTrack('ViewContent', { content_name: 'demo_video' });
-          }}
-        />
+        {/* Which desk a visitor picks is the strongest signal on the page of
+            what they actually do for a living, so it goes to analytics. */}
+        <Demo c={c} onDeskChange={(desk) => track('demo_desk', { desk })} />
 
         <WhoFor c={c} />
 

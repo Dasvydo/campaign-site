@@ -224,7 +224,7 @@ in `src/components/Header.tsx`.
 
 PostHog, EU host. Eight events, named exactly as the campaign spec fixes them:
 
-`page_view` · `video_play` · `pricing_view` · `form_start` · `form_submit` ·
+`page_view` · `demo_desk` · `pricing_view` · `form_start` · `form_submit` ·
 `qualified_shown` · `too_small_shown` · `booking_click`
 
 Every event carries `market`, `locale`, `utm_source`, `utm_medium`,

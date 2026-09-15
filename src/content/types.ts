@@ -10,6 +10,58 @@
  *   - Do not invent testimonials, named customers or pilots. None exist.
  */
 
+/** The five things a firm knows, and the five switches that turn them off.
+    They are deliberately the same five on every desk: a rule, a date, the file,
+    the figures, and the house voice. That sameness is the argument. */
+export type DemoSource = 'rules' | 'deadline' | 'file' | 'deductions' | 'tone';
+
+export interface DemoSourceCopy {
+  key: DemoSource;
+  label: string;
+  /** "1 line", "2 figures", "the register". */
+  count: string;
+  /** Said aloud when a clause fed by this source is pinned. */
+  name: string;
+  /** What the live region says when it goes off, and when it comes back. */
+  off: string;
+  on: string;
+}
+
+/** One reading of one clause. `circle` is the phrase the pen rings, if any. */
+export interface DemoVariant {
+  text: string;
+  circle?: string;
+  tail?: string;
+}
+
+/** One clause of the draft, in its three readings.
+    `on` is the whole truth, `tone` is the same facts in a stiffer register and
+    is absent where the clause has no separate voice, `off` is what is left when
+    the source is gone. `dep` marks a clause that disappears entirely when
+    another source goes, because it is the tail of that source's sentence.
+    `sep` is the literal text that follows the clause, outside it. */
+export interface DemoClause {
+  key: DemoSource;
+  dep?: DemoSource;
+  on: DemoVariant;
+  tone?: DemoVariant;
+  off: DemoVariant;
+  sep?: string;
+}
+
+/** One desk. Every sender, figure and date on all three is invented, which the
+    slug under the heading says out loud. None of them is a customer. */
+export interface DemoDesk {
+  id: string;
+  tab: string;
+  /** Named in the live region when the desk changes. */
+  deskName: string;
+  letter: { from: string; subject: string; body: string };
+  sources: [DemoSourceCopy, DemoSourceCopy, DemoSourceCopy, DemoSourceCopy, DemoSourceCopy];
+  salutation: DemoClause;
+  clauses: DemoClause[];
+}
+
 export interface NumberRow {
   /** The figure itself, without the hedge and without the unit. */
   amount: string;
@@ -102,12 +154,56 @@ export interface Content {
   };
 
   demo: {
+    eyebrow: string;
     title: string;
-    lead: string;
-    placeholderTitle: string;
-    placeholderBody: string;
-    playLabel: string;
-    caption: string;
+    lede: string;
+    /** Says out loud that the example is canned and the figures invented. */
+    slug: string;
+    noJs: string;
+
+    /** The letter's own two labels. The hero's dealt card uses its own. */
+    fromLabel: string;
+    subjectLabel: string;
+
+    pickLead: string;
+    beatIn: string;
+    beatKnows: string;
+    beatWrote: string;
+    beatNote: string;
+
+    gateNote: string;
+    sendLabel: string;
+    editLabel: string;
+    doneLabel: string;
+    sentStamp: string;
+    draftStamp: string;
+    sentChip: string;
+    dealLabel: string;
+    payoff: string;
+    editNote: string;
+    reLabel: string;
+    close: string;
+    closeBasis: string;
+
+    /** The live region's fixed lines. Everything else it says comes from the
+        desk, because it names that desk's own facts. */
+    say: {
+      allOff: string;
+      restore: string;
+      deal: string;
+      sent: string;
+      edit: string;
+      done: string;
+      /** Prefixed to a source name when a clause is pinned. */
+      source: string;
+      /** "{desk} desk. A different message, the same five sources." */
+      desk: string;
+    };
+
+    restoreLabel: string;
+    allOffNote: string;
+
+    desks: [DemoDesk, DemoDesk, DemoDesk];
   };
 
   numbers: {

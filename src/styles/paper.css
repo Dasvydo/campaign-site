@@ -1407,6 +1407,12 @@
              background-color var(--demo-t-micro) var(--demo-e-out);
 }
 .demo-v.demo-enter{opacity:0}
+/* The prototype faded a swapped clause in by adding a class and taking it off
+   two frames later. React mounts a new element when the reading changes, so the
+   fade is a mount animation instead and needs no second render. It is applied
+   only after the first paint, so the draft does not fade in on arrival. */
+.demo-v.demo-v-in{animation:demo-v-in var(--demo-t-in) var(--demo-e-out) backwards}
+@keyframes demo-v-in{from{opacity:0}to{opacity:1}}
 
 .demo-v.demo-struck{
   background-image:var(--demo-strike);

@@ -12,7 +12,10 @@ import type { Locale, Market, Utm } from './contract';
 /** The eight event names, exactly as the spec lists them. */
 export type EventName =
   | 'page_view'
-  | 'video_play'
+  /* Which of the three desks a visitor picks in the worked example: the
+     strongest signal on the page of what they actually do for a living. It
+     replaces video_play, which keyed on a demo video that never existed. */
+  | 'demo_desk'
   | 'pricing_view'
   | 'form_start'
   | 'form_submit'
