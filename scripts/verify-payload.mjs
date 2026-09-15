@@ -158,14 +158,14 @@ async function main() {
       check(p.blankKeys.length === 0, `    every content key has a value`, p.blankKeys.join(', '));
       check(p.missing.length === 0, `    every expected string reaches the DOM`, p.missing.slice(0, 2).join(' | '));
       check(p.leaked.length === 0, `    no English master copy leaked in`, p.leaked.slice(0, 2).join(' | '));
-      check(p.sectionsFound.length === 7, `    all 7 numbered sections present`, p.sectionsFound.join(','));
+      check(p.sectionsFound.length === 6, `    all 6 numbered sections present`, p.sectionsFound.join(','));
       check(p.htmlLang === (p.locale === 'en' ? 'en' : p.locale), `    html lang is ${p.locale}`, p.htmlLang);
       check(p.title.length > 20 && p.description.length > 60, `    title and description are set`);
-      check(p.canonical.endsWith(p.locale === 'en' ? '.dev/' : `/${p.locale}`), `    canonical points at this locale`, p.canonical);
+      check(p.canonical.endsWith(p.locale === 'en' ? '/' : `/${p.locale}`), `    canonical points at this locale`, p.canonical);
       check(p.hreflangs.length === 4, `    hreflang alternates for all locales plus x-default`, p.hreflangs.join(','));
       check(p.hasSkipLink && p.hasMainLandmark && p.hasFooter, `    skip link, main landmark and footer present`);
-      check(p.videoPlaceholderAspect === '16 / 9', `    demo slot reserves a 16:9 box so nothing shifts`, p.videoPlaceholderAspect);
-      check(p.controlCount === 6, `    the qualifier has exactly 6 controls`, String(p.controlCount));
+      check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
+      check(p.questionCount === 6, `    the qualifier asks exactly 6 questions`, String(p.questionCount));
       check(p.labelledControls, `    every control has a real label element`);
     }
 
@@ -297,7 +297,7 @@ async function main() {
     /* 9. every PostHog event name exists in the source --------------------- */
     console.log('\nPostHog event names');
     const srcFiles = ['src/LocalePage.tsx', 'src/lib/analytics.ts'].map((p) => readFileSync(join(root, p), 'utf8')).join('\n');
-    for (const name of ['page_view', 'video_play', 'pricing_view', 'form_start', 'form_submit', 'qualified_shown', 'too_small_shown', 'booking_click']) {
+    for (const name of ['page_view', 'demo_desk', 'pricing_view', 'form_start', 'form_submit', 'qualified_shown', 'too_small_shown', 'booking_click']) {
       check(srcFiles.includes(`'${name}'`), `${name} is wired`);
     }
   } finally {

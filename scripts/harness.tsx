@@ -44,6 +44,15 @@ function setValue(el: HTMLInputElement | HTMLSelectElement, value: string) {
   el.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
+/** Tick the radio in `name` whose value is `value`, the way a person would. */
+function check(host: HTMLElement, name: string, value: string) {
+  const el = host.querySelector<HTMLInputElement>(
+    `input[type="radio"][name="${name}"][value="${value}"]`,
+  );
+  if (!el) throw new Error(`no radio ${name}=${value} on the form`);
+  el.click();
+}
+
 async function runOne(s: Scenario) {
   const host = document.createElement('div');
   document.body.appendChild(host);
@@ -88,9 +97,13 @@ async function runOne(s: Scenario) {
     setValue(q<HTMLInputElement>('#f-company_name'), 'Vesterled Ejendomsadministration');
     setValue(q<HTMLInputElement>('#f-work_email'), s.email);
     setValue(q<HTMLInputElement>('#f-phone'), '+45 32 14 88 90');
-    setValue(q<HTMLSelectElement>('#f-team_size'), s.team_size);
-    setValue(q<HTMLSelectElement>('#f-email_client'), s.email_client);
-    setValue(q<HTMLSelectElement>('#f-role'), s.role);
+    /* The three closed questions became radio groups when the page was ported
+       from the prototype. The values they send are unchanged, which is the
+       whole point of checking here, so the harness picks the radio by value
+       instead of setting a select's value. */
+    check(host, 'team_size', s.team_size);
+    check(host, 'email_client', s.email_client);
+    check(host, 'role', s.role);
   });
 
   const freeEmailWarningShown = Boolean(host.querySelector('#w-work_email'));
