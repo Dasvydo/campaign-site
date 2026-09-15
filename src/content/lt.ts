@@ -31,15 +31,19 @@ export const lt: Content = {
     clockOut: '08:41',
 
     skip: 'Pereiti prie turinio',
-    dateline: 'Komandų leidimas. Nuo dešimties vietų.',
+    dateline: 'Laiškų juodraščiai komandoms nuo dešimties žmonių.',
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
     tab: 'Pažiūrėkite, ar tinkame',
 
     title: { before: 'Parašyta iš ', mark: 'jūsų pačių bylų', after: '. Išsiųsta jūsų žmonių.' },
-    deck: { before: 'Dabar ', after: '. Laukia keturiasdešimt laiškų. Kiekvienas jau turi juodraštį.' },
+    deck: {
+      before: 'Dabar ',
+      after:
+        '. Laukia keturiasdešimt laiškų. Kiekvienas jau turi atsakymo juodraštį, parašytą iš Jūsų pačių bylų.',
+    },
 
     cta: 'Pažiūrėkite, ar tinkame',
-    ctaNote: 'Nuo 890 USD per mėnesį. Pirmos dvi savaitės nemokamai.',
+    ctaNote: 'Nuo 890 USD per mėnesį dešimčiai vietų. Pirmos dvi savaitės nemokamai.',
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
@@ -87,9 +91,9 @@ export const lt: Content = {
     sentStamp: 'Išsiųsta',
     draftStamp: 'Juodraštis',
     sentChip: 'Išsiuntėte Jūs, 08:41',
-    dealLabel: 'Paduoti kitą laišką',
-    payoff: 'Iš šio biuro niekas neišėjo, kol nepaspaudėte. Tai vienintelis kelias laukan.',
-    editNote: 'Jūs jį pakeitėte. Būtent taip atrodo pirma savaitė.',
+    dealLabel: 'Kitas laiškas',
+    payoff: 'Iš šio biuro niekas neišėjo, kol nepaspaudėte siųsti. Kito kelio laukan nėra.',
+    editNote: 'Jūs jį pakeitėte prieš išsiunčiant. Būtent taip atrodo pirma savaitė.',
     reLabel: 'Dėl',
     close: 'Jūs perskaitote. Jūs išsiunčiate. Niekas nepraleido devynių minučių jį rašydamas.',
     closeBasis: 'Devynios minutės yra mūsų prielaida, kiek trunka parašyti vieną nuo nulio, o ne matavimas.',
@@ -104,7 +108,7 @@ export const lt: Content = {
       desk: ' stalas. Kitas laiškas, tie patys penki šaltiniai.',
     },
     restoreLabel: 'Grąžinti viską',
-    allOffNote: 'Tai, ką turi bet kuris įrankis be Jūsų bylų.',
+    allOffNote: 'Taip rašo bet kuris kitas įrankis, neturėdamas Jūsų bylų.',
     desks: [
       {
         id: 'property',
@@ -151,7 +155,7 @@ export const lt: Content = {
           {
             key: 'tone',
             label: 'biuro rašymo maniera',
-            count: 'registras',
+            count: 'tonas',
             name: 'biuro rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
             on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
@@ -242,7 +246,7 @@ export const lt: Content = {
           {
             key: 'tone',
             label: 'biuro rašymo maniera',
-            count: 'registras',
+            count: 'tonas',
             name: 'biuro rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
             on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
@@ -333,7 +337,7 @@ export const lt: Content = {
           {
             key: 'tone',
             label: 'biuro rašymo maniera',
-            count: 'registras',
+            count: 'tonas',
             name: 'biuro rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
             on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
@@ -387,15 +391,18 @@ export const lt: Content = {
     title: 'Kiek tai verta',
     about: 'apie\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'grąža nuo vienos vietos kainos' },
-      { amount: '400', unit: '\u00a0EUR', label: 'sutaupoma per mėnesį vienai vietai' },
+      { amount: '5', unit: 'x', label: 'sutaupyto laiko, palyginti su vienos vietos kaina' },
+      { amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienai vietai' },
       { amount: '40', unit: '\u00a0dienų', label: 'kol atsiperka įdiegimas ir pirmas mėnuo' },
     ],
     lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
     moreLabel: 'Parodyti skaičiavimą',
     basis: [
       { term: 'apie 5x', def: 'Numanomas sutaupytas laikas, palyginti su vietos kaina.' },
-      { term: 'apie 400 EUR', def: 'Numanomos sutaupytos valandos, esant vidutiniam atlyginimui.' },
+      {
+        term: 'apie 430 USD',
+        def: 'Numanomos sutaupytos valandos esant vidutiniam atlyginimui, perskaičiuota iš eurų.',
+      },
       {
         term: 'apie 40 dienų',
         def: '500 USD įdiegimo mokestis ir pirmas vietų mėnuo, palyginti su aukščiau nurodytu sutaupymu.',
@@ -413,7 +420,7 @@ export const lt: Content = {
     groups: [
       { tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
       { tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
-      { tab: 'Administravimo įmonėms', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
+      { tab: 'Nekilnojamojo turto administratoriams', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
     ],
     notes: {
       seats: {
@@ -437,7 +444,7 @@ export const lt: Content = {
 
     feesTitle: 'Kainos',
     fees: [
-      { term: 'Už vietą', figure: '89 USD', per: 'per mėnesį', note: 'Mažiausiai 10 vietų.' },
+      { term: 'Už vietą', figure: '89 USD', per: 'per mėnesį', note: 'Viena vieta yra vienas žmogus. Mažiausiai dešimt.' },
       { term: 'Įdiegimas', figure: '500 USD', per: 'vieną kartą', note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.' },
     ],
 

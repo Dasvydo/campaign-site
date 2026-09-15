@@ -31,15 +31,19 @@ export const da: Content = {
     clockOut: '08:41',
 
     skip: 'Spring til indholdet',
-    dateline: 'Teams-udgaven. Ti pladser og opefter.',
+    dateline: 'Mailudkast til teams på ti og opefter.',
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
     tab: 'Se om vi passer sammen',
 
     title: { before: 'Skrevet ud fra ', mark: 'jeres egne sager', after: '. Sendt af jeres folk.' },
-    deck: { before: 'Klokken er ', after: '. Fyrre mails venter. De har alle sammen allerede et udkast.' },
+    deck: {
+      before: 'Klokken er ',
+      after:
+        '. Fyrre mails venter. De har alle sammen allerede et svar i udkast, skrevet ud fra jeres egne sager.',
+    },
 
     cta: 'Se om vi passer sammen',
-    ctaNote: 'Fra 890 USD om måneden. De første to uger er gratis.',
+    ctaNote: 'Fra 890 USD om måneden for ti pladser. De første to uger er gratis.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {
@@ -87,9 +91,9 @@ export const da: Content = {
     sentStamp: 'Sendt',
     draftStamp: 'Udkast',
     sentChip: 'Sendt af dig, 08:41',
-    dealLabel: 'Giv næste brev',
-    payoff: 'Intet forlod kontoret, før du trykkede der. Det er den eneste vej ud.',
-    editNote: 'Du rettede det. Sådan ser den første uge ud.',
+    dealLabel: 'Næste brev',
+    payoff: 'Intet forlod kontoret, før du trykkede send. Der er ingen anden vej ud.',
+    editNote: 'Du rettede det, før det blev sendt. Sådan ser den første uge ud.',
     reLabel: 'Vedr',
     close: 'Du læser det. Du sender det. Ingen brugte ni minutter på at skrive det.',
     closeBasis: 'De ni minutter er vores antagelse om at skrive et fra bunden, ikke en måling.',
@@ -104,7 +108,7 @@ export const da: Content = {
       desk: '-skrivebordet. En anden mail, de samme fem kilder.',
     },
     restoreLabel: 'Sæt det hele tilbage',
-    allOffNote: 'Det, ethvert værktøj har uden jeres sager.',
+    allOffNote: 'Sådan skriver ethvert andet værktøj, uden jeres sager.',
     desks: [
       {
         id: 'property',
@@ -387,15 +391,18 @@ export const da: Content = {
     title: 'Hvad det er værd',
     about: 'cirka\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'i afkast af prisen per plads' },
-      { amount: '400', unit: '\u00a0EUR', label: 'sparet om måneden, per plads' },
+      { amount: '5', unit: 'x', label: 'sparet tid, holdt op mod prisen per plads' },
+      { amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, per plads' },
       { amount: '40', unit: '\u00a0dage', label: 'til at tjene opsætning og første måned hjem' },
     ],
     lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
     moreLabel: 'Vis regnestykket',
     basis: [
       { term: 'cirka 5x', def: 'Antaget sparet tid, holdt op mod prisen per plads.' },
-      { term: 'cirka 400 EUR', def: 'Antaget sparede timer, ved en mellemlønning.' },
+      {
+        term: 'cirka 430 USD',
+        def: 'Antagne sparede timer ved en mellemlønning, omregnet fra euro.',
+      },
       {
         term: 'cirka 40 dage',
         def: 'Opsætningen på 500 USD og første måneds pladser, holdt op mod besparelsen ovenfor.',
@@ -413,7 +420,7 @@ export const da: Content = {
     groups: [
       { tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
       { tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
-      { tab: 'Administrationsfirmaer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
+      { tab: 'Ejendomsadministratorer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
     ],
     notes: {
       seats: {
@@ -437,7 +444,7 @@ export const da: Content = {
 
     feesTitle: 'Priserne',
     fees: [
-      { term: 'Per plads', figure: '89 USD', per: 'om måneden', note: 'Mindst 10 pladser.' },
+      { term: 'Per plads', figure: '89 USD', per: 'om måneden', note: 'En plads er en person. Ti er minimum.' },
       { term: 'Opsætning', figure: '500 USD', per: 'én gang', note: 'En workshop på jeres egen rigtige post.' },
     ],
 

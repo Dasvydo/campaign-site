@@ -28,15 +28,19 @@ export const en: Content = {
     clockOut: '08:41',
 
     skip: 'Skip to content',
-    dateline: 'Teams edition. Ten seats and up.',
+    dateline: 'Email drafting for teams of ten and up.',
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
     tab: 'Check if we are a fit',
 
     title: { before: 'Written from ', mark: 'your files', after: '. Sent by your people.' },
-    deck: { before: 'It is ', after: '. Forty messages are waiting. Every one already has a draft.' },
+    deck: {
+      before: 'It is ',
+      after:
+        '. Forty emails are waiting. Every one already has a reply, drafted from your own files.',
+    },
 
     cta: 'Check if we are a fit',
-    ctaNote: 'From 890 USD a month. First two weeks free.',
+    ctaNote: 'From 890 USD a month for ten seats. First two weeks free.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {
@@ -84,9 +88,9 @@ export const en: Content = {
     sentStamp: 'Sent',
     draftStamp: 'Draft',
     sentChip: 'Sent by you, 08:41',
-    dealLabel: 'Deal the next letter',
-    payoff: 'Nothing left this office until you pressed that. It is the only way out.',
-    editNote: 'You changed it. That is what the first week looks like.',
+    dealLabel: 'Next letter',
+    payoff: 'Nothing left this office until you pressed send. There is no other way out.',
+    editNote: 'You changed it before it went out. That is what the first week looks like.',
     reLabel: 'Re',
     close: 'You read it. You send it. Nobody spent nine minutes writing it out.',
     closeBasis: 'Nine minutes is our assumption for writing one from scratch, not a measurement.',
@@ -101,7 +105,7 @@ export const en: Content = {
       desk: ' desk. A different message, the same five sources.',
     },
     restoreLabel: 'Put it all back',
-    allOffNote: 'What any tool has without your files.',
+    allOffNote: 'This is what any other tool writes, with none of your files.',
     desks: [
       {
         id: 'property',
@@ -148,7 +152,7 @@ export const en: Content = {
           {
             key: 'tone',
             label: 'the way the office writes',
-            count: 'the register',
+            count: 'the tone',
             name: 'the way the office writes',
             off: 'House tone off. Same facts, stiffer wording.',
             on: 'House tone on. The draft reads in the office voice again.',
@@ -239,7 +243,7 @@ export const en: Content = {
           {
             key: 'tone',
             label: 'the way the office writes',
-            count: 'the register',
+            count: 'the tone',
             name: 'the way the office writes',
             off: 'House tone off. Same facts, stiffer wording.',
             on: 'House tone on. The draft reads in the office voice again.',
@@ -330,7 +334,7 @@ export const en: Content = {
           {
             key: 'tone',
             label: 'the way the office writes',
-            count: 'the register',
+            count: 'the tone',
             name: 'the way the office writes',
             off: 'House tone off. Same facts, stiffer wording.',
             on: 'House tone on. The draft reads in the office voice again.',
@@ -384,15 +388,18 @@ export const en: Content = {
     title: 'What it is worth',
     about: 'about\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'return on the seat cost' },
-      { amount: '400', unit: '\u00a0EUR', label: 'saved per month, per seat' },
+      { amount: '5', unit: 'x', label: 'time saved, against what a seat costs' },
+      { amount: '430', unit: '\u00a0USD', label: 'saved per month, for each seat' },
       { amount: '40', unit: '\u00a0days', label: 'to pay back setup and the first month' },
     ],
     lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
     moreLabel: 'Show the arithmetic',
     basis: [
       { term: 'about 5x', def: 'Assumed time saved, against the seat cost.' },
-      { term: 'about 400 EUR', def: 'Assumed hours saved, at a mid level salary.' },
+      {
+        term: 'about 430 USD',
+        def: 'Assumed hours saved at a mid level salary, converted from euros.',
+      },
       {
         term: 'about 40 days',
         def: 'The 500 USD setup fee and the first month of seats, against the saving above.',
@@ -410,7 +417,7 @@ export const en: Content = {
     groups: [
       { tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
       { tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
-      { tab: 'Administrative firms', line: 'Tenant mail, deposits and maintenance. All year.' },
+      { tab: 'Property managers', line: 'Tenant mail, deposits and maintenance. All year.' },
     ],
     notes: {
       seats: {
@@ -434,7 +441,7 @@ export const en: Content = {
 
     feesTitle: 'The fees',
     fees: [
-      { term: 'Per seat', figure: '89 USD', per: 'per month', note: 'Minimum 10 seats.' },
+      { term: 'Per seat', figure: '89 USD', per: 'per month', note: 'One seat is one person. Ten is the minimum.' },
       { term: 'Setup', figure: '500 USD', per: 'once', note: 'A workshop on your team’s own real mail.' },
     ],
 
