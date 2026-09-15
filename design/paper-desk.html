@@ -623,6 +623,61 @@ a{color:inherit}
   .hero-tally{display:none}
 }
 
+/* ------------------------------------------------------------
+   THE PHONE HERO, composed rather than reflowed.
+
+   A phone gives the hero about 844px and room for one picture.
+   The ghost "40" and the pile of forty letters are the same
+   idea twice, and the numeral is the weaker half: it is
+   decoration, its tally lost its place beside it below 400px,
+   and the word "Forty" is already in the deck two lines under
+   it. Worse, stacking it above the copy put it directly over
+   the folio, so the screen opened on "40" and then "01", two
+   numbers in a column meaning nothing to each other.
+
+   So on a phone the numeral goes and the tally stays: eight
+   groups of five, in the same amber pen that draws every other
+   mark on the page, one band 26px tall instead of a block 160px
+   tall. The 134px that buys is what carries the dealt example
+   card, the concrete thing and the hook into the worked
+   example, up onto the first screen.
+   ------------------------------------------------------------ */
+@media (max-width:719px){
+  .hero-numeral{display:none}
+  .hero-tally{
+    display:block;
+    width:min(268px,74%);
+    margin:0 0 4px;
+  }
+  .hero-count{
+    order:-1;
+    margin:0 0 18px;
+    display:block;
+  }
+
+  /* the desktop rhythm is 48px between bands, which is right for a page read
+     at arm's length and too airy on a screen the size of a hand. The phone
+     reads at half that, and the 64px it saves is the rest of what puts the
+     example card on the first screen. The masthead nav stays: a price sensitive
+     reader jumping straight to what it costs is worth more than the last
+     twenty pixels of a picture. */
+  .hero-grid{padding-block:20px 24px}
+  .hero-folio{margin-bottom:14px}
+  .hero-deck{margin-top:22px}
+  .hero-act{margin-top:32px}
+  .hero-pile{margin-top:clamp(26px,5vw,34px)}
+}
+
+/* The masthead tab, the hero button and the standing price bar are the same
+   six words. On a wide screen only the first two exist and they are far apart.
+   On a phone all three are in play, the hero's own button is on the first
+   screen, and the standing bar takes over the moment it scrolls away, so the
+   tab is a duplicate rather than a safety net. It stays in landscape, which is
+   the one case where the standing bar is suppressed. */
+@media (max-width:719px) and (min-height:421px){
+  .hero-tab{display:none}
+}
+
 @media (prefers-reduced-motion:reduce){
   .hero-hl{
     animation:none;

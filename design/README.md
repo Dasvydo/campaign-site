@@ -31,6 +31,8 @@ Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8c
    visible words.
 7. The closing call to action became a full width door with its risk reversal
    attached, and the page gained a scroll rail. 728 visible words.
+8. The phone hero was composed on its own terms rather than reflowed from the
+   desktop one.
 
 ## Decisions that are settled, and why
 
@@ -87,6 +89,31 @@ Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8c
   because several sections set `overflow-x:clip` and a clip context captures
   fixed descendants.
 
+- **The phone hero is composed, not reflowed.** A phone gives the hero about
+  844px and room for one picture. The ghost "40" and the pile of forty letters
+  were the same idea twice, and stacking the numeral above the copy put it
+  directly over the folio, so the screen opened on "40" and then "01", two
+  numbers in a column meaning nothing to each other. Below 720px the numeral
+  goes and the tally stays: eight groups of five in the same amber pen that
+  draws every other mark on the page, one band 28px tall instead of a block
+  160px tall. The vertical rhythm drops from the desktop's 48px to about half
+  that, which is right for a screen read at hand's length. Together that is
+  roughly 130px, and it is what carries the dealt example card, the concrete
+  thing and the hook into the worked example, up onto the first screen: at
+  414px the whole card; at 390px everything down to the subject line.
+
+  The masthead tab goes too, at any phone height tall enough for the standing
+  price bar. The tab, the hero button and the bar are the same six words; on a
+  wide screen only the first two exist and they are far apart, but on a phone
+  the hero's own button is on the first screen and the bar takes over the
+  moment it scrolls away, so the tab was a duplicate rather than a safety net.
+  It stays in landscape, the one case where the bar is suppressed.
+
+  A side effect worth having: **at 719px and below the page has zero axe
+  violations.** The one known exception below is now a wide-screen exception
+  only, where the numeral sits beside the tally that explains it rather than
+  orphaned above the copy.
+
 - **Payback is "about 40 days"**, matching `src/content/en.ts`. The generated
   page had drifted to "about 10 days", which is the ten-seat reading and makes
   the claim four times stronger. Restored to the conservative figure. Dovy has
@@ -94,8 +121,9 @@ Live prototype: https://claude.ai/code/artifact/0e625003-48cb-46a9-aeda-61518d8c
 
 ## Known, deliberate exception
 
-`gates.mjs` reports **1 axe color-contrast violation**: the decorative ghost
-numeral, the large "40" behind the hero pile. `#DDCFC6` on cream is 1.36:1
+`gates.mjs` reports **1 axe color-contrast violation at 720px and wider, and
+none below that**: the decorative ghost numeral, the large "40" behind the hero
+pile, which the phone layout does not use at all. `#DDCFC6` on cream is 1.36:1
 against a 3:1 requirement. It is inside `aria-hidden="true"` and the count it
 whispers is stated in words in the deck beside it, so nothing is lost to a
 screen reader. (There used to be four. The other three were 01/02/03 behind the
@@ -146,7 +174,10 @@ three-desk version is marginally faster on frames and level on TBT. Anyone
 adopting these as CI gates should re-baseline on the CI runner rather than
 trusting the numbers in this table.
 
-Also verified in Chromium, not asserted: the rail reads 0 at the top and 1.0000
+Also verified in Chromium, not asserted: axe is clean at 390 and at 719 and
+reports the single known numeral violation from 720 up; the masthead tab
+survives in landscape, where the standing bar is suppressed, and the desktop
+composition returns intact at 760; the rail reads 0 at the top and 1.0000
 at the foot, stays pinned at y=0 over the clipped price section, and remeasures
 when a disclosure changes the page height; the closing call to action clears the
 standing price bar at 390px; changing desk swaps the message, the
