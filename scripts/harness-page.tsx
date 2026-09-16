@@ -12,12 +12,22 @@
  * checked against what `comparison()` says it should hold. This file does the
  * measuring and the deriving; verify-payload.mjs does the asserting, because
  * only this side can import the offer.
+ *
+ * The ledger in the numbers section is measured the same way, and for a worse
+ * reason: it is the one section that has already shipped with its figures
+ * missing. Two of its three rows are arithmetic on the offer and the third is
+ * the assumption the other two are computed from, so the numerals are read back
+ * out of the DOM and set against what `modelledMultiple` and
+ * `modelledPaybackDays` return. Nothing about the ledger is asserted from the
+ * words beside it, because the words were all still correct on the day the
+ * figures went blank.
  */
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { LocalePage } from '../src/LocalePage';
 import { content, pathFor } from '../src/content';
+import { TEAM_SIZES, route } from '../src/lib/contract';
 import type { Locale } from '../src/lib/contract';
 import {
   OFFER,
@@ -25,6 +35,8 @@ import {
   belowTeamCeiling,
   comparison,
   isCapped,
+  modelledMultiple,
+  modelledPaybackDays,
   remainingSpots,
   setupDue,
   teamCeilingMonthly,
@@ -85,6 +97,38 @@ const figure = (value: number): string => usd(value);
 /** The head count out of a size cell, "People: 15" and its two translations. */
 const sizeOf = (el: Element | null): number =>
   Number((el?.textContent ?? '').replace(/\D+/g, ''));
+
+/* The firm the ledger models, in people.
+
+   <Numbers /> holds this as MODEL_FIRM and does not export it, so it is
+   restated here rather than imported. It is not a price and it is not a figure
+   the page prints: it is the smallest firm this is sold to, which is the count
+   the qualifier's first qualifying band opens at. Everything derived from it
+   below still comes out of src/lib/offer.ts, and `smallestSoldTo` ties the
+   restated constant to the contract so the two cannot drift apart in silence,
+   which is the only way a mirrored constant is safe to keep. */
+const MODEL_FIRM = 10;
+
+/* The smallest head count the qualifier will take a lead from, read off the
+   contract rather than written down: the first band in TEAM_SIZES that routes
+   to anything other than too_small, taken at its lower bound. */
+const smallestSoldTo = (): number => {
+  for (const size of TEAM_SIZES) {
+    if (route(size, 'outlook').outcome !== 'too_small') return Number(size.replace(/\D.*$/, ''));
+  }
+  return 0;
+};
+
+/* The window the day unit beside the payback can carry.
+
+   src/content/types.ts records that the form shipped in all three locales is
+   the plural that reads correctly from two to nine, and modelledPaybackDays
+   repeats the warning for whoever next moves a price. A payback of one, or of
+   ten and above, is not a new numeral beside the same word: it is a line that
+   wants rewriting in three languages, and a suite that let it through would be
+   trading a visible failure here for wrong Danish on a public page. */
+const PAYBACK_UNIT_MIN = 2;
+const PAYBACK_UNIT_MAX = 9;
 
 (globalThis as unknown as { __RUN_PAGE__: () => Promise<void> }).__RUN_PAGE__ = async () => {
   const results: Array<Record<string, unknown>> = [];
@@ -230,6 +274,68 @@ const sizeOf = (el: Element | null): number =>
         : []),
     ];
     const unassembled = assembled.filter(([, s]) => !text.includes(s)).map(([label]) => label);
+
+    /* The ledger, read back out of the DOM rather than trusted.
+
+       This is the section that already shipped blank. When the content contract
+       moved the multiple and the payback off written amounts, the component
+       went on printing the amount that was no longer there, and the page read
+       "about  x" and "about  days" in all three locales for two commits. Every
+       suite passed throughout, because the labels were still on the page and a
+       label is a word.
+
+       So the numerals are measured here, one row at a time. The saving is read
+       back out of the copy exactly the way <Numbers /> reads it, because it is
+       the assumption the other two figures are computed from rather than a
+       price of ours, and the two computed figures are asked of the offer's own
+       helpers instead of being worked out again in this file. Redoing the
+       arithmetic here would produce a check that agrees with a wrong
+       implementation, which is the circular test the offer guard already had to
+       be rescued from. */
+    const saving = Number.parseFloat(
+      c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
+    );
+    const wantMultiple = modelledMultiple(saving, MODEL_FIRM, tier);
+    const wantPayback = modelledPaybackDays(saving, MODEL_FIRM, tier);
+    const wantFigure = (key: string, amount?: string): string => {
+      if (key === 'multiple') return wantMultiple === null ? '' : String(wantMultiple);
+      if (key === 'payback') return wantPayback === null ? '' : String(wantPayback);
+      return amount ?? '';
+    };
+
+    const ledger = Array.from(host.querySelectorAll('#numbers .numbers-slip')).map((li, i) => {
+      const row = c.numbers.rows[i];
+      const want = row ? wantFigure(row.key, row.amount).trim() : '';
+      return {
+        key: row ? row.key : `row ${i + 1}`,
+        amount: (li.querySelector('.numbers-amt')?.textContent ?? '').trim(),
+        unit: (li.querySelector('.numbers-unit')?.textContent ?? '').trim(),
+        /* The whole hedged line as one string, so a figure that reaches the
+           page but lands outside the sentence it belongs to still fails. */
+        line: li.querySelector('.numbers-fig')?.textContent ?? '',
+        want,
+        wantLine: row ? c.numbers.about + want + row.unit : '',
+      };
+    });
+
+    /* The failure that shipped, kept as a check of its own. It cannot be folded
+       into the comparison below, because a saving that stops parsing takes the
+       expectation blank at the same moment it takes the page blank, and a check
+       that only compared the two would pass on exactly the regression it exists
+       to catch. */
+    const ledgerBlank = ledger.filter((r) => r.amount === '').map((r) => r.key);
+    const ledgerBad = ledger
+      .filter((r) => r.amount !== '' && (r.amount !== r.want || r.line !== r.wantLine))
+      .map((r) => `${r.key}: "${r.line}", offer says "${r.wantLine}"`);
+
+    /* The payback as the page printed it rather than as the helper computed it,
+       because the unit string is sitting beside the printed one. */
+    const paybackRow = ledger.find((r) => r.key === 'payback');
+    const paybackOnPage = Number(paybackRow?.amount ?? '');
+    const paybackInUnitRange =
+      Number.isInteger(paybackOnPage) &&
+      paybackOnPage >= PAYBACK_UNIT_MIN &&
+      paybackOnPage <= PAYBACK_UNIT_MAX;
 
     /* The comparison table, read back out of the DOM rather than trusted. Each
        of our rows carries the head count it is arguing about, so the arithmetic
@@ -403,6 +509,27 @@ const sizeOf = (el: Element | null): number =>
       blankKeys,
       missing,
       unassembled,
+      /* The ledger: three rows, three figures, and the window the unit beside
+         the last of them can carry. */
+      ledgerRowCount: ledger.length,
+      ledgerRowsInContent: c.numbers.rows.length,
+      modelFirm: MODEL_FIRM,
+      smallestSoldTo: smallestSoldTo(),
+      modelFirmMatchesContract: MODEL_FIRM === smallestSoldTo(),
+      ledgerSaving: Number.isFinite(saving)
+        ? String(saving)
+        : `"${c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? ''}" does not parse to a figure`,
+      ledgerSavingIsNumeric: Number.isFinite(saving) && saving > 0,
+      ledgerModelled: wantMultiple !== null && wantPayback !== null,
+      wantMultiple,
+      wantPayback,
+      ledgerBlank,
+      ledgerBad,
+      paybackOnPage: paybackRow?.amount ?? '',
+      paybackUnit: paybackRow?.unit ?? '',
+      paybackInUnitRange,
+      paybackMin: PAYBACK_UNIT_MIN,
+      paybackMax: PAYBACK_UNIT_MAX,
       ourRowCount: ourRows.length,
       refRowCount: host.querySelectorAll('#compare .cmp-row-ref').length,
       badRows,
