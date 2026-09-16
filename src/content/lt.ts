@@ -23,7 +23,7 @@ export const lt: Content = {
     skipToContent: 'Pereiti prie turinio',
     localeLabel: 'Kalba',
     localeNames: { en: 'English', da: 'Dansk', lt: 'Lietuvių' },
-    cta: 'Užsisakykite pokalbį',
+    cta: 'Pažiūrėkite, ar tinkame',
   },
 
   hero: {
@@ -33,7 +33,6 @@ export const lt: Content = {
     skip: 'Pereiti prie turinio',
     dateline: 'Laiškų juodraščiai komandoms nuo dešimties žmonių.',
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
-    tab: 'Pažiūrėkite, ar tinkame',
 
     title: {
       before: 'Keturiasdešimt laiškų. ',
@@ -43,7 +42,6 @@ export const lt: Content = {
     },
     deck: 'Parašyta iš Jūsų pačių bylų, Jūsų pačių žodžiais. Jūsų žmonės juos perskaito ir išsiunčia.',
 
-    cta: 'Pažiūrėkite, ar tinkame. Taip arba ne.',
     ctaNote: 'Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
@@ -58,7 +56,6 @@ export const lt: Content = {
 
     bar: {
       text: 'Pirmos dvi savaitės nemokamos.',
-      cta: 'Patikrinkite, ar tinkame',
     },
 
     message: {
@@ -551,7 +548,6 @@ export const lt: Content = {
       link: 'doviloop.dev',
       after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
     },
-    cta: 'Pažiūrėkite, ar tinkame',
     ctaNote: 'Dvi savaitės nemokamai. Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
   },
 

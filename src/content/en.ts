@@ -20,7 +20,7 @@ export const en: Content = {
     skipToContent: 'Skip to the main content',
     localeLabel: 'Language',
     localeNames: { en: 'English', da: 'Dansk', lt: 'Lietuvių' },
-    cta: 'Book a call',
+    cta: 'Check if we are a fit',
   },
 
   hero: {
@@ -30,7 +30,6 @@ export const en: Content = {
     skip: 'Skip to content',
     dateline: 'Email drafting for teams of ten and up.',
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
-    tab: 'Check if we are a fit',
 
     title: {
       before: 'Forty emails in. ',
@@ -40,7 +39,6 @@ export const en: Content = {
     },
     deck: 'Drafted from your own files, in your own wording. Your people read them and send.',
 
-    cta: 'Check the fit. Get a yes or no.',
     ctaNote: 'The first two weeks are free. No card, and nothing taken.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
@@ -55,7 +53,6 @@ export const en: Content = {
 
     bar: {
       text: 'The first two weeks are free.',
-      cta: 'Check the fit',
     },
 
     message: {
@@ -546,7 +543,6 @@ export const en: Content = {
       link: 'doviloop.dev',
       after: ' does the same drafting and costs a great deal less.',
     },
-    cta: 'Check if we are a fit',
     ctaNote: 'Two weeks free. Say no at the review call and nothing is invoiced.',
   },
 

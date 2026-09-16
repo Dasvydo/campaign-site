@@ -555,7 +555,7 @@ export function Price({
               {c.price.ask.after}
             </p>
             <a className="price-cta" href="#fit" onClick={onCta}>
-              {c.price.cta}
+              {c.nav.cta}
             </a>
             <p className="price-cta-note">{c.price.ctaNote}</p>
           </div>

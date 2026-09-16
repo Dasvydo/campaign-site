@@ -248,7 +248,7 @@ export function Hero({
           </nav>
 
           <a className="hero-tab" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
-            {c.hero.tab}
+            {c.nav.cta}
           </a>
         </header>
 
@@ -282,7 +282,7 @@ export function Hero({
 
           <div className="hero-act">
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
-              {c.hero.cta}
+              {c.nav.cta}
             </a>
             <p className="hero-note">{c.hero.ctaNote}</p>
           </div>
@@ -351,7 +351,7 @@ export function Hero({
       <div className="hero-bar" ref={barRef}>
         <p>{c.hero.bar.text}</p>
         <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
-          {c.hero.bar.cta}
+          {c.nav.cta}
         </a>
       </div>
     </section>

@@ -231,6 +231,27 @@ async function main() {
         `    the timeline offers three stops`,
         `${p.stopCount} rendered, ${p.stopsInContent} in the content file`,
       );
+      /* One ask, one set of words for it. Four separate keys had drifted into
+         four different promises, and the drift was invisible because nothing
+         compared them. Counting distinct labels is what makes it visible: the
+         count is 1 or the check names every wording it found. */
+      {
+        const distinct = [...new Set(p.fitCtaLabels)];
+        check(
+          p.fitCtaLabels.length >= 3 &&
+            distinct.length === 1 &&
+            distinct[0] === p.fitCtaInContent,
+          `    every control pointing at the fit check says the same thing`,
+          `${p.fitCtaLabels.length} control(s), ${distinct.length} wording(s): ${distinct
+            .map((d) => JSON.stringify(d))
+            .join(' | ')}; content says ${JSON.stringify(p.fitCtaInContent)}`,
+        );
+        check(
+          p.fitNavLinks === 1,
+          `    the masthead still lists the fit check, and is not held to the button wording`,
+          `${p.fitNavLinks} masthead link(s) to #fit`,
+        );
+      }
       /* The counter is the thing that makes the founding places a fact rather
          than a countdown, so it has to be on the page wherever the tier still
          has places to count, and gone where it does not. */

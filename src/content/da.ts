@@ -23,7 +23,7 @@ export const da: Content = {
     skipToContent: 'Spring til indholdet',
     localeLabel: 'Sprog',
     localeNames: { en: 'English', da: 'Dansk', lt: 'Lietuvių' },
-    cta: 'Book et møde',
+    cta: 'Se om vi passer sammen',
   },
 
   hero: {
@@ -33,7 +33,6 @@ export const da: Content = {
     skip: 'Spring til indholdet',
     dateline: 'Mailudkast til teams på ti og opefter.',
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
-    tab: 'Se om vi passer sammen',
 
     title: {
       before: 'Fyrre mails ind. ',
@@ -43,7 +42,6 @@ export const da: Content = {
     },
     deck: 'Skrevet ud fra jeres egne sager, i jeres egne ord. Jeres folk læser dem igennem og sender.',
 
-    cta: 'Se om det passer. Få et ja eller nej.',
     ctaNote: 'De første to uger er gratis. Intet kort, og ingen betaling.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
@@ -58,7 +56,6 @@ export const da: Content = {
 
     bar: {
       text: 'De første to uger er gratis.',
-      cta: 'Se om det passer',
     },
 
     message: {
@@ -552,7 +549,6 @@ export const da: Content = {
       link: 'doviloop.dev',
       after: ' det samme arbejde og koster væsentligt mindre.',
     },
-    cta: 'Se om vi passer sammen',
     ctaNote: 'To uger gratis. Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
   },
 

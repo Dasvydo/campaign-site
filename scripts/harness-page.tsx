@@ -277,7 +277,7 @@ const smallestSoldTo = (): number => {
        further down, assembled, because half a sentence proves nothing now that
        the other half comes from the offer. */
     const mustAppear = [
-      c.hero.title.mark, c.hero.deck, c.hero.cta, c.hero.dateline,
+      c.hero.title.mark, c.hero.deck, c.nav.cta, c.hero.dateline,
       c.hero.deal.subject,
       c.demo.title, c.demo.lede, c.demo.pickLead, c.demo.close,
       ...c.demo.desks.map((d) => d.tab),
@@ -301,7 +301,7 @@ const smallestSoldTo = (): number => {
       /* Only the selected stop's state line is on the page at rest. */
       c.price.stops[0].state,
       c.price.total.term, c.price.total.per,
-      c.price.askEyebrow, c.price.cta, c.price.ctaNote,
+      c.price.askEyebrow, c.price.ctaNote,
       /* The founding block on a capped tier, or the one line that replaces the
          whole trade once the capped tiers are spent. Never both. */
       ...(capped
@@ -679,7 +679,7 @@ const smallestSoldTo = (): number => {
        and the filter drops anything the target locale happens to share. */
     const en = content.en;
     const englishOnly = [
-      en.hero.title.mark, en.hero.cta, en.demo.title, en.demo.pickLead,
+      en.hero.title.mark, en.nav.cta, en.demo.title, en.demo.pickLead,
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
       en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.claimsTitle,
@@ -721,6 +721,25 @@ const smallestSoldTo = (): number => {
          the monthly total out, which is the risk reversal made visible. */
       stopCount: host.querySelectorAll('#price [data-price-stop]').length,
       stopsInContent: c.price.stops.length,
+      /* The page asks for exactly one thing, so it has to ask for it in one
+         set of words. These four controls, the folder tab, the hero button,
+         the standing bar and the button under the price, all point at #fit and
+         all used to carry their own wording. One of the four said a call was
+         being booked, which is not what happens: six questions happen. They
+         now read a single key, and this is the check that keeps them there.
+         A literal typed back into any one component shows up here as a second
+         distinct label rather than as nothing at all. */
+      fitCtaLabels: Array.from(
+        host.querySelectorAll('a[href="#fit"]:not(.hero-nav a)'),
+      ).map((a) => (a.textContent ?? '').trim()),
+      /* The masthead's own section link also points at #fit and is excluded
+         above. It is a table of contents entry sitting between "Example" and
+         "What it costs", not an ask, and holding it to the button wording
+         would put a sentence in a list of one-word labels. Counted here so
+         that the exclusion is a measurement rather than an assumption: if the
+         masthead ever stops carrying it, this reads 0 and says so. */
+      fitNavLinks: host.querySelectorAll('.hero-nav a[href="#fit"]').length,
+      fitCtaInContent: c.nav.cta,
       /* The founding trade, and the counter that makes it a fact rather than a
          countdown. Rendered only where the tier has places to count. */
       tierOnShow: tier.id,

@@ -315,6 +315,15 @@ export interface Content {
     skipToContent: string;
     localeLabel: string;
     localeNames: { en: string; da: string; lt: string };
+    /** The one call to action, for the one thing this page asks anyone to do.
+        Every control that points at #fit reads this key: the folder tab, the
+        hero button, the standing bar on phones and the button under the price.
+        It used to be four keys, and they had drifted into four different
+        promises, one of which said a call was being booked when what happens
+        is six questions. The page harness holds every #fit control to one
+        label, so a literal typed back into a component fails the build rather
+        than quietly making it five. Changing the wording here changes it
+        everywhere, which is what lets ad copy be written against it. */
     cta: string;
   };
 
@@ -327,7 +336,6 @@ export interface Content {
     skip: string;
     dateline: string;
     nav: { example: string; price: string; fit: string };
-    tab: string;
 
     /** The headline is split so the highlighter can fall on the right phrase in
         each language rather than on a fixed word count, and so the time the
@@ -340,7 +348,7 @@ export interface Content {
         used to carry moved up into the headline. */
     deck: string;
 
-    cta: string;
+    /** Sits under the hero button. The button's words are nav.cta. */
     ctaNote: string;
 
     /** The pile of letters, and the one dealt off the top of it.
@@ -366,8 +374,8 @@ export interface Content {
       sr: string;
     };
 
-    /** The standing price bar on phones. */
-    bar: { text: string; cta: string };
+    /** The standing price bar on phones. Its button is nav.cta. */
+    bar: { text: string };
 
     /** The worked example's own paper. The demo reads these for its first desk,
         so the property scenario exists once per locale. */
@@ -559,7 +567,7 @@ export interface Content {
 
     askEyebrow: string;
     ask: { before: string; link: string; after: string };
-    cta: string;
+    /** Sits under the button at the foot of the band. The button is nav.cta. */
     ctaNote: string;
   };
 
