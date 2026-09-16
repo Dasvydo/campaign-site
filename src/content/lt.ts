@@ -558,7 +558,7 @@ export const lt: Content = {
   compare: {
     eyebrow: 'Suma vienam žmogui',
     title: 'Kiek kainuoja kiekvienas žmogus',
-    lede: 'Vienas mokestis visai įmonei reiškia, kad kaina vienam žmogui mažėja įmonei augant. Štai kur ji atsiduria, šalia dviejų planų, kuriuos produkto svetainėje gali nusipirkti bet kas.',
+    lede: 'Vienas mokestis visai įmonei reiškia, kad kaina vienam žmogui mažėja įmonei augant. Štai kur ji atsiduria, o greta pateikta didžiausia įmonė, kuriai parduodamas Team planas.',
 
     planLabel: 'Planas',
     perHeadLabel: 'Kiekvienam žmogui',
@@ -567,39 +567,34 @@ export const lt: Content = {
     ourPlan: 'Šis pasiūlymas',
     ourSize: { label: 'Žmonių:' },
 
-    individualPlan: 'Individual planas',
-    individualSize: 'Vienas žmogus',
     teamPlan: 'Team planas',
     teamSize: { label: 'Žmonių, ne daugiau kaip:' },
 
     claimsTitle: 'Kas iš to išeina',
     claims: {
-      belowTeamRate: {
-        size: 'Įmonėje, kurioje žmonių skaičius yra ',
-        before: ', vienam žmogui čia tenka ',
-        mid: ' per mėnesį. Team plano kaina svetainėje doviloop.dev yra ',
-        after: ' už žmogų.',
-      },
-      belowIndividualRate: {
-        size: 'Kai komandos dydis yra ',
-        before: ', suma vienam žmogui čia yra ',
-        mid: ' per mėnesį, o tai mažiau nei Individual plano kaina svetainėje doviloop.dev, kuri yra ',
-        after: ' už žmogų.',
-      },
       belowTeamCeiling: {
-        before: 'Visa įmonė čia moka ',
-        mid: ' per mėnesį, kad ir kiek žmonių apimtų mokestis. Team planas parduodamas iki tokio žmonių skaičiaus: ',
-        then: ', ir tokio dydžio įmonė moka ',
-        after: ' per mėnesį.',
+        before: 'Team planas parduodamas tik iki tokio žmonių skaičiaus: ',
+        mid: '. Didžiausia įmonė, kuriai jis parduodamas, moka ',
+        then: ' per mėnesį. Visa įmonė čia moka ',
+        after: ' per mėnesį, kad ir kiek žmonių apimtų šis mokestis.',
+      },
+      curve: {
+        smallOpen: 'Įmonėje, kurioje žmonių skaičius yra ',
+        smallCost: ', vienam žmogui tenka ',
+        largeOpen: ' per mėnesį. Įmonėje, kurioje žmonių skaičius yra ',
+        largeCost: ', vienam žmogui tenka ',
+        after: ' per mėnesį. Mokestis visai įmonei abiem atvejais yra toks pat, tad kaina vienam žmogui mažėja įmonei augant.',
       },
     },
-    noClaims: {
-      size: 'Įmonėje, kurioje žmonių skaičius yra ',
-      after: ', suma nėra mažesnė nė už vieną iš dviejų paskelbtų kainų.',
+
+    individualNote: {
+      before:
+        'Individual yra kitas planas produkto svetainėje. Jis skirtas vienam žmogui, perkamas po vieną vietą, ir kiekviena vieta turi savo atskirą žinių bazę. Viena vieta kainuoja ',
+      after: ' per mėnesį.',
     },
 
     sourceNote: {
-      before: 'Individual ir Team planų kainos yra paskelbtos svetainėje ',
+      before: 'Team ir Individual planų kainos čia yra paskelbtos svetainėje ',
       link: 'doviloop.dev',
       mid: ', užfiksuotos ',
       after: '. Mes jų nekoregavome.',
