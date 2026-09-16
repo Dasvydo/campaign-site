@@ -10,38 +10,77 @@ import {
 } from '../lib/offer';
 
 /**
- * The sum per head, and the three sentences it is allowed to support.
+ * The sum per head, and the two claims it is allowed to support.
  *
  * This is the section that makes the argument rather than asserting it. One
  * flat fee for the whole firm means the cost per person falls as the firm
  * grows, and the only way a reader can check that is to see the division done
- * in front of them next to the two rates anyone can buy on doviloop.dev. So the
- * table is the substance of the section, and the claims underneath it are a
- * reading of the table, never a replacement for it.
+ * in front of them. So the table is the substance of the section, and the
+ * claims underneath it are a reading of the table, never a replacement for it.
  *
- * Three rules hold this together.
+ * What is in the table, and what is not.
+ *
+ * The table holds firm level plans and nothing else: our own fee at three head
+ * counts, and Team at the largest firm it will sell to. That is what a grid
+ * with a per head column implies it is doing, and it is the only comparison
+ * this offer wins at every size it is sold to. Team is the plan a firm of this
+ * size would otherwise be on, and Team stops selling at its seat ceiling, so a
+ * firm at the head count this page is sold to cannot buy it at all. The
+ * comparison worth making is therefore firm total against firm total: our one
+ * flat fee against what the largest firm Team will take pays every month. That
+ * is the lead claim.
+ *
+ * Individual has no row, and that is the point of this file's last revision.
+ * It is a plan for one person, bought a seat at a time, so its seat rate is not
+ * a firm's cost a head and cannot be read down the same column as one. Printed
+ * there it was read against our cost a head, which at the smallest firm this
+ * page is sold to is the comparison we lose: the flat fee only falls past that
+ * seat rate well above the ten person floor the meta description, the dateline,
+ * the qualifying note and the form routing all advertise. So the plan is named
+ * in prose under the table instead, with its published seat rate, and nothing
+ * is claimed about it in either direction. The rate is public; hiding it would
+ * be worse than saying it. What we stop doing is inviting the per head
+ * comparison by putting it in a column.
+ *
+ * What renders at each tier, under the shipped offer.
+ *
+ * The curve claim renders at all three tiers. It compares nothing: it states
+ * what each person costs at the smallest and the largest head count the table
+ * shows, and the fact that the fee for the firm does not move between them.
+ * That is true at every tier and at every pair of sizes, so it is not gated on
+ * arithmetic. It is skipped only where the table has fewer than two covered
+ * sizes to draw a line between, which the shipped coverage does not produce.
+ *
+ * The Team ceiling claim renders at the two capped tiers, whose flat fee is
+ * under what the largest firm Team will take pays, and does not render at the
+ * uncapped tier, whose flat fee is above it. Nothing softens or hedges it
+ * there: the gate reads `belowTeamCeiling` off the offer, and a claim that does
+ * not hold is simply not on the page.
+ *
+ * So at the uncapped tier the section is the table, the curve, the note naming
+ * Individual, and the source note. There is no "none of this holds" fallback
+ * sentence, because with the
+ * curve ungated there is no reachable state in which the claims list is empty
+ * and the table is not. A fallback for an unreachable state is copy maintained
+ * in three languages and read in none.
+ *
+ * Three rules hold the rest of it together.
  *
  * Nothing here is written down. Every figure on screen comes out of offer.ts
- * through `usd`, and the two rival rates are the published ones the offer file
- * records with the date they were read. There is no number in this file except
- * the three head counts the table compares at, which are sizes, not prices.
+ * through `usd`, and the published rates are the ones the offer file records
+ * with the date they were read. There is no number in this file except the
+ * three head counts the table compares at, which are sizes, not prices.
  *
- * No sentence is a sentence. Each claim is a boolean the offer resolves, and
- * the copy around it is a set of fragments with slots for figures. A claim that
- * does not hold at the active tier is not softened or hedged: it is not
- * rendered. That is the whole point of the gate. At the uncapped tier all three
- * happen to be false at all three sizes, which is why `noClaims` exists and why
- * the table, the heading and the source note all still render around it. The
- * honest version of this section is a finished thought, not a lede followed by
- * a refusal.
+ * No sentence is a sentence. Each claim is a set of fragments with slots for
+ * figures, and the component decides whether it appears at all.
  *
  * No per head figure outside coverage. `comparison(n).perPerson` is null for a
  * head count the flat fee does not cover, and the rows are filtered on exactly
  * that null before anything is rendered. A firm above the ceiling would get the
  * most flattering figure on the page out of a division the offer has not agreed
  * to honour, so it gets no figure at all. The filter also means that lowering
- * `OFFER.covers` quietly drops the sizes it no longer covers from the table
- * instead of leaving them there to be believed.
+ * `OFFER.covers` quietly drops the sizes it no longer covers from the table,
+ * and from the two ends of the curve, instead of leaving them to be believed.
  *
  * No folio number, unlike the other sections. The folios are a continuous run
  * across the sections that were already here, and opening a slot in the middle
@@ -75,23 +114,19 @@ export function Compare({ c }: { c: Content }) {
   const tier = activeTier();
   const rows = SIZES.map((n) => comparison(n, tier)).filter(isCovered);
 
-  /* Each per head claim is argued at the smallest size on show where it is
-     true, because the smallest size is the weakest case that still holds and
-     therefore the one worth stating. `find` returns undefined where no size
-     qualifies, and undefined renders nothing. */
-  const teamRateRow = rows.find((r) => r.claims.belowTeamRate) ?? null;
-  const individualRow = rows.find((r) => r.claims.belowIndividualRate) ?? null;
+  /* The two ends of the curve are the two ends of the table, so the sentence
+     cannot describe a size the reader cannot also see. Two distinct rows are
+     needed for a curve to be a curve: with one size covered, or none, there is
+     a figure but no fall, and the honest thing is to say nothing rather than to
+     compare a size with itself. */
+  const smallest = rows.length > 1 ? rows[0] : null;
+  const largest = rows.length > 1 ? rows[rows.length - 1] : null;
 
-  /* The third claim has no size in it at all: both sides of it are fixed, so it
+  /* The other claim has no size in it at all: both sides of it are fixed, so it
      turns on the tier and nothing else. */
   const ceilingHolds = belowTeamCeiling(tier);
 
-  const anyClaim = teamRateRow !== null || individualRow !== null || ceilingHolds;
-
-  /* The fallback names the largest size on show, which is the size at which the
-     sum comes closest to working. Saying it does not come out there is the
-     strongest honest version of the sentence. */
-  const fallbackRow = rows.length > 0 ? rows[rows.length - 1] : null;
+  const anyClaim = ceilingHolds || (smallest !== null && largest !== null);
 
   return (
     <section id="compare" aria-labelledby="compare-h">
@@ -138,20 +173,8 @@ export function Compare({ c }: { c: Content }) {
                 </tr>
               ))}
 
-              <tr className="cmp-row cmp-row-ref">
-                <th scope="row" className="cmp-plan">
-                  <span className="cmp-plan-name">{t.individualPlan}</span>
-                  <span className="cmp-plan-size">{t.individualSize}</span>
-                </th>
-                {/* The same figure in both cells, and not by accident:
-                    Individual is one seat by definition, so the firm buying it
-                    is one person and the two columns are the same number for
-                    it. Printing the rate in the firm column rather than leaving
-                    the cell empty keeps every row readable on its own. */}
-                <td className="cmp-num">{usd(OFFER.compare.individual)}</td>
-                <td className="cmp-num">{usd(OFFER.compare.individual)}</td>
-              </tr>
-
+              {/* The only row here that is not ours, because it is the only
+                  other plan a firm can buy for the whole firm. */}
               <tr className="cmp-row cmp-row-ref">
                 <th scope="row" className="cmp-plan">
                   <span className="cmp-plan-name">{t.teamPlan}</span>
@@ -159,6 +182,9 @@ export function Compare({ c }: { c: Content }) {
                     {t.teamSize.label} {OFFER.compare.teamMax}
                   </span>
                 </th>
+                {/* The firm cell here is a real total for a real firm: the seat
+                    rate at the seat ceiling, which is the largest bill Team can
+                    produce and the figure the lead claim is argued against. */}
                 <td className="cmp-num">{usd(OFFER.compare.team)}</td>
                 <td className="cmp-num">{usd(teamCeilingMonthly())}</td>
               </tr>
@@ -168,59 +194,51 @@ export function Compare({ c }: { c: Content }) {
 
         {/* Outside the table on purpose. These are prose about the figures, not
             more figures, and a cell is the wrong place to put an argument. */}
-        {(anyClaim || fallbackRow !== null) && (
+        {anyClaim && (
           <div className="cmp-claims">
             <h3 className="cmp-claims-h">{t.claimsTitle}</h3>
 
-            {anyClaim ? (
-              <ul className="cmp-claim-list" role="list">
-                {teamRateRow !== null && (
-                  <li className="cmp-claim">
-                    {t.claims.belowTeamRate.size}
-                    <b className="cmp-fig">{teamRateRow.headcount}</b>
-                    {t.claims.belowTeamRate.before}
-                    <b className="cmp-fig">{usd(teamRateRow.perPerson)}</b>
-                    {t.claims.belowTeamRate.mid}
-                    <b className="cmp-fig">{usd(OFFER.compare.team)}</b>
-                    {t.claims.belowTeamRate.after}
-                  </li>
-                )}
+            <ul className="cmp-claim-list" role="list">
+              {ceilingHolds && (
+                <li className="cmp-claim">
+                  {t.claims.belowTeamCeiling.before}
+                  <b className="cmp-fig">{OFFER.compare.teamMax}</b>
+                  {t.claims.belowTeamCeiling.mid}
+                  <b className="cmp-fig">{usd(teamCeilingMonthly())}</b>
+                  {t.claims.belowTeamCeiling.then}
+                  <b className="cmp-fig">{usd(tier.price)}</b>
+                  {t.claims.belowTeamCeiling.after}
+                </li>
+              )}
 
-                {individualRow !== null && (
-                  <li className="cmp-claim">
-                    {t.claims.belowIndividualRate.size}
-                    <b className="cmp-fig">{individualRow.headcount}</b>
-                    {t.claims.belowIndividualRate.before}
-                    <b className="cmp-fig">{usd(individualRow.perPerson)}</b>
-                    {t.claims.belowIndividualRate.mid}
-                    <b className="cmp-fig">{usd(OFFER.compare.individual)}</b>
-                    {t.claims.belowIndividualRate.after}
-                  </li>
-                )}
-
-                {ceilingHolds && (
-                  <li className="cmp-claim">
-                    {t.claims.belowTeamCeiling.before}
-                    <b className="cmp-fig">{usd(tier.price)}</b>
-                    {t.claims.belowTeamCeiling.mid}
-                    <b className="cmp-fig">{OFFER.compare.teamMax}</b>
-                    {t.claims.belowTeamCeiling.then}
-                    <b className="cmp-fig">{usd(teamCeilingMonthly())}</b>
-                    {t.claims.belowTeamCeiling.after}
-                  </li>
-                )}
-              </ul>
-            ) : (
-              fallbackRow !== null && (
-                <p className="cmp-claim cmp-claim-none">
-                  {t.noClaims.size}
-                  <b className="cmp-fig">{fallbackRow.headcount}</b>
-                  {t.noClaims.after}
-                </p>
-              )
-            )}
+              {smallest !== null && largest !== null && (
+                <li className="cmp-claim">
+                  {t.claims.curve.smallOpen}
+                  <b className="cmp-fig">{smallest.headcount}</b>
+                  {t.claims.curve.smallCost}
+                  <b className="cmp-fig">{usd(smallest.perPerson)}</b>
+                  {t.claims.curve.largeOpen}
+                  <b className="cmp-fig">{largest.headcount}</b>
+                  {t.claims.curve.largeCost}
+                  <b className="cmp-fig">{usd(largest.perPerson)}</b>
+                  {t.claims.curve.after}
+                </li>
+              )}
+            </ul>
           </div>
         )}
+
+        {/* The plan that is not in the table, said plainly. A sentence rather
+            than a row, because prose can say what a plan is and a column can
+            only say what it costs a head, and what this plan costs a head is
+            not a figure a firm can compare itself with. It sits directly above
+            the source note so the rate in it is attributed by the same
+            sentence that attributes the rate in the table. */}
+        <p className="cmp-src">
+          {t.individualNote.before}
+          <b className="cmp-fig">{usd(OFFER.compare.individual)}</b>
+          {t.individualNote.after}
+        </p>
 
         {/* Somebody else's prices, so they carry whose they are and when we read
             them. A comparison whose basis is invisible is a claim the reader has

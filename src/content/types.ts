@@ -152,18 +152,43 @@ export interface PriceStop {
 }
 
 /**
- * The per person table, and the three claims that sit under it.
+ * The per person table, the two claims that sit under it, and the one plan
+ * that is named beside it rather than ranked inside it.
  *
  * Nothing here holds a figure. Our own cost a head is arithmetic on the flat
- * fee, and the two rates it is set against are doviloop.dev's published prices;
- * both are injected at render time, so a price that moves cannot leave a
- * sentence on this page saying otherwise.
+ * fee, and the rates it is set beside are doviloop.dev's published prices; both
+ * are injected at render time, so a price that moves cannot leave a sentence on
+ * this page saying otherwise.
  *
- * The three claims are independent on purpose. Each one is rendered only where
- * the arithmetic makes it true at the size and the tier on show, each reads on
- * its own, and none of them refers to the others. The keys match the claim
- * names the offer resolves, so wiring one to the other is a lookup and not a
- * judgement. Where none of them holds, `noClaims` is what the section says.
+ * What the two claims argue, and why they are these two.
+ *
+ * `belowTeamCeiling` is the lead. It is a firm total against a firm total, not
+ * a rate against a rate: Team stops selling at its seat ceiling, so the largest
+ * firm Team will take is the largest bill Team can produce, and our one flat
+ * fee is set against that. It carries no head count slot, because both sides of
+ * it are fixed. It is true on a tier priced under that ceiling and false above
+ * it, which is why it is gated on the offer rather than written as a promise.
+ *
+ * `curve` is the argument that needs no rival at all: one fee for the firm
+ * means the cost per head falls as the firm grows. It names the smallest and
+ * the largest head count the table shows and what each person costs at each, so
+ * the reader can see the line running down rather than be told about it. It is
+ * true at every tier and every pair of sizes, so it is ungated.
+ *
+ * Individual is not argued against, and it is not in the table. The table
+ * compares firm level plans by head, so everything in it has to be a plan a
+ * firm can buy for the whole firm: our own sizes, and Team at the largest firm
+ * it will sell to. Individual is a plan for one person, bought a seat at a
+ * time, so a row for it would put its seat rate in the same column a firm reads
+ * our cost a head out of, and invite a comparison that is not like for like at
+ * any size this offer is sold to. It is named in prose under the table instead,
+ * by `individualNote`, which says what the plan is and what a seat costs and
+ * claims nothing about it either way.
+ *
+ * There is no "nothing holds" fallback. With `curve` ungated, the claims list
+ * is empty only where the table has fewer than two covered sizes to draw a
+ * curve between, which the shipped coverage never produces; a fallback for that
+ * would be a sentence maintained in three languages and never seen.
  */
 export interface CompareCopy {
   eyebrow: string;
@@ -183,43 +208,69 @@ export interface CompareCopy {
   ourPlan: string;
   ourSize: { label: string };
 
-  /** The two published rates, as reference rows. `individualSize` holds no
-      figure at all, because Individual is one seat by definition and the copy
-      can just say so. `teamSize` is the same label shape as `ourSize` and takes
-      the ceiling Team will sell to: "People, at most: 9". */
-  individualPlan: string;
-  individualSize: string;
+  /** The one reference row. Team is a firm plan, so it can be compared with
+      ours by head, and it is the only published plan in the table.
+
+      `teamSize` is the same label shape as `ourSize` and takes the ceiling Team
+      will sell to: "People, at most: 9". */
   teamPlan: string;
   teamSize: { label: string };
 
   claimsTitle: string;
   /**
-   * Each per head claim names the head count it is arguing about. The table
-   * shows several sizes at once, so "at this size" would point at nothing; the
-   * size is a slot, and it sits where no noun has to agree with it.
-   *
-   * The two per head claims are worded differently on purpose. Both hold at the
-   * same time more often than not, and two sentences that open the same way and
-   * end in different figures read as one sentence printed twice. Each still
-   * stands alone: neither refers to the other, so all four combinations of the
-   * pair read correctly.
+   * Two claims, independent of one another. Neither refers to the other, so
+   * both orderings and both of the reachable combinations read correctly.
    */
   claims: {
-    /** "<size><head count><before><our cost a head><mid><the Team rate><after>" */
-    belowTeamRate: { size: string; before: string; mid: string; after: string };
-    /** "<size><head count><before><our cost a head><mid><the Individual rate><after>" */
-    belowIndividualRate: { size: string; before: string; mid: string; after: string };
-    /** "<before><our monthly fee><mid><the Team seat ceiling><then><what a firm
-        that size pays on Team><after>". No head count slot, because both sides
-        of this one are fixed: it is the claim that holds at every size the fee
-        covers, and falls away with the tier rather than with the size. */
+    /** The lead claim, rendered only where `belowTeamCeiling` holds on the
+        active tier.
+        "<before><the Team seat ceiling><mid><what the largest firm Team will
+        take pays every month><then><our flat monthly fee for the whole
+        firm><after>"
+        No head count slot: both sides of this claim are fixed, so it falls away
+        with the tier rather than with the size. The ceiling is a count of
+        people and lands at the end of its clause, with no noun after it to
+        agree with. */
     belowTeamCeiling: { before: string; mid: string; then: string; after: string };
+    /** Always rendered wherever the table has two covered sizes to draw
+        between, because it is true at every tier and every size.
+        "<smallOpen><the smallest head count on show><smallCost><what each
+        person costs at that size><largeOpen><the largest head count on
+        show><largeCost><what each person costs at that size><after>"
+        Both head counts end their clauses. Write the sentence so it is right
+        whatever the four figures turn out to be: the only thing it may assert
+        is that the fee for the firm does not change between the two sizes and
+        that the cost per head therefore falls, which holds at every tier. */
+    curve: {
+      smallOpen: string;
+      smallCost: string;
+      largeOpen: string;
+      largeCost: string;
+      after: string;
+    };
   };
-  /** Stands in for the claims where not one of them is true. It takes the same
-      head count slot, for the same reason: "<size><head count><after>". */
-  noClaims: { size: string; after: string };
 
-  /** Whose prices the two reference rows are, and when we read them.
+  /**
+   * The Individual plan, named under the table instead of given a row in it.
+   * "<before><what one Individual seat costs a month><after>"
+   *
+   * This is the only place the page says the Individual plan exists, and it
+   * exists because the rate is public and hiding it would be worse than saying
+   * it. What it must do is describe the plan: one person, bought a seat at a
+   * time, each seat keeping its own knowledge base. What it must not do is rank
+   * it. No "cheaper", no "better", no "instead of", no setting its seat rate
+   * against our cost a head, and no arithmetic on it: a firm that wants a
+   * separate knowledge base for every person can multiply it themselves.
+   *
+   * One figure only, and it ends its clause with no noun behind it to agree
+   * with. The rate is doviloop.dev's, so it is covered by `sourceNote`, which
+   * is rendered directly after this and names both published rates.
+   */
+  individualNote: { before: string; after: string };
+
+  /** Whose prices the published rates in this section are, and when we read
+      them. It covers the Team rate in the table and the Individual rate in the
+      note above it, so it names both rather than pointing at a row.
       "<before><doviloop.dev><mid><the date they were read><after>" */
   sourceNote: { before: string; link: string; mid: string; after: string };
 }

@@ -553,7 +553,7 @@ export const en: Content = {
   compare: {
     eyebrow: 'The sum per head',
     title: 'What each person costs',
-    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, beside the two plans anyone can buy on the product site.',
+    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, with the largest firm the Team plan will sell to set beside it.',
 
     planLabel: 'Plan',
     perHeadLabel: 'Each person',
@@ -562,39 +562,34 @@ export const en: Content = {
     ourPlan: 'This offer',
     ourSize: { label: 'People:' },
 
-    individualPlan: 'Individual',
-    individualSize: 'One person',
     teamPlan: 'Team',
     teamSize: { label: 'People, at most:' },
 
     claimsTitle: 'What that works out as',
     claims: {
-      belowTeamRate: {
-        size: 'In a firm of ',
-        before: ', each person here costs ',
-        mid: ' a month. The Team rate on doviloop.dev is ',
-        after: ' a person.',
-      },
-      belowIndividualRate: {
-        size: 'With ',
-        before: ' on the team, the sum per head here is ',
-        mid: ' a month, under the Individual rate on doviloop.dev of ',
-        after: ' a person.',
-      },
       belowTeamCeiling: {
-        before: 'The whole firm pays ',
-        mid: ' a month here, at any size the fee covers. Team stops selling at a head count of ',
-        then: ', and a firm that size pays ',
-        after: ' a month.',
+        before: 'Team stops selling at a head count of ',
+        mid: '. The largest firm it will take pays ',
+        then: ' a month. The whole firm pays ',
+        after: ' a month here, at every size the fee covers.',
+      },
+      curve: {
+        smallOpen: 'At a head count of ',
+        smallCost: ', each person costs ',
+        largeOpen: ' a month. At a head count of ',
+        largeCost: ', each person costs ',
+        after: ' a month. The fee for the firm is the same at both, so the cost per head falls as the firm grows.',
       },
     },
-    noClaims: {
-      size: 'In a firm of ',
-      after: ', the sum does not come out under either published rate.',
+
+    individualNote: {
+      before:
+        'Individual is the other plan on the product site. It is for one person, bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
+      after: ' a month.',
     },
 
     sourceNote: {
-      before: 'The Individual and Team rates are the published prices on ',
+      before: 'The Team and Individual rates here are the published prices on ',
       link: 'doviloop.dev',
       mid: ', read on ',
       after: '. We have not adjusted them.',
