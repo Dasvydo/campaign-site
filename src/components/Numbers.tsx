@@ -1,6 +1,19 @@
 import { useEffect, useRef } from 'react';
-import type { Content } from '../content/types';
+import type { Content, NumberRow } from '../content/types';
+import { activeTier, modelledMultiple, modelledPaybackDays } from '../lib/offer';
 import { Disclosure } from './Disclosure';
+
+/**
+ * The firm the ledger models, in people.
+ *
+ * Ten is not a sample size somebody picked. It is the smallest firm this is
+ * sold to, and the basis under the figures names it out loud in all three
+ * languages: a figure that holds at the smallest firm holds at every size
+ * above it. It lives here rather than in the offer because it is an assumption
+ * this section argues from and not a term of the offer, and because a change
+ * to it is a change to the sentence in the disclosure as much as to the sum.
+ */
+const MODEL_FIRM = 10;
 
 /**
  * Three figures, and the arithmetic behind them one click away.
@@ -75,6 +88,26 @@ export function Numbers({ c }: { c: Content }) {
     };
   }, []);
 
+  // Two of the three figures are arithmetic on the offer and one is copy, so
+  // the tier is read here and the saving is read back out of the row that
+  // prints it. Keeping the saving in one place means the disclosure that states
+  // it and the figures computed from it cannot disagree, and anything that does
+  // not parse to a figure leaves the helpers with nothing to work from, so the
+  // ledger prints a blank rather than a guess.
+  const tier = activeTier();
+  const saving = Number.parseFloat(
+    c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
+  );
+  const multiple = modelledMultiple(saving, MODEL_FIRM, tier);
+  const payback = modelledPaybackDays(saving, MODEL_FIRM, tier);
+
+  /** The figure for one row, or an empty string where there is none to print. */
+  const figureFor = (r: NumberRow): string => {
+    if (r.key === 'multiple') return multiple === null ? '' : String(multiple);
+    if (r.key === 'payback') return payback === null ? '' : String(payback);
+    return saving > 0 ? (r.amount ?? '') : '';
+  };
+
   return (
     <section id="numbers" aria-labelledby="numbers-h" ref={secRef}>
       <div className="numbers-wrap">
@@ -98,7 +131,7 @@ export function Numbers({ c }: { c: Content }) {
                   </span>
                   <p className="numbers-fig">
                     <span className="numbers-about">{c.numbers.about}</span>
-                    <span className="numbers-amt">{r.amount}</span>
+                    <span className="numbers-amt">{figureFor(r)}</span>
                     <span className="numbers-unit">{r.unit}</span>
                   </p>
                 </div>

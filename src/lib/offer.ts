@@ -406,6 +406,106 @@ export function breakEvenHeadcount(
 }
 
 /**
+ * A month, taken as thirty days, for the payback figure alone.
+ *
+ * The saving the page models is written by the month and the payback is
+ * written in days, so one of the two has to be converted and the conversion
+ * needs a length of month. Thirty is the round month, the one a reader checks
+ * the sum with in their own head, and it is a convention rather than a
+ * measurement. That is what the hedge in front of every figure in the ledger,
+ * and the line under it saying these are a model and not a measurement, are
+ * there to carry. It is not a price, so it belongs here as a constant of the
+ * model rather than in the offer.
+ */
+const DAYS_PER_MONTH = 30;
+
+/**
+ * Are these inputs something we are willing to divide with?
+ *
+ * The saving is not ours: it is an assumption written into the copy, and the
+ * component reads it back out of that string. A fraction arriving here is
+ * therefore not a finer figure, it is a string that was misread, and a misread
+ * string should produce no figure at all rather than a confident one. The
+ * headcount is put to `coversHeadcount` for the reason `perPerson` gives: a
+ * firm the flat fee does not cover has no arithmetic behind it that we have
+ * agreed to honour.
+ *
+ * The saving is an argument rather than an import on purpose. It is copy, it
+ * is translated, and it changes when the assumption behind it changes; this
+ * file holds what we charge, and the moment it also held what we assume, the
+ * two would start being edited in one place by one person.
+ */
+function modelIsAnswerable(
+  savingPerPersonPerMonth: number,
+  headcount: number,
+  offer: Offer,
+): boolean {
+  return (
+    Number.isInteger(savingPerPersonPerMonth) &&
+    savingPerPersonPerMonth > 0 &&
+    coversHeadcount(headcount, offer)
+  );
+}
+
+/**
+ * How many times over the modelled saving covers the flat monthly fee.
+ *
+ * The saving across the whole firm, against the one fee that firm pays. Null
+ * rather than a number wherever the division would misbehave, so a component
+ * can render the result straight and get a blank where there is nothing
+ * honest to print, in the same way `perPerson` refuses a figure it cannot
+ * stand behind. A fee of zero is refused too: it would divide to Infinity, and
+ * the ladder invariants do not forbid it.
+ *
+ * Both figures here round to the nearest whole number. Rounding down would
+ * understate the case for no reason a reader benefits from, and rounding up
+ * would be the thumb on the scale a modelled figure can least afford. Nearest
+ * is the rule that needs no defending, and the figure is hedged in the copy
+ * either way.
+ */
+export function modelledMultiple(
+  savingPerPersonPerMonth: number,
+  headcount: number,
+  tier: TierConfig = activeTier(),
+  offer: Offer = OFFER,
+): number | null {
+  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
+  if (!(tier.price > 0)) return null;
+  return Math.round((savingPerPersonPerMonth * headcount) / tier.price);
+}
+
+/**
+ * How long the modelled saving takes to pay back what the firm pays to start.
+ *
+ * What it costs to start is `firstMonthTotal`, which is the fee plus whatever
+ * setup the tier does not waive, so the figure gets worse the moment a tier
+ * stops waiving it. That is the honest direction for it to move, and it is why
+ * this reads the first invoice rather than the monthly fee.
+ *
+ * A word of warning for whoever next moves a price. The unit beside this
+ * figure is a counted noun in every locale, and types.ts records that the
+ * forms shipped are the ones that are right from two to nine. With the shipped
+ * ladder the answer lands inside that range at all three tiers. A change that
+ * puts it at one, or at ten and above, wants those unit strings rewritten in
+ * all three languages, not merely a new number here.
+ */
+export function modelledPaybackDays(
+  savingPerPersonPerMonth: number,
+  headcount: number,
+  tier: TierConfig = activeTier(),
+  offer: Offer = OFFER,
+): number | null {
+  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
+  const toStart = firstMonthTotal(tier, offer);
+  // Nothing to pay back is not a payback of no days, it is a figure with no
+  // meaning, and the sentence beside it would be about a cost that was not
+  // charged.
+  if (!(toStart > 0)) return null;
+  const savedPerDay = (savingPerPersonPerMonth * headcount) / DAYS_PER_MONTH;
+  return Math.round(toStart / savedPerDay);
+}
+
+/**
  * Rounds to cents for display only. Never used by a claim: a claim reads the
  * exact value, so a figure that rounds down to look like a win cannot make a
  * sentence appear that the arithmetic does not support.
@@ -479,7 +579,23 @@ export function validateOffer(offer: Offer = OFFER): string[] {
     );
   }
 
-  // Not one of the four, but the same class of mistake: a coverage or cap of
+  // A fifth invariant, and the only one about the shape of the ladder rather
+  // than its numbers: it has to end somewhere it cannot run out. The last
+  // tier is what `activeTier` falls through to once every capped tier ahead of
+  // it is spent, so a capacity on that last tier is a capacity the page can be
+  // left standing on with no places behind it: a trade offered against nothing,
+  // beside a counter reading none of however many. Nothing downstream can catch
+  // it, because every helper it would ask is answering truthfully about a tier
+  // that genuinely is the active one. It has to be refused here.
+  const last = offer.tiers[offer.order[offer.order.length - 1]];
+  if (last && last.total !== null) {
+    problems.push(
+      `the last tier on the ladder must be uncapped, so the page always has a ` +
+        `tier to fall back to: ${last.id} declares ${last.total} places`,
+    );
+  }
+
+  // Not one of the numbered five, but the same class of mistake: a coverage or cap of
   // zero would make every per person number on the page meaningless.
   count('covers', offer.covers);
   count('draftCap', offer.draftCap);

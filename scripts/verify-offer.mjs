@@ -211,6 +211,10 @@ check(
   active.total === null
     ? 'uncapped, so remainingSpots is null'
     : `${remainingSpots(active)} of ${active.total} open`);
+const lastOnLadder = OFFER.tiers[OFFER.order[OFFER.order.length - 1]];
+check(lastOnLadder.total === null,
+  'the last tier on the ladder is uncapped, so the page can never be left standing on a spent tier',
+  `${lastOnLadder.id} declares ${lastOnLadder.total === null ? 'no capacity' : `${lastOnLadder.total} places`}`);
 check(Object.isFrozen(OFFER) && Object.isFrozen(OFFER.tiers) &&
   Object.isFrozen(OFFER.tiers.founding) && Object.isFrozen(OFFER.compare),
   'the config is frozen all the way down, not just at the top');
@@ -409,7 +413,7 @@ check(comparison(OFFER.compare.teamMax, active).teamMonthly === TEAM_CEILING_MON
   'and there is one at the ceiling itself, at the hand computed total',
   usd(TEAM_CEILING_MONTHLY));
 
-/* 9. the four invariants, each violated on purpose ------------------------ */
+/* 9. the five invariants, each violated on purpose ------------------------ */
 console.log('\nThe validator, given configurations that are wrong');
 const brokenCases = [
   {
@@ -447,6 +451,27 @@ const brokenCases = [
     make: () => {
       const c = clone();
       c.declaredTier = 'standard';
+      return c;
+    },
+  },
+  {
+    // The one a reviewer found by hand. Give the last tier a capacity and spend
+    // the whole ladder, and activeTier has nowhere left to fall through to: it
+    // hands back a capped tier with no places on it, and the page offers the
+    // trade beside a counter reading none of however many. Nothing downstream
+    // can catch it, because every helper it asks is being told the truth about
+    // a tier that genuinely is the active one.
+    label: 'a capacity on the last tier of the ladder',
+    match: /last tier on the ladder must be uncapped/i,
+    make: () => {
+      const c = clone();
+      const lastId = c.order[c.order.length - 1];
+      for (const id of c.order) {
+        if (id !== lastId) c.tiers[id].started = c.tiers[id].total;
+      }
+      c.tiers[lastId].total = 4;
+      c.tiers[lastId].started = 4;
+      c.declaredTier = lastId;
       return c;
     },
   },
