@@ -423,6 +423,15 @@ export function Qualifier({
                         : c.results.qualified.bookingFallback}
                     </a>
 
+                    {/* Under the button rather than above it, because it is an
+                        instruction for the page the button opens and not a
+                        reason to press it. Shown on both branches: the fallback
+                        is a mailto, and a lead who writes in from a different
+                        address is the same unmatched booking by another route. */}
+                    <p className="mt-4 max-w-[52ch] text-[14.5px] leading-relaxed text-warmwhite/90">
+                      {c.results.qualified.sameEmail}
+                    </p>
+
                     <div className="mt-11 rule-top pt-7">
                       <h4 className="font-display text-[1.3rem]">{c.results.qualified.coversTitle}</h4>
                       <ul className="mt-4 m-0 list-none p-0">

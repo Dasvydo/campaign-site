@@ -660,6 +660,8 @@ export const da: Content = {
       ],
       bookingCta: 'Vælg et tidspunkt',
       bookingFallback: 'Skriv til os for at booke',
+      sameEmail:
+        'Én ting: book med den samme mail, som du har givet os her. Så kobler vi mødet sammen med det, du har skrevet.',
     },
     gmailNote:
       'Du skrev, at teamet ikke sidder i Outlook. Det er helt fint. Gmail og andre klienter sættes op per team i onboardingen, og vi gennemgår på mødet, hvad det kræver.',

@@ -133,6 +133,15 @@ async function runOne(s: Scenario) {
     outcomeMatches: shownOutcome === s.expect,
     resultTitleRendered: text.includes(expectTitle),
     gmailNoteRendered: text.includes(c.results.gmailNote),
+    /* Which address to book under. This is the only thing joining a booking to
+       the lead that produced it: WF-C7 matches on the email address and has
+       nothing else to match on, and the booking page will take whatever the
+       visitor types. So the sentence asking for the same one is load bearing,
+       and it has to be measured where it has to appear, which is every screen
+       that offers a booking and no screen that does not. The too_small screen
+       offers a mailto to a nurture list instead, and the same sentence there
+       would be asking somebody to match a call they are not being offered. */
+    sameEmailRendered: text.includes(c.results.qualified.sameEmail),
     pricingLinkRendered: Boolean(host.querySelector('a[href*="doviloop.dev/pricing"]')),
     freeEmailWarningShown,
     localeIsNotEnglish: s.locale === 'en' ? null : !text.includes(content.en.results.qualified.title),

@@ -654,6 +654,8 @@ export const en: Content = {
       ],
       bookingCta: 'Pick a time',
       bookingFallback: 'Email us to book',
+      sameEmail:
+        'One thing: book with the same email you just gave us. That is how the call gets matched to what you told us here.',
     },
     gmailNote:
       'You told us the team is not on Outlook. That is fine. Gmail and other clients are set up per team during onboarding, and we will go through what that takes on the call.',

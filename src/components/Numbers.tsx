@@ -1,6 +1,12 @@
 import { useEffect, useRef } from 'react';
 import type { Content, NumberRow } from '../content/types';
-import { activeTier, modelledMultiple, modelledPaybackDays } from '../lib/offer';
+import {
+  activeTier,
+  formatCount,
+  formatMoney,
+  modelledMultiple,
+  modelledPaybackDays,
+} from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -101,11 +107,23 @@ export function Numbers({ c }: { c: Content }) {
   const multiple = modelledMultiple(saving, MODEL_FIRM, tier);
   const payback = modelledPaybackDays(saving, MODEL_FIRM, tier);
 
-  /** The figure for one row, or an empty string where there is none to print. */
+  /* The figure for one row, or an empty string where there is none to print.
+
+     Two formatters, because two of these rows are not the same kind of thing as
+     the third. The multiple and the payback are counts, of times over and of
+     days, and neither has a decimal part to write. The saving is an amount in
+     the currency its unit names, so it keeps whatever cents it was written with
+     and gets the decimal mark of the language reading it.
+
+     The saving goes back out through the formatter rather than straight out of
+     the copy it came from, which is the one behavioural change here. It is read
+     as a number a line above to compute the other two, so printing the string
+     it was parsed from would let the page show one figure and argue from
+     another. Today they are the same, and this is what keeps them so. */
   const figureFor = (r: NumberRow): string => {
-    if (r.key === 'multiple') return multiple === null ? '' : String(multiple);
-    if (r.key === 'payback') return payback === null ? '' : String(payback);
-    return saving > 0 ? (r.amount ?? '') : '';
+    if (r.key === 'multiple') return multiple === null ? '' : formatCount(multiple, c.htmlLang);
+    if (r.key === 'payback') return payback === null ? '' : formatCount(payback, c.htmlLang);
+    return saving > 0 && r.amount ? formatMoney(saving, c.htmlLang) : '';
   };
 
   return (

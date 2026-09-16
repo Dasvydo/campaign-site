@@ -659,6 +659,8 @@ export const lt: Content = {
       ],
       bookingCta: 'Pasirinkite laiką',
       bookingFallback: 'Parašykite mums, kad užsiregistruotumėte',
+      sameEmail:
+        'Vienas dalykas: registruodamiesi nurodykite tą patį el. pašto adresą, kurį mums čia pateikėte. Tada pokalbį susiesime su tuo, ką parašėte.',
     },
     gmailNote:
       'Nurodėte, kad komanda nedirba su Outlook. Tai nėra kliūtis. Gmail ir kiti klientai paruošiami kiekvienai komandai atskirai įvedimo metu, o ką tai reiškia, aptarsime pokalbio metu.',

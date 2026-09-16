@@ -553,6 +553,13 @@ export interface Content {
       coversTitle: string;
       bookingCta: string;
       bookingFallback: string;
+      /* Which address to book under. WF-C7 matches a booking back to the lead
+         on the email address and has nothing else to match on, so a booking
+         made under a different one arrives with no lead attached. Google's
+         booking page will take whatever the visitor types, and the shortlink
+         strips query parameters, so the address cannot be filled in for them
+         from here. Asking is the whole mechanism. */
+      sameEmail: string;
     };
     gmailNote: string;
     tooSmall: {

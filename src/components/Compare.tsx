@@ -5,8 +5,9 @@ import {
   activeTier,
   belowTeamCeiling,
   comparison,
+  formatCount,
+  formatMoney,
   teamCeilingMonthly,
-  usd,
 } from '../lib/offer';
 
 /**
@@ -67,9 +68,10 @@ import {
  * Three rules hold the rest of it together.
  *
  * Nothing here is written down. Every figure on screen comes out of offer.ts
- * through `usd`, and the published rates are the ones the offer file records
- * with the date they were read. There is no number in this file except the
- * three head counts the table compares at, which are sizes, not prices.
+ * through the three formatters below, and the published rates are the ones the
+ * offer file records with the date they were read. There is no number in this
+ * file except the three head counts the table compares at, which are sizes,
+ * not prices.
  *
  * No sentence is a sentence. Each claim is a set of fragments with slots for
  * figures, and the component decides whether it appears at all.
@@ -108,6 +110,24 @@ function isCovered(row: Comparison): row is CoveredComparison {
 
 export function Compare({ c }: { c: Content }) {
   const t = c.compare;
+
+  /* Three ways to print a figure, all of them in the language the section is
+     being read in. This section exists so a reader can check the division
+     themselves, and they cannot check a figure whose decimal mark they read as
+     a thousands separator: the per head figure at the largest covered firm is
+     nineteen and a half, which written the English way is a four figure sum in
+     Danish.
+
+     `cell` and `money` differ by one word, and the difference is where the
+     figure sits. A cell is under a column head that has already named the
+     currency once, and repeating it down the column would be printing the same
+     word in every row. A claim is a sentence standing on its own, and an
+     amount in a sentence with no unit beside it is a number the reader has to
+     take on trust, which is the one thing this section refuses to ask of them.
+     `figure` is for the head counts, which are not amounts at all. */
+  const cell = (value: number): string => formatMoney(value, c.htmlLang);
+  const money = (value: number): string => `${cell(value)} ${OFFER.currency}`;
+  const figure = (value: number): string => formatCount(value, c.htmlLang);
 
   /* Read once, so the table and the claims are answering for the same tier
      even if this render straddled a change to the counts. */
@@ -165,11 +185,11 @@ export function Compare({ c }: { c: Content }) {
                   <th scope="row" className="cmp-plan">
                     <span className="cmp-plan-name">{t.ourPlan}</span>
                     <span className="cmp-plan-size">
-                      {t.ourSize.label} {r.headcount}
+                      {t.ourSize.label} {figure(r.headcount)}
                     </span>
                   </th>
-                  <td className="cmp-num cmp-num-lead">{usd(r.perPerson)}</td>
-                  <td className="cmp-num">{usd(r.monthly)}</td>
+                  <td className="cmp-num cmp-num-lead">{cell(r.perPerson)}</td>
+                  <td className="cmp-num">{cell(r.monthly)}</td>
                 </tr>
               ))}
 
@@ -179,14 +199,14 @@ export function Compare({ c }: { c: Content }) {
                 <th scope="row" className="cmp-plan">
                   <span className="cmp-plan-name">{t.teamPlan}</span>
                   <span className="cmp-plan-size">
-                    {t.teamSize.label} {OFFER.compare.teamMax}
+                    {t.teamSize.label} {figure(OFFER.compare.teamMax)}
                   </span>
                 </th>
                 {/* The firm cell here is a real total for a real firm: the seat
                     rate at the seat ceiling, which is the largest bill Team can
                     produce and the figure the lead claim is argued against. */}
-                <td className="cmp-num">{usd(OFFER.compare.team)}</td>
-                <td className="cmp-num">{usd(teamCeilingMonthly())}</td>
+                <td className="cmp-num">{cell(OFFER.compare.team)}</td>
+                <td className="cmp-num">{cell(teamCeilingMonthly())}</td>
               </tr>
             </tbody>
           </table>
@@ -202,11 +222,11 @@ export function Compare({ c }: { c: Content }) {
               {ceilingHolds && (
                 <li className="cmp-claim">
                   {t.claims.belowTeamCeiling.before}
-                  <b className="cmp-fig">{OFFER.compare.teamMax}</b>
+                  <b className="cmp-fig">{figure(OFFER.compare.teamMax)}</b>
                   {t.claims.belowTeamCeiling.mid}
-                  <b className="cmp-fig">{usd(teamCeilingMonthly())}</b>
+                  <b className="cmp-fig">{money(teamCeilingMonthly())}</b>
                   {t.claims.belowTeamCeiling.then}
-                  <b className="cmp-fig">{usd(tier.price)}</b>
+                  <b className="cmp-fig">{money(tier.price)}</b>
                   {t.claims.belowTeamCeiling.after}
                 </li>
               )}
@@ -214,13 +234,13 @@ export function Compare({ c }: { c: Content }) {
               {smallest !== null && largest !== null && (
                 <li className="cmp-claim">
                   {t.claims.curve.smallOpen}
-                  <b className="cmp-fig">{smallest.headcount}</b>
+                  <b className="cmp-fig">{figure(smallest.headcount)}</b>
                   {t.claims.curve.smallCost}
-                  <b className="cmp-fig">{usd(smallest.perPerson)}</b>
+                  <b className="cmp-fig">{money(smallest.perPerson)}</b>
                   {t.claims.curve.largeOpen}
-                  <b className="cmp-fig">{largest.headcount}</b>
+                  <b className="cmp-fig">{figure(largest.headcount)}</b>
                   {t.claims.curve.largeCost}
-                  <b className="cmp-fig">{usd(largest.perPerson)}</b>
+                  <b className="cmp-fig">{money(largest.perPerson)}</b>
                   {t.claims.curve.after}
                 </li>
               )}
@@ -236,7 +256,7 @@ export function Compare({ c }: { c: Content }) {
             sentence that attributes the rate in the table. */}
         <p className="cmp-src">
           {t.individualNote.before}
-          <b className="cmp-fig">{usd(OFFER.compare.individual)}</b>
+          <b className="cmp-fig">{money(OFFER.compare.individual)}</b>
           {t.individualNote.after}
         </p>
 

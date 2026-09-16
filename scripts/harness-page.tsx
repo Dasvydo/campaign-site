@@ -39,8 +39,9 @@ import {
   modelledPaybackDays,
   remainingSpots,
   setupDue,
+  formatCount,
+  formatMoney,
   teamCeilingMonthly,
-  usd,
 } from '../src/lib/offer';
 
 /* The page after the port and after the flat fee landed: hero, the worked
@@ -113,11 +114,6 @@ function leaves(value: unknown, path = '', out: Array<[string, string]> = []): A
   return out;
 }
 
-/** The two ways the page prints a number, copied from <Price /> so an assembled
-    string is assembled exactly the way the component assembles it. */
-const money = (value: number): string => `${usd(value)} ${OFFER.currency}`;
-const figure = (value: number): string => usd(value);
-
 /** The head count out of a size cell, "People: 15" and its two translations. */
 const sizeOf = (el: Element | null): number =>
   Number((el?.textContent ?? '').replace(/\D+/g, ''));
@@ -187,6 +183,27 @@ const PAYBACK_UNIT_MAX = 9;
     const c = content[locale];
     const [firmFee, setupFee] = c.price.fees;
     const tierName = c.price.tierNames[tier.id];
+
+    /* The three ways the page prints a number, copied from <Price /> and
+       <Compare /> so an assembled string is assembled exactly the way the
+       component assembles it.
+
+       Rebuilt once per locale rather than once per run, which is the whole
+       reason they moved in here. A figure is written differently in each of the
+       three languages: Danish and Lithuanian write the decimal with a comma,
+       and each groups thousands its own way. An expectation built in English
+       and compared against a Danish page would fail on every amount with a
+       decimal part, and an expectation that did not group at all would pass a
+       page that had quietly stopped grouping. Both of those are the check
+       lying about the page rather than reading it, so the locale goes in.
+
+       `cell` and `money` are the same amount with and without its unit,
+       because that is the distinction <Compare /> draws: a table cell sits
+       under a column head that has named the currency once, a claim is a
+       sentence that has to carry its own. */
+    const cell = (value: number): string => formatMoney(value, c.htmlLang);
+    const money = (value: number): string => `${cell(value)} ${OFFER.currency}`;
+    const figure = (value: number): string => formatCount(value, c.htmlLang);
 
     /* Empty or whitespace-only strings anywhere in the locale file. */
     const blankKeys = leaves(c)
@@ -273,7 +290,7 @@ const PAYBACK_UNIT_MAX = 9;
          three languages without a single check noticing. */
       [
         'the Individual note, with the seat rate it publishes',
-        c.compare.individualNote.before + figure(OFFER.compare.individual) +
+        c.compare.individualNote.before + money(OFFER.compare.individual) +
           c.compare.individualNote.after,
       ],
       [
@@ -334,10 +351,15 @@ const PAYBACK_UNIT_MAX = 9;
     );
     const wantMultiple = modelledMultiple(saving, MODEL_FIRM, tier);
     const wantPayback = modelledPaybackDays(saving, MODEL_FIRM, tier);
+    /* Two of these are counts and one is an amount, which is the split
+       <Numbers /> makes and the reason the saving is asked of the parsed number
+       rather than handed back out of the copy: the component prints what it
+       computed from, so an expectation built from the raw string would agree
+       with a component that had stopped doing that. */
     const wantFigure = (key: string, amount?: string): string => {
-      if (key === 'multiple') return wantMultiple === null ? '' : String(wantMultiple);
-      if (key === 'payback') return wantPayback === null ? '' : String(wantPayback);
-      return amount ?? '';
+      if (key === 'multiple') return wantMultiple === null ? '' : figure(wantMultiple);
+      if (key === 'payback') return wantPayback === null ? '' : figure(wantPayback);
+      return saving > 0 && amount ? cell(saving) : '';
     };
 
     const ledger = Array.from(host.querySelectorAll('#numbers .numbers-slip')).map((li, i) => {
@@ -388,8 +410,8 @@ const PAYBACK_UNIT_MAX = 9;
         size,
         perHead: cells[0] ?? '',
         firm: cells[1] ?? '',
-        wantPerHead: want.perPerson === null ? null : usd(want.perPerson),
-        wantFirm: usd(want.monthly),
+        wantPerHead: want.perPerson === null ? null : cell(want.perPerson),
+        wantFirm: cell(want.monthly),
         covered: want.covered,
       };
     });
@@ -417,7 +439,7 @@ const PAYBACK_UNIT_MAX = 9;
     const refCells = Array.from(host.querySelectorAll('#compare .cmp-row-ref .cmp-num')).map(
       (td) => td.textContent ?? '',
     );
-    const wantRefCells = [usd(OFFER.compare.team), usd(teamCeilingMonthly())];
+    const wantRefCells = [cell(OFFER.compare.team), cell(teamCeilingMonthly())];
     const wantRefRowCount = numCols > 0 ? wantRefCells.length / numCols : 0;
     const badRefCells =
       refCells.length === wantRefCells.length && refCells.every((v, i) => v === wantRefCells[i])
@@ -444,13 +466,26 @@ const PAYBACK_UNIT_MAX = 9;
        row that pairs the rate with a per head cell still fails while the cell
        itself is being reported wrong elsewhere. */
     const rowText = (el: Element): string => (el.textContent ?? '').replace(/\s+/g, ' ').trim();
-    const individualRate = usd(OFFER.compare.individual);
+    /* Both shapes of every amount this check looks for.
+
+       An amount is written two ways in this section now, with its unit and
+       without, and which one a cell uses is a styling decision somebody making
+       this mistake again would not think about. The seat rate reads bare inside
+       a table and with its unit in the prose it is published in today; our own
+       per head figure is the reverse. Matching only the shape each happens to
+       wear right now would mean a row that paired them the other way round
+       walked straight past a check written to stop exactly that pairing. */
+    const bothShapes = (value: number): string[] => [cell(value), money(value)];
+    const individualRates = new Set(bothShapes(OFFER.compare.individual));
     const individualNamedInTable = Array.from(host.querySelectorAll('#compare .cmp-table tr'))
       .filter((tr) => rowText(tr).includes(INDIVIDUAL_PLAN))
       .map(rowText);
     const ourPerHead = new Set(
       ourRows
-        .flatMap((r) => [r.perHead.trim(), r.wantPerHead ?? ''])
+        .flatMap((r) => [
+          r.perHead.trim(),
+          ...(r.wantPerHead === null ? [] : [r.wantPerHead, `${r.wantPerHead} ${OFFER.currency}`]),
+        ])
         .filter((v) => v !== ''),
     );
     const individualPairedRows = Array.from(
@@ -460,7 +495,7 @@ const PAYBACK_UNIT_MAX = 9;
         const cells = Array.from(row.querySelectorAll('td, th, .cmp-num, .cmp-fig')).map((el) =>
           (el.textContent ?? '').trim(),
         );
-        return cells.some((v) => ourPerHead.has(v)) && cells.some((v) => v === individualRate);
+        return cells.some((v) => ourPerHead.has(v)) && cells.some((v) => individualRates.has(v));
       })
       .map(rowText);
 
@@ -496,18 +531,28 @@ const PAYBACK_UNIT_MAX = 9;
        fragments with slots, and a fragment that grew a numeral would read
        correctly and be wrong.
 
-       The Individual seat rate is deliberately not in this set. It is a real
-       figure of the offer's and it is printed on the page, in the note under
-       the table, but no claim is allowed to carry it: a claim that did would be
-       the per head comparison this section was rebuilt to stop making, and it
-       would arrive wearing the offer's own number. So it is a stray figure
-       here, and it is the one figure in `OFFER.compare` that is. */
+       Neither rival seat rate is in this set, and both absences are the same
+       rule. They are real figures of the offer's, and one of them is printed
+       on the page in the note under the table, but no claim may carry either:
+       a claim that did would be the per seat comparison this section was
+       rebuilt to stop making, and it would arrive wearing the offer's own
+       number. The Team rate has a cell of its own in the table, which is a
+       firm's published rate presented as one and not an argument; a sentence
+       is the other thing. So both are stray figures here.
+
+       Every entry is in the shape a claim would print it: head counts as
+       counts, amounts with the unit the sentence around them has no column
+       head to borrow. An amount allowed here bare would let a claim print one
+       with no currency on it and pass, which is the ambiguity the formatters
+       were added to remove. */
     const allowedFigures = new Set<string>([
-      ...ourRows.flatMap((r) => [String(r.size), r.wantPerHead ?? '']),
-      usd(tier.price),
-      usd(OFFER.compare.team),
-      String(OFFER.compare.teamMax),
-      usd(teamCeilingMonthly()),
+      ...ourRows.flatMap((r) => [
+        figure(r.size),
+        ...(r.wantPerHead === null ? [] : [`${r.wantPerHead} ${OFFER.currency}`]),
+      ]),
+      money(tier.price),
+      figure(OFFER.compare.teamMax),
+      money(teamCeilingMonthly()),
     ]);
     const claimFigures = Array.from(host.querySelectorAll('#compare .cmp-claim .cmp-fig')).map(
       (el) => el.textContent ?? '',

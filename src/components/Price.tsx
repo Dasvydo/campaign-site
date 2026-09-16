@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Content } from '../content/types';
-import { OFFER, activeTier, isCapped, remainingSpots, setupDue, usd } from '../lib/offer';
+import {
+  OFFER,
+  activeTier,
+  formatCount,
+  formatMoney,
+  isCapped,
+  remainingSpots,
+  setupDue,
+} from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -30,13 +38,6 @@ import { Disclosure } from './Disclosure';
  *
  * Both fire at most once per page load.
  */
-
-/** An amount, with the currency the offer is priced in. Never a literal. */
-const money = (value: number): string => `${usd(value)} ${OFFER.currency}`;
-
-/** A count of things rather than an amount, printed the same way so that a
-    ceiling and a fee cannot come out formatted differently. */
-const figure = (value: number): string => usd(value);
 
 export function Price({
   c,
@@ -127,6 +128,23 @@ export function Price({
   const setupWaived = tier.setupWaived && setupDue(tier) === 0;
   const [firmFee, setupFee] = c.price.fees;
   const waived = setupWaived ? setupFee.waived : undefined;
+
+  /* The two ways this band prints a number, and the reason they live inside the
+     component rather than beside the imports: the language does. `c.htmlLang`
+     is the locale the page was routed to, and the three languages this page is
+     published in do not agree on what a full stop in a figure means. Danish
+     reads it as a thousands separator, so an ungrouped 19.50 on /da says
+     nineteen hundred and fifty, and a price is the last figure on a page that
+     may be ambiguous. Both formatters round exactly as the old `usd` did, so
+     nothing here changes what an amount is, only how it is written down. */
+
+  /** An amount, with the currency the offer is priced in. Never a literal. */
+  const money = (value: number): string => `${formatMoney(value, c.htmlLang)} ${OFFER.currency}`;
+
+  /** A count of things rather than an amount. Same locale, different rounding:
+      a count carries no decimal part, and a pooled cap in the thousands is
+      grouped the way the language reading it groups. */
+  const figure = (value: number): string => formatCount(value, c.htmlLang);
 
   /* The timeline. Three stops; picking the last one strikes the monthly total
      out and puts nothing in its place, which is the risk reversal made visible

@@ -392,8 +392,15 @@ async function main() {
     const outlookScenario = results.find((r) => r.scenario.includes('Outlook') && r.expectedOutcome === 'qualified');
     check(outlookScenario?.gmailNoteRendered === false, 'Outlook outcome does NOT show the Gmail note');
 
+    /* Every qualifying outcome routes to the booking, so every one of them has
+       to carry the line that makes the booking traceable back to the lead. */
+    for (const r of results.filter((x) => x.expectedOutcome !== 'too_small')) {
+      check(r.sameEmailRendered === true, `  "${r.scenario}" asks them to book with the same email`);
+    }
+
     const small = results.find((r) => r.expectedOutcome === 'too_small');
     check(Boolean(small?.pricingLinkRendered), '1-9 seats links to doviloop.dev pricing');
+    check(small?.sameEmailRendered === false, '1-9 seats is not asked to book with the same email');
     check(small?.events.includes('too_small_shown') === true, '1-9 seats fires too_small_shown');
     check(
       results.filter((r) => r.expectedOutcome !== 'too_small').every((r) => r.events.includes('qualified_shown')),
