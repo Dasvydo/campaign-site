@@ -67,17 +67,41 @@ const SECTION_IDS = ['hero', 'demo', 'who', 'numbers', 'price', 'compare', 'qual
    three tier prices, the setup fee, the coverage, the pooled draft cap, the two
    published rates, the Team ceiling and the per head divisions of the flat fee.
 
-   The seat framing is checked as the English word only. Danish and Lithuanian
-   said it as "plads" and "vieta", and both of those words are now doing honest
-   work in the founding block, where they mean a place in the cohort. Matching
-   them would fail on correct copy, so the numerals carry the check in those two
-   locales, and they are the half of the old model that actually misprices
-   anything. */
+   The seat framing is checked as the English word only, and never as the bare
+   word. Danish and Lithuanian said it as "plads" and "vieta", and both of those
+   words are now doing honest work in the founding block, where they mean a
+   place in the cohort. English is no safer: since Individual lost its row it is
+   named in prose under the table, and that sentence says the plan is "bought a
+   seat at a time" and that "each seat keeps its own knowledge base". That is
+   correct copy about somebody else's per seat plan, shipped deliberately in
+   three languages, and a bare word match fails on it.
+
+   So the two seat patterns match the framing rather than the noun: a price
+   attached to a seat, and a count of seats. Neither is a thing this page can
+   say about its own offer without having gone back to selling seats, and
+   neither fires on prose that merely mentions one. Describing a rival plan by
+   the seat is allowed; pricing by the seat, or fencing the offer at a number of
+   them, is not. The numerals stay as they were, and they remain the half of the
+   check that catches an actual misprice in all three locales. */
 const STALE = [
   { label: '890, the old flat monthly for ten seats', re: /(?<![\d.,])890(?![\d.,])/ },
   { label: '89, the old per seat rate', re: /(?<![\d.,])89(?![\d.,])/ },
-  { label: 'the old minimum framed as seats', re: /\bseats?\b/i },
+  {
+    label: 'a rate priced by the seat',
+    re: /(?<![\d.,])\d[\d.,]*\s*(?:USD\s*)?(?:a|per|\/)\s*seat\b/i,
+  },
+  {
+    label: 'the old minimum framed as a count of seats',
+    re: /(?:(?<![\d.,])\d[\d.,]*|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|twelve|fifteen|twenty|fifty)\b)\s*\+?\s*seats\b/i,
+  },
 ];
+
+/* The plan that is named under the table and must never be inside it.
+
+   The plan names on doviloop.dev stay in English in all three locale files,
+   because that is what a reader will be looking at when they open the product
+   site, so one literal finds a row that names it in any of the three. */
+const INDIVIDUAL_PLAN = 'Individual';
 
 /** Every leaf string in a content object, so a blank key is caught. */
 function leaves(value: unknown, path = '', out: Array<[string, string]> = []): Array<[string, string]> {
@@ -215,7 +239,9 @@ const PAYBACK_UNIT_MAX = 9;
       c.compare.eyebrow, c.compare.title, c.compare.lede,
       c.compare.planLabel, c.compare.perHeadLabel, c.compare.firmLabel,
       c.compare.ourPlan, c.compare.ourSize.label,
-      c.compare.individualPlan, c.compare.individualSize,
+      /* One reference plan, because the table now holds firm level plans only.
+         Individual is named in prose under the table, and its sentence has a
+         figure in it, so it is asserted assembled rather than listed here. */
       c.compare.teamPlan, c.compare.teamSize.label,
       c.compare.claimsTitle, c.compare.sourceNote.link,
       c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel,
@@ -238,6 +264,17 @@ const PAYBACK_UNIT_MAX = 9;
       [
         'the monthly total under the timeline',
         c.price.total.term + c.price.total.sub.label + ' ' + figure(OFFER.covers) + money(tier.price),
+      ],
+      /* The plan with no row. Everything else in this section is arithmetic
+         the table or a claim would give away if it went missing, and this is
+         the one figure in it with nothing behind it: a published rate dropped
+         into a sentence. Nothing else on the page would move if it arrived
+         blank, so a sentence reading "One seat costs  a month" would ship in
+         three languages without a single check noticing. */
+      [
+        'the Individual note, with the seat rate it publishes',
+        c.compare.individualNote.before + figure(OFFER.compare.individual) +
+          c.compare.individualNote.after,
       ],
       [
         'the source note, with the date the rival rates were read',
@@ -364,51 +401,111 @@ const PAYBACK_UNIT_MAX = 9;
        offer has refused to honour. */
     const uncoveredRows = ourRows.filter((r) => !r.covered).map((r) => String(r.size));
 
-    /* The two reference rows are somebody else's published rates, printed as
-       they are read. Individual is one seat by definition, so the same figure
-       stands in both of its cells. */
+    /* The one reference row is somebody else's published rate, printed as it is
+       read. Team is the only plan in the table that is not ours, because it is
+       the only other plan a firm can buy for the whole firm, and both of its
+       cells are a firm's figures: the seat rate it sells at, and what the
+       largest firm it will take pays every month.
+
+       How many such rows there should be is derived rather than written down.
+       The offer can put exactly these two figures in a reference row, and the
+       table gives every row one figure per numeric column, so the rows to
+       expect is those cells over the columns the table has. Add a row for a
+       plan the offer has no reference cells for and the arithmetic stops
+       agreeing, which is the same failure as printing the wrong rate. */
+    const numCols = host.querySelectorAll('#compare .cmp-table thead .cmp-col-num').length;
     const refCells = Array.from(host.querySelectorAll('#compare .cmp-row-ref .cmp-num')).map(
       (td) => td.textContent ?? '',
     );
-    const wantRefCells = [
-      usd(OFFER.compare.individual), usd(OFFER.compare.individual),
-      usd(OFFER.compare.team), usd(teamCeilingMonthly()),
-    ];
+    const wantRefCells = [usd(OFFER.compare.team), usd(teamCeilingMonthly())];
+    const wantRefRowCount = numCols > 0 ? wantRefCells.length / numCols : 0;
     const badRefCells =
       refCells.length === wantRefCells.length && refCells.every((v, i) => v === wantRefCells[i])
         ? []
         : [`${refCells.join(',')} against ${wantRefCells.join(',')}`];
 
+    /* The comparison this section was rebuilt to stop making, measured as an
+       absence.
+
+       Individual is a plan for one person, bought a seat at a time, so its seat
+       rate is not a firm's cost a head and cannot be read down the same column
+       as one. Printed there it was set against our per head figure, and at the
+       ten person floor this page advertises that is the one comparison this
+       offer loses: the flat fee only falls past that seat rate well above it.
+       The plan therefore has no row, and these are the two measurements that
+       fail if somebody gives it one again.
+
+       The first is the row by name, which catches the obvious way back. The
+       second is the shape of the mistake rather than its wording, and catches a
+       row that reaches the same reading under another name or none: our cost a
+       head and that seat rate printed as two cells of one row is a comparison
+       to any reader, whatever the row is called. Both the figure the page
+       printed and the figure the offer would have produced count as ours, so a
+       row that pairs the rate with a per head cell still fails while the cell
+       itself is being reported wrong elsewhere. */
+    const rowText = (el: Element): string => (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+    const individualRate = usd(OFFER.compare.individual);
+    const individualNamedInTable = Array.from(host.querySelectorAll('#compare .cmp-table tr'))
+      .filter((tr) => rowText(tr).includes(INDIVIDUAL_PLAN))
+      .map(rowText);
+    const ourPerHead = new Set(
+      ourRows
+        .flatMap((r) => [r.perHead.trim(), r.wantPerHead ?? ''])
+        .filter((v) => v !== ''),
+    );
+    const individualPairedRows = Array.from(
+      host.querySelectorAll('#compare tr, #compare [role="row"]'),
+    )
+      .filter((row) => {
+        const cells = Array.from(row.querySelectorAll('td, th, .cmp-num, .cmp-fig')).map((el) =>
+          (el.textContent ?? '').trim(),
+        );
+        return cells.some((v) => ourPerHead.has(v)) && cells.some((v) => v === individualRate);
+      })
+      .map(rowText);
+
     /* Which claims the offer says hold at this tier, over exactly the sizes the
        table put on show. Derived, never listed: the point of the gate is that a
        tier change takes the sentences it stops supporting off the page without
        anybody remembering to, and an expectation written down here by hand
-       would go stale on the same morning the copy would have. The ceiling claim
-       is asked of the tier alone, because both sides of it are fixed and it
-       holds at every size or none. */
+       would go stale on the same morning the copy would have.
+
+       Two claims, and each is asked the one question that gates it. The ceiling
+       claim is asked of the tier alone, because both sides of it are fixed: it
+       holds wherever the flat fee is under what the largest firm Team will take
+       pays, at every size or at none. The curve claim is asked of the table,
+       because it compares our own figures with each other and so has no rate to
+       fall short of: it needs two covered sizes to draw a line between and
+       nothing else. Coverage is read off `comparison()` rather than off the
+       rows, so a size the offer has stopped covering takes the curve with it
+       even if the table were still printing it.
+
+       There is no third branch. The section has no fallback sentence, because
+       with the curve ungated there is no reachable state in which the claims
+       list is empty and the table is not. */
     const shown = ourRows.map((r) => comparison(r.size, tier));
+    const coveredShown = shown.filter((r) => r.perPerson !== null);
     const claimsExpected = [
-      ...(shown.some((r) => r.claims.belowTeamRate) ? ['belowTeamRate'] : []),
-      ...(shown.some((r) => r.claims.belowIndividualRate) ? ['belowIndividualRate'] : []),
       ...(belowTeamCeiling(tier) ? ['belowTeamCeiling'] : []),
+      ...(coveredShown.length > 1 ? ['curve'] : []),
     ];
-    const claimsRendered = host.querySelectorAll(
-      '#compare .cmp-claim:not(.cmp-claim-none)',
-    ).length;
-    /* Where not one claim holds, the section says so rather than trailing off:
-       one standing line, and only where there is a covered size to name. */
-    const noClaimsRendered = host.querySelectorAll('#compare .cmp-claim-none').length;
-    const noClaimsExpected = claimsExpected.length === 0 && ourRows.length > 0 ? 1 : 0;
+    const claimsRendered = host.querySelectorAll('#compare .cmp-claim').length;
 
     /* Every figure inside a claim has to be one the offer can produce. This is
        the check that catches a number typed into the copy: the sentences are
        fragments with slots, and a fragment that grew a numeral would read
-       correctly and be wrong. */
+       correctly and be wrong.
+
+       The Individual seat rate is deliberately not in this set. It is a real
+       figure of the offer's and it is printed on the page, in the note under
+       the table, but no claim is allowed to carry it: a claim that did would be
+       the per head comparison this section was rebuilt to stop making, and it
+       would arrive wearing the offer's own number. So it is a stray figure
+       here, and it is the one figure in `OFFER.compare` that is. */
     const allowedFigures = new Set<string>([
       ...ourRows.flatMap((r) => [String(r.size), r.wantPerHead ?? '']),
       usd(tier.price),
       usd(OFFER.compare.team),
-      usd(OFFER.compare.individual),
       String(OFFER.compare.teamMax),
       usd(teamCeilingMonthly()),
     ]);
@@ -532,13 +629,14 @@ const PAYBACK_UNIT_MAX = 9;
       paybackMax: PAYBACK_UNIT_MAX,
       ourRowCount: ourRows.length,
       refRowCount: host.querySelectorAll('#compare .cmp-row-ref').length,
+      wantRefRowCount,
       badRows,
       uncoveredRows,
       badRefCells,
+      individualNamedInTable,
+      individualPairedRows,
       claimsExpected,
       claimsRendered,
-      noClaimsExpected,
-      noClaimsRendered,
       claimFigureCount: claimFigures.length,
       strayFigures,
       stale,

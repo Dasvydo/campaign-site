@@ -14,8 +14,9 @@
  *   5. Every locale file has every key, and none contains an em dash
  *   6. All seven sections render, in document order, in all three locales
  *   7. Every figure the offer injects reaches the line that left a slot for it,
- *      the comparison table prints the offer's own division, and only the
- *      claims the arithmetic supports at the shipped tier are on the page
+ *      the comparison table prints the offer's own division, only the claims
+ *      the arithmetic supports at the shipped tier are on the page, and the
+ *      Individual plan stays out of the table it was taken out of
  *   8. Nothing of the per seat model it replaced is still rendered anywhere
  *   9. The three ledger figures are the offer's own arithmetic, none of them
  *      blank, and the payback stays inside the range its unit strings carry
@@ -219,7 +220,15 @@ async function main() {
         p.tierIsCapped ? 'capped tier, counter expected' : 'uncapped tier, counter must be gone',
       );
       check(p.ourRowCount === 3, `    the table compares three head counts`, String(p.ourRowCount));
-      check(p.refRowCount === 2, `    beside the two published rates`, String(p.refRowCount));
+      /* One reference row, and the count is derived in the harness rather than
+         written here: the offer has exactly two figures a reference row may
+         print, and the table gives each row one figure per numeric column. A
+         second reference row is therefore a row the offer has no cells for. */
+      check(
+        p.refRowCount === p.wantRefRowCount,
+        `    beside the one firm plan a firm this size could otherwise buy`,
+        `${p.refRowCount} rendered, the offer's reference cells fill ${p.wantRefRowCount}`,
+      );
       check(
         p.badRows.length === 0,
         `    every per head figure is the offer's own division`,
@@ -232,22 +241,44 @@ async function main() {
       );
       check(
         p.badRefCells.length === 0,
-        `    the reference rows print the published rates unaltered`,
+        `    the reference row prints the published rate unaltered`,
         p.badRefCells.join(' | '),
+      );
+      /* The mistake this section was rebuilt to undo, asserted as an absence.
+         The table set our cost per head against the Individual seat rate, and
+         at the ten person floor this page advertises that is the comparison
+         this offer loses: the flat fee only falls past that seat rate at
+         fourteen people on the founding tier, seventeen on early, and never on
+         standard. So Individual has no row, and is named in prose under the
+         table with its published rate and no comparison.
+
+         Two checks, because there are two ways back. The first is the row by
+         name. The second is the shape of it: our per head figure and that seat
+         rate printed as two cells of one row, which reads as a comparison
+         whatever the row is called, and which would catch a reinstatement that
+         renamed the plan or dropped the name altogether. */
+      check(
+        p.individualNamedInTable.length === 0,
+        `    no row in the table names the Individual plan`,
+        p.individualNamedInTable.slice(0, 2).join(' | '),
+      );
+      check(
+        p.individualPairedRows.length === 0,
+        `    and nothing sets our cost a head against the Individual seat rate`,
+        p.individualPairedRows.slice(0, 2).join(' | '),
       );
       /* The gate, measured. The expectation is derived in the harness from the
          offer over the sizes the table actually showed, never listed here, so
          that advancing a tier moves this check with the page instead of
-         failing it. */
+         failing it. At most two now: the Team ceiling claim wherever the active
+         tier's flat fee is under what the largest firm Team will take pays, and
+         the curve claim wherever the table has two covered sizes to draw
+         between. There is no fallback line to count, because with the curve
+         ungated the claims list is never empty while the table is not. */
       check(
         p.claimsRendered === p.claimsExpected.length,
         `    only the claims the arithmetic supports are rendered`,
         `${p.claimsRendered} on the page, offer holds ${p.claimsExpected.length}: ${p.claimsExpected.join(',') || 'none'}`,
-      );
-      check(
-        p.noClaimsRendered === p.noClaimsExpected,
-        `    and the standing line appears only where none of them holds`,
-        `${p.noClaimsRendered} rendered, ${p.noClaimsExpected} expected`,
       );
       check(
         p.claimFigureCount > 0 && p.strayFigures.length === 0,
