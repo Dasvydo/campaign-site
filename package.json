@@ -6,6 +6,7 @@
   "description": "DoviLoop Teams campaign landing page at teams.doviloop.dev. English, Danish, Lithuanian.",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run verify:offer",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false",
@@ -15,7 +16,8 @@
     "verify:consent": "node scripts/verify-consent.mjs",
     "verify:offer": "node scripts/verify-offer.mjs",
     "audit:locales": "node scripts/audit-locales.mjs",
-    "verify:consent-layout": "node scripts/verify-consent-layout.mjs"
+    "verify:consent-layout": "node scripts/verify-consent-layout.mjs",
+    "verify": "npm run verify:offer && npm run verify:consent && npm run verify:payload && npm run audit:locales"
   },
   "dependencies": {
     "posthog-js": "^1.203.1",

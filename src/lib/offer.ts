@@ -138,6 +138,13 @@ function deepFreeze<T>(value: T): T {
  * may be written down. If a number below needs to change, it changes here and
  * the page follows; if a component needs a number, it imports a helper from
  * this file and never a literal.
+ *
+ * Advancing a tier by hand, which is the edit this file exists to survive:
+ * one, set `started` to the pilots actually running on that tier; two, set
+ * `held` to the setup calls booked but not yet begun; three, when a tier has
+ * no places left, move `declaredTier` on to the next tier along `order`; four,
+ * run `npm run verify:offer`, which the build runs for you and which refuses
+ * the edit, by name, if the counts and the declared tier disagree.
  */
 export const OFFER: Offer = deepFreeze({
   currency: 'USD',
@@ -615,6 +622,11 @@ export function validateOffer(offer: Offer = OFFER): string[] {
   return problems;
 }
 
+/** The problems as one block of text, so every caller reports them alike. */
+function problemReport(problems: string[]): string {
+  return `Invalid offer configuration:\n  - ${problems.join('\n  - ')}`;
+}
+
 /**
  * The build guard. Throws with every problem listed, because a build that stops
  * on the first one costs a second build to find the second one.
@@ -622,6 +634,64 @@ export function validateOffer(offer: Offer = OFFER): string[] {
 export function assertOfferValid(offer: Offer = OFFER): void {
   const problems = validateOffer(offer);
   if (problems.length > 0) {
-    throw new Error(`Invalid offer configuration:\n  - ${problems.join('\n  - ')}`);
+    throw new Error(problemReport(problems));
   }
+}
+
+/* -------------------------------------------------------------------------
+ * Running the guard, when the page is what is running
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Was this bundle built for whoever wrote the edit, or for whoever reads the
+ * page?
+ *
+ * Asked through an optional read rather than a plain one, because this module
+ * is bundled outside Vite as well: the verification script hands it to esbuild
+ * with nothing defined, and in a plain module `import.meta.env` is simply not
+ * there. A guard that threw while working out whether it was allowed to throw
+ * would be the worst of both worlds, so anything short of a definite yes is
+ * read as no, which is the branch that cannot take a page down.
+ */
+function builtForDevelopment(): boolean {
+  return (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV === true;
+}
+
+/**
+ * The guard, run once, the first time anything imports the offer.
+ *
+ * This is the only thing in this file that happens because the file was
+ * loaded, and it is here because the guard above was until now a function
+ * nobody called from the application: a hand edit that oversold a tier could
+ * reach a browser with nothing having objected. It runs at module scope rather
+ * than inside a helper deliberately. A check inside `activeTier` would run on
+ * every render for no new information, since the configuration is frozen and
+ * cannot change between two renders, and it would fail in whichever component
+ * happened to ask first rather than at the point the offer was loaded.
+ *
+ * Why it does two different things in two places, which is a choice and not an
+ * oversight.
+ *
+ * For whoever is editing, it throws. A thrown error at module scope stops the
+ * dev server dead with the list of problems in front of the person who just
+ * caused them, which is the fastest and least ignorable way to learn that the
+ * counts no longer add up.
+ *
+ * For whoever is reading the page, it reports and carries on. Throwing here
+ * would unmount the whole page, and a visitor who came from an ad would get a
+ * blank screen instead of an offer: a wrong count is a bad day, an empty page
+ * is the ad budget spent on nothing. The page is also not defenceless in that
+ * state, because `remainingSpots` clamps at none rather than printing a
+ * negative count, so the worst an oversold tier renders is a tier that reads
+ * as full. The build is where a bad configuration is supposed to be stopped,
+ * and it now is: the verification script runs ahead of the build through the
+ * prebuild hook, so a configuration this bad should never have been given a
+ * bundle at all. Reaching a visitor at all means that gate was bypassed, and
+ * the console line is the record of it.
+ */
+const problemsAtLoad = validateOffer();
+if (problemsAtLoad.length > 0) {
+  const report = problemReport(problemsAtLoad);
+  if (builtForDevelopment()) throw new Error(report);
+  console.error(report);
 }
