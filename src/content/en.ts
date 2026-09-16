@@ -475,7 +475,10 @@ export const en: Content = {
     founding: {
       eyebrow: { before: 'The ', after: ' places' },
       title: 'A trade, not a discount',
-      lede: 'We have no customers to point at yet. These places are how we get some, so the lower fee is what we pay for your name on the work.',
+      lede: {
+        noProofYet: 'We have no customers to point at yet.',
+        trade: 'These places are a trade: a lower fee for your name on the work.',
+      },
       spots: { label: 'Places still open:', of: ' of ' },
       spotsClosed: 'The places that came with a trade are taken. The fee below is the standard one, and there is nothing to trade for it.',
       givesTitle: 'What you give',

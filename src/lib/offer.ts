@@ -321,6 +321,38 @@ export function belowIndividualRate(
 }
 
 /**
+ * How many pilots have started, across the whole ladder.
+ *
+ * Started, never held. A held place is a booked call, and a booked call is not
+ * a customer anyone could be pointed at. Summed over every tier rather than
+ * read off the active one, because the active tier's own count says nothing
+ * about the tiers already spent: at `early` the founding places are full by
+ * definition, and a question about whether this business has customers is a
+ * question about all of them.
+ */
+export function pilotsStarted(offer: Offer = OFFER): number {
+  return offer.order.reduce((n, id) => n + (offer.tiers[id]?.started ?? 0), 0);
+}
+
+/**
+ * May the page still say it has no customers to point at?
+ *
+ * The one sentence on this page that makes a factual claim about the state of
+ * the business rather than about the offer, which is why it is gated here
+ * beside the claims about price rather than left standing in the copy. It is
+ * true the day the page goes up and false from the first pilot onward, and
+ * nothing about rendering it could ever notice: a sentence does not stop
+ * reading like a sentence when it stops being true.
+ *
+ * Gated on the count and not on the tier. The tier is the coarser signal and
+ * would have left the claim standing through the first four founding pilots,
+ * every one of them a customer we could by then point at.
+ */
+export function noCustomersYet(offer: Offer = OFFER): boolean {
+  return pilotsStarted(offer) === 0;
+}
+
+/**
  * Is our whole monthly bill below what the largest Team firm pays?
  *
  * Independent of headcount, because both sides of it are fixed. It is true at

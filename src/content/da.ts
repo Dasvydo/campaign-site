@@ -478,7 +478,10 @@ export const da: Content = {
     founding: {
       eyebrow: { before: 'De ', after: ' pladser' },
       title: 'En byttehandel, ikke en rabat',
-      lede: 'Vi har endnu ingen kunder at pege på. De her pladser er måden, vi får nogle på, så den lavere pris er det, vi betaler for jeres navn på arbejdet.',
+      lede: {
+        noProofYet: 'Vi har endnu ingen kunder at pege på.',
+        trade: 'De her pladser er en byttehandel: en lavere pris for jeres navn på arbejdet.',
+      },
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
       spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Prisen nedenfor er den almindelige, og der er ikke noget at bytte for den.',
       givesTitle: 'Det, I giver',

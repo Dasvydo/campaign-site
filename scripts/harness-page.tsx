@@ -303,7 +303,11 @@ const smallestSoldTo = (): number => {
          whole trade once the capped tiers are spent. Never both. */
       ...(capped
         ? [
-            c.price.founding.title, c.price.founding.lede, c.price.founding.spots.label,
+            c.price.founding.title,
+            /* The half of the lede that is true at any count. The other half is a
+               claim about this business, gated on the offer, and it is asserted in
+               both of its states by harness-claim rather than assumed here. */
+            c.price.founding.lede.trade, c.price.founding.spots.label,
             c.price.founding.givesTitle, ...c.price.founding.gives,
             c.price.founding.getsTitle, c.price.founding.note,
             ...(setupWaived ? [c.price.founding.gets.setup] : []),

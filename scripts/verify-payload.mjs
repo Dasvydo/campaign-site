@@ -370,6 +370,102 @@ async function main() {
       );
     }
 
+    /* 3d-bis. the claim about us, in a state the shipped offer cannot reach -- */
+    /* The founding block opens by saying we have no customers to point at. That
+       is the only sentence on the page that is a statement about this business
+       rather than about the offer, and it is the only one that can go false on
+       a day nobody touches the page.
+
+       Rendering the page as shipped cannot check it. The gate is true for the
+       offer on disk and stays true until the first pilot starts, so the
+       sentence appears whether or not anyone remembered to gate it. The defect
+       is invisible in the only state the bundle normally has.
+
+       So the harness is built twice against the real component and the real
+       copy: once as the offer stands, and once with a founding pilot started,
+       patched into the source as the bundler reads it. A second copy of the
+       offer would drift from the first; a patch that stops matching throws. */
+    console.log('\nThe claim about us, rendered in both states');
+    const startedPilot = (src) => {
+      const out = src.replace(/(id: 'founding'[^\n]*?)started: 0/, '$1started: 1');
+      if (out === src) {
+        throw new Error(
+          'could not start a founding pilot in src/lib/offer.ts: the tier line has changed shape, ' +
+            'so this check is no longer testing what it says it is',
+        );
+      }
+      return out;
+    };
+
+    const runClaim = async (label, patch) => {
+      const outfile = join(work, `claim-${label}.js`);
+      await build({
+        entryPoints: [join(root, 'scripts/harness-claim.tsx')],
+        bundle: true,
+        outfile,
+        format: 'iife',
+        platform: 'browser',
+        jsx: 'automatic',
+        target: 'es2020',
+        logLevel: 'silent',
+        define: {
+          'import.meta.env.DEV': 'false',
+          'import.meta.env.VITE_LEAD_WEBHOOK_URL': JSON.stringify(ENDPOINT),
+          'import.meta.env.VITE_BOOKING_URL': JSON.stringify('https://calendar.example/mock'),
+          'import.meta.env.VITE_POSTHOG_KEY': '""',
+          'import.meta.env.VITE_POSTHOG_HOST': '""',
+          'import.meta.env.VITE_META_PIXEL_ID': '""',
+          'process.env.NODE_ENV': '"development"',
+        },
+        loader: { '.css': 'empty' },
+        plugins: patch
+          ? [
+              {
+                name: 'start-a-pilot',
+                setup(b) {
+                  b.onLoad({ filter: /src[\\/]lib[\\/]offer\.ts$/ }, (args) => ({
+                    contents: patch(readFileSync(args.path, 'utf8')),
+                    loader: 'ts',
+                  }));
+                },
+              },
+            ]
+          : undefined,
+      });
+      w.eval(readFileSync(outfile, 'utf8'));
+      await w.__RUN_CLAIM__();
+      return w.__CLAIM_RESULTS__;
+    };
+
+    for (const [label, patch, wantGate] of [
+      ['as shipped', null, true],
+      ['one pilot started', startedPilot, false],
+    ]) {
+      const rows = await runClaim(label.replace(/\s+/g, '-'), patch);
+      console.log(`  ${label}`);
+      for (const r of rows) {
+        const where = `/${r.locale === 'en' ? '' : r.locale}`;
+        check(
+          r.gate === wantGate,
+          `    ${where} the offer ${wantGate ? 'allows' : 'refuses'} the claim`,
+          `${r.started} started, gate ${r.gate}`,
+        );
+        check(
+          r.claimShown === wantGate,
+          `    ${where} the claim is ${wantGate ? 'on' : 'off'} the page`,
+          r.lede,
+        );
+        /* The half that never goes false. A gate that took the whole lede with
+           it would leave the founding block opening on a heading. */
+        check(r.tradeShown, `    ${where} the trade is explained either way`, r.lede);
+        check(
+          r.lede === r.wantLede,
+          `    ${where} and the lede is exactly those sentences, with nothing left over`,
+          `"${r.lede}" against "${r.wantLede}"`,
+        );
+      }
+    }
+
     /* 3e. nothing left of the model this page replaced -------------------- */
     /* The check that would have caught a half-finished migration. The old page
        sold seats: 890 USD a month for ten of them, 89 USD each, and a minimum

@@ -478,7 +478,10 @@ export const lt: Content = {
     founding: {
       eyebrow: { before: 'Vietos, kol galioja ', after: ' etapas' },
       title: 'Mainai, o ne nuolaida',
-      lede: 'Kol kas neturime klientų, į kuriuos galėtume parodyti. Šios vietos yra būdas jų turėti, tad mažesnis mokestis yra tai, ką mokame už Jūsų vardą prie šio darbo.',
+      lede: {
+        noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
+        trade: 'Šios vietos yra mainai: mažesnis mokestis už Jūsų vardą prie šio darbo.',
+      },
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
       spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Žemiau nurodytas mokestis yra standartinis, ir nėra dėl ko mainytis.',
       givesTitle: 'Ką duodate Jūs',

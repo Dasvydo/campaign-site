@@ -6,6 +6,7 @@ import {
   formatCount,
   formatMoney,
   isCapped,
+  noCustomersYet,
   remainingSpots,
   setupDue,
 } from '../lib/offer';
@@ -330,7 +331,15 @@ export function Price({
               <h3 className="price-sub price-sub-lead" id="price-founding-h">
                 {c.price.founding.title}
               </h3>
-              <p className="price-subnote">{c.price.founding.lede}</p>
+              {/* The admission comes off the page by itself. It is true today
+                  and false from the first pilot onward, and the offer is the
+                  only thing that knows which, so the offer decides. What is
+                  left standing is the sentence that explains the trade, which
+                  is true at any count and reads on its own. */}
+              <p className="price-subnote">
+                {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
+                {c.price.founding.lede.trade}
+              </p>
 
               <dl className="price-fees" aria-labelledby="price-founding-h">
                 <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 0 }}>

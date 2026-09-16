@@ -488,7 +488,15 @@ export interface Content {
       /** "<before><the active tier's name><after>". */
       eyebrow: { before: string; after: string };
       title: string;
-      lede: string;
+      /** Two sentences, because only one of them is always true.
+
+          `noProofYet` is a claim about this business and not about the offer:
+          it holds until the first pilot starts and is false from then on, with
+          nothing at render time able to tell. `offer.noCustomersYet()` decides
+          whether it appears. `trade` explains what the places are and does not
+          depend on how many firms have taken one, so it is always printed and
+          has to read as a whole sentence on its own. */
+      lede: { noProofYet: string; trade: string };
       /** A label, then the count, then the total: "Places still open: 3 of 5".
           The numeral ends its clause and nothing after it agrees with it, so
           the line is right at one place left as well as at five. One is the

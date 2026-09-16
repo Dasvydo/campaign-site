@@ -137,6 +137,7 @@ const {
   OFFER, activeTier, remainingSpots, perPerson, comparison, belowTeamRate,
   belowIndividualRate, belowTeamCeiling, teamCeilingMonthly, breakEvenHeadcount,
   setupDue, firstMonthTotal, coversHeadcount, validateOffer, assertOfferValid,
+  pilotsStarted, noCustomersYet,
   usd,
 } = offer;
 
@@ -489,6 +490,52 @@ for (const { label, match, make } of brokenCases) {
   }
   check(threw, `and the build guard refuses to pass ${label}`);
 }
+
+/* 9b. the one claim about the business rather than the offer -------------- */
+/* "We have no customers to point at yet" is the only sentence on the page that
+   is a statement about us. It cannot be checked by rendering it: it goes false
+   while reading exactly as it always did, on a day nobody edits the page. So
+   the states it has to be right in are walked here.
+
+   The fourth of these is the one the gate exists for. Gating on the tier would
+   have passed it: founding is still the active tier with four pilots running,
+   and the sentence would have been on a live page contradicting four
+   customers. */
+console.log('\nThe claim that we have nobody to point at yet');
+check(pilotsStarted(OFFER) === 0 && noCustomersYet(OFFER),
+  'the shipped offer has started nobody, so the page may still say so');
+
+const one = clone();
+one.tiers.founding.started = 1;
+check(pilotsStarted(one) === 1 && !noCustomersYet(one),
+  'one pilot started takes the claim off the page',
+  `started ${pilotsStarted(one)}`);
+
+const held = clone();
+held.tiers.founding.held = held.tiers.founding.total;
+check(pilotsStarted(held) === 0 && noCustomersYet(held),
+  'a held place is a booked call, not a customer, so the claim stands');
+
+const nearlyFull = clone();
+nearlyFull.tiers.founding.started = nearlyFull.tiers.founding.total - 1;
+check(activeTier(nearlyFull).id === 'founding' && !noCustomersYet(nearlyFull),
+  'the claim is gone well before the tier turns over, which the tier alone would miss',
+  `${pilotsStarted(nearlyFull)} started, still on ${activeTier(nearlyFull).id}`);
+
+const onEarly = clone();
+onEarly.tiers.founding.started = onEarly.tiers.founding.total;
+onEarly.declaredTier = 'early';
+check(!noCustomersYet(onEarly),
+  'and it is gone on every tier above founding',
+  `started ${pilotsStarted(onEarly)}`);
+
+const late = clone();
+late.tiers.founding.started = late.tiers.founding.total;
+late.tiers.early.started = late.tiers.early.total;
+late.declaredTier = 'standard';
+check(pilotsStarted(late) === late.tiers.founding.total + late.tiers.early.total,
+  'pilots are counted across the whole ladder, not just the tier on show',
+  `${pilotsStarted(late)} started`);
 
 /* 10. the ladder advancing by hand ---------------------------------------- */
 console.log('\nAdvancing a tier, which is a hand edit and nothing else');
