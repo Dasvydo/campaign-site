@@ -590,7 +590,7 @@ export const da: Content = {
 
     individualNote: {
       before:
-        'Individual er det andet abonnement på produktsiden. Det er til én person, det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
+        'Individual er abonnementet til én person på produktsiden. Det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
       after: ' om måneden.',
     },
 

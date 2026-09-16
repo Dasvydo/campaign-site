@@ -589,7 +589,7 @@ export const lt: Content = {
 
     individualNote: {
       before:
-        'Individual yra kitas planas produkto svetainėje. Jis skirtas vienam žmogui, perkamas po vieną vietą, ir kiekviena vieta turi savo atskirą žinių bazę. Viena vieta kainuoja ',
+        'Individual yra planas vienam žmogui produkto svetainėje. Jis perkamas po vieną vietą, ir kiekviena vieta turi savo atskirą žinių bazę. Viena vieta kainuoja ',
       after: ' per mėnesį.',
     },
 

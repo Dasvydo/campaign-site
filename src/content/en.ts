@@ -584,7 +584,7 @@ export const en: Content = {
 
     individualNote: {
       before:
-        'Individual is the other plan on the product site. It is for one person, bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
+        'Individual is the plan for one person on the product site. It is bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
       after: ' a month.',
     },
 

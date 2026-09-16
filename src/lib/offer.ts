@@ -162,6 +162,28 @@ export const OFFER: Offer = deepFreeze({
   covers: 20,
   draftCap: 8000,
   setupFee: 500,
+  /* Somebody else's published prices, and what was left out of them.
+
+     doviloop.dev sells three plans, all read on the date below. Two of them
+     are recorded here, with their published rates, because those are the two
+     the page sets beside this offer.
+
+     The third is Managed, and it is the omission worth knowing about. It is a
+     firm level plan sold from ten seats up, priced by the seat, with its own
+     onboarding fee waived on annual payment. Two things follow. It is sold at
+     exactly the head counts this campaign targets, so a reader of the
+     comparison could buy it instead of this. And because it is priced by the
+     seat, its bill for a firm rises with head count while this offer's does
+     not, which is the same curve the comparison section already argues.
+
+     It is also the model this page used to sell, which is what the stale price
+     scan in the page harness is still looking for. Leaving it out of the table
+     is a choice about what this page argues rather than a reading of the
+     source, and if the two offers are ever meant to stand side by side it
+     belongs in the table rather than in this comment.
+
+     No figure of its own is written down here on purpose: every rate this file
+     carries appears exactly once, and the build guard enforces it. */
   compare: {
     individual: 29,
     team: 59,
