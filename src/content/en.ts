@@ -40,7 +40,7 @@ export const en: Content = {
     },
 
     cta: 'Check if we are a fit',
-    ctaNote: 'From 890 USD a month for ten seats. First two weeks free.',
+    ctaNote: 'The first two weeks are free. No card, and nothing taken.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {
@@ -52,7 +52,7 @@ export const en: Content = {
     },
 
     bar: {
-      text: 'From 890 USD a month for ten seats, plus 500 USD setup once. First two weeks free.',
+      text: 'First two weeks free. No card needed.',
       cta: 'Check the fit',
     },
 
@@ -388,21 +388,24 @@ export const en: Content = {
     title: 'What it is worth',
     about: 'about\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'time saved, against what a seat costs' },
-      { amount: '430', unit: '\u00a0USD', label: 'saved per month, for each seat' },
-      { amount: '40', unit: '\u00a0days', label: 'to pay back setup and the first month' },
+      { key: 'multiple', unit: 'x', label: 'time saved, against what the firm pays' },
+      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'saved per month, for each person' },
+      { key: 'payback', unit: '\u00a0days', label: 'to pay back what it costs to start' },
     ],
     lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
     moreLabel: 'Show the arithmetic',
     basis: [
-      { term: 'about 5x', def: 'Assumed time saved, against the seat cost.' },
       {
-        term: 'about 430 USD',
-        def: 'Assumed hours saved at a mid level salary, converted from euros.',
+        term: 'The multiple',
+        def: 'The saving below, across the firm, against the one monthly fee the firm pays.',
       },
       {
-        term: 'about 40 days',
-        def: 'The 500 USD setup fee and the first month of seats, against the saving above.',
+        term: 'The saving',
+        def: 'Assumed hours saved at a mid level salary, converted from euros. One person, one month.',
+      },
+      {
+        term: 'The payback',
+        def: 'What the firm pays to start, against the saving above.',
       },
     ],
     notes: [
@@ -421,9 +424,9 @@ export const en: Content = {
     ],
     notes: {
       seats: {
-        before: 'This offer starts at ',
-        mark: '10 seats',
-        mid: '. Below that, the plan on ',
+        before: 'One fee covers ',
+        mark: 'the whole firm',
+        mid: ', and it is priced for ten people and up. Below that, the plan on ',
         link: 'doviloop.dev',
         after: ' does the same drafting and costs a great deal less.',
       },
@@ -441,53 +444,148 @@ export const en: Content = {
 
     feesTitle: 'The fees',
     fees: [
-      { term: 'Per seat', figure: '89 USD', per: 'per month', note: 'One seat is one person. Ten is the minimum.' },
-      { term: 'Setup', figure: '500 USD', per: 'once', note: 'A workshop on your team’s own real mail.' },
+      {
+        term: 'The firm',
+        per: 'per month',
+        note: 'One fee for everyone who writes mail. It does not move when you hire.',
+      },
+      {
+        term: 'Setup',
+        per: 'once',
+        note: 'A workshop on your team’s own real mail.',
+        waived: 'Waived',
+      },
     ],
 
+    covers: {
+      title: 'What the fee covers',
+      people: {
+        before: 'Up to ',
+        after: ' people in the firm. Names go on and come off as the team changes.',
+      },
+      drafts: {
+        before: 'A pooled ',
+        after: ' drafts a month, shared across everyone. Nobody has their own allowance to run out of.',
+      },
+      note: 'Past either of those we will say so and talk about the next size up, before anything is billed.',
+    },
+
+    founding: {
+      eyebrow: 'The founding places',
+      title: 'A trade, not a discount',
+      lede: 'We have no customers to point at yet. The founding places are how we get some, so the lower fee is what we pay for your name on the work.',
+      spots: { before: 'Of ', mid: ' founding places, ', after: ' are still open.' },
+      spotsClosed: 'The founding places are taken. The fee below is the standard one, and there is nothing to trade for it.',
+      givesTitle: 'What you give',
+      gives: [
+        'A testimonial for the product site, in your own words.',
+        'A case study at sixty days, with figures you are happy to show.',
+        'Your logo on the product site.',
+        'Two feedback calls in the first two months.',
+      ],
+      getsTitle: 'What you get',
+      gets: [
+        'The founding monthly fee for the firm, instead of the standard one.',
+        'The setup fee waived.',
+      ],
+      note: 'If you would rather not be named, take the standard fee and nothing else about the product changes.',
+    },
+
     freeTitle: 'The first two weeks are free',
-    freeNote: 'You spend the workshop time, nothing else.',
+    freeNote: 'You spend the workshop time, nothing else. We do not take a card to start.',
     termsLabel: 'Show the terms',
     terms: [
       { t: 'Workshop and setup included.', n: 'Neither is billed afterwards.' },
-      { t: 'Your card goes on at the start.', n: 'Untouched while the fortnight runs.' },
-      { t: 'Stop inside the two weeks and you pay nothing.', n: 'No seat fee, no setup fee, no invoice.' },
-      { t: 'Seats are month to month.', n: 'On or off as the team changes.' },
+      { t: 'No card, and nothing taken.', n: 'We do not ask for one to start the fortnight.' },
+      { t: 'Stop inside the two weeks and you pay nothing.', n: 'No monthly fee, no setup fee, no invoice.' },
+      { t: 'The fee is month to month.', n: 'No year to sign, and no head count to keep up.' },
     ],
 
     whenTitle: 'What happens, and when',
     stops: [
       {
         day: 'Day 0',
-        note: 'Card on file. Nothing taken.',
-        state: 'On file, not charged',
-        say: 'Day 0. The card is on file and nothing is charged.',
+        note: 'Nothing taken. No card needed.',
+        state: 'Nothing taken yet',
+        say: {
+          before: 'Day 0. Nothing is taken and no card is needed. The monthly total reads ',
+          after: '.',
+        },
       },
       {
         day: 'Day 14',
         note: 'The first charge.',
         state: 'Charged from here',
-        say: 'Day 14. The first charge is taken. The monthly total is 890 USD.',
+        say: { before: 'Day 14. The first charge is taken. The monthly total is ', after: '.' },
       },
       {
         day: 'Stop here',
         note: 'Any time inside the fortnight.',
         state: 'Not charged at all',
-        say: 'Stop here. The monthly total is struck out and reads 0 USD.',
+        say: { before: 'Stop here. The monthly total is struck out and reads ', after: '.' },
       },
     ],
     total: {
-      term: '10 seats',
-      sub: 'The smallest team we take.',
-      figure: '890 USD',
+      term: 'The whole firm',
+      sub: { before: 'One fee, up to ', after: ' people.' },
       per: 'per month',
       zero: '0 USD',
     },
 
     askEyebrow: 'Before you book',
-    ask: { before: 'This offer starts at 10 seats. Below that, the plan on ', link: 'doviloop.dev', after: ' does the same drafting and costs a great deal less.' },
+    ask: {
+      before: 'This offer is priced for firms of ten and up. Below that, the plan on ',
+      link: 'doviloop.dev',
+      after: ' does the same drafting and costs a great deal less.',
+    },
     cta: 'Check if we are a fit',
     ctaNote: 'Two weeks free. Stop inside them and you pay nothing.',
+  },
+
+  compare: {
+    eyebrow: 'The same fee, per person',
+    title: 'What each person costs',
+    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, beside the two plans anyone can buy on the product site.',
+
+    planLabel: 'Plan',
+    perHeadLabel: 'Each person',
+    firmLabel: 'The firm',
+
+    ourPlan: 'This offer',
+    ourSize: { before: '', after: ' people' },
+
+    individualPlan: 'Individual',
+    individualSize: 'One person',
+    teamPlan: 'Team',
+    teamSize: { before: 'Up to ', after: ' people' },
+
+    claimsTitle: 'What that works out as',
+    claims: {
+      belowTeamRate: {
+        before: 'At this size each person here costs ',
+        mid: ' a month. The Team rate on doviloop.dev is ',
+        after: ' a person.',
+      },
+      belowIndividualRate: {
+        before: 'At this size each person here costs ',
+        mid: ' a month. The Individual rate on doviloop.dev is ',
+        after: ' a person, and that is the cheapest seat on the product site.',
+      },
+      belowTeamCeiling: {
+        before: 'The whole firm pays ',
+        mid: ' a month here. The largest firm Team will sell to is ',
+        then: ' people, and that firm pays ',
+        after: ' a month.',
+      },
+    },
+    noClaims: 'At this size the sum does not come out under either published rate, so we are not going to say that it does.',
+
+    sourceNote: {
+      before: 'The Individual and Team rates are the published prices on ',
+      link: 'doviloop.dev',
+      mid: ', read on ',
+      after: '. We have not adjusted them.',
+    },
   },
 
   form: {

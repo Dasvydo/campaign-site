@@ -8,6 +8,9 @@
  *   - No AI-flavoured phrasing. No "unlock", no "supercharge", no "seamless".
  *   - Short declarative sentences. Concrete nouns. Write like a person.
  *   - Do not invent testimonials, named customers or pilots. None exist.
+ *   - No prices. Not one. Every amount the page says out loud is read from
+ *     src/lib/offer.ts at render time, and the copy carries the words around
+ *     it. Where a number belongs in a sentence, the type gives it a slot.
  */
 
 /** The five things a firm knows, and the five switches that turn them off.
@@ -62,10 +65,18 @@ export interface DemoDesk {
   clauses: DemoClause[];
 }
 
+/** One figure in the ledger.
+    `key` says where the figure comes from, because two of the three are now
+    arithmetic on the offer and only one is copy. `multiple` and `payback` are
+    computed at render time from the flat fee, so they carry no `amount` here
+    and a price change cannot leave a stale number on the page. `saving` is an
+    input to the model rather than a price of ours, so it is written down. */
 export interface NumberRow {
-  /** The figure itself, without the hedge and without the unit. */
-  amount: string;
-  /** What follows it: "x", " EUR", " days". Leading space where one is wanted. */
+  key: 'multiple' | 'saving' | 'payback';
+  /** The figure itself, without the hedge and without the unit. Present only
+      on the `saving` row; the others are filled from the offer. */
+  amount?: string;
+  /** What follows it: "x", " USD", " days". Leading space where one is wanted. */
   unit: string;
   label: string;
 }
@@ -83,11 +94,15 @@ export interface AudienceCopy {
   line: string;
 }
 
+/** One line on the fee sheet. No figure: the amount is read from the offer at
+    render time, so the sheet cannot disagree with the total below it. `waived`
+    is the word shown in place of the amount where the tier gives that fee away,
+    and only the setup line carries one. */
 export interface PriceFee {
   term: string;
-  figure: string;
   per: string;
   note: string;
+  waived?: string;
 }
 
 export interface PriceTerm {
@@ -101,7 +116,66 @@ export interface PriceStop {
   day: string;
   note: string;
   state: string;
-  say: string;
+  /** What the live region says, split around the figure the total is showing
+      at this stop: the monthly fee, or the struck out zero on the last one. A
+      struck out figure is a picture, and the announcement has to say the
+      amount out loud rather than point at it. */
+  say: { before: string; after: string };
+}
+
+/**
+ * The per person table, and the three claims that sit under it.
+ *
+ * Nothing here holds a figure. Our own cost a head is arithmetic on the flat
+ * fee, and the two rates it is set against are doviloop.dev's published prices;
+ * both are injected at render time, so a price that moves cannot leave a
+ * sentence on this page saying otherwise.
+ *
+ * The three claims are independent on purpose. Each one is rendered only where
+ * the arithmetic makes it true at the size and the tier on show, each reads on
+ * its own, and none of them refers to the others. The keys match the claim
+ * names the offer resolves, so wiring one to the other is a lookup and not a
+ * judgement. Where none of them holds, `noClaims` is what the section says.
+ */
+export interface CompareCopy {
+  eyebrow: string;
+  title: string;
+  lede: string;
+
+  /** Column heads, in the order the table reads them. */
+  planLabel: string;
+  perHeadLabel: string;
+  firmLabel: string;
+
+  /** Our own rows, one per head count on show. `size` reads "<count> people",
+      and `before` is empty in English only because English puts the count
+      first. A language that does not needs it. */
+  ourPlan: string;
+  ourSize: { before: string; after: string };
+
+  /** The two published rates, as reference rows. `teamSize` reads
+      "Up to <teamMax> people", which is the ceiling Team will sell to. */
+  individualPlan: string;
+  individualSize: string;
+  teamPlan: string;
+  teamSize: { before: string; after: string };
+
+  claimsTitle: string;
+  claims: {
+    /** "<before><our cost a head><mid><the Team rate><after>" */
+    belowTeamRate: { before: string; mid: string; after: string };
+    /** "<before><our cost a head><mid><the Individual rate><after>" */
+    belowIndividualRate: { before: string; mid: string; after: string };
+    /** "<before><our monthly fee><mid><the Team seat ceiling><then><what a firm
+        that size pays on Team><after>" */
+    belowTeamCeiling: { before: string; mid: string; then: string; after: string };
+  };
+  /** Stands in for the claims where not one of them is true at this size. */
+  noClaims: string;
+
+  /** Whose prices the two reference rows are, and when we read them.
+      "<before><doviloop.dev><mid><the date they were read><after>" */
+  sourceNote: { before: string; link: string; mid: string; after: string };
 }
 
 export interface SelectOption {
@@ -252,12 +326,48 @@ export interface Content {
     };
   };
 
+  /** One flat fee for the whole firm. Every amount below is read from the
+      offer, so this block holds the sentences and the labels and not one
+      price. */
   price: {
     eyebrow: string;
     title: string;
 
     feesTitle: string;
+    /** The monthly fee for the firm, then the one off setup fee. */
     fees: [PriceFee, PriceFee];
+
+    /** What the flat fee covers. Both ceilings are firm level rather than per
+        person, and both numbers come from the offer. */
+    covers: {
+      title: string;
+      /** "<before><people covered><after>" */
+      people: { before: string; after: string };
+      /** "<before><drafts a month, pooled><after>" */
+      drafts: { before: string; after: string };
+      note: string;
+    };
+
+    /** The founding places, written as a trade rather than a discount: four
+        things given, two things got back.
+        Each line of `gets` is rendered on its own terms, because the second of
+        them is only true on a tier that actually waives the setup fee.
+        The counter is rendered only where the tier has a finite number of
+        places. On the uncapped tier there is no trade left to offer, and
+        `spotsClosed` is the one line that stands in for the whole block. */
+    founding: {
+      eyebrow: string;
+      title: string;
+      lede: string;
+      /** "<before><places in all><mid><places still open><after>" */
+      spots: { before: string; mid: string; after: string };
+      spotsClosed: string;
+      givesTitle: string;
+      gives: [string, string, string, string];
+      getsTitle: string;
+      gets: [string, string];
+      note: string;
+    };
 
     freeTitle: string;
     freeNote: string;
@@ -268,13 +378,20 @@ export interface Content {
     /** Three stops on the timeline. The last one is the one that strikes the
         monthly total out and replaces it with nothing. */
     stops: [PriceStop, PriceStop, PriceStop];
-    total: { term: string; sub: string; figure: string; per: string; zero: string };
+    /** `sub` splits around the number of people the fee covers. There is no
+        `figure`: the monthly total is the offer's, read at render time. `zero`
+        is what replaces it when the last stop strikes it out. */
+    total: { term: string; sub: { before: string; after: string }; per: string; zero: string };
 
     askEyebrow: string;
     ask: { before: string; link: string; after: string };
     cta: string;
     ctaNote: string;
   };
+
+  /** What each person costs here, set beside the two published rates on
+      doviloop.dev. */
+  compare: CompareCopy;
 
   form: {
     eyebrow: string;
