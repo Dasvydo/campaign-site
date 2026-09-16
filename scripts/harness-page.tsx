@@ -18,7 +18,7 @@
  * missing. Two of its three rows are arithmetic on the offer and the third is
  * the assumption the other two are computed from, so the numerals are read back
  * out of the DOM and set against what `modelledMultiple` and
- * `modelledPaybackDays` return. Nothing about the ledger is asserted from the
+ * `modelledMultiple` returns. Nothing about the ledger is asserted from the
  * words beside it, because the words were all still correct on the day the
  * figures went blank.
  */
@@ -36,7 +36,6 @@ import {
   comparison,
   isCapped,
   modelledMultiple,
-  modelledPaybackDays,
   remainingSpots,
   setupDue,
   formatCount,
@@ -138,17 +137,6 @@ const smallestSoldTo = (): number => {
   }
   return 0;
 };
-
-/* The window the day unit beside the payback can carry.
-
-   src/content/types.ts records that the form shipped in all three locales is
-   the plural that reads correctly from two to nine, and modelledPaybackDays
-   repeats the warning for whoever next moves a price. A payback of one, or of
-   ten and above, is not a new numeral beside the same word: it is a line that
-   wants rewriting in three languages, and a suite that let it through would be
-   trading a visible failure here for wrong Danish on a public page. */
-const PAYBACK_UNIT_MIN = 2;
-const PAYBACK_UNIT_MAX = 9;
 
 (globalThis as unknown as { __RUN_PAGE__: () => Promise<void> }).__RUN_PAGE__ = async () => {
   const results: Array<Record<string, unknown>> = [];
@@ -412,7 +400,7 @@ const PAYBACK_UNIT_MAX = 9;
     /* The ledger, read back out of the DOM rather than trusted.
 
        This is the section that already shipped blank. When the content contract
-       moved the multiple and the payback off written amounts, the component
+       moved the multiple off a written amount, the component
        went on printing the amount that was no longer there, and the page read
        "about  x" and "about  days" in all three locales for two commits. Every
        suite passed throughout, because the labels were still on the page and a
@@ -430,7 +418,6 @@ const PAYBACK_UNIT_MAX = 9;
       c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
     );
     const wantMultiple = modelledMultiple(saving, MODEL_FIRM, tier);
-    const wantPayback = modelledPaybackDays(saving, MODEL_FIRM, tier);
     /* Two of these are counts and one is an amount, which is the split
        <Numbers /> makes and the reason the saving is asked of the parsed number
        rather than handed back out of the copy: the component prints what it
@@ -438,7 +425,6 @@ const PAYBACK_UNIT_MAX = 9;
        with a component that had stopped doing that. */
     const wantFigure = (key: string, amount?: string): string => {
       if (key === 'multiple') return wantMultiple === null ? '' : figure(wantMultiple);
-      if (key === 'payback') return wantPayback === null ? '' : figure(wantPayback);
       return saving > 0 && amount ? cell(saving) : '';
     };
 
@@ -466,15 +452,6 @@ const PAYBACK_UNIT_MAX = 9;
     const ledgerBad = ledger
       .filter((r) => r.amount !== '' && (r.amount !== r.want || r.line !== r.wantLine))
       .map((r) => `${r.key}: "${r.line}", offer says "${r.wantLine}"`);
-
-    /* The payback as the page printed it rather than as the helper computed it,
-       because the unit string is sitting beside the printed one. */
-    const paybackRow = ledger.find((r) => r.key === 'payback');
-    const paybackOnPage = Number(paybackRow?.amount ?? '');
-    const paybackInUnitRange =
-      Number.isInteger(paybackOnPage) &&
-      paybackOnPage >= PAYBACK_UNIT_MIN &&
-      paybackOnPage <= PAYBACK_UNIT_MAX;
 
     /* The comparison table, read back out of the DOM rather than trusted. Each
        of our rows carries the head count it is arguing about, so the arithmetic
@@ -755,16 +732,10 @@ const PAYBACK_UNIT_MAX = 9;
         ? String(saving)
         : `"${c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? ''}" does not parse to a figure`,
       ledgerSavingIsNumeric: Number.isFinite(saving) && saving > 0,
-      ledgerModelled: wantMultiple !== null && wantPayback !== null,
+      ledgerModelled: wantMultiple !== null,
       wantMultiple,
-      wantPayback,
       ledgerBlank,
       ledgerBad,
-      paybackOnPage: paybackRow?.amount ?? '',
-      paybackUnit: paybackRow?.unit ?? '',
-      paybackInUnitRange,
-      paybackMin: PAYBACK_UNIT_MIN,
-      paybackMax: PAYBACK_UNIT_MAX,
       ourRowCount: ourRows.length,
       refRowCount: host.querySelectorAll('#compare .cmp-row-ref').length,
       wantRefRowCount,

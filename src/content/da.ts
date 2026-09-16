@@ -395,7 +395,6 @@ export const da: Content = {
     rows: [
       { key: 'multiple', unit: 'x', label: 'sparet tid, holdt op mod det, virksomheden betaler' },
       { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, for hver person' },
-      { key: 'payback', unit: '\u00a0dage', label: 'til at tjene opstarten hjem' },
     ],
     lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
     moreLabel: 'Vis regnestykket',
@@ -407,10 +406,6 @@ export const da: Content = {
       {
         term: 'Besparelsen',
         def: 'Antagne sparede timer ved en mellemløn, omregnet fra euro. Én person, én måned.',
-      },
-      {
-        term: 'Tilbagebetalingen',
-        def: 'Det, virksomheden betaler for at komme i gang, holdt op mod den samme besparelse på tværs af ti personer.',
       },
     ],
     notes: [

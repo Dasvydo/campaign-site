@@ -395,7 +395,6 @@ export const lt: Content = {
     rows: [
       { key: 'multiple', unit: 'x', label: 'sutaupyto laiko, palyginti su tuo, kiek moka įmonė' },
       { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienam žmogui' },
-      { key: 'payback', unit: '\u00a0dienos', label: 'kol atsiperka tai, ką kainuoja pradėti' },
     ],
     lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
     moreLabel: 'Parodyti skaičiavimą',
@@ -407,10 +406,6 @@ export const lt: Content = {
       {
         term: 'Sutaupymas',
         def: 'Numanomos sutaupytos valandos esant vidutinio lygio atlyginimui, perskaičiuota iš eurų. Vienas žmogus, vienas mėnuo.',
-      },
-      {
-        term: 'Atsipirkimas',
-        def: 'Tai, kiek įmonė sumoka pradėdama, palyginti su tuo pačiu sutaupymu dešimčiai žmonių.',
       },
     ],
     notes: [

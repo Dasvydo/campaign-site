@@ -19,7 +19,7 @@
  *      Individual plan stays out of the table it was taken out of
  *   8. Nothing of the per seat model it replaced is still rendered anywhere
  *   9. The three ledger figures are the offer's own arithmetic, none of them
- *      blank, and the payback stays inside the range its unit strings carry
+ *      blank
  *
  *   npm run verify:payload
  */
@@ -318,8 +318,7 @@ async function main() {
        nothing anywhere looked at a numeral.
 
        So the numerals are asserted, per locale and per row, against what
-       `modelledMultiple` and `modelledPaybackDays` return for the saving that
-       locale's copy carries. The expectation is read out of those helpers
+       `modelledMultiple` returns for the saving that locale's copy carries. The expectation is read out of those helpers
        rather than recomputed in the harness on purpose: a check that redoes the
        arithmetic is a second implementation of it, and it would go on agreeing
        with a wrong one. Nothing here is asserted from the words beside the
@@ -329,8 +328,8 @@ async function main() {
     for (const p of pages) {
       console.log(`  /${p.locale === 'en' ? '' : p.locale}`);
       check(
-        p.ledgerRowCount === 3 && p.ledgerRowCount === p.ledgerRowsInContent,
-        `    the ledger renders three rows`,
+        p.ledgerRowCount === 2 && p.ledgerRowCount === p.ledgerRowsInContent,
+        `    the ledger renders two rows`,
         `${p.ledgerRowCount} rendered, ${p.ledgerRowsInContent} in the content file`,
       );
       /* <Numbers /> keeps the modelled firm to itself and does not export it, so
@@ -353,8 +352,8 @@ async function main() {
       );
       check(
         p.ledgerModelled,
-        `    and the offer returns both computed figures from it`,
-        `multiple ${p.wantMultiple === null ? 'null' : p.wantMultiple}, payback ${p.wantPayback === null ? 'null' : p.wantPayback}`,
+        `    and the offer returns the computed figure from it`,
+        `multiple ${p.wantMultiple === null ? 'null' : p.wantMultiple}`,
       );
       /* The failure that shipped, named as itself. Asserted on its own rather
          than through the comparison below, because a blank expectation and a
@@ -368,18 +367,6 @@ async function main() {
         p.ledgerBad.length === 0,
         `    every ledger figure is the offer's own arithmetic, in its own line`,
         p.ledgerBad.join(' | '),
-      );
-      /* src/content/types.ts records that the day unit shipped in all three
-         locales is the plural form that reads correctly from two to nine, and
-         modelledPaybackDays repeats the warning. A payback of one, or of ten and
-         above, is not a new numeral beside the same word: it is a line that
-         wants rewriting in three languages. A config change that moves the
-         figure out of that window fails here rather than rendering wrong
-         Danish. */
-      check(
-        p.paybackInUnitRange,
-        `    the payback stays inside the range its unit strings can carry`,
-        `${p.paybackOnPage || 'blank'} against the unit "${p.paybackUnit}", which is the form for ${p.paybackMin} to ${p.paybackMax}`,
       );
     }
 

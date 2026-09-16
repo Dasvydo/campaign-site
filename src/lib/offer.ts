@@ -413,20 +413,6 @@ export function breakEvenHeadcount(
 }
 
 /**
- * A month, taken as thirty days, for the payback figure alone.
- *
- * The saving the page models is written by the month and the payback is
- * written in days, so one of the two has to be converted and the conversion
- * needs a length of month. Thirty is the round month, the one a reader checks
- * the sum with in their own head, and it is a convention rather than a
- * measurement. That is what the hedge in front of every figure in the ledger,
- * and the line under it saying these are a model and not a measurement, are
- * there to carry. It is not a price, so it belongs here as a constant of the
- * model rather than in the offer.
- */
-const DAYS_PER_MONTH = 30;
-
-/**
  * Are these inputs something we are willing to divide with?
  *
  * The saving is not ours: it is an assumption written into the copy, and the
@@ -479,37 +465,6 @@ export function modelledMultiple(
   if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
   if (!(tier.price > 0)) return null;
   return Math.round((savingPerPersonPerMonth * headcount) / tier.price);
-}
-
-/**
- * How long the modelled saving takes to pay back what the firm pays to start.
- *
- * What it costs to start is `firstMonthTotal`, which is the fee plus whatever
- * setup the tier does not waive, so the figure gets worse the moment a tier
- * stops waiving it. That is the honest direction for it to move, and it is why
- * this reads the first invoice rather than the monthly fee.
- *
- * A word of warning for whoever next moves a price. The unit beside this
- * figure is a counted noun in every locale, and types.ts records that the
- * forms shipped are the ones that are right from two to nine. With the shipped
- * ladder the answer lands inside that range at all three tiers. A change that
- * puts it at one, or at ten and above, wants those unit strings rewritten in
- * all three languages, not merely a new number here.
- */
-export function modelledPaybackDays(
-  savingPerPersonPerMonth: number,
-  headcount: number,
-  tier: TierConfig = activeTier(),
-  offer: Offer = OFFER,
-): number | null {
-  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
-  const toStart = firstMonthTotal(tier, offer);
-  // Nothing to pay back is not a payback of no days, it is a figure with no
-  // meaning, and the sentence beside it would be about a cost that was not
-  // charged.
-  if (!(toStart > 0)) return null;
-  const savedPerDay = (savingPerPersonPerMonth * headcount) / DAYS_PER_MONTH;
-  return Math.round(toStart / savedPerDay);
 }
 
 /**

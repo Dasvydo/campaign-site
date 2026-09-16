@@ -75,25 +75,22 @@ export interface DemoDesk {
 }
 
 /** One figure in the ledger.
-    `key` says where the figure comes from, because two of the three are now
-    arithmetic on the offer and only one is copy. `multiple` and `payback` are
-    computed at render time from the flat fee, so they carry no `amount` here
-    and a price change cannot leave a stale number on the page. `saving` is an
-    input to the model rather than a price of ours, so it is written down. */
+    `key` says where the figure comes from, because one of the two is
+    arithmetic on the offer and the other is copy. `multiple` is computed at
+    render time from the flat fee, so it carries no `amount` here and a price
+    change cannot leave a stale number on the page. `saving` is an input to the
+    model rather than a price of ours, so it is written down. */
 export interface NumberRow {
-  key: 'multiple' | 'saving' | 'payback';
+  key: 'multiple' | 'saving';
   /** The figure itself, without the hedge and without the unit. Present only
       on the `saving` row; the others are filled from the offer. */
   amount?: string;
-  /** What follows the figure: "x", " USD", " days". Leading space where one is
-      wanted. This is the one counted noun left standing next to a numeral on
-      the page, because a ledger line is a figure and its unit and nothing else
-      reads like one. It is safe because the reachable counts are narrow: the
-      multiple and the saving take units that do not inflect, and with the
-      shipped offer the payback lands between three and nine days at every tier,
-      so a form that is right across two to nine is right everywhere the page
-      can reach. If the offer ever puts that figure at one, or above ten, this
-      line wants rewriting rather than translating. */
+  /** What follows the figure: "x", " USD". Leading space where one is wanted.
+      Neither unit still standing here inflects in any of the three languages,
+      which is what makes a bare unit beside a numeral safe on this line. The
+      one that did was the day count beside the payback, and it went with the
+      row. A unit added here that does inflect brings the whole counted noun
+      problem back with it, and wants a sentence rather than a slot. */
   unit: string;
   label: string;
 }
@@ -421,12 +418,19 @@ export interface Content {
     title: string;
     /** "about ", set before every figure, so the hedge is written once. */
     about: string;
-    rows: [NumberRow, NumberRow, NumberRow];
+    /* Pinned to a length on purpose: the ledger is a fixed set of figures, not
+       a list that grows, and a locale quietly carrying a different number of
+       them is a page that says something different in one language. Two since
+       the payback came off. */
+    rows: [NumberRow, NumberRow];
     /** "These are a model, not a measurement." The mark is highlighted. */
     lede: { before: string; mark: string; after: string };
     /** The disclosure that carries the basis of every figure above. */
     moreLabel: string;
-    basis: [BasisRow, BasisRow, BasisRow];
+    /* One entry per figure above, same length for the same reason: a figure
+       with no basis is an unexplained number, and a basis with no figure is an
+       explanation of something the reader cannot see. */
+    basis: [BasisRow, BasisRow];
     notes: [string, string];
   };
 

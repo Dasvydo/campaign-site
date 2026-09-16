@@ -1,12 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Content, NumberRow } from '../content/types';
-import {
-  activeTier,
-  formatCount,
-  formatMoney,
-  modelledMultiple,
-  modelledPaybackDays,
-} from '../lib/offer';
+import { activeTier, formatCount, formatMoney, modelledMultiple } from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -22,7 +16,7 @@ import { Disclosure } from './Disclosure';
 const MODEL_FIRM = 10;
 
 /**
- * Three figures, and the arithmetic behind them one click away.
+ * Two figures, and the arithmetic behind them one click away.
  *
  * Every figure is hedged with "about" and none of them is a measurement, which
  * the lede says out loud rather than burying in small print. There are no
@@ -94,35 +88,33 @@ export function Numbers({ c }: { c: Content }) {
     };
   }, []);
 
-  // Two of the three figures are arithmetic on the offer and one is copy, so
+  // One of the two figures is arithmetic on the offer and the other is copy, so
   // the tier is read here and the saving is read back out of the row that
   // prints it. Keeping the saving in one place means the disclosure that states
-  // it and the figures computed from it cannot disagree, and anything that does
-  // not parse to a figure leaves the helpers with nothing to work from, so the
+  // it and the figure computed from it cannot disagree, and anything that does
+  // not parse to a figure leaves the helper with nothing to work from, so the
   // ledger prints a blank rather than a guess.
   const tier = activeTier();
   const saving = Number.parseFloat(
     c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
   );
   const multiple = modelledMultiple(saving, MODEL_FIRM, tier);
-  const payback = modelledPaybackDays(saving, MODEL_FIRM, tier);
 
   /* The figure for one row, or an empty string where there is none to print.
 
-     Two formatters, because two of these rows are not the same kind of thing as
-     the third. The multiple and the payback are counts, of times over and of
-     days, and neither has a decimal part to write. The saving is an amount in
-     the currency its unit names, so it keeps whatever cents it was written with
-     and gets the decimal mark of the language reading it.
+     Two formatters, because the two rows are not the same kind of thing. The
+     multiple is a count, of times over, with no decimal part to write. The
+     saving is an amount in the currency its unit names, so it keeps whatever
+     cents it was written with and gets the decimal mark of the language
+     reading it.
 
      The saving goes back out through the formatter rather than straight out of
-     the copy it came from, which is the one behavioural change here. It is read
-     as a number a line above to compute the other two, so printing the string
-     it was parsed from would let the page show one figure and argue from
-     another. Today they are the same, and this is what keeps them so. */
+     the copy it came from. It is read as a number a line above to compute the
+     multiple, so printing the string it was parsed from would let the page show
+     one figure and argue from another. Today they are the same, and this is
+     what keeps them so. */
   const figureFor = (r: NumberRow): string => {
     if (r.key === 'multiple') return multiple === null ? '' : formatCount(multiple, c.htmlLang);
-    if (r.key === 'payback') return payback === null ? '' : formatCount(payback, c.htmlLang);
     return saving > 0 && r.amount ? formatMoney(saving, c.htmlLang) : '';
   };
 

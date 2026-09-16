@@ -392,7 +392,6 @@ export const en: Content = {
     rows: [
       { key: 'multiple', unit: 'x', label: 'time saved, against what the firm pays' },
       { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'saved per month, for each person' },
-      { key: 'payback', unit: '\u00a0days', label: 'to pay back what it costs to start' },
     ],
     lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
     moreLabel: 'Show the arithmetic',
@@ -404,10 +403,6 @@ export const en: Content = {
       {
         term: 'The saving',
         def: 'Assumed hours saved at a mid level salary, converted from euros. One person, one month.',
-      },
-      {
-        term: 'The payback',
-        def: 'What the firm pays to start, against that same saving across ten people.',
       },
     ],
     notes: [
