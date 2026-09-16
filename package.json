@@ -13,6 +13,7 @@
     "mock": "node scripts/mock-webhook.mjs",
     "verify:payload": "node scripts/verify-payload.mjs",
     "verify:consent": "node scripts/verify-consent.mjs",
+    "verify:offer": "node scripts/verify-offer.mjs",
     "audit:locales": "node scripts/audit-locales.mjs",
     "verify:consent-layout": "node scripts/verify-consent-layout.mjs"
   },
