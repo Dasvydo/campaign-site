@@ -43,7 +43,7 @@ export const da: Content = {
     },
 
     cta: 'Se om vi passer sammen',
-    ctaNote: 'Fra 890 USD om måneden for ti pladser. De første to uger er gratis.',
+    ctaNote: 'De første to uger er gratis. Intet kort, og ingen betaling.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {
@@ -55,7 +55,7 @@ export const da: Content = {
     },
 
     bar: {
-      text: 'Fra 890 USD om måneden for ti pladser, plus 500 USD i opsætning én gang. De første to uger er gratis.',
+      text: 'De første to uger er gratis.',
       cta: 'Se om det passer',
     },
 
@@ -391,21 +391,24 @@ export const da: Content = {
     title: 'Hvad det er værd',
     about: 'cirka\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'sparet tid, holdt op mod prisen per plads' },
-      { amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, per plads' },
-      { amount: '40', unit: '\u00a0dage', label: 'til at tjene opsætning og første måned hjem' },
+      { key: 'multiple', unit: 'x', label: 'sparet tid, holdt op mod det, virksomheden betaler' },
+      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, for hver person' },
+      { key: 'payback', unit: '\u00a0dage', label: 'til at tjene opstarten hjem' },
     ],
     lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
     moreLabel: 'Vis regnestykket',
     basis: [
-      { term: 'cirka 5x', def: 'Antaget sparet tid, holdt op mod prisen per plads.' },
       {
-        term: 'cirka 430 USD',
-        def: 'Antagne sparede timer ved en mellemlønning, omregnet fra euro.',
+        term: 'Faktoren',
+        def: 'Besparelsen nedenfor ganget med ti personer, holdt op mod den ene månedspris, virksomheden betaler. Ti personer er den mindste virksomhed, vi sælger det her til, så et tal, der holder der, holder i alle størrelser derover.',
       },
       {
-        term: 'cirka 40 dage',
-        def: 'Opsætningen på 500 USD og første måneds pladser, holdt op mod besparelsen ovenfor.',
+        term: 'Besparelsen',
+        def: 'Antagne sparede timer ved en mellemløn, omregnet fra euro. Én person, én måned.',
+      },
+      {
+        term: 'Tilbagebetalingen',
+        def: 'Det, virksomheden betaler for at komme i gang, holdt op mod den samme besparelse på tværs af ti personer.',
       },
     ],
     notes: [
@@ -424,9 +427,9 @@ export const da: Content = {
     ],
     notes: {
       seats: {
-        before: 'Tilbuddet starter ved ',
-        mark: '10 pladser',
-        mid: '. Under det gør planen på ',
+        before: 'Én pris dækker ',
+        mark: 'hele virksomheden',
+        mid: ', og den er sat til ti personer og opefter. Under det gør planen på ',
         link: 'doviloop.dev',
         after: ' det samme arbejde og koster væsentligt mindre.',
       },
@@ -442,55 +445,166 @@ export const da: Content = {
     eyebrow: 'Hvad det koster, og hvad I risikerer',
     title: 'Hvad det koster',
 
+    tierNames: { founding: 'allerførste', early: 'tidlige', standard: 'almindelige' },
+
     feesTitle: 'Priserne',
     fees: [
-      { term: 'Per plads', figure: '89 USD', per: 'om måneden', note: 'En plads er en person. Ti er minimum.' },
-      { term: 'Opsætning', figure: '500 USD', per: 'én gang', note: 'En workshop på jeres egen rigtige post.' },
+      {
+        term: 'Virksomheden',
+        per: 'om måneden',
+        note: 'Én pris for alle, der skriver mails. Den ændrer sig ikke, når I ansætter flere.',
+      },
+      {
+        term: 'Opsætning',
+        per: 'én gang',
+        note: 'En workshop på jeres egen rigtige post.',
+        waived: {
+          label: 'Bortfalder',
+          say: { before: 'Opsætningsprisen på ', after: ' bortfalder på det her trin.' },
+        },
+      },
     ],
+
+    covers: {
+      title: 'Hvad prisen dækker',
+      people: {
+        label: 'Personer dækket, op til:',
+        note: 'Navne kommer til og falder fra, efterhånden som holdet ændrer sig.',
+      },
+      drafts: {
+        label: 'Udkast om måneden, delt på tværs af hele virksomheden:',
+        note: 'Fælles for alle. Ingen har sin egen pulje, der kan løbe tør.',
+      },
+      note: 'Kommer I over en af de to, siger vi det og finder ud af det sammen med jer, inden der bliver faktureret noget.',
+    },
+
+    founding: {
+      eyebrow: { before: 'De ', after: ' pladser' },
+      title: 'En byttehandel, ikke en rabat',
+      lede: 'Vi har endnu ingen kunder at pege på. De her pladser er måden, vi får nogle på, så den lavere pris er det, vi betaler for jeres navn på arbejdet.',
+      spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
+      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Prisen nedenfor er den almindelige, og der er ikke noget at bytte for den.',
+      givesTitle: 'Det, I giver',
+      gives: [
+        'En udtalelse til produktsiden, med jeres egne ord.',
+        'En case efter tres dage, med tal, I gerne vil vise frem.',
+        'Jeres logo på produktsiden.',
+        'To feedbackmøder i de første to måneder.',
+      ],
+      getsTitle: 'Det, I får',
+      gets: {
+        fee: {
+          before: 'Prisen om måneden for hele virksomheden på de ',
+          after: ' pladser, ikke den almindelige pris.',
+        },
+        setup: 'Opsætningsprisen bortfalder helt.',
+      },
+      note: 'Vil I helst ikke nævnes, tager I den almindelige pris, og intet andet ved produktet ændrer sig.',
+    },
 
     freeTitle: 'De første to uger er gratis',
     freeNote: 'I bruger tiden på workshoppen, intet andet.',
     termsLabel: 'Vis vilkårene',
     terms: [
       { t: 'Workshop og opsætning er med.', n: 'Ingen af delene faktureres bagefter.' },
-      { t: 'Kortet lægges ind fra start.', n: 'Det røres ikke, mens de fjorten dage løber.' },
-      { t: 'Stopper I inden for de to uger, betaler I intet.', n: 'Ingen pladspris, ingen opsætning, ingen faktura.' },
-      { t: 'Pladser er måned til måned.', n: 'Til og fra, efterhånden som holdet ændrer sig.' },
+      { t: 'Intet kort, og ingen betaling.', n: 'Betalingsoplysninger kommer senere, efter I har sagt ja.' },
+      { t: 'Siger I nej, betaler I intet.', n: 'Der faktureres ikke noget, og der er ikke noget at opsige.' },
+      { t: 'Prisen er måned til måned.', n: 'Ingen binding på et år, og intet fast antal medarbejdere at leve op til.' },
     ],
 
     whenTitle: 'Hvad der sker, og hvornår',
     stops: [
       {
         day: 'Dag 0',
-        note: 'Kortet er lagt ind. Intet er trukket.',
-        state: 'Lagt ind, ikke trukket',
-        say: 'Dag 0. Kortet er lagt ind, og der trækkes intet.',
+        note: 'Workshoppen køres. Udkastene begynder at komme tilbage.',
+        state: 'Intet faktureret endnu',
+        say: {
+          before: 'Dag 0. Workshoppen køres, og udkastene begynder at komme tilbage. Der faktureres ikke noget. Månedsprisen lyder på ',
+          after: '.',
+        },
       },
       {
         day: 'Dag 14',
-        note: 'Første træk.',
-        state: 'Trækkes herfra',
-        say: 'Dag 14. Første træk sker. Månedsprisen er 890 USD.',
+        note: 'Et opsamlingsmøde. Siger I ja, faktureres den første måned.',
+        state: 'Faktureres efter et ja',
+        say: {
+          before: 'Dag 14. Der er et opsamlingsmøde, og den første måned faktureres kun, hvis I siger ja. Månedsprisen er ',
+          after: '.',
+        },
       },
       {
-        day: 'Stop her',
-        note: 'Når som helst inden for de fjorten dage.',
-        state: 'Trækkes slet ikke',
-        say: 'Stop her. Månedsprisen er streget ud og lyder på 0 USD.',
+        day: 'Siger I nej',
+        note: 'Når som helst frem til det møde.',
+        state: 'Faktureres slet ikke',
+        say: { before: 'Siger I nej, bliver månedsprisen streget ud og lyder på ', after: '.' },
       },
     ],
     total: {
-      term: '10 pladser',
-      sub: 'Det mindste hold, vi tager.',
-      figure: '890 USD',
+      term: 'Hele virksomheden',
+      sub: { label: 'Personer dækket, op til:' },
       per: 'om måneden',
       zero: '0 USD',
     },
 
     askEyebrow: 'Inden I booker',
-    ask: { before: 'Tilbuddet starter ved 10 pladser. Under det gør planen på ', link: 'doviloop.dev', after: ' det samme arbejde og koster væsentligt mindre.' },
+    ask: {
+      before: 'Tilbuddet er sat til virksomheder på ti personer og opefter. Under det gør planen på ',
+      link: 'doviloop.dev',
+      after: ' det samme arbejde og koster væsentligt mindre.',
+    },
     cta: 'Se om vi passer sammen',
-    ctaNote: 'To uger gratis. Stopper I inden for dem, betaler I intet.',
+    ctaNote: 'To uger gratis. Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
+  },
+
+  compare: {
+    eyebrow: 'Regnestykket per person',
+    title: 'Hvad hver person koster',
+    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, ved siden af de to planer, alle kan købe på produktsiden.',
+
+    planLabel: 'Abonnement',
+    perHeadLabel: 'Per person',
+    firmLabel: 'Virksomheden',
+
+    ourPlan: 'Det her tilbud',
+    ourSize: { label: 'Personer:' },
+
+    individualPlan: 'Individual-planen',
+    individualSize: 'Én person',
+    teamPlan: 'Team-planen',
+    teamSize: { label: 'Personer, højst:' },
+
+    claimsTitle: 'Hvad det svarer til',
+    claims: {
+      belowTeamRate: {
+        size: 'I en virksomhed på ',
+        before: ' koster hver person her ',
+        mid: ' om måneden. Team-taksten på doviloop.dev er ',
+        after: ' per person.',
+      },
+      belowIndividualRate: {
+        size: 'Er I ',
+        before: ' på holdet, ligger prisen per person her på ',
+        mid: ' om måneden. Det er under Individual-taksten på doviloop.dev, som er ',
+        after: ' per person.',
+      },
+      belowTeamCeiling: {
+        before: 'Hele virksomheden betaler ',
+        mid: ' om måneden her, i alle de størrelser, prisen dækker. Team-planen sælges ikke til flere end ',
+        then: ', og en virksomhed af den størrelse betaler ',
+        after: ' om måneden.',
+      },
+    },
+    noClaims: {
+      size: 'I en virksomhed på ',
+      after: ' kommer regnestykket ikke under nogen af de offentliggjorte takster.',
+    },
+
+    sourceNote: {
+      before: 'Taksterne for Individual og Team er de offentliggjorte priser på ',
+      link: 'doviloop.dev',
+      mid: ', aflæst ',
+      after: '. Vi har ikke justeret dem.',
+    },
   },
 
   form: {
@@ -555,7 +669,7 @@ export const da: Content = {
     gmailNote:
       'Du skrev, at teamet ikke sidder i Outlook. Det er helt fint. Gmail og andre klienter sættes op per team i onboardingen, og vi gennemgår på mødet, hvad det kræver.',
     tooSmall: {
-      title: 'Det her starter ved 10 brugere.',
+      title: 'Det her starter ved ti personer.',
       body: 'I er under det i dag, så et møde ville bruge tyve minutter af din tid på at nå frem til det samme svar. Planen på doviloop.dev laver den samme skrivning for mindre teams og koster væsentligt mindre. Vend tilbage, når teamet vokser, så tager vi den derfra.',
       pricingCta: 'Se planen til mindre teams',
       nurtureTitle: 'Vil du hellere have den korte version på mail?',
@@ -564,7 +678,7 @@ export const da: Content = {
       nurtureCta: 'Send mig de tre mails',
       nurtureSubject: 'Send mig de tre mails',
       nurtureMailBody:
-        'Send mig gerne de tre korte mails om at skære ned på gentagen post. Vi er under 10 brugere indtil videre.',
+        'Send mig gerne de tre korte mails om at skære ned på gentagen post. Vi er et mindre firma indtil videre.',
     },
     deliveryWarning:
       'Vores system nåede ikke at bekræfte dine svar, så vi har gemt dem på den her enhed og sender dem igen automatisk. Der er ikke noget gået tabt. Book endelig mødet nedenfor alligevel.',
