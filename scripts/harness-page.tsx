@@ -179,7 +179,77 @@ const PAYBACK_UNIT_MAX = 9;
       crashed = err instanceof Error ? err.message : String(err);
     }
 
-    const text = host.textContent ?? '';
+    const stepOneText = host.textContent ?? '';
+    /* Six questions, across two screens.
+
+       The form asks three and then three, so a count of what is on screen
+       would come back three and be confidently wrong about the thing it is
+       measuring. This walks the form instead: count the first screen, answer
+       it, turn the page, count the second, then put the form back where it was
+       found so every measurement below still sees the page a visitor arrives
+       at. Labelling is checked on both screens for the same reason: half a
+       form whose labels are real proves nothing about the other half.
+
+       The answers used to get past the first screen are read off the contract,
+       never written down here, so a change to the routing table cannot leave
+       this walking into a dead end it then reports as a missing question. */
+    const countQuestions = (): number =>
+      host.querySelectorAll('#qualifier input:not([type="radio"])').length +
+      host.querySelectorAll('#qualifier [role="radiogroup"]').length;
+    const labelsHold = (): boolean =>
+      Array.from(host.querySelectorAll<HTMLInputElement>('#qualifier input')).every(
+        (el) =>
+          Boolean(el.id && host.querySelector(`label[for="${el.id}"]`)) ||
+          Boolean(el.closest('label')),
+      );
+    const tick = (name: string, value: string) =>
+      host
+        .querySelector<HTMLInputElement>(`#qualifier input[type="radio"][name="${name}"][value="${value}"]`)
+        ?.click();
+
+    const stepsShown = host.querySelectorAll('#qualifier .qualifier-step').length;
+    const stepOneQuestions = countQuestions();
+    const stepOneLabelled = labelsHold();
+    /* Which questions each screen actually holds, by the label the reader sees.
+       Counting alone would be satisfied by two screens that both showed all
+       six, and a split that does not split is the whole thing this is for. */
+    const labelsOn = (): string[] =>
+      Array.from(host.querySelectorAll('#qualifier .qualifier-field .qualifier-label')).map((el) =>
+        (el.textContent ?? '').trim(),
+      );
+    const stepOneAsks = labelsOn();
+
+    const qualifyingBand = TEAM_SIZES.find((t) => route(t, 'outlook').outcome !== 'too_small');
+    await act(async () => {
+      tick('team_size', qualifyingBand ?? '');
+      tick('email_client', 'outlook');
+      tick('role', 'owner_partner');
+    });
+    await act(async () => {
+      host.querySelector<HTMLFormElement>('#qualifier form')?.dispatchEvent(
+        new Event('submit', { bubbles: true, cancelable: true }),
+      );
+    });
+
+    const stepTwoText = host.textContent ?? '';
+    const stepTwoAsks = labelsOn();
+    const stepTwoQuestions = countQuestions();
+    const stepTwoLabelled = labelsHold();
+    /* The page turn itself. If Continue did nothing the counts above are both
+       of the same screen, which would otherwise add up to six and pass. */
+    const stepTurned = stepTwoQuestions > 0 && !host.querySelector('#qualifier [role="radiogroup"]');
+
+    await act(async () => {
+      host.querySelector<HTMLButtonElement>('#qualifier .qualifier-back')?.click();
+    });
+    const backWorks = Boolean(host.querySelector('#qualifier [role="radiogroup"]'));
+
+    /* Both screens, joined on a newline so that nothing can match across the
+       seam. Every check that reads the page reads this: a string the form
+       only shows on its second screen is still a string the page shows, and
+       English leaking onto the second screen of /da would otherwise be
+       invisible to the one check that exists to catch it. */
+    const text = stepOneText + '\n' + stepTwoText;
     const c = content[locale];
     const [firmFee, setupFee] = c.price.fees;
     const tierName = c.price.tierNames[tier.id];
@@ -646,18 +716,24 @@ const PAYBACK_UNIT_MAX = 9;
       ),
       /* Every control is labelled, by a label[for] on the three text fields and
          by the label that wraps each radio. Both are real label elements; an
-         aria-label would not count here on purpose. */
-      labelledControls: Array.from(
-        host.querySelectorAll<HTMLInputElement>('#qualifier input'),
-      ).every(
-        (el) =>
-          Boolean(el.id && host.querySelector(`label[for="${el.id}"]`)) ||
-          Boolean(el.closest('label')),
-      ),
-      /* Six questions: three written and three chosen from radio groups. */
-      questionCount:
-        host.querySelectorAll('#qualifier input:not([type="radio"])').length +
-        host.querySelectorAll('#qualifier [role="radiogroup"]').length,
+         aria-label would not count here on purpose. Measured on both screens
+         by the walk above. */
+      labelledControls: stepOneLabelled && stepTwoLabelled,
+      /* Six questions: three chosen from radio groups, then three written. */
+      questionCount: stepOneQuestions + stepTwoQuestions,
+      stepsShown,
+      stepTurned,
+      backWorks,
+      /* The three closed questions first, the contact details second, and
+         neither screen carrying any of the other's. */
+      stepOneAsks,
+      stepTwoAsks,
+      stepOneIsTheQuestions:
+        stepOneAsks.join('|') ===
+        [c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel].join('|'),
+      stepTwoIsTheDetails:
+        stepTwoAsks.join('|') ===
+        [c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel].join('|'),
       blankKeys,
       missing,
       unassembled,

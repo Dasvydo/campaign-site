@@ -555,6 +555,19 @@ export interface Content {
     roleLabel: string;
     roleOptions: SelectOption[];
     choosePrompt: string;
+    /** The two screens the six questions are split across.
+
+        Names rather than a count, and the reason is the same one that took the
+        numerals out of the price band: "Step 1 of 2" puts a numeral inside a
+        noun phrase that has to agree with it, in two languages where it does.
+        A name for each screen says more anyway, and `aria-current` carries
+        which one is open without either language having to write it down. */
+    steps: string[];
+    /** Names the list of steps for a screen reader. */
+    stepsLabel: string;
+    /** Moves to the second screen. Not a submit: nothing is sent yet. */
+    continueCta: string;
+    backCta: string;
     submit: string;
     submitting: string;
     required: string;

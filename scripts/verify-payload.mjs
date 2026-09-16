@@ -190,6 +190,22 @@ async function main() {
       );
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 6, `    the qualifier asks exactly 6 questions`, String(p.questionCount));
+      /* Six across two screens, not six on one. The count above is the sum of
+         a walk, so it needs the walk to have actually gone somewhere: without
+         these three it would be satisfied by counting one screen twice. */
+      check(p.stepsShown === 2, `    the form is presented as two steps`, String(p.stepsShown));
+      check(p.stepTurned, `    answering the questions turns the page to the contact details`);
+      check(
+        p.stepOneIsTheQuestions,
+        `    the first step asks the three questions and nothing else`,
+        p.stepOneAsks.join(' | '),
+      );
+      check(
+        p.stepTwoIsTheDetails,
+        `    the second step asks the three contact details and nothing else`,
+        p.stepTwoAsks.join(' | '),
+      );
+      check(p.backWorks, `    and Back returns to the questions`);
       check(p.labelledControls, `    every control has a real label element`);
     }
 
@@ -388,6 +404,18 @@ async function main() {
     for (const r of results) {
       check(r.outcomeMatches, `${r.scenario} -> ${r.expectedOutcome}`, `got ${r.shownOutcome}`);
       check(r.resultTitleRendered, `  result screen for "${r.scenario}" renders its own copy`);
+      check(r.reachedStepTwo, `  "${r.scenario}" reaches the second step before anything is sent`);
+      check(
+        r.events.filter((e) => e === 'form_submit').length === 1,
+        `  "${r.scenario}" submits exactly once, not once per step`,
+        r.events.join(','),
+      );
+      check(
+        r.events.indexOf('form_step') > r.events.indexOf('form_start') &&
+          r.events.indexOf('form_step') < r.events.indexOf('form_submit'),
+        `  "${r.scenario}" fires form_step between form_start and form_submit`,
+        r.events.join(','),
+      );
     }
 
     const gmailScenario = results.find((r) => r.expectedOutcome === 'gmail_on_request');
@@ -518,7 +546,7 @@ async function main() {
     /* 9. every PostHog event name exists in the source --------------------- */
     console.log('\nPostHog event names');
     const srcFiles = ['src/LocalePage.tsx', 'src/lib/analytics.ts'].map((p) => readFileSync(join(root, p), 'utf8')).join('\n');
-    for (const name of ['page_view', 'demo_desk', 'pricing_view', 'form_start', 'form_submit', 'qualified_shown', 'too_small_shown', 'booking_click']) {
+    for (const name of ['page_view', 'demo_desk', 'pricing_view', 'form_start', 'form_step', 'form_submit', 'qualified_shown', 'too_small_shown', 'booking_click']) {
       check(srcFiles.includes(`'${name}'`), `${name} is wired`);
     }
   } finally {

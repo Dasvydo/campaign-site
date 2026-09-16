@@ -2368,6 +2368,45 @@
   margin:0 0 40px; max-width:54ch;
   font-size:17px; line-height:1.6; color:var(--muted);
 }
+
+/* The two screens, as a list rather than a progress bar. There is no
+   percentage to report and nothing to animate: there are two names, and one of
+   them is where the reader is standing. Focus is sent to the current one after
+   every page turn, so it takes a focus ring although it is not a control. */
+.qualifier-steps{
+  margin:0 0 40px; padding:0; list-style:none;
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px;
+  font-size:13px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--q-muted);
+}
+.qualifier-step{ position:relative; padding-left:18px }
+.qualifier-step::before{
+  content:""; position:absolute; left:0; top:.42em;
+  width:8px; height:8px; border-radius:50%;
+  border:1px solid currentColor;
+}
+.qualifier-step.is-on{ color:var(--q-ink); font-weight:500 }
+.qualifier-step.is-on::before{ background:currentColor }
+.qualifier-step:focus-visible{
+  outline:3px solid var(--focus); outline-offset:4px; border-radius:2px;
+}
+
+/* Quiet beside the primary, because going back is a correction and a
+   correction should not compete with the thing it is a correction to. Still a
+   real button with a real hit area: on a phone it sits under a thumb. */
+.qualifier-back{
+  display:inline-flex; align-items:center;
+  min-height:52px; padding:14px 4px;
+  font-family:inherit; font-size:16px; line-height:1.2;
+  color:var(--q-muted); background:none; border:0; cursor:pointer;
+  text-decoration:underline; text-underline-offset:4px;
+  text-decoration-color:var(--q-taupe);
+  transition:color var(--t-in) var(--e-out);
+}
+.qualifier-back:hover{ color:var(--q-ink) }
+.qualifier-back:focus-visible{
+  outline:3px solid var(--focus); outline-offset:4px; border-radius:3px;
+}
 .qualifier-field{
   display:grid;
   grid-template-columns:var(--qualifier-rail) minmax(0,1fr);

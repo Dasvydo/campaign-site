@@ -19,6 +19,12 @@ export type EventName =
   | 'demo_desk'
   | 'pricing_view'
   | 'form_start'
+  /* Reaching the second screen of the form. With form_start and form_submit
+     either side of it, an abandoned form can be attributed to the screen it was
+     abandoned on: no form_step means they left on the questions, form_step with
+     no form_submit means they left on the contact details. Fired on the way
+     forward only. Going back is a different signal and is not this one. */
+  | 'form_step'
   | 'form_submit'
   | 'qualified_shown'
   | 'too_small_shown'

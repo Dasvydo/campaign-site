@@ -1,10 +1,12 @@
 /**
  * Test harness. Not shipped. Bundled and run by scripts/verify-payload.mjs.
  *
- * Renders the REAL <Qualifier /> component into jsdom, fills the six fields,
- * submits, and lets the real lib/lead.ts POST over real HTTP to the local mock
- * webhook. Nothing about the payload is reconstructed for the test: what the
- * mock validates is what a browser would actually send.
+ * Renders the REAL <Qualifier /> component into jsdom, walks both screens of
+ * the form, fills all six fields, submits, and lets the real lib/lead.ts POST
+ * over real HTTP to the local mock webhook. Nothing about the payload is
+ * reconstructed for the test: what the mock validates is what a browser would
+ * actually send, and it has to still be one POST of six fields however many
+ * screens they were collected on.
  */
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
@@ -77,6 +79,7 @@ async function runOne(s: Scenario) {
           },
         }}
         onFormStart={() => events.push('form_start')}
+        onFormStep={() => events.push('form_step')}
         onFormSubmit={() => events.push('form_submit')}
         onQualifiedShown={(outcome) => {
           events.push('qualified_shown');
@@ -92,27 +95,69 @@ async function runOne(s: Scenario) {
   });
 
   const q = <T extends Element>(sel: string) => host.querySelector<T>(sel)!;
+  const submit = async () => {
+    await act(async () => {
+      q<HTMLFormElement>('form').dispatchEvent(
+        new Event('submit', { bubbles: true, cancelable: true }),
+      );
+    });
+  };
 
+  /* Screen one: the three closed questions, which the form now asks first.
+
+     They became radio groups when the page was ported from the prototype. The
+     values they send are unchanged, which is the whole point of checking here,
+     so the harness picks the radio by value rather than setting a select's. */
   await act(async () => {
-    setValue(q<HTMLInputElement>('#f-company_name'), 'Vesterled Ejendomsadministration');
-    setValue(q<HTMLInputElement>('#f-work_email'), s.email);
-    setValue(q<HTMLInputElement>('#f-phone'), '+45 32 14 88 90');
-    /* The three closed questions became radio groups when the page was ported
-       from the prototype. The values they send are unchanged, which is the
-       whole point of checking here, so the harness picks the radio by value
-       instead of setting a select's value. */
     check(host, 'team_size', s.team_size);
     check(host, 'email_client', s.email_client);
     check(host, 'role', s.role);
   });
 
-  const freeEmailWarningShown = Boolean(host.querySelector('#w-work_email'));
+  /* This submit turns the page and sends nothing. If it ever starts sending,
+     the mock sees a payload with three empty strings in it and says so. */
+  await submit();
+  const reachedStepTwo = Boolean(host.querySelector('#f-company_name'));
+
+  /* Bail out with a report rather than a stack trace.
+
+     Everything below reaches for a field by id and would throw on null, and a
+     harness that dies takes every other scenario's findings with it. A split
+     that stopped splitting is exactly the defect worth having a named failing
+     check for, so it gets one: the run ends here, `reachedStepTwo` is false,
+     and verify-payload prints which scenario never got to the second screen. */
+  if (!reachedStepTwo) {
+    results.push({
+      scenario: s.name,
+      locale: s.locale,
+      events,
+      shownOutcome,
+      expectedOutcome: s.expect,
+      outcomeMatches: false,
+      resultTitleRendered: false,
+      gmailNoteRendered: false,
+      sameEmailRendered: false,
+      pricingLinkRendered: false,
+      freeEmailWarningShown: false,
+      reachedStepTwo,
+      localeIsNotEnglish: s.locale === 'en' ? null : true,
+    });
+    await act(async () => {
+      root.unmount();
+    });
+    host.remove();
+    return;
+  }
 
   await act(async () => {
-    q<HTMLFormElement>('form').dispatchEvent(
-      new Event('submit', { bubbles: true, cancelable: true }),
-    );
+    setValue(q<HTMLInputElement>('#f-company_name'), 'Vesterled Ejendomsadministration');
+    setValue(q<HTMLInputElement>('#f-work_email'), s.email);
+    setValue(q<HTMLInputElement>('#f-phone'), '+45 32 14 88 90');
   });
+
+  const freeEmailWarningShown = Boolean(host.querySelector('#w-work_email'));
+
+  await submit();
 
   // Let the real fetch and the real retry pause settle.
   await act(async () => {
@@ -144,6 +189,7 @@ async function runOne(s: Scenario) {
     sameEmailRendered: text.includes(c.results.qualified.sameEmail),
     pricingLinkRendered: Boolean(host.querySelector('a[href*="doviloop.dev/pricing"]')),
     freeEmailWarningShown,
+    reachedStepTwo,
     localeIsNotEnglish: s.locale === 'en' ? null : !text.includes(content.en.results.qualified.title),
   });
 

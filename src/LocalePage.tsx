@@ -138,6 +138,7 @@ export function LocalePage({ locale }: { locale: Locale }) {
           c={c}
           ctx={{ locale, market, source, utm }}
           onFormStart={() => track('form_start')}
+          onFormStep={(step: number) => track('form_step', { step })}
           onFormSubmit={(payload: QualifierPayload) => {
             track('form_submit', {
               team_size: payload.team_size,

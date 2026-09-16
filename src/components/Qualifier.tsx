@@ -18,12 +18,31 @@ import { Mark } from './Hero';
 /**
  * The qualifier.
  *
- * Six fields, in the order the spec fixes, mapping one to one onto the shared
- * contract in 00-START-HERE.md. The three outcomes are rendered client-side
- * from lib/contract.ts `route()`, which is the same rules table Batch F applies
+ * Six fields mapping one to one onto the shared contract in 00-START-HERE.md,
+ * asked across two screens. The three outcomes are rendered client-side from
+ * lib/contract.ts `route()`, which is the same rules table Batch F applies
  * server side. The table is written down in exactly one place so the two
  * implementations cannot drift apart quietly.
+ *
+ * The screens are a presentation choice and reach no further than this file.
+ * The payload is still assembled in the key order the contract fixes, from
+ * `values`, whatever order the screens happened to collect them in, and no
+ * field was added, dropped or renamed to make the split possible.
  */
+
+/* Which questions live on which screen.
+
+   The three closed questions go first because they cost a click rather than a
+   keystroke. A form whose first line is "company name" asks for the commitment
+   before it has earned any, and these three are the half of the form that is
+   actually about the reader's firm rather than about reaching them.
+
+   This is also the list each screen is validated against, so a screen can only
+   ever complain about a field the reader can see. */
+const STEP_FIELDS: Record<1 | 2, readonly FieldName[]> = {
+  1: ['team_size', 'email_client', 'role'],
+  2: ['company_name', 'work_email', 'phone'],
+};
 
 /* Free providers get a soft warning, never a block. Someone at a ten person
    brokerage genuinely might be on a personal address, and rejecting them would
@@ -66,13 +85,14 @@ export interface QualifierContext {
 }
 
 type Screen =
-  | { kind: 'form' }
+  | { kind: 'form'; step: 1 | 2 }
   | { kind: 'result'; outcome: 'qualified' | 'gmail_on_request' | 'too_small'; delivered: boolean };
 
 export function Qualifier({
   c,
   ctx,
   onFormStart,
+  onFormStep,
   onFormSubmit,
   onQualifiedShown,
   onTooSmallShown,
@@ -81,6 +101,7 @@ export function Qualifier({
   c: Content;
   ctx: QualifierContext;
   onFormStart: () => void;
+  onFormStep: (step: number) => void;
   onFormSubmit: (payload: QualifierPayload) => void;
   onQualifiedShown: (outcome: string, delivered: boolean) => void;
   onTooSmallShown: (delivered: boolean) => void;
@@ -89,10 +110,11 @@ export function Qualifier({
   const [values, setValues] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [busy, setBusy] = useState(false);
-  const [screen, setScreen] = useState<Screen>({ kind: 'form' });
+  const [screen, setScreen] = useState<Screen>({ kind: 'form', step: 1 });
   const [nurtureAsked, setNurtureAsked] = useState(false);
   const startFired = useRef(false);
   const resultRef = useRef<HTMLDivElement | null>(null);
+  const stepRef = useRef<HTMLLIElement | null>(null);
 
   /* The stylesheet keeps the form hidden until this says the script is running.
      In the prototype that guarded a form which could not submit; here it guards
@@ -141,15 +163,64 @@ export function Qualifier({
     return e;
   }
 
+  /* Moving between the two screens.
+
+     Focus goes to the step that is now current, which is the only thing on the
+     page that says which one that is. Without it a keyboard user presses
+     Continue and lands back at the top of the document with three new questions
+     somewhere below them, and a screen reader is told nothing at all. */
+  const goTo = (step: 1 | 2) => {
+    setScreen({ kind: 'form', step });
+    setErrors({});
+    window.requestAnimationFrame(() => stepRef.current?.focus());
+  };
+
+  /** The first field of a screen that has something wrong with it, in the order
+      the screen presents them rather than the order the errors were found. */
+  const firstBad = (
+    found: Partial<Record<FieldName, string>>,
+    step: 1 | 2,
+  ): FieldName | undefined => STEP_FIELDS[step].find((f) => found[f]);
+
   async function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault();
-    if (busy) return;
+    if (busy || screen.kind !== 'form') return;
 
     const found = validate(values);
+
+    /* The first screen is checked on its own, so it cannot complain about a
+       field that is not on it. Nothing is sent here: this is a page turn. */
+    if (screen.step === 1) {
+      const mine = Object.fromEntries(
+        STEP_FIELDS[1].filter((f) => found[f]).map((f) => [f, found[f]]),
+      ) as Partial<Record<FieldName, string>>;
+      setErrors(mine);
+      const bad = firstBad(mine, 1);
+      if (bad) {
+        document.getElementById(`f-${bad}`)?.focus();
+        return;
+      }
+      goTo(2);
+      onFormStep(2);
+      return;
+    }
+
+    /* The second screen is checked against the whole form. By now the only way
+       a first screen answer can be missing is something having gone wrong, and
+       the right response to that is to put the reader back where the missing
+       answer lives rather than to show them an error for a field they cannot
+       see. The errors are set after the page turn so `goTo` does not clear
+       the very thing being reported. */
     setErrors(found);
     if (Object.keys(found).length > 0) {
-      const first = document.getElementById(`f-${Object.keys(found)[0]}`);
-      first?.focus();
+      const back = firstBad(found, 1);
+      if (back) {
+        goTo(1);
+        setErrors(found);
+        window.requestAnimationFrame(() => document.getElementById(`f-${back}`)?.focus());
+        return;
+      }
+      document.getElementById(`f-${firstBad(found, 2)}`)?.focus();
       return;
     }
 
@@ -246,110 +317,154 @@ export function Qualifier({
               <form className="qualifier-form" noValidate onSubmit={handleSubmit}>
                 <p className="qualifier-lead qualifier-indent">{c.form.lead}</p>
 
-                <TextField
-                  n="01"
-                  id="company_name"
-                  label={c.form.companyLabel}
-                  error={errors.company_name}
-                  value={values.company_name}
-                  onChange={(v) => set('company_name', v)}
-                  onFocus={touch}
-                  inputProps={{ type: 'text', autoComplete: 'organization', required: true }}
-                />
+                {/* Where they are, and how far there is to go.
 
-                <TextField
-                  n="02"
-                  id="work_email"
-                  label={c.form.emailLabel}
-                  hint={c.form.emailHint}
-                  error={errors.work_email}
-                  value={values.work_email}
-                  onChange={(v) => set('work_email', v)}
-                  onFocus={touch}
-                  extraDescribedBy={freeEmail ? 'w-work_email' : undefined}
-                  inputProps={{
-                    type: 'email',
-                    inputMode: 'email',
-                    autoComplete: 'email',
-                    spellCheck: false,
-                    required: true,
-                  }}
-                />
+                    The list is the only thing on the page that says which
+                    screen is open, so `aria-current` carries that fact and
+                    focus is sent here on every page turn. Names rather than
+                    "1 of 2": a name says what the screen is going to ask for,
+                    and a numeral inside a phrase that has to agree with it is
+                    the thing the price band had to be rewritten to stop
+                    doing. */}
+                <ol className="qualifier-steps qualifier-indent" aria-label={c.form.stepsLabel}>
+                  {c.form.steps.map((title, i) => {
+                    const on = i + 1 === screen.step;
+                    return (
+                      <li
+                        className={'qualifier-step' + (on ? ' is-on' : '')}
+                        aria-current={on ? 'step' : undefined}
+                        ref={on ? stepRef : undefined}
+                        tabIndex={on ? -1 : undefined}
+                        key={title}
+                      >
+                        {title}
+                      </li>
+                    );
+                  })}
+                </ol>
 
-                {/* The soft warning. Announced, never blocking. */}
-                <div className="qualifier-indent" aria-live="polite">
-                  {freeEmail ? (
-                    <p className="qualifier-warn" id="w-work_email">
-                      {c.form.emailFreeWarning}
-                    </p>
-                  ) : null}
-                </div>
-
-                {/* The prototype marked this one Optional. The live form
-                    requires it, and a label that says optional beside a field
-                    which blocks submission is simply untrue, so the marker is
-                    not carried across. c.form.optional stays in the contract
-                    for whenever a field genuinely is. */}
-                <TextField
-                  n="03"
-                  id="phone"
-                  label={c.form.phoneLabel}
-                  error={errors.phone}
-                  value={values.phone}
-                  onChange={(v) => set('phone', v)}
-                  onFocus={touch}
-                  inputProps={{ type: 'tel', inputMode: 'tel', autoComplete: 'tel' }}
-                />
-
-                {groups.map((g, i) => {
-                  const errId = 'e-' + g.name;
-                  const labelId = 'l-' + g.name;
-                  return (
-                    <div
-                      className="qualifier-field qualifier-group"
-                      data-field={g.name}
-                      role="radiogroup"
-                      aria-required="true"
-                      aria-labelledby={labelId}
-                      aria-describedby={errors[g.name] ? errId : undefined}
-                      key={g.name}
-                    >
-                      <span className="qualifier-num" aria-hidden="true">
-                        {'0' + (i + 4)}
-                      </span>
-                      <span className="qualifier-label" id={labelId}>
-                        {g.label}
-                      </span>
-                      <p className="qualifier-err" id={errId} hidden={!errors[g.name]}>
-                        {errors[g.name]}
-                      </p>
-                      <div className="qualifier-chips">
-                        {g.options.map((o) => (
-                          <label className="qualifier-chip" key={o.value}>
-                            <input
-                              type="radio"
-                              name={g.name}
-                              value={o.value}
-                              checked={values[g.name] === o.value}
-                              onChange={() => set(g.name, o.value)}
-                              onFocus={touch}
-                            />
-                            <span className="qualifier-chip-box" aria-hidden="true">
-                              <svg viewBox="0 0 20 20" focusable="false">
-                                <path d="M3 11 L8 15 L17 5" />
-                              </svg>
-                            </span>
-                            <span>{o.label}</span>
-                          </label>
-                        ))}
+                {screen.step === 1 ? (
+  groups.map((g, i) => {
+                    const errId = 'e-' + g.name;
+                    const labelId = 'l-' + g.name;
+                    return (
+                      <div
+                        className="qualifier-field qualifier-group"
+                        data-field={g.name}
+                        role="radiogroup"
+                        aria-required="true"
+                        aria-labelledby={labelId}
+                        aria-describedby={errors[g.name] ? errId : undefined}
+                        key={g.name}
+                      >
+                        <span className="qualifier-num" aria-hidden="true">
+                          {'0' + (i + 1)}
+                        </span>
+                        <span className="qualifier-label" id={labelId}>
+                          {g.label}
+                        </span>
+                        <p className="qualifier-err" id={errId} hidden={!errors[g.name]}>
+                          {errors[g.name]}
+                        </p>
+                        <div className="qualifier-chips">
+                          {g.options.map((o) => (
+                            <label className="qualifier-chip" key={o.value}>
+                              <input
+                                type="radio"
+                                name={g.name}
+                                value={o.value}
+                                checked={values[g.name] === o.value}
+                                onChange={() => set(g.name, o.value)}
+                                onFocus={touch}
+                              />
+                              <span className="qualifier-chip-box" aria-hidden="true">
+                                <svg viewBox="0 0 20 20" focusable="false">
+                                  <path d="M3 11 L8 15 L17 5" />
+                                </svg>
+                              </span>
+                              <span>{o.label}</span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
+                    );
+                  })
+                ) : (
+                  <>
+                    <TextField
+                      n="04"
+                      id="company_name"
+                      label={c.form.companyLabel}
+                      error={errors.company_name}
+                      value={values.company_name}
+                      onChange={(v) => set('company_name', v)}
+                      onFocus={touch}
+                      inputProps={{ type: 'text', autoComplete: 'organization', required: true }}
+                    />
+
+                    <TextField
+                      n="05"
+                      id="work_email"
+                      label={c.form.emailLabel}
+                      hint={c.form.emailHint}
+                      error={errors.work_email}
+                      value={values.work_email}
+                      onChange={(v) => set('work_email', v)}
+                      onFocus={touch}
+                      extraDescribedBy={freeEmail ? 'w-work_email' : undefined}
+                      inputProps={{
+                        type: 'email',
+                        inputMode: 'email',
+                        autoComplete: 'email',
+                        spellCheck: false,
+                        required: true,
+                      }}
+                    />
+
+                    {/* The soft warning. Announced, never blocking. */}
+                    <div className="qualifier-indent" aria-live="polite">
+                      {freeEmail ? (
+                        <p className="qualifier-warn" id="w-work_email">
+                          {c.form.emailFreeWarning}
+                        </p>
+                      ) : null}
                     </div>
-                  );
-                })}
+
+                    {/* The prototype marked this one Optional. The live form
+                        requires it, and a label that says optional beside a field
+                        which blocks submission is simply untrue, so the marker is
+                        not carried across. c.form.optional stays in the contract
+                        for whenever a field genuinely is. */}
+                    <TextField
+                      n="06"
+                      id="phone"
+                      label={c.form.phoneLabel}
+                      error={errors.phone}
+                      value={values.phone}
+                      onChange={(v) => set('phone', v)}
+                      onFocus={touch}
+                      inputProps={{ type: 'tel', inputMode: 'tel', autoComplete: 'tel' }}
+                    />
+                  </>
+                )}
 
                 <div className="qualifier-actions qualifier-indent">
+                  {screen.step === 2 ? (
+                    <button type="button" className="qualifier-back" onClick={() => goTo(1)}>
+                      {c.form.backCta}
+                    </button>
+                  ) : null}
+                  {/* One button, two jobs. On the first screen it turns the
+                      page and sends nothing, which is why its label does not
+                      promise an answer; on the second it is the submit it
+                      always was. Both are type="submit" so that pressing
+                      Enter in a field does the obvious thing on either. */}
                   <button type="submit" className="qualifier-submit" disabled={busy}>
-                    {busy ? c.form.submitting : c.form.submit}
+                    {screen.step === 1
+                      ? c.form.continueCta
+                      : busy
+                        ? c.form.submitting
+                        : c.form.submit}
                   </button>
                 </div>
 
@@ -463,7 +578,7 @@ export function Qualifier({
                   type="button"
                   className="btn btn-quiet mt-9"
                   onClick={() => {
-                    setScreen({ kind: 'form' });
+                    setScreen({ kind: 'form', step: 1 });
                     setErrors({});
                   }}
                 >
