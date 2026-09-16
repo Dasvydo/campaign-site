@@ -559,7 +559,7 @@ export const da: Content = {
   compare: {
     eyebrow: 'Regnestykket per person',
     title: 'Hvad hver person koster',
-    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, med den største virksomhed, Team-planen sælger til, ved siden af.',
+    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, med de to virksomhedsabonnementer fra produktsiden ved siden af.',
 
     planLabel: 'Abonnement',
     perHeadLabel: 'Per person',
@@ -571,8 +571,18 @@ export const da: Content = {
     teamPlan: 'Team-planen',
     teamSize: { label: 'Personer, højst:' },
 
+    managedPlan: 'Administreret',
+    managedSize: { label: 'Personer, mindst:' },
+
     claimsTitle: 'Hvad det svarer til',
     claims: {
+      belowManagedFloor: {
+        before:
+          'Administreret er abonnementet til en virksomhed af den her størrelse. Det starter ved et antal personer på ',
+        mid: ', og den mindste virksomhed, det tager, betaler ',
+        then: ' om måneden. Hele virksomheden betaler ',
+        after: ' om måneden her.',
+      },
       belowTeamCeiling: {
         before: 'Team-planen sælges ikke til flere personer end ',
         mid: '. Den største virksomhed, planen kan sælge til, betaler ',
@@ -588,14 +598,16 @@ export const da: Content = {
       },
     },
 
+    individualPlan: 'Individuel',
+
     individualNote: {
       before:
-        'Individual er abonnementet til én person på produktsiden. Det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
+        ' er abonnementet til én person på produktsiden. Det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
       after: ' om måneden.',
     },
 
     sourceNote: {
-      before: 'Taksterne for Team og Individual her er de offentliggjorte priser på ',
+      before: 'Taksterne for Team, Administreret og Individuel her er de offentliggjorte priser på ',
       link: 'doviloop.dev',
       mid: ', aflæst ',
       after: '. Vi har ikke justeret dem.',

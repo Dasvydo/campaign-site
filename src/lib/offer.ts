@@ -92,6 +92,13 @@ export interface CompareRates {
   readonly team: number;
   /** Largest firm the Team plan will sell to, in seats. */
   readonly teamMax: number;
+  /** Managed plan, USD per seat per month. */
+  readonly managed: number;
+  /** Smallest firm the Managed plan will sell to, in seats. A floor, where
+      `teamMax` is a ceiling: Team stops at nine and Managed starts at ten, so
+      between them they cover every size and the two rows in the table are the
+      edges where each plan meets the sizes this offer is sold at. */
+  readonly managedMin: number;
   readonly source: string;
   /** ISO-8601 date the rates above were read. */
   readonly readAt: string;
@@ -162,32 +169,28 @@ export const OFFER: Offer = deepFreeze({
   covers: 20,
   draftCap: 8000,
   setupFee: 500,
-  /* Somebody else's published prices, and what was left out of them.
+  /* Somebody else's published prices, all read on the date below.
 
-     doviloop.dev sells three plans, all read on the date below. Two of them
-     are recorded here, with their published rates, because those are the two
-     the page sets beside this offer.
+     doviloop.dev sells three plans and all three are here. Individual is a
+     plan for one person and is named in prose under the table, because a seat
+     rate is not a firm's cost a head and cannot be read down the same column
+     as one. Team and Managed are both firm level plans and both have a row.
 
-     The third is Managed, and it is the omission worth knowing about. It is a
-     firm level plan sold from ten seats up, priced by the seat, with its own
-     onboarding fee waived on annual payment. Two things follow. It is sold at
-     exactly the head counts this campaign targets, so a reader of the
-     comparison could buy it instead of this. And because it is priced by the
-     seat, its bill for a firm rises with head count while this offer's does
-     not, which is the same curve the comparison section already argues.
+     Team is a ceiling and Managed is a floor, which is why one row each is
+     enough. Team stops selling at nine seats, so its largest firm is the last
+     point where it touches the sizes this page is sold at. Managed starts at
+     ten, so its smallest firm is the first. Between them they are the whole of
+     what a firm at these head counts could buy instead of this offer.
 
-     It is also the model this page used to sell, which is what the stale price
-     scan in the page harness is still looking for. Leaving it out of the table
-     is a choice about what this page argues rather than a reading of the
-     source, and if the two offers are ever meant to stand side by side it
-     belongs in the table rather than in this comment.
-
-     No figure of its own is written down here on purpose: every rate this file
-     carries appears exactly once, and the build guard enforces it. */
+     No figure of its own is written down in this comment on purpose: every
+     rate this file carries appears exactly once, and the build guard enforces
+     it. They are all three lines below. */
   compare: {
     individual: 29,
     team: 59,
     teamMax: 9,
+    managed: 89,
+    managedMin: 10,
     source: 'doviloop.dev pricing bundle',
     readAt: '2026-09-16',
   },
@@ -372,6 +375,38 @@ export function pilotsStarted(offer: Offer = OFFER): number {
  */
 export function noCustomersYet(offer: Offer = OFFER): boolean {
   return pilotsStarted(offer) === 0;
+}
+
+/**
+ * What the smallest firm Managed will sell to pays every month. A fixed floor.
+ *
+ * The mirror of `teamCeilingMonthly`. Team is bounded above and Managed below,
+ * so the two figures the comparison sets this offer against are the two points
+ * where somebody else's per seat pricing meets the sizes sold here.
+ */
+export function managedFloorMonthly(offer: Offer = OFFER): number {
+  return offer.compare.managedMin * offer.compare.managed;
+}
+
+/**
+ * Is our whole monthly bill below what the smallest Managed firm pays?
+ *
+ * The claim that matters most of the three, because Managed is the only plan
+ * on the product site a firm at these head counts can actually buy. Team they
+ * cannot: it stops at nine. Individual is sold by the seat to one person. So
+ * this is the comparison a reader is really choosing between, and it is the
+ * one that holds at every tier on the ladder rather than only the capped ones.
+ *
+ * Computed all the same, and strict rather than "at or below". A ladder that
+ * ever priced a tier at or above the Managed floor would take the sentence off
+ * the page instead of printing something untrue, which is the whole reason
+ * none of these is written as copy.
+ */
+export function belowManagedFloor(
+  tier: TierConfig = activeTier(),
+  offer: Offer = OFFER,
+): boolean {
+  return tier.price < managedFloorMonthly(offer);
 }
 
 /**

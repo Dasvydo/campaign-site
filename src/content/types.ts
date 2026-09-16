@@ -205,20 +205,43 @@ export interface CompareCopy {
   ourPlan: string;
   ourSize: { label: string };
 
-  /** The one reference row. Team is a firm plan, so it can be compared with
-      ours by head, and it is the only published plan in the table.
+  /** The two reference rows. Both are firm level plans, so both can be read
+      down the same per head column as ours. Individual cannot and has no row.
 
-      `teamSize` is the same label shape as `ourSize` and takes the ceiling Team
-      will sell to: "People, at most: 9". */
+      One is a ceiling and one is a floor, which is why one row each is enough.
+      Team stops selling at nine seats, so `teamSize` takes the largest firm it
+      will take: "People, at most: 9". Managed starts at ten, so `managedSize`
+      takes the smallest: "People, at least: 10". Between them they are the
+      whole of what a firm at these head counts could buy instead. Both are the
+      same label shape as `ourSize`, for the same reason. */
   teamPlan: string;
   teamSize: { label: string };
+  managedPlan: string;
+  managedSize: { label: string };
+
+  /** The plan with no row, named so that the page and the product site call it
+      the same thing. All three names are the ones doviloop.dev prints in that
+      language, which is not always the English one: the point of naming a
+      rival plan at all is that a reader can go and find it. */
+  individualPlan: string;
 
   claimsTitle: string;
   /**
-   * Two claims, independent of one another. Neither refers to the other, so
-   * both orderings and both of the reachable combinations read correctly.
+   * Three claims, independent of one another. None refers to another, so every
+   * ordering and every reachable combination reads correctly.
    */
   claims: {
+    /** The claim that matters most, and the only one about a plan a firm at
+        these head counts can actually buy. Rendered where `belowManagedFloor`
+        holds, which with the shipped ladder is every tier, unlike the Team
+        claim which falls away at the uncapped one.
+        "<before><the Managed seat floor><mid><what the smallest firm Managed
+        will take pays every month><then><our flat monthly fee for the whole
+        firm><after>"
+        Same shape as the Team claim and the same reason for it: no head count
+        slot, because both sides are fixed, and the floor lands at the end of
+        its clause with no noun after it to agree with. */
+    belowManagedFloor: { before: string; mid: string; then: string; after: string };
     /** The lead claim, rendered only where `belowTeamCeiling` holds on the
         active tier.
         "<before><the Team seat ceiling><mid><what the largest firm Team will

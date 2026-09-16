@@ -3,10 +3,12 @@ import type { Comparison } from '../lib/offer';
 import {
   OFFER,
   activeTier,
+  belowManagedFloor,
   belowTeamCeiling,
   comparison,
   formatCount,
   formatMoney,
+  managedFloorMonthly,
   teamCeilingMonthly,
 } from '../lib/offer';
 
@@ -22,14 +24,23 @@ import {
  * What is in the table, and what is not.
  *
  * The table holds firm level plans and nothing else: our own fee at three head
- * counts, and Team at the largest firm it will sell to. That is what a grid
- * with a per head column implies it is doing, and it is the only comparison
- * this offer wins at every size it is sold to. Team is the plan a firm of this
- * size would otherwise be on, and Team stops selling at its seat ceiling, so a
- * firm at the head count this page is sold to cannot buy it at all. The
- * comparison worth making is therefore firm total against firm total: our one
- * flat fee against what the largest firm Team will take pays every month. That
- * is the lead claim.
+ * counts, and both of the firm plans the product site publishes. That is what a
+ * grid with a per head column implies it is doing.
+ *
+ * Those two are a ceiling and a floor, which is why one row each is enough.
+ * Team stops selling at its seat ceiling, so a firm at the head counts this
+ * page is sold to cannot buy it at all; its row is the last point where that
+ * plan touches these sizes. Managed starts at its seat floor, which is the
+ * smallest firm this page is sold to, so it is the plan such a firm would
+ * actually be put on, and its row is the first point where it touches. Between
+ * them they are the whole of what a firm at these head counts could buy
+ * instead of this offer.
+ *
+ * The lead claim is therefore Managed, not Team: it is the one comparison a
+ * reader is really choosing between, and unlike the Team claim it holds at
+ * every tier on the ladder rather than only the capped ones. The Team claim
+ * stays because a reader looking at the product site will see that plan first
+ * and is owed the reason it is not what they would be sold.
  *
  * Individual has no row, and that is the point of this file's last revision.
  * It is a plan for one person, bought a seat at a time, so its seat rate is not
@@ -142,11 +153,16 @@ export function Compare({ c }: { c: Content }) {
   const smallest = rows.length > 1 ? rows[0] : null;
   const largest = rows.length > 1 ? rows[rows.length - 1] : null;
 
-  /* The other claim has no size in it at all: both sides of it are fixed, so it
-     turns on the tier and nothing else. */
+  /* Neither of these has a size in it at all: both sides of each are fixed, so
+     they turn on the tier and nothing else. They are asked separately because
+     they fall away at different points. The Managed one holds wherever the flat
+     fee is under what the smallest firm that plan takes pays, which on the
+     shipped ladder is every tier; the Team one goes when the fee passes what
+     the largest firm Team takes pays, which happens at the uncapped tier. */
+  const floorHolds = belowManagedFloor(tier);
   const ceilingHolds = belowTeamCeiling(tier);
 
-  const anyClaim = ceilingHolds || (smallest !== null && largest !== null);
+  const anyClaim = floorHolds || ceilingHolds || (smallest !== null && largest !== null);
 
   return (
     <section id="compare" aria-labelledby="compare-h">
@@ -208,6 +224,21 @@ export function Compare({ c }: { c: Content }) {
                 <td className="cmp-num">{cell(OFFER.compare.team)}</td>
                 <td className="cmp-num">{cell(teamCeilingMonthly())}</td>
               </tr>
+
+              {/* The other one, and the only plan in the table a firm at these
+                  head counts can actually buy. Its firm cell is the smallest
+                  bill it can produce, the seat rate at the seat floor, which is
+                  the figure the lead claim is argued against. */}
+              <tr className="cmp-row cmp-row-ref">
+                <th scope="row" className="cmp-plan">
+                  <span className="cmp-plan-name">{t.managedPlan}</span>
+                  <span className="cmp-plan-size">
+                    {t.managedSize.label} {figure(OFFER.compare.managedMin)}
+                  </span>
+                </th>
+                <td className="cmp-num">{cell(OFFER.compare.managed)}</td>
+                <td className="cmp-num">{cell(managedFloorMonthly())}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -219,6 +250,18 @@ export function Compare({ c }: { c: Content }) {
             <h3 className="cmp-claims-h">{t.claimsTitle}</h3>
 
             <ul className="cmp-claim-list" role="list">
+              {floorHolds && (
+                <li className="cmp-claim">
+                  {t.claims.belowManagedFloor.before}
+                  <b className="cmp-fig">{figure(OFFER.compare.managedMin)}</b>
+                  {t.claims.belowManagedFloor.mid}
+                  <b className="cmp-fig">{money(managedFloorMonthly())}</b>
+                  {t.claims.belowManagedFloor.then}
+                  <b className="cmp-fig">{money(tier.price)}</b>
+                  {t.claims.belowManagedFloor.after}
+                </li>
+              )}
+
               {ceilingHolds && (
                 <li className="cmp-claim">
                   {t.claims.belowTeamCeiling.before}
@@ -255,6 +298,7 @@ export function Compare({ c }: { c: Content }) {
             the source note so the rate in it is attributed by the same
             sentence that attributes the rate in the table. */}
         <p className="cmp-src">
+          <b className="cmp-plan-name">{t.individualPlan}</b>
           {t.individualNote.before}
           <b className="cmp-fig">{money(OFFER.compare.individual)}</b>
           {t.individualNote.after}

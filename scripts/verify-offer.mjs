@@ -242,7 +242,20 @@ check(OFFER.currency === 'USD', 'prices are USD everywhere');
 console.log('\nThe module as a source of truth');
 const src = readFileSync(join(root, 'src/lib/offer.ts'), 'utf8');
 const occurrences = (n) => (src.match(new RegExp(`(?<![\\d.])${n}(?![\\d.])`, 'g')) ?? []).length;
-for (const [label, value] of [
+/* Every figure the module is the source of, and nowhere else in it.
+
+   The rule this enforces is that a figure is written down once, so it cannot be
+   edited in one place and left stale in another. What it counts is occurrences
+   of the literal in the file, comments included, because a rate restated in
+   prose goes stale exactly as readily as one restated in code.
+
+   The count expected is not always one. Two of these are different facts that
+   happen to hold the same number: the early tier takes ten firms and the
+   Managed plan starts at ten seats, and neither is the other written twice. So
+   a figure is allowed one appearance for each fact on this list that holds it,
+   and no more. A third `10` typed into a function body still fails, and so
+   does a rate duplicated in a comment, which is what this caught last. */
+const FIGURES = [
   ['founding price', OFFER.tiers.founding.price],
   ['early price', OFFER.tiers.early.price],
   ['standard price', OFFER.tiers.standard.price],
@@ -250,13 +263,20 @@ for (const [label, value] of [
   ['Individual rate', OFFER.compare.individual],
   ['Team rate', OFFER.compare.team],
   ['Team seat ceiling', OFFER.compare.teamMax],
+  ['Managed rate', OFFER.compare.managed],
+  ['Managed seat floor', OFFER.compare.managedMin],
   ['coverage', OFFER.covers],
   ['pooled draft cap', OFFER.draftCap],
   ['founding places', OFFER.tiers.founding.total],
   ['early places', OFFER.tiers.early.total],
-]) {
+];
+for (const [label, value] of FIGURES) {
+  const sharing = FIGURES.filter(([, v]) => v === value);
   const n = occurrences(value);
-  check(n === 1, `${label} is written down exactly once`, `${value} appears ${n} time(s)`);
+  const also = sharing.filter(([l]) => l !== label).map(([l]) => l);
+  check(n === sharing.length,
+    `${label} is written down once${also.length ? `, and so is ${also.join(' and ')}` : ''}`,
+    `${value} appears ${n} time(s), ${sharing.length} expected`);
 }
 // Built from its code point so that this file can test for the character it is
 // forbidden to contain, without containing it.

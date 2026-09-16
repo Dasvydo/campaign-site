@@ -246,7 +246,7 @@ async function main() {
          second reference row is therefore a row the offer has no cells for. */
       check(
         p.refRowCount === p.wantRefRowCount,
-        `    beside the one firm plan a firm this size could otherwise buy`,
+        `    beside both firm plans a firm this size could otherwise buy`,
         `${p.refRowCount} rendered, the offer's reference cells fill ${p.wantRefRowCount}`,
       );
       check(
@@ -261,7 +261,7 @@ async function main() {
       );
       check(
         p.badRefCells.length === 0,
-        `    the reference row prints the published rate unaltered`,
+        `    the reference rows print the published rates unaltered`,
         p.badRefCells.join(' | '),
       );
       /* The mistake this section was rebuilt to undo, asserted as an absence.

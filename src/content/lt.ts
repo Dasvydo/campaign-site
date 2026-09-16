@@ -558,7 +558,7 @@ export const lt: Content = {
   compare: {
     eyebrow: 'Suma vienam žmogui',
     title: 'Kiek kainuoja kiekvienas žmogus',
-    lede: 'Vienas mokestis visai įmonei reiškia, kad kaina vienam žmogui mažėja įmonei augant. Štai kur ji atsiduria, o greta pateikta didžiausia įmonė, kuriai parduodamas Team planas.',
+    lede: 'Vienas mokestis visai įmonei reiškia, kad kaina vienam žmogui mažėja įmonei augant. Štai kur ji atsiduria, o greta pateikti du įmonėms skirti planai iš produkto svetainės.',
 
     planLabel: 'Planas',
     perHeadLabel: 'Kiekvienam žmogui',
@@ -567,13 +567,23 @@ export const lt: Content = {
     ourPlan: 'Šis pasiūlymas',
     ourSize: { label: 'Žmonių:' },
 
-    teamPlan: 'Team planas',
+    teamPlan: 'Komandos planas',
     teamSize: { label: 'Žmonių, ne daugiau kaip:' },
+
+    managedPlan: 'Prižiūrimas planas',
+    managedSize: { label: 'Žmonių, bent:' },
 
     claimsTitle: 'Kas iš to išeina',
     claims: {
+      belowManagedFloor: {
+        before:
+          'Prižiūrimas planas skirtas tokio dydžio įmonei. Jis parduodamas nuo tokio žmonių skaičiaus: ',
+        mid: '. Mažiausia įmonė, kuriai jis parduodamas, moka ',
+        then: ' per mėnesį. Visa įmonė čia moka ',
+        after: ' per mėnesį.',
+      },
       belowTeamCeiling: {
-        before: 'Team planas parduodamas tik iki tokio žmonių skaičiaus: ',
+        before: 'Komandos planas parduodamas tik iki tokio žmonių skaičiaus: ',
         mid: '. Didžiausia įmonė, kuriai jis parduodamas, moka ',
         then: ' per mėnesį. Visa įmonė čia moka ',
         after: ' per mėnesį, kad ir kiek žmonių apimtų šis mokestis.',
@@ -587,14 +597,16 @@ export const lt: Content = {
       },
     },
 
+    individualPlan: 'Individualus',
+
     individualNote: {
       before:
-        'Individual yra planas vienam žmogui produkto svetainėje. Jis perkamas po vieną vietą, ir kiekviena vieta turi savo atskirą žinių bazę. Viena vieta kainuoja ',
+        ' planas produkto svetainėje skirtas vienam žmogui. Jis perkamas po vieną vietą, ir kiekviena vieta turi savo atskirą žinių bazę. Viena vieta kainuoja ',
       after: ' per mėnesį.',
     },
 
     sourceNote: {
-      before: 'Team ir Individual planų kainos čia yra paskelbtos svetainėje ',
+      before: 'Komandos, Prižiūrimo ir Individualaus planų kainos čia yra paskelbtos svetainėje ',
       link: 'doviloop.dev',
       mid: ', užfiksuotos ',
       after: '. Mes jų nekoregavome.',

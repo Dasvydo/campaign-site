@@ -32,6 +32,7 @@ import type { Locale } from '../src/lib/contract';
 import {
   OFFER,
   activeTier,
+  belowManagedFloor,
   belowTeamCeiling,
   comparison,
   isCapped,
@@ -40,6 +41,7 @@ import {
   setupDue,
   formatCount,
   formatMoney,
+  managedFloorMonthly,
   teamCeilingMonthly,
 } from '../src/lib/offer';
 
@@ -98,10 +100,11 @@ const STALE = [
 
 /* The plan that is named under the table and must never be inside it.
 
-   The plan names on doviloop.dev stay in English in all three locale files,
-   because that is what a reader will be looking at when they open the product
-   site, so one literal finds a row that names it in any of the three. */
-const INDIVIDUAL_PLAN = 'Individual';
+   Read from the locale rather than written down here. It used to be the one
+   literal 'Individual', on the reasoning that the product site keeps its plan
+   names in English; the product site does no such thing, and on /da and /lt it
+   prints names of its own. A literal would have gone on passing while missing
+   the row it exists to catch, in the two languages where it matters. */
 
 /** Every leaf string in a content object, so a blank key is caught. */
 function leaves(value: unknown, path = '', out: Array<[string, string]> = []): Array<[string, string]> {
@@ -322,6 +325,7 @@ const smallestSoldTo = (): number => {
          Individual is named in prose under the table, and its sentence has a
          figure in it, so it is asserted assembled rather than listed here. */
       c.compare.teamPlan, c.compare.teamSize.label,
+      c.compare.managedPlan, c.compare.managedSize.label, c.compare.individualPlan,
       c.compare.claimsTitle, c.compare.sourceNote.link,
       c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel,
       c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel, c.form.submit,
@@ -500,7 +504,10 @@ const smallestSoldTo = (): number => {
     const refCells = Array.from(host.querySelectorAll('#compare .cmp-row-ref .cmp-num')).map(
       (td) => td.textContent ?? '',
     );
-    const wantRefCells = [cell(OFFER.compare.team), cell(teamCeilingMonthly())];
+    const wantRefCells = [
+      cell(OFFER.compare.team), cell(teamCeilingMonthly()),
+      cell(OFFER.compare.managed), cell(managedFloorMonthly()),
+    ];
     const wantRefRowCount = numCols > 0 ? wantRefCells.length / numCols : 0;
     const badRefCells =
       refCells.length === wantRefCells.length && refCells.every((v, i) => v === wantRefCells[i])
@@ -539,7 +546,7 @@ const smallestSoldTo = (): number => {
     const bothShapes = (value: number): string[] => [cell(value), money(value)];
     const individualRates = new Set(bothShapes(OFFER.compare.individual));
     const individualNamedInTable = Array.from(host.querySelectorAll('#compare .cmp-table tr'))
-      .filter((tr) => rowText(tr).includes(INDIVIDUAL_PLAN))
+      .filter((tr) => rowText(tr).includes(c.compare.individualPlan))
       .map(rowText);
     const ourPerHead = new Set(
       ourRows
@@ -582,6 +589,7 @@ const smallestSoldTo = (): number => {
     const shown = ourRows.map((r) => comparison(r.size, tier));
     const coveredShown = shown.filter((r) => r.perPerson !== null);
     const claimsExpected = [
+      ...(belowManagedFloor(tier) ? ['belowManagedFloor'] : []),
       ...(belowTeamCeiling(tier) ? ['belowTeamCeiling'] : []),
       ...(coveredShown.length > 1 ? ['curve'] : []),
     ];
@@ -614,20 +622,45 @@ const smallestSoldTo = (): number => {
       money(tier.price),
       figure(OFFER.compare.teamMax),
       money(teamCeilingMonthly()),
+      figure(OFFER.compare.managedMin),
+      money(managedFloorMonthly()),
     ]);
     const claimFigures = Array.from(host.querySelectorAll('#compare .cmp-claim .cmp-fig')).map(
       (el) => el.textContent ?? '',
     );
     const strayFigures = claimFigures.filter((f) => !allowedFigures.has(f));
 
-    /* Nothing from the model this page replaced, anywhere in what it rendered.
-       A little of the surrounding text rides along with each hit, because
-       "890 is on the page" is only half of what a reader of the failure needs. */
+    /* Nothing from the model this page replaced, anywhere it rendered except
+       the comparison.
+
+       Two of the numerals scanned for stopped being ours. The model this page
+       used to sell was the product site's Managed plan, priced by the seat from
+       ten seats up, so this page's old flat monthly for ten and its old per
+       seat rate are that plan's published figures. Managed is now a row in the
+       comparison, cited at exactly those rates, and a scan that knows only the
+       digits cannot tell a citation from a relapse.
+
+       Excluding that one section loses nothing. It is the most heavily asserted
+       part of the page: every cell is checked against the offer's own
+       arithmetic, every figure inside a claim has to be one the offer can
+       produce, and the plan that must never return to the table has two checks
+       of its own. A stale price could not hide there. Everywhere else the
+       numerals still catch a misprice in all three locales, which is what they
+       were added for.
+
+       Subtracted as text rather than pruned from the DOM because `text` is both
+       screens of the form joined, and the comparison appears in each.
+
+       A little of the surrounding text rides along with each hit, because the
+       numeral being on the page is only half of what a reader of the failure
+       needs. */
+    const compareText = host.querySelector('#compare')?.textContent ?? '';
+    const outside = compareText ? text.split(compareText).join('\n') : text;
     const stale = STALE.flatMap(({ label, re }) => {
-      const m = re.exec(text);
+      const m = re.exec(outside);
       if (!m) return [];
       const at = Math.max(0, (m.index ?? 0) - 40);
-      return [`${label} -> ...${text.slice(at, (m.index ?? 0) + 40).replace(/\s+/g, ' ')}...`];
+      return [`${label} -> ...${outside.slice(at, (m.index ?? 0) + 40).replace(/\s+/g, ' ')}...`];
     });
 
     /* English master strings that must NOT appear on /da or /lt. Compared only

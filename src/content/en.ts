@@ -553,7 +553,7 @@ export const en: Content = {
   compare: {
     eyebrow: 'The sum per head',
     title: 'What each person costs',
-    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, with the largest firm the Team plan will sell to set beside it.',
+    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, with the two firm plans on the product site set beside it.',
 
     planLabel: 'Plan',
     perHeadLabel: 'Each person',
@@ -565,8 +565,17 @@ export const en: Content = {
     teamPlan: 'Team',
     teamSize: { label: 'People, at most:' },
 
+    managedPlan: 'Managed',
+    managedSize: { label: 'People, at least:' },
+
     claimsTitle: 'What that works out as',
     claims: {
+      belowManagedFloor: {
+        before: 'Managed is the plan for a firm of this size. It starts at a head count of ',
+        mid: ', and the smallest firm it takes pays ',
+        then: ' a month. The whole firm pays ',
+        after: ' a month here.',
+      },
       belowTeamCeiling: {
         before: 'Team stops selling at a head count of ',
         mid: '. The largest firm it will take pays ',
@@ -582,14 +591,16 @@ export const en: Content = {
       },
     },
 
+    individualPlan: 'Individual',
+
     individualNote: {
       before:
-        'Individual is the plan for one person on the product site. It is bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
+        ' is the plan for one person on the product site. It is bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
       after: ' a month.',
     },
 
     sourceNote: {
-      before: 'The Team and Individual rates here are the published prices on ',
+      before: 'The Team, Managed and Individual rates here are the published prices on ',
       link: 'doviloop.dev',
       mid: ', read on ',
       after: '. We have not adjusted them.',
