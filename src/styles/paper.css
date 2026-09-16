@@ -3228,3 +3228,276 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   .consent-slip{ animation:none }
   .consent-mark::after{ transition:none }
 }
+
+
+/* ============================================================
+   SECTION: compare   "The sum per head"
+   The one block on the page that shows its working. A flat fee
+   divided by a head count is the whole argument, so the division
+   is set as a real table and the sentences under it are a
+   reading of that table rather than a substitute for it.
+
+   Ground: cream. It follows the charcoal terms band and is
+   followed by the cream form, and a third tone in between would
+   turn one argument into two exhibits. It is left out of the
+   TONAL RHYTHM rule above for the same reason: cream is already
+   the desk, and this section is still standing on it.
+
+   No folio. The folios are a continuous run over the sections
+   that were already here and this block has no number of its
+   own, so the header opens on the eyebrow instead.
+   ============================================================ */
+
+#compare{
+  --cmp-sans : "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  --cmp-serif: "Playfair Display", "Iowan Old Style", Georgia, serif;
+
+  /* the same sheet shadow every other paper object on the page wears, so the
+     table reads as one more thing laid on the desk */
+  --cmp-lift:
+      1px 2px 2px -1px rgba(37,29,24,.18),
+      2px 6px 12px -4px rgba(37,29,24,.16),
+      inset 1px 1px 0 var(--edge);
+
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--cmp-sans);
+  font-size:17px;
+  line-height:1.55;
+  padding-block:96px 80px;
+  overflow-x:clip;
+  /* every figure in this section sits in a column under another figure, so the
+     digits are fixed width throughout rather than per cell */
+  font-variant-numeric:tabular-nums lining;
+}
+@media (max-width:1023px){ #compare{ padding-block:56px 48px } }
+
+.cmp-wrap{
+  max-width:1280px;
+  margin-inline:auto;
+  padding-inline:clamp(16px,4vw,48px);
+  position:relative;
+}
+
+.cmp-head{ margin:0 0 40px }
+
+.cmp-eyebrow{
+  margin:0 0 16px;
+  font-size:12.5px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted);
+  /* the tracking on the last letter would otherwise push the block right of
+     the heading it labels */
+  margin-right:-.14em;
+}
+
+.cmp-h{
+  font-family:var(--cmp-serif);
+  font-weight:400;
+  font-size:clamp(34px, 19px + 2.75vw, 54px);
+  line-height:1.04;
+  letter-spacing:-.014em;
+  text-indent:-.03em;
+  margin:0;
+  max-width:16ch;
+  text-wrap:balance;
+}
+
+/* The sheet the table is laid on. Narrow: three short columns stretched to the
+   full twelve column measure would put a head count at one end of the screen
+   and the figure it explains at the other, which is the opposite of what a
+   comparison is for. */
+.cmp-sheet{
+  max-width:44rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  box-shadow:var(--cmp-lift);
+  padding:24px 26px 10px;
+}
+
+/* PHONE LAYOUT, decided rather than defaulted.
+   The table stays a table at every width. It does not scroll sideways and it
+   does not restack into cards.
+   Not a scroller, because the column a 360px screen would hide behind a
+   sideways gesture is the per head figure, which is the one number the whole
+   section exists to show, and because a scroll region has to be focusable and
+   labelled to stay reachable by keyboard, which is a second mechanism to get
+   right for no gain here.
+   Not a stack, because display:block on table parts is what drops the row and
+   column association in several screen readers, and a bare figure with no
+   column head over it is a number with no meaning.
+   It fits instead: three columns, a fixed layout so the table can never be
+   wider than its container whatever lands in a cell, and the plan column
+   allowed to wrap onto two lines. At 360px that is about 150px of label and
+   two columns of five digits, which measures. */
+.cmp-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  text-align:left;
+}
+.cmp-col-plan{ width:46% }
+.cmp-col-num { width:27% }
+
+/* The lede does double duty as the table's caption: it is already the sentence
+   that says what is being set against what, which is what a caption owes a
+   screen reader. Above the table, left aligned, read as prose. */
+.cmp-cap{
+  caption-side:top;
+  text-align:left;
+  margin:0 0 20px;
+  max-width:58ch;
+  font-size:15.5px; line-height:1.62;
+  color:var(--muted);
+}
+
+.cmp-table thead th{
+  padding:0 0 10px;
+  font-size:12.5px; font-weight:500;
+  letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted);
+  border-bottom:1px solid var(--border);
+  vertical-align:bottom;
+}
+.cmp-table thead th.cmp-col-num{ text-align:right }
+
+/* The currency, once per column rather than once per cell. Six repetitions of
+   the same three letters down a table is noise; the reader needs to be told
+   what they are counting in, not reminded five times. */
+/* --muted, not --taupe. Taupe is the border tone and measures about 1.3:1 as
+   small type on paper, which is the mistake the consent block already had to
+   correct once. */
+.cmp-unit{
+  display:inline-block;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+
+.cmp-row{ transition:background var(--t-micro) var(--e-out) }
+.cmp-row:hover{ background:var(--sand) }
+.cmp-row th,
+.cmp-row td{
+  padding:13px 0;
+  border-top:1px solid var(--border);
+  vertical-align:baseline;
+}
+.cmp-row:first-child th,
+.cmp-row:first-child td{ border-top:none }
+
+/* the two published rates are reference, not offer: same rows, quieter ink */
+.cmp-row-ref .cmp-plan-name{ color:var(--muted); font-weight:400 }
+.cmp-row-ref .cmp-num{ color:var(--muted) }
+
+.cmp-plan{
+  padding-right:12px;
+  font-weight:400;
+  overflow-wrap:break-word;
+}
+.cmp-plan-name{
+  display:block;
+  font-size:16px; font-weight:500; color:var(--ink);
+}
+.cmp-plan-size{
+  display:block;
+  margin-top:2px;
+  font-size:13px; color:var(--muted);
+}
+
+.cmp-num{
+  text-align:right;
+  font-size:18px;
+  color:var(--ink);
+  white-space:nowrap;
+}
+/* the per head column is the argument; the firm column is context for it */
+.cmp-num-lead{
+  font-family:var(--cmp-serif);
+  font-size:22px;
+  letter-spacing:-.01em;
+}
+
+/* THE CLAIMS. Outside the sheet and outside the table: prose about figures is
+   not another figure, and a cell is the wrong container for an argument. */
+.cmp-claims{ margin-top:34px; max-width:62ch }
+
+.cmp-claims-h{
+  margin:0 0 12px;
+  font-family:var(--cmp-sans);
+  font-size:12.5px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted);
+  margin-right:-.14em;
+}
+
+.cmp-claim-list{ margin:0; padding:0; list-style:none }
+
+.cmp-claim{
+  margin:0;
+  padding:11px 0 11px 18px;
+  position:relative;
+  font-size:16px; line-height:1.6;
+  color:var(--ink);
+  border-top:1px solid var(--border);
+}
+.cmp-claim-list .cmp-claim:first-child{ border-top:none }
+.cmp-claim::before{
+  content:"";
+  position:absolute; left:0; top:1.05em;
+  width:7px; height:1.5px;
+  background:var(--amber-text);
+}
+/* The line that stands in when not one of the three holds. It is set exactly
+   like a claim, because it is the same kind of statement and the section has to
+   read as finished rather than as an apology for having nothing to say. The
+   only difference is the rule, which is the colour of a note and not of a mark
+   being made. */
+.cmp-claim-none::before{ background:var(--taupe) }
+
+.cmp-src{
+  margin:26px 0 0;
+  max-width:62ch;
+  font-size:13.5px; line-height:1.6;
+  color:var(--muted);
+}
+.cmp-src-link{
+  color:var(--amber-text);
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+  transition:border-color var(--t-micro) var(--e-out);
+}
+.cmp-src-link:hover{ border-bottom-color:var(--amber-text) }
+.cmp-src-link:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; border-radius:2px }
+
+@media (max-width:719px){
+  .cmp-head{ margin-bottom:28px }
+  .cmp-sheet{ padding:18px 16px 6px }
+  .cmp-cap{ margin-bottom:16px; font-size:14.5px }
+  .cmp-table thead th{ font-size:11px; letter-spacing:.06em }
+  /* the unit drops onto its own line under the column head rather than forcing
+     a third line of wrapping out of "Each person" */
+  .cmp-unit{ display:block }
+  .cmp-row th,
+  .cmp-row td{ padding:11px 0 }
+  .cmp-plan{ padding-right:8px }
+  .cmp-plan-name{ font-size:15px }
+  .cmp-plan-size{ font-size:12.5px }
+  .cmp-num{ font-size:16px }
+  .cmp-num-lead{ font-size:19px }
+  .cmp-claims{ margin-top:26px }
+  .cmp-claim{ font-size:15px }
+}
+
+/* At the narrowest supported width the label column gives back what the two
+   figure columns need, rather than the figures wrapping or the table pushing
+   past the gutter. */
+@media (max-width:389px){
+  .cmp-col-plan{ width:42% }
+  .cmp-col-num { width:29% }
+  .cmp-num-lead{ font-size:18px }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cmp-row,
+  .cmp-src-link{ transition:none }
+}

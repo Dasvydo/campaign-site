@@ -43,7 +43,7 @@ export const lt: Content = {
     },
 
     cta: 'Pažiūrėkite, ar tinkame',
-    ctaNote: 'Nuo 890 USD per mėnesį dešimčiai vietų. Pirmos dvi savaitės nemokamai.',
+    ctaNote: 'Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
@@ -55,7 +55,7 @@ export const lt: Content = {
     },
 
     bar: {
-      text: 'Nuo 890 USD per mėnesį dešimčiai vietų, plius 500 USD vienkartinis įdiegimas. Pirmos dvi savaitės nemokamai.',
+      text: 'Pirmos dvi savaitės nemokamos.',
       cta: 'Patikrinkite, ar tinkame',
     },
 
@@ -389,23 +389,26 @@ export const lt: Content = {
   numbers: {
     eyebrow: 'Mūsų pačių skaičiavimas',
     title: 'Kiek tai verta',
-    about: 'apie\u00a0',
+    about: 'maždaug\u00a0',
     rows: [
-      { amount: '5', unit: 'x', label: 'sutaupyto laiko, palyginti su vienos vietos kaina' },
-      { amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienai vietai' },
-      { amount: '40', unit: '\u00a0dienų', label: 'kol atsiperka įdiegimas ir pirmas mėnuo' },
+      { key: 'multiple', unit: 'x', label: 'sutaupyto laiko, palyginti su tuo, kiek moka įmonė' },
+      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienam žmogui' },
+      { key: 'payback', unit: '\u00a0dienos', label: 'kol atsiperka tai, ką kainuoja pradėti' },
     ],
     lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
     moreLabel: 'Parodyti skaičiavimą',
     basis: [
-      { term: 'apie 5x', def: 'Numanomas sutaupytas laikas, palyginti su vietos kaina.' },
       {
-        term: 'apie 430 USD',
-        def: 'Numanomos sutaupytos valandos esant vidutiniam atlyginimui, perskaičiuota iš eurų.',
+        term: 'Daugiklis',
+        def: 'Žemiau nurodytas sutaupymas, padaugintas iš dešimties žmonių, palyginti su vienu mėnesiniu mokesčiu, kurį moka įmonė. Dešimt yra mažiausia įmonė, kuriai tai parduodame, tad skaičius, galiojantis ten, galioja ir kiekvienam didesniam dydžiui.',
       },
       {
-        term: 'apie 40 dienų',
-        def: '500 USD įdiegimo mokestis ir pirmas vietų mėnuo, palyginti su aukščiau nurodytu sutaupymu.',
+        term: 'Sutaupymas',
+        def: 'Numanomos sutaupytos valandos esant vidutinio lygio atlyginimui, perskaičiuota iš eurų. Vienas žmogus, vienas mėnuo.',
+      },
+      {
+        term: 'Atsipirkimas',
+        def: 'Tai, kiek įmonė sumoka pradėdama, palyginti su tuo pačiu sutaupymu dešimčiai žmonių.',
       },
     ],
     notes: [
@@ -424,9 +427,9 @@ export const lt: Content = {
     ],
     notes: {
       seats: {
-        before: 'Šis pasiūlymas prasideda nuo ',
-        mark: '10 vietų',
-        mid: '. Mažesnėms komandoms planas svetainėje ',
+        before: 'Vienas mokestis apima ',
+        mark: 'visą įmonę',
+        mid: ', o kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
         link: 'doviloop.dev',
         after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
       },
@@ -442,55 +445,165 @@ export const lt: Content = {
     eyebrow: 'Kiek kainuoja ir kuo rizikuojate',
     title: 'Kiek kainuoja',
 
+    tierNames: { founding: 'steigiamasis', early: 'ankstyvasis', standard: 'standartinis' },
+
     feesTitle: 'Kainos',
     fees: [
-      { term: 'Už vietą', figure: '89 USD', per: 'per mėnesį', note: 'Viena vieta yra vienas žmogus. Mažiausiai dešimt.' },
-      { term: 'Įdiegimas', figure: '500 USD', per: 'vieną kartą', note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.' },
+      {
+        term: 'Įmonė',
+        per: 'per mėnesį',
+        note: 'Vienas mokestis visiems, kas rašo laiškus. Jis nepasikeičia, kai priimate naujų žmonių.',
+      },
+      {
+        term: 'Įdiegimas',
+        per: 'vieną kartą',
+        note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.',
+        waived: {
+          label: 'Netaikomas',
+          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ', šiame etape netaikomas.' },
+        },
+      },
     ],
+
+    covers: {
+      title: 'Ką apima mokestis',
+      people: {
+        label: 'Aprėpiama žmonių, ne daugiau kaip:',
+        note: 'Vardai įrašomi ir išbraukiami keičiantis komandai.',
+      },
+      drafts: {
+        label: 'Juodraščių per mėnesį, bendrai visai įmonei:',
+        note: 'Bendra visiems. Niekas neturi atskiro limito, kuris galėtų baigtis.',
+      },
+      note: 'Peržengus bet kurią iš šių ribų, pasakysime ir susitarsime su Jumis dar prieš išrašydami sąskaitą.',
+    },
+
+    founding: {
+      eyebrow: { before: 'Vietos, kol galioja ', after: ' etapas' },
+      title: 'Mainai, o ne nuolaida',
+      lede: 'Kol kas neturime klientų, į kuriuos galėtume parodyti. Šios vietos yra būdas jų turėti, tad mažesnis mokestis yra tai, ką mokame už Jūsų vardą prie šio darbo.',
+      spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
+      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Žemiau nurodytas mokestis yra standartinis, ir nėra dėl ko mainytis.',
+      givesTitle: 'Ką duodate Jūs',
+      gives: [
+        'Atsiliepimą produkto svetainei, savais žodžiais.',
+        'Atvejo aprašymą po šešiasdešimties dienų, su skaičiais, kuriuos sutinkate rodyti.',
+        'Savo logotipą produkto svetainėje.',
+        'Du atsiliepimų pokalbius per pirmus du mėnesius.',
+      ],
+      getsTitle: 'Ką gaunate Jūs',
+      gets: {
+        fee: { before: 'Įmonei taikomas ', after: ' mėnesinis mokestis vietoj standartinio.' },
+        setup: 'Visas įdiegimo mokestis netaikomas.',
+      },
+      note: 'Jei nenorite būti įvardyti, rinkitės standartinį mokestį, ir niekas kitas produkte nesikeičia.',
+    },
 
     freeTitle: 'Pirmos dvi savaitės nemokamos',
     freeNote: 'Skiriate laiko užsiėmimui, daugiau nieko.',
     termsLabel: 'Parodyti sąlygas',
     terms: [
       { t: 'Užsiėmimas ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
-      { t: 'Kortelė pridedama pačioje pradžioje.', n: 'Dvi savaites ji neliečiama.' },
-      { t: 'Sustoję per dvi savaites nemokate nieko.', n: 'Jokio mokesčio už vietas, jokio įdiegimo, jokios sąskaitos.' },
-      { t: 'Vietos mokamos mėnesiui.', n: 'Įjungiamos ir išjungiamos keičiantis komandai.' },
+      { t: 'Kortelės neprašome ir nieko nenuskaitome.', n: 'Mokėjimo duomenų prireiks vėliau, kai pasakysite taip.' },
+      { t: 'Pasakius ne, nemokate nieko.', n: 'Jokia sąskaita neišrašoma ir nėra ko atšaukti.' },
+      { t: 'Mokestis mokamas kas mėnesį.', n: 'Nereikia pasirašyti metams ir nereikia išlaikyti žmonių skaičiaus.' },
     ],
 
     whenTitle: 'Kas vyksta ir kada',
     stops: [
       {
         day: '0 diena',
-        note: 'Kortelė pridėta. Nieko nenuskaityta.',
-        state: 'Pridėta, nenuskaityta',
-        say: '0 diena. Kortelė pridėta ir niekas nenuskaitoma.',
+        note: 'Vyksta užsiėmimas. Pradeda grįžti juodraščiai.',
+        state: 'Kol kas jokios sąskaitos',
+        say: {
+          before:
+            '0 diena. Vyksta užsiėmimas ir pradeda grįžti juodraščiai. Jokia sąskaita neišrašoma. Mėnesio suma rodo ',
+          after: '.',
+        },
       },
       {
         day: '14 diena',
-        note: 'Pirmas nuskaitymas.',
-        state: 'Nuskaitoma nuo čia',
-        say: '14 diena. Įvyksta pirmas nuskaitymas. Mėnesio suma 890 USD.',
+        note: 'Apžvalgos pokalbis. Pasakykite taip, ir už pirmą mėnesį išrašoma sąskaita.',
+        state: 'Sąskaita tik pasakius taip',
+        say: {
+          before:
+            '14 diena. Vyksta apžvalgos pokalbis, o sąskaita už pirmą mėnesį išrašoma tik tada, jei pasakote taip. Mėnesio suma yra ',
+          after: '.',
+        },
       },
       {
-        day: 'Sustokite čia',
-        note: 'Bet kada per dvi savaites.',
-        state: 'Visai nenuskaitoma',
-        say: 'Sustokite čia. Mėnesio suma perbraukta ir lygi 0 USD.',
+        day: 'Pasakykite ne',
+        note: 'Bet kada iki to pokalbio.',
+        state: 'Jokios sąskaitos išvis',
+        say: { before: 'Pasakykite ne, ir mėnesio suma perbraukiama bei rodo ', after: '.' },
       },
     ],
     total: {
-      term: '10 vietų',
-      sub: 'Mažiausia komanda, kurią priimame.',
-      figure: '890 USD',
+      term: 'Visa įmonė',
+      sub: { label: 'Aprėpiama žmonių, ne daugiau kaip:' },
       per: 'per mėnesį',
       zero: '0 USD',
     },
 
     askEyebrow: 'Prieš užsakydami',
-    ask: { before: 'Šis pasiūlymas prasideda nuo 10 vietų. Mažesnėms komandoms planas svetainėje ', link: 'doviloop.dev', after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.' },
+    ask: {
+      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
+      link: 'doviloop.dev',
+      after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
+    },
     cta: 'Pažiūrėkite, ar tinkame',
-    ctaNote: 'Dvi savaitės nemokamai. Sustoję per jas nemokate nieko.',
+    ctaNote: 'Dvi savaitės nemokamai. Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
+  },
+
+  compare: {
+    eyebrow: 'Suma vienam žmogui',
+    title: 'Kiek kainuoja kiekvienas žmogus',
+    lede: 'Vienas mokestis visai įmonei reiškia, kad kaina vienam žmogui mažėja įmonei augant. Štai kur ji atsiduria, šalia dviejų planų, kuriuos produkto svetainėje gali nusipirkti bet kas.',
+
+    planLabel: 'Planas',
+    perHeadLabel: 'Kiekvienam žmogui',
+    firmLabel: 'Visai įmonei',
+
+    ourPlan: 'Šis pasiūlymas',
+    ourSize: { label: 'Žmonių:' },
+
+    individualPlan: 'Individual planas',
+    individualSize: 'Vienas žmogus',
+    teamPlan: 'Team planas',
+    teamSize: { label: 'Žmonių, ne daugiau kaip:' },
+
+    claimsTitle: 'Kas iš to išeina',
+    claims: {
+      belowTeamRate: {
+        size: 'Įmonėje, kurioje žmonių skaičius yra ',
+        before: ', vienam žmogui čia tenka ',
+        mid: ' per mėnesį. Team plano kaina svetainėje doviloop.dev yra ',
+        after: ' už žmogų.',
+      },
+      belowIndividualRate: {
+        size: 'Kai komandos dydis yra ',
+        before: ', suma vienam žmogui čia yra ',
+        mid: ' per mėnesį, o tai mažiau nei Individual plano kaina svetainėje doviloop.dev, kuri yra ',
+        after: ' už žmogų.',
+      },
+      belowTeamCeiling: {
+        before: 'Visa įmonė čia moka ',
+        mid: ' per mėnesį, kad ir kiek žmonių apimtų mokestis. Team planas parduodamas iki tokio žmonių skaičiaus: ',
+        then: ', ir tokio dydžio įmonė moka ',
+        after: ' per mėnesį.',
+      },
+    },
+    noClaims: {
+      size: 'Įmonėje, kurioje žmonių skaičius yra ',
+      after: ', suma nėra mažesnė nė už vieną iš dviejų paskelbtų kainų.',
+    },
+
+    sourceNote: {
+      before: 'Individual ir Team planų kainos yra paskelbtos svetainėje ',
+      link: 'doviloop.dev',
+      mid: ', užfiksuotos ',
+      after: '. Mes jų nekoregavome.',
+    },
   },
 
   form: {
@@ -555,7 +668,7 @@ export const lt: Content = {
     gmailNote:
       'Nurodėte, kad komanda nedirba su Outlook. Tai nėra kliūtis. Gmail ir kiti klientai paruošiami kiekvienai komandai atskirai įvedimo metu, o ką tai reiškia, aptarsime pokalbio metu.',
     tooSmall: {
-      title: 'Šis pasiūlymas prasideda nuo 10 vietų.',
+      title: 'Šis pasiūlymas prasideda nuo dešimties žmonių.',
       body: 'Šiandien Jūsų yra mažiau, tad pokalbis atimtų dvidešimt Jūsų minučių ir baigtųsi tuo pačiu atsakymu. Planas doviloop.dev svetainėje daro tą patį mažesnėms komandoms ir kainuoja gerokai mažiau. Grįžkite, kai komanda paaugs, ir tęsime nuo čia.',
       pricingCta: 'Pažiūrėti planą mažesnėms komandoms',
       nurtureTitle: 'Gal norite trumpos versijos el. paštu?',
@@ -564,7 +677,7 @@ export const lt: Content = {
       nurtureCta: 'Atsiųskite man tuos tris laiškus',
       nurtureSubject: 'Atsiųskite man tuos tris laiškus',
       nurtureMailBody:
-        'Prašau atsiųsti tuos tris trumpus laiškus apie pasikartojančio pašto mažinimą. Kol kas esame mažiau nei 10 vietų.',
+        'Prašau atsiųsti tuos tris trumpus laiškus apie pasikartojančio pašto mažinimą. Kol kas esame mažesnė įmonė.',
     },
     deliveryWarning:
       'Mūsų sistema nepatvirtino Jūsų atsakymų, todėl išsaugojome juos šiame įrenginyje ir išsiųsime dar kartą automatiškai. Niekas neprarasta. Pokalbį žemiau vis tiek galite užsisakyti.',
