@@ -436,7 +436,7 @@ export const da: Content = {
   },
 
   price: {
-    eyebrow: 'Hvad det koster, og hvad I risikerer',
+    eyebrow: 'To uger, så bestemmer I',
     title: 'Hvad det koster',
 
     tierNames: { founding: 'allerførste', early: 'tidlige', standard: 'almindelige' },

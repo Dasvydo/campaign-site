@@ -436,7 +436,7 @@ export const lt: Content = {
   },
 
   price: {
-    eyebrow: 'Kiek kainuoja ir kuo rizikuojate',
+    eyebrow: 'Dvi savaitės, tada nusprendžiate',
     title: 'Kiek kainuoja',
 
     tierNames: { founding: 'steigiamasis', early: 'ankstyvasis', standard: 'standartinis' },

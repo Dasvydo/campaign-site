@@ -433,7 +433,7 @@ export const en: Content = {
   },
 
   price: {
-    eyebrow: 'What it costs, and what you risk',
+    eyebrow: 'Two weeks, then you decide',
     title: 'What it costs',
 
     tierNames: { founding: 'founding', early: 'early', standard: 'standard' },
