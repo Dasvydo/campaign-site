@@ -1923,21 +1923,8 @@
   .price-ask{ grid-column:9 / 13; margin-top:0 }
 }
 
-.price-sub{
-  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
-  font-weight:400; color:var(--warmwhite);
-  font-size:clamp(24px, 16px + 1.1vw, 30px);
-  line-height:1.15; letter-spacing:-.008em;
-  margin:0 0 24px;
-}
-.price-sub-lead{
-  font-size:clamp(30px, 18px + 1.8vw, 40px);
-  line-height:1.08; letter-spacing:-.014em;
-  margin:0 0 8px;
-}
-.price-sub-lead + .price-subnote{
-  margin:0 0 24px; font-size:14px; line-height:1.45; color:var(--price-dim); max-width:46ch;
-}
+/* The section no longer has visible sub-headings: the panel has one place
+   to start, and the headings its lists still need are .price-sr. */
 
 .price-block{ margin:0 0 48px }
 .price-block:first-child{ margin-bottom:64px }
@@ -2134,6 +2121,78 @@
 }
 .price-total-zero.is-in{ opacity:1; transform:none }
 .price-total-zero[hidden]{ display:none }
+
+/* --- the panel -------------------------------------------------------------
+   One block carries the whole band now: the stops, the total they drive, and
+   two disclosures. The rhythm below is deliberately flat, because the thing
+   that used to make this section hard to read was not any one item's size, it
+   was seven headings competing to be the place you start. There is one place to
+   start here, and it is the row of stops. */
+.price-panel{ margin:0 }
+.price-panel .price-stops{ margin-bottom:8px }
+
+/* The total is the answer to the control above it, so it is the largest thing
+   in the section by a clear margin rather than by a few points. */
+.price-total-state{
+  font-size:13px; letter-spacing:.08em;
+}
+.price-total-fig,
+.price-total-zero{
+  font-size:clamp(44px, 26px + 3.4vw, 76px);
+}
+.price-total-row{ align-items:last baseline }
+
+.price-total-num{ display:inline-block }
+
+/* The waiver, as a mark. The amount and the sentence are in the terms. */
+.price-waiver{
+  display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  margin:20px 0 0;
+}
+.price-waiver-term{ font-size:15px; line-height:1.4; color:var(--price-dim) }
+.price-waiver-mark{
+  font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink); background:var(--amber);
+  padding:4px 10px; border-radius:2px; white-space:nowrap;
+}
+.price-fig-off{ text-decoration:line-through; text-decoration-thickness:1px; color:var(--price-dim) }
+
+/* The strongest sentence on the band, which used to sit sixth. */
+.price-free{
+  margin:24px 0 0; max-width:52ch;
+  font-size:19px; line-height:1.45;
+}
+.price-free-t{ color:var(--warmwhite); font-weight:500 }
+.price-free-n{ color:var(--price-dim) }
+
+.price-founding{ margin:32px 0 0 }
+.price-founding .price-eyebrow{ margin:0 0 10px }
+.price-fees-tight{ border-top-width:1px }
+.price-fees-tight .price-fee{ padding-block:14px }
+
+.price-more{ margin:32px 0 0; border-top:1px solid var(--price-rule-strong); padding-top:8px }
+.price-more .disc + .disc{ margin-top:4px }
+.price-more .price-fees{ margin-top:12px }
+.price-more .price-subnote{
+  margin:0 0 16px; font-size:15px; line-height:1.5; color:var(--price-dim); max-width:52ch;
+}
+
+@media (prefers-reduced-motion:no-preference){
+  /* Replayed by the key on each, so a change of stop lands rather than
+     swapping in place. The figure carries it even where the digits are the
+     same at two stops: what moved is the state, and the total is where the eye
+     already is. */
+  .price-total-num,
+  .price-total-state{ animation:price-land var(--price-t-in) var(--price-e-out) both }
+}
+@keyframes price-land{
+  from{ opacity:0; transform:translateY(.18em) }
+  to{ opacity:1; transform:none }
+}
+@media (prefers-reduced-motion:reduce){
+  .price-total-num,
+  .price-total-state{ animation:none }
+}
 
 .price-ask{ align-self:start }
 @media (min-width:1024px) and (min-height:620px){
@@ -3549,4 +3608,9 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
 @media (prefers-reduced-motion:reduce){
   .cmp-row,
   .cmp-src-link{ transition:none }
+}
+
+.price-per-mark{
+  display:inline-block; margin-top:6px;
+  color:var(--amber); letter-spacing:.1em; text-transform:uppercase;
 }

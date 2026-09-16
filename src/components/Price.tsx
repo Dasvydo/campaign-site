@@ -243,174 +243,25 @@ export function Price({
           </h2>
         </header>
 
+        {/* One panel, not six stacked blocks.
+
+            This band used to ask for seven headings to be read in order before
+            it said what anyone actually pays, and the only interactive thing on
+            it, the timeline that strikes the total out, sat at the bottom where
+            nobody scrolled to it. That order is now inverted. The stops are the
+            control, the total is the answer, and everything that is neither is
+            one click away rather than gone: the fee sheet, the ceilings and the
+            terms are inside the disclosures below, so every figure and every
+            note is still on the page and still in the DOM for a screen reader
+            and for find-in-page.
+
+            The headings those folded blocks need in order to label their lists
+            are still here too, as .price-sr. A definition list wants a name,
+            and losing the name to save a line of space would have traded a real
+            thing for a cosmetic one. */}
         <div className="price-sheet">
-          <div className="price-block">
-            <h3 className="price-sub" id="price-fees-h">
-              {c.price.feesTitle}
-            </h3>
-            <dl className="price-fees" aria-labelledby="price-fees-h">
-              <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 0 }}>
-                <dt className="price-fee-term">{firmFee.term}</dt>
-                <dd className="price-fee-amt">
-                  <span className="price-fig">{money(tier.price)}</span>
-                  <span className="price-per">{firmFee.per}</span>
-                </dd>
-                <dd className="price-fee-note">{firmFee.note}</dd>
-              </div>
-
-              {/* The setup fee is shown whether or not it is due. A fee waived
-                  without its amount on show is a trade with no visible value,
-                  and the reader is left no way to price what they are giving
-                  up for it. The struck figure is a picture, so where it is
-                  struck the same fact is carried in words as well. */}
-              <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 1 }}>
-                <dt className="price-fee-term">{setupFee.term}</dt>
-                <dd className="price-fee-amt">
-                  {waived ? (
-                    <>
-                      <span className="price-fig" aria-hidden="true">
-                        <s>{money(OFFER.setupFee)}</s>
-                      </span>
-                      <span className="price-per" aria-hidden="true">
-                        {waived.label}
-                      </span>
-                      <span className="price-sr">
-                        {waived.say.before}
-                        {money(OFFER.setupFee)}
-                        {waived.say.after}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="price-fig">{money(OFFER.setupFee)}</span>
-                  )}
-                  <span className="price-per">{setupFee.per}</span>
-                </dd>
-                <dd className="price-fee-note">{setupFee.note}</dd>
-              </div>
-            </dl>
-          </div>
-
-          {/* Both ceilings are the whole firm's, not one person's, so both read
-              as a label with the count after it and neither is a price. */}
-          <div className="price-block">
-            <h3 className="price-sub" id="price-covers-h">
-              {c.price.covers.title}
-            </h3>
-            <dl className="price-fees" aria-labelledby="price-covers-h">
-              <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 0 }}>
-                <dt className="price-fee-term">{c.price.covers.people.label}</dt>
-                <dd className="price-fee-amt">
-                  <span className="price-fig">{figure(OFFER.covers)}</span>
-                </dd>
-                <dd className="price-fee-note">{c.price.covers.people.note}</dd>
-              </div>
-              <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 1 }}>
-                <dt className="price-fee-term">{c.price.covers.drafts.label}</dt>
-                <dd className="price-fee-amt">
-                  <span className="price-fig">{figure(OFFER.draftCap)}</span>
-                </dd>
-                <dd className="price-fee-note">{c.price.covers.drafts.note}</dd>
-              </div>
-            </dl>
-            <p className="price-fee-note">{c.price.covers.note}</p>
-          </div>
-
-          {/* The trade, and the counter that makes it a fact rather than a
-              countdown. On the uncapped tier there is no trade left to offer,
-              so the whole block goes and one line stands in its place. Nothing
-              here is written for a particular tier: the name comes from the
-              tier on show, and the second half of what is got back appears
-              only where that tier really does waive the setup fee. */}
-          {capped ? (
-            <div className="price-block">
-              <p className="price-eyebrow">
-                {c.price.founding.eyebrow.before}
-                {tierName}
-                {c.price.founding.eyebrow.after}
-              </p>
-              <h3 className="price-sub price-sub-lead" id="price-founding-h">
-                {c.price.founding.title}
-              </h3>
-              {/* The admission comes off the page by itself. It is true today
-                  and false from the first pilot onward, and the offer is the
-                  only thing that knows which, so the offer decides. What is
-                  left standing is the sentence that explains the trade, which
-                  is true at any count and reads on its own. */}
-              <p className="price-subnote">
-                {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
-                {c.price.founding.lede.trade}
-              </p>
-
-              <dl className="price-fees" aria-labelledby="price-founding-h">
-                <div className="price-fee" data-price-reveal style={{ ['--i' as string]: 0 }}>
-                  <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
-                  <dd className="price-fee-amt">
-                    <span className="price-fig">
-                      {figure(spotsLeft ?? 0)}
-                      {c.price.founding.spots.of}
-                      {figure(tier.total ?? 0)}
-                    </span>
-                  </dd>
-                </div>
-              </dl>
-
-              <h4 className="price-sub" id="price-gives-h">
-                {c.price.founding.givesTitle}
-              </h4>
-              <ol className="price-terms" aria-labelledby="price-gives-h">
-                {c.price.founding.gives.map((g, i) => (
-                  <li data-price-reveal style={{ ['--i' as string]: i }} key={g}>
-                    <span className="price-term-t">{g}</span>
-                  </li>
-                ))}
-              </ol>
-
-              <h4 className="price-sub" id="price-gets-h">
-                {c.price.founding.getsTitle}
-              </h4>
-              <ol className="price-terms" aria-labelledby="price-gets-h">
-                <li data-price-reveal style={{ ['--i' as string]: 0 }}>
-                  <span className="price-term-t">
-                    {c.price.founding.gets.fee.before}
-                    {tierName}
-                    {c.price.founding.gets.fee.after}
-                  </span>
-                </li>
-                {setupWaived ? (
-                  <li data-price-reveal style={{ ['--i' as string]: 1 }}>
-                    <span className="price-term-t">{c.price.founding.gets.setup}</span>
-                  </li>
-                ) : null}
-              </ol>
-
-              <p className="price-fee-note">{c.price.founding.note}</p>
-            </div>
-          ) : (
-            <div className="price-block">
-              <p className="price-fee-note">{c.price.founding.spotsClosed}</p>
-            </div>
-          )}
-
-          <div className="price-block">
-            <h3 className="price-sub price-sub-lead" id="price-free-h">
-              {c.price.freeTitle}
-            </h3>
-            <p className="price-subnote">{c.price.freeNote}</p>
-
-            <Disclosure label={c.price.termsLabel}>
-              <ol className="price-terms" aria-labelledby="price-free-h">
-                {c.price.terms.map((t, i) => (
-                  <li data-price-reveal style={{ ['--i' as string]: i }} key={t.t}>
-                    <span className="price-term-t">{t.t}</span>
-                    <span className="price-term-n">{t.n}</span>
-                  </li>
-                ))}
-              </ol>
-            </Disclosure>
-          </div>
-
-          <div className="price-block">
-            <h3 className="price-sub" id="price-when-h">
+          <div className="price-block price-panel">
+            <h3 className="price-sr" id="price-when-h">
               {c.price.whenTitle}
             </h3>
 
@@ -454,7 +305,10 @@ export function Price({
             </ol>
 
             <div className={'price-total' + (struck ? ' is-struck' : '')} data-price-total>
-              <p className="price-total-state" data-price-state>
+              {/* Keyed so it remounts and replays. Between the first two
+                  stops this line is the only thing on the total that changes,
+                  so if it arrives silently the stop reads as a dead control. */}
+              <p className="price-total-state" data-price-state key={stop}>
                 {c.price.stops[stop].state}
               </p>
               <div className="price-total-row">
@@ -465,8 +319,14 @@ export function Price({
                   </span>
                 </span>
                 <span className="price-total-amt">
+                  {/* The ref stays on the outer span, which never remounts, so
+                      the measured pen length survives a change of stop. Only
+                      the digits inside are keyed, and remounting those is what
+                      replays the count. */}
                   <span className="price-total-fig" data-price-strike ref={strikeRef}>
-                    {money(tier.price)}
+                    <span className="price-total-num" key={stop}>
+                      {money(tier.price)}
+                    </span>
                     <svg
                       className="price-strike-svg"
                       viewBox="0 0 120 14"
@@ -490,6 +350,196 @@ export function Price({
               <p className="price-sr" role="status" aria-live="polite" data-price-status>
                 {status}
               </p>
+            </div>
+
+            {/* The waiver, as a mark rather than a row of its own. The amount
+                it is worth and the sentence that says so both live in the terms
+                below; this is only the flag that there is something to read. */}
+            {waived ? (
+              <p className="price-waiver" data-price-reveal style={{ ['--i' as string]: 0 }}>
+                <span className="price-waiver-term">{setupFee.term}</span>
+                <span className="price-waiver-mark">{waived.label}</span>
+              </p>
+            ) : null}
+
+            <p className="price-free" data-price-reveal style={{ ['--i' as string]: 1 }}>
+              <strong className="price-free-t">{c.price.freeTitle}</strong>{' '}
+              <span className="price-free-n">{c.price.freeNote}</span>
+            </p>
+
+            {/* The counter that makes the trade a fact rather than a countdown.
+                It stays in the open: it is one short line, and it is the only
+                thing on the band that changes as places go. What the trade
+                costs and returns is the reading, and the reading folds. */}
+            {capped ? (
+              <div
+                className="price-founding"
+                data-price-reveal
+                style={{ ['--i' as string]: 2 }}
+              >
+                <p className="price-eyebrow">
+                  {c.price.founding.eyebrow.before}
+                  {tierName}
+                  {c.price.founding.eyebrow.after}
+                </p>
+                <h3 className="price-sr" id="price-founding-h">
+                  {c.price.founding.title}
+                </h3>
+                <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
+                  <div className="price-fee">
+                    <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
+                    <dd className="price-fee-amt">
+                      <span className="price-fig">
+                        {figure(spotsLeft ?? 0)}
+                        {c.price.founding.spots.of}
+                        {figure(tier.total ?? 0)}
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            ) : (
+              <p className="price-fee-note" data-price-reveal style={{ ['--i' as string]: 2 }}>
+                {c.price.founding.spotsClosed}
+              </p>
+            )}
+
+            <div className="price-more" data-price-reveal style={{ ['--i' as string]: 3 }}>
+              <Disclosure label={c.price.termsLabel}>
+                <ol className="price-terms">
+                  {c.price.terms.map((t) => (
+                    <li key={t.t}>
+                      <span className="price-term-t">{t.t}</span>
+                      <span className="price-term-n">{t.n}</span>
+                    </li>
+                  ))}
+                </ol>
+
+                {/* The fee sheet. The firm's own line repeats the total above
+                    it on purpose: read on its own, inside the terms, it is the
+                    line that says the fee is one fee and does not move with
+                    head count. */}
+                <h4 className="price-sr" id="price-fees-h">
+                  {c.price.feesTitle}
+                </h4>
+                <dl className="price-fees" aria-labelledby="price-fees-h">
+                  <div className="price-fee">
+                    <dt className="price-fee-term">{firmFee.term}</dt>
+                    <dd className="price-fee-amt">
+                      <span className="price-fig">{money(tier.price)}</span>
+                      <span className="price-per">{firmFee.per}</span>
+                    </dd>
+                    <dd className="price-fee-note">{firmFee.note}</dd>
+                  </div>
+
+                  {/* The setup fee is shown whether or not it is due. A fee
+                      waived in silence is a fee nobody knows they were spared,
+                      and the amount has to be legible for the waiver above to
+                      mean anything. */}
+                  <div className="price-fee">
+                    <dt className="price-fee-term">{setupFee.term}</dt>
+                    <dd className="price-fee-amt">
+                      {waived ? (
+                        <>
+                          <span className="price-fig price-fig-off" aria-hidden="true">
+                            {money(OFFER.setupFee)}
+                          </span>
+                          {/* The period stays with the amount it belongs to,
+                              and the waiver follows as its own mark. Read in
+                              the other order it ran together as "Waived once",
+                              which says the waiver happens once rather than
+                              that the fee does. */}
+                          <span className="price-per" aria-hidden="true">
+                            {setupFee.per}
+                          </span>
+                          <span className="price-per price-per-mark" aria-hidden="true">
+                            {waived.label}
+                          </span>
+                          <span className="price-sr">
+                            {waived.say.before}
+                            {money(OFFER.setupFee)}
+                            {waived.say.after}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="price-fig">{money(OFFER.setupFee)}</span>
+                          <span className="price-per">{setupFee.per}</span>
+                        </>
+                      )}
+                    </dd>
+                    <dd className="price-fee-note">{setupFee.note}</dd>
+                  </div>
+                </dl>
+
+                {/* Both ceilings are the whole firm's, not one person's, so
+                    both read as one number the firm shares. */}
+                <h4 className="price-sr" id="price-covers-h">
+                  {c.price.covers.title}
+                </h4>
+                <dl className="price-fees" aria-labelledby="price-covers-h">
+                  <div className="price-fee">
+                    <dt className="price-fee-term">{c.price.covers.people.label}</dt>
+                    <dd className="price-fee-amt">
+                      <span className="price-fig">{figure(OFFER.covers)}</span>
+                    </dd>
+                    <dd className="price-fee-note">{c.price.covers.people.note}</dd>
+                  </div>
+                  <div className="price-fee">
+                    <dt className="price-fee-term">{c.price.covers.drafts.label}</dt>
+                    <dd className="price-fee-amt">
+                      <span className="price-fig">{figure(OFFER.draftCap)}</span>
+                    </dd>
+                    <dd className="price-fee-note">{c.price.covers.drafts.note}</dd>
+                  </div>
+                </dl>
+                <p className="price-fee-note">{c.price.covers.note}</p>
+              </Disclosure>
+
+              {capped ? (
+                <Disclosure label={c.price.founding.title}>
+                  {/* The admission comes off the page by itself. It is true
+                      today and false from the first pilot onward, and the offer
+                      is the only thing that knows which, so the offer decides.
+                      What is left standing is the sentence that explains the
+                      trade, which is true at any count and reads on its own. */}
+                  <p className="price-subnote">
+                    {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
+                    {c.price.founding.lede.trade}
+                  </p>
+
+                  <h4 className="price-sr" id="price-gives-h">
+                    {c.price.founding.givesTitle}
+                  </h4>
+                  <ol className="price-terms" aria-labelledby="price-gives-h">
+                    {c.price.founding.gives.map((g) => (
+                      <li key={g}>
+                        <span className="price-term-t">{g}</span>
+                      </li>
+                    ))}
+                  </ol>
+
+                  <h4 className="price-sr" id="price-gets-h">
+                    {c.price.founding.getsTitle}
+                  </h4>
+                  <ol className="price-terms" aria-labelledby="price-gets-h">
+                    <li>
+                      <span className="price-term-t">
+                        {c.price.founding.gets.fee.before}
+                        {tierName}
+                        {c.price.founding.gets.fee.after}
+                      </span>
+                    </li>
+                    {setupWaived ? (
+                      <li>
+                        <span className="price-term-t">{c.price.founding.gets.setup}</span>
+                      </li>
+                    ) : null}
+                  </ol>
+
+                  <p className="price-fee-note">{c.price.founding.note}</p>
+                </Disclosure>
+              ) : null}
             </div>
           </div>
         </div>
