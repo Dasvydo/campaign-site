@@ -12,6 +12,11 @@
  *   3. The free-provider email produces a warning and does NOT block submission
  *   4. Danish and Lithuanian result screens render without English leaking in
  *   5. Every locale file has every key, and none contains an em dash
+ *   6. All seven sections render, in document order, in all three locales
+ *   7. Every figure the offer injects reaches the line that left a slot for it,
+ *      the comparison table prints the offer's own division, and only the
+ *      claims the arithmetic supports at the shipped tier are on the page
+ *   8. Nothing of the per seat model it replaced is still rendered anywhere
  *
  *   npm run verify:payload
  */
@@ -158,7 +163,19 @@ async function main() {
       check(p.blankKeys.length === 0, `    every content key has a value`, p.blankKeys.join(', '));
       check(p.missing.length === 0, `    every expected string reaches the DOM`, p.missing.slice(0, 2).join(' | '));
       check(p.leaked.length === 0, `    no English master copy leaked in`, p.leaked.slice(0, 2).join(' | '));
-      check(p.sectionsFound.length === 6, `    all 6 numbered sections present`, p.sectionsFound.join(','));
+      check(
+        p.sectionsFound.length === p.sectionsExpected.length,
+        `    all ${p.sectionsExpected.length} sections present, the sum per head included`,
+        p.sectionsFound.join(','),
+      );
+      /* Presence would pass with the comparison table stapled to the bottom of
+         the page. It has to read as the second half of the terms: after the
+         price, before anybody is asked for an email address. */
+      check(
+        p.sectionOrder.join(',') === p.sectionsExpected.join(','),
+        `    the sections are in document order`,
+        p.sectionOrder.join(','),
+      );
       check(p.htmlLang === (p.locale === 'en' ? 'en' : p.locale), `    html lang is ${p.locale}`, p.htmlLang);
       check(p.title.length > 20 && p.description.length > 60, `    title and description are set`);
       check(p.canonical.endsWith(p.locale === 'en' ? '/' : `/${p.locale}`), `    canonical points at this locale`, p.canonical);
@@ -167,6 +184,90 @@ async function main() {
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 6, `    the qualifier asks exactly 6 questions`, String(p.questionCount));
       check(p.labelledControls, `    every control has a real label element`);
+    }
+
+    /* 3c. the arithmetic, on the page rather than in the config ------------ */
+    /* Every amount the page says out loud now comes out of src/lib/offer.ts at
+       render time, which is what makes the per person argument checkable and
+       also what makes a half-finished migration invisible: the words arrive
+       from the locale file and look right whether or not the figure landed
+       beside them. So the figure-bearing lines are asserted as content plus the
+       offer's own number, assembled in the order the component lays them out,
+       and the comparison table is read back out of the DOM and set against what
+       `comparison()` says it should hold. */
+    console.log('\nThe price, and the sum per head');
+    for (const p of pages) {
+      console.log(`  /${p.locale === 'en' ? '' : p.locale}`);
+      check(
+        p.unassembled.length === 0,
+        `    every figure reaches the line that left a slot for it`,
+        p.unassembled.join(' | '),
+      );
+      check(
+        p.stopCount === 3 && p.stopCount === p.stopsInContent,
+        `    the timeline offers three stops`,
+        `${p.stopCount} rendered, ${p.stopsInContent} in the content file`,
+      );
+      /* The counter is the thing that makes the founding places a fact rather
+         than a countdown, so it has to be on the page wherever the tier still
+         has places to count, and gone where it does not. */
+      check(
+        p.hasSpotsCounter === p.tierIsCapped,
+        `    the founding block counts its places on the ${p.tierOnShow} tier`,
+        p.tierIsCapped ? 'capped tier, counter expected' : 'uncapped tier, counter must be gone',
+      );
+      check(p.ourRowCount === 3, `    the table compares three head counts`, String(p.ourRowCount));
+      check(p.refRowCount === 2, `    beside the two published rates`, String(p.refRowCount));
+      check(
+        p.badRows.length === 0,
+        `    every per head figure is the offer's own division`,
+        p.badRows.join(' | '),
+      );
+      check(
+        p.uncoveredRows.length === 0,
+        `    and no head count the flat fee does not cover`,
+        p.uncoveredRows.join(','),
+      );
+      check(
+        p.badRefCells.length === 0,
+        `    the reference rows print the published rates unaltered`,
+        p.badRefCells.join(' | '),
+      );
+      /* The gate, measured. The expectation is derived in the harness from the
+         offer over the sizes the table actually showed, never listed here, so
+         that advancing a tier moves this check with the page instead of
+         failing it. */
+      check(
+        p.claimsRendered === p.claimsExpected.length,
+        `    only the claims the arithmetic supports are rendered`,
+        `${p.claimsRendered} on the page, offer holds ${p.claimsExpected.length}: ${p.claimsExpected.join(',') || 'none'}`,
+      );
+      check(
+        p.noClaimsRendered === p.noClaimsExpected,
+        `    and the standing line appears only where none of them holds`,
+        `${p.noClaimsRendered} rendered, ${p.noClaimsExpected} expected`,
+      );
+      check(
+        p.claimFigureCount > 0 && p.strayFigures.length === 0,
+        `    no figure inside a claim that the offer cannot produce`,
+        p.strayFigures.join(',') || `${p.claimFigureCount} figures, all the offer's`,
+      );
+    }
+
+    /* 3d. nothing left of the model this page replaced -------------------- */
+    /* The check that would have caught a half-finished migration. The old page
+       sold seats: 890 USD a month for ten of them, 89 USD each, and a minimum
+       written as a count of seats. None of that is true any more, and a page
+       that still says it anywhere is a page selling two offers at once. Scanned
+       across the whole rendered output of all three locales, because the last
+       place a stale price survives is the one nobody reads. */
+    console.log('\nNothing left of the per seat model');
+    for (const p of pages) {
+      check(
+        p.stale.length === 0,
+        `  /${p.locale === 'en' ? '' : p.locale} renders no price from the old model`,
+        p.stale.join(' | '),
+      );
     }
 
     /* 4. routing outcomes -------------------------------------------------- */
