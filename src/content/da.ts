@@ -559,7 +559,7 @@ export const da: Content = {
   compare: {
     eyebrow: 'Regnestykket per person',
     title: 'Hvad hver person koster',
-    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, ved siden af de to planer, alle kan købe på produktsiden.',
+    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, med den største virksomhed, Team-planen sælger til, ved siden af.',
 
     planLabel: 'Abonnement',
     perHeadLabel: 'Per person',
@@ -568,39 +568,34 @@ export const da: Content = {
     ourPlan: 'Det her tilbud',
     ourSize: { label: 'Personer:' },
 
-    individualPlan: 'Individual-planen',
-    individualSize: 'Én person',
     teamPlan: 'Team-planen',
     teamSize: { label: 'Personer, højst:' },
 
     claimsTitle: 'Hvad det svarer til',
     claims: {
-      belowTeamRate: {
-        size: 'I en virksomhed på ',
-        before: ' koster hver person her ',
-        mid: ' om måneden. Team-taksten på doviloop.dev er ',
-        after: ' per person.',
-      },
-      belowIndividualRate: {
-        size: 'Er I ',
-        before: ' på holdet, ligger prisen per person her på ',
-        mid: ' om måneden. Det er under Individual-taksten på doviloop.dev, som er ',
-        after: ' per person.',
-      },
       belowTeamCeiling: {
-        before: 'Hele virksomheden betaler ',
-        mid: ' om måneden her, i alle de størrelser, prisen dækker. Team-planen sælges ikke til flere end ',
-        then: ', og en virksomhed af den størrelse betaler ',
-        after: ' om måneden.',
+        before: 'Team-planen sælges ikke til flere personer end ',
+        mid: '. Den største virksomhed, planen kan sælge til, betaler ',
+        then: ' om måneden. Hele virksomheden betaler ',
+        after: ' om måneden her, i alle de størrelser, prisen dækker.',
+      },
+      curve: {
+        smallOpen: 'Er antallet af personer ',
+        smallCost: ', koster hver person ',
+        largeOpen: ' om måneden. Er antallet af personer ',
+        largeCost: ', koster hver person ',
+        after: ' om måneden. Prisen for hele virksomheden er den samme i begge tilfælde, så prisen per person falder, i takt med at virksomheden vokser.',
       },
     },
-    noClaims: {
-      size: 'I en virksomhed på ',
-      after: ' kommer regnestykket ikke under nogen af de offentliggjorte takster.',
+
+    individualNote: {
+      before:
+        'Individual er det andet abonnement på produktsiden. Det er til én person, det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
+      after: ' om måneden.',
     },
 
     sourceNote: {
-      before: 'Taksterne for Individual og Team er de offentliggjorte priser på ',
+      before: 'Taksterne for Team og Individual her er de offentliggjorte priser på ',
       link: 'doviloop.dev',
       mid: ', aflæst ',
       after: '. Vi har ikke justeret dem.',
