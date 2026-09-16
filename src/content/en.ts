@@ -52,7 +52,7 @@ export const en: Content = {
     },
 
     bar: {
-      text: 'First two weeks free. No card needed.',
+      text: 'The first two weeks are free.',
       cta: 'Check the fit',
     },
 
@@ -397,7 +397,7 @@ export const en: Content = {
     basis: [
       {
         term: 'The multiple',
-        def: 'The saving below, across the firm, against the one monthly fee the firm pays.',
+        def: 'The saving below multiplied by ten people, against the one monthly fee the firm pays. Ten is the smallest firm we sell this to, so a figure that holds there holds at every size above it.',
       },
       {
         term: 'The saving',
@@ -405,7 +405,7 @@ export const en: Content = {
       },
       {
         term: 'The payback',
-        def: 'What the firm pays to start, against the saving above.',
+        def: 'What the firm pays to start, against that same saving across ten people.',
       },
     ],
     notes: [
@@ -442,6 +442,8 @@ export const en: Content = {
     eyebrow: 'What it costs, and what you risk',
     title: 'What it costs',
 
+    tierNames: { founding: 'founding', early: 'early', standard: 'standard' },
+
     feesTitle: 'The fees',
     fees: [
       {
@@ -453,29 +455,32 @@ export const en: Content = {
         term: 'Setup',
         per: 'once',
         note: 'A workshop on your team’s own real mail.',
-        waived: 'Waived',
+        waived: {
+          label: 'Waived',
+          say: { before: 'The setup fee of ', after: ' is waived on this tier.' },
+        },
       },
     ],
 
     covers: {
       title: 'What the fee covers',
       people: {
-        before: 'Up to ',
-        after: ' people in the firm. Names go on and come off as the team changes.',
+        label: 'People covered, up to:',
+        note: 'Names go on and come off as the team changes.',
       },
       drafts: {
-        before: 'A pooled ',
-        after: ' drafts a month, shared across everyone. Nobody has their own allowance to run out of.',
+        label: 'Drafts a month, pooled across the firm:',
+        note: 'Shared across everyone. Nobody has their own allowance to run out of.',
       },
-      note: 'Past either of those we will say so and talk about the next size up, before anything is billed.',
+      note: 'Past either of those we will say so and work it out with you, before anything is billed.',
     },
 
     founding: {
-      eyebrow: 'The founding places',
+      eyebrow: { before: 'The ', after: ' places' },
       title: 'A trade, not a discount',
-      lede: 'We have no customers to point at yet. The founding places are how we get some, so the lower fee is what we pay for your name on the work.',
-      spots: { before: 'Of ', mid: ' founding places, ', after: ' are still open.' },
-      spotsClosed: 'The founding places are taken. The fee below is the standard one, and there is nothing to trade for it.',
+      lede: 'We have no customers to point at yet. These places are how we get some, so the lower fee is what we pay for your name on the work.',
+      spots: { label: 'Places still open:', of: ' of ' },
+      spotsClosed: 'The places that came with a trade are taken. The fee below is the standard one, and there is nothing to trade for it.',
       givesTitle: 'What you give',
       gives: [
         'A testimonial for the product site, in your own words.',
@@ -484,20 +489,20 @@ export const en: Content = {
         'Two feedback calls in the first two months.',
       ],
       getsTitle: 'What you get',
-      gets: [
-        'The founding monthly fee for the firm, instead of the standard one.',
-        'The setup fee waived.',
-      ],
+      gets: {
+        fee: { before: 'The ', after: ' monthly fee for the firm, instead of the standard one.' },
+        setup: 'The setup fee waived, in full.',
+      },
       note: 'If you would rather not be named, take the standard fee and nothing else about the product changes.',
     },
 
     freeTitle: 'The first two weeks are free',
-    freeNote: 'You spend the workshop time, nothing else. We do not take a card to start.',
+    freeNote: 'You spend the workshop time, and nothing else.',
     termsLabel: 'Show the terms',
     terms: [
       { t: 'Workshop and setup included.', n: 'Neither is billed afterwards.' },
-      { t: 'No card, and nothing taken.', n: 'We do not ask for one to start the fortnight.' },
-      { t: 'Stop inside the two weeks and you pay nothing.', n: 'No monthly fee, no setup fee, no invoice.' },
+      { t: 'No card, and nothing taken.', n: 'Payment details come later, after you have said yes.' },
+      { t: 'Say no and you pay nothing.', n: 'Nothing is invoiced, and there is nothing to cancel.' },
       { t: 'The fee is month to month.', n: 'No year to sign, and no head count to keep up.' },
     ],
 
@@ -505,29 +510,32 @@ export const en: Content = {
     stops: [
       {
         day: 'Day 0',
-        note: 'Nothing taken. No card needed.',
-        state: 'Nothing taken yet',
+        note: 'The workshop runs. The drafts start coming back.',
+        state: 'Nothing invoiced yet',
         say: {
-          before: 'Day 0. Nothing is taken and no card is needed. The monthly total reads ',
+          before: 'Day 0. The workshop runs and the drafts start coming back. Nothing is invoiced. The monthly total reads ',
           after: '.',
         },
       },
       {
         day: 'Day 14',
-        note: 'The first charge.',
-        state: 'Charged from here',
-        say: { before: 'Day 14. The first charge is taken. The monthly total is ', after: '.' },
+        note: 'A review call. Say yes and the first month is invoiced.',
+        state: 'Invoiced after a yes',
+        say: {
+          before: 'Day 14. There is a review call, and the first month is invoiced only if you say yes. The monthly total is ',
+          after: '.',
+        },
       },
       {
-        day: 'Stop here',
-        note: 'Any time inside the fortnight.',
-        state: 'Not charged at all',
-        say: { before: 'Stop here. The monthly total is struck out and reads ', after: '.' },
+        day: 'Say no',
+        note: 'Any time up to that call.',
+        state: 'Nothing invoiced at all',
+        say: { before: 'Say no, and the monthly total is struck out and reads ', after: '.' },
       },
     ],
     total: {
       term: 'The whole firm',
-      sub: { before: 'One fee, up to ', after: ' people.' },
+      sub: { label: 'People covered, up to:' },
       per: 'per month',
       zero: '0 USD',
     },
@@ -539,11 +547,11 @@ export const en: Content = {
       after: ' does the same drafting and costs a great deal less.',
     },
     cta: 'Check if we are a fit',
-    ctaNote: 'Two weeks free. Stop inside them and you pay nothing.',
+    ctaNote: 'Two weeks free. Say no at the review call and nothing is invoiced.',
   },
 
   compare: {
-    eyebrow: 'The same fee, per person',
+    eyebrow: 'The sum per head',
     title: 'What each person costs',
     lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, beside the two plans anyone can buy on the product site.',
 
@@ -552,33 +560,38 @@ export const en: Content = {
     firmLabel: 'The firm',
 
     ourPlan: 'This offer',
-    ourSize: { before: '', after: ' people' },
+    ourSize: { label: 'People:' },
 
     individualPlan: 'Individual',
     individualSize: 'One person',
     teamPlan: 'Team',
-    teamSize: { before: 'Up to ', after: ' people' },
+    teamSize: { label: 'People, at most:' },
 
     claimsTitle: 'What that works out as',
     claims: {
       belowTeamRate: {
-        before: 'At this size each person here costs ',
+        size: 'In a firm of ',
+        before: ', each person here costs ',
         mid: ' a month. The Team rate on doviloop.dev is ',
         after: ' a person.',
       },
       belowIndividualRate: {
-        before: 'At this size each person here costs ',
-        mid: ' a month. The Individual rate on doviloop.dev is ',
-        after: ' a person, and that is the cheapest seat on the product site.',
+        size: 'With ',
+        before: ' on the team, the sum per head here is ',
+        mid: ' a month, under the Individual rate on doviloop.dev of ',
+        after: ' a person.',
       },
       belowTeamCeiling: {
         before: 'The whole firm pays ',
-        mid: ' a month here. The largest firm Team will sell to is ',
-        then: ' people, and that firm pays ',
+        mid: ' a month here, at any size the fee covers. Team stops selling at a head count of ',
+        then: ', and a firm that size pays ',
         after: ' a month.',
       },
     },
-    noClaims: 'At this size the sum does not come out under either published rate, so we are not going to say that it does.',
+    noClaims: {
+      size: 'In a firm of ',
+      after: ', the sum does not come out under either published rate.',
+    },
 
     sourceNote: {
       before: 'The Individual and Team rates are the published prices on ',
@@ -650,7 +663,7 @@ export const en: Content = {
     gmailNote:
       'You told us the team is not on Outlook. That is fine. Gmail and other clients are set up per team during onboarding, and we will go through what that takes on the call.',
     tooSmall: {
-      title: 'This one starts at 10 seats.',
+      title: 'This one starts at ten people.',
       body: 'You are under that today, so a call would spend twenty minutes of your time to reach the same answer. The plan on doviloop.dev does the same drafting for smaller teams and costs a great deal less. Come back to us when the team grows and we will pick this up.',
       pricingCta: 'See the plan for smaller teams',
       nurtureTitle: 'Want the short version by email instead?',
@@ -659,7 +672,7 @@ export const en: Content = {
       nurtureCta: 'Send me the three emails',
       nurtureSubject: 'Send me the three emails',
       nurtureMailBody:
-        'Please send me the three short notes on cutting repeat mail. I am under 10 seats for now.',
+        'Please send me the three short notes on cutting repeat mail. We are a smaller firm for now.',
     },
     deliveryWarning:
       'Our system did not confirm your answers, so we have kept them on this device and will send them again automatically. Nothing is lost. Book the call below either way.',

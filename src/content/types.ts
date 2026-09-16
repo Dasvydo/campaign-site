@@ -11,6 +11,15 @@
  *   - No prices. Not one. Every amount the page says out loud is read from
  *     src/lib/offer.ts at render time, and the copy carries the words around
  *     it. Where a number belongs in a sentence, the type gives it a slot.
+ *   - A numeral never sits inside a noun phrase that has to agree with it.
+ *     Every slot below that takes a figure puts the figure last: after a label
+ *     and a colon, or at the end of a clause with no noun behind it. English
+ *     gets away with "3 places"; Danish needs "1 plads" and "2 pladser", and
+ *     Lithuanian needs "1 vieta", "5 vietos" and "11 vietu". A label with the
+ *     count after it is right at every count in all three languages, and it is
+ *     the shape to keep. Where that genuinely could not be done, the comment on
+ *     the slot says which counts are reachable, so the form can be chosen
+ *     rather than guessed.
  */
 
 /** The five things a firm knows, and the five switches that turn them off.
@@ -76,7 +85,15 @@ export interface NumberRow {
   /** The figure itself, without the hedge and without the unit. Present only
       on the `saving` row; the others are filled from the offer. */
   amount?: string;
-  /** What follows it: "x", " USD", " days". Leading space where one is wanted. */
+  /** What follows the figure: "x", " USD", " days". Leading space where one is
+      wanted. This is the one counted noun left standing next to a numeral on
+      the page, because a ledger line is a figure and its unit and nothing else
+      reads like one. It is safe because the reachable counts are narrow: the
+      multiple and the saving take units that do not inflect, and with the
+      shipped offer the payback lands between three and nine days at every tier,
+      so a form that is right across two to nine is right everywhere the page
+      can reach. If the offer ever puts that figure at one, or above ten, this
+      line wants rewriting rather than translating. */
   unit: string;
   label: string;
 }
@@ -95,14 +112,25 @@ export interface AudienceCopy {
 }
 
 /** One line on the fee sheet. No figure: the amount is read from the offer at
-    render time, so the sheet cannot disagree with the total below it. `waived`
-    is the word shown in place of the amount where the tier gives that fee away,
-    and only the setup line carries one. */
+    render time, so the sheet cannot disagree with the total below it.
+
+    `waived` is carried by the setup line alone, and rendered only on a tier
+    that gives that fee away. The amount is still shown, struck through, with
+    `label` beside it: a fee waived without its amount on show is a trade with
+    no visible value, and the reader is left with no way to price what they are
+    giving up for it. A struck out figure is a picture, so `say` carries the
+    same fact in words, split around the amount, for anyone who is not looking
+    at it. The digit is still the offer's. */
 export interface PriceFee {
   term: string;
   per: string;
   note: string;
-  waived?: string;
+  waived?: {
+    /** The word set beside the struck out amount. */
+    label: string;
+    /** "<before><the setup fee><after>", said aloud. */
+    say: { before: string; after: string };
+  };
 }
 
 export interface PriceTerm {
@@ -147,31 +175,49 @@ export interface CompareCopy {
   perHeadLabel: string;
   firmLabel: string;
 
-  /** Our own rows, one per head count on show. `size` reads "<count> people",
-      and `before` is empty in English only because English puts the count
-      first. A language that does not needs it. */
+  /** Our own rows, one per head count on show. The size cell is a label with
+      the count after it, "People: 12", and not a sentence wrapped around a
+      digit, so no language has to make a noun agree with a number it is handed
+      at render time. `label` carries its own colon, so the punctuation belongs
+      to the translator rather than to the component. */
   ourPlan: string;
-  ourSize: { before: string; after: string };
+  ourSize: { label: string };
 
-  /** The two published rates, as reference rows. `teamSize` reads
-      "Up to <teamMax> people", which is the ceiling Team will sell to. */
+  /** The two published rates, as reference rows. `individualSize` holds no
+      figure at all, because Individual is one seat by definition and the copy
+      can just say so. `teamSize` is the same label shape as `ourSize` and takes
+      the ceiling Team will sell to: "People, at most: 9". */
   individualPlan: string;
   individualSize: string;
   teamPlan: string;
-  teamSize: { before: string; after: string };
+  teamSize: { label: string };
 
   claimsTitle: string;
+  /**
+   * Each per head claim names the head count it is arguing about. The table
+   * shows several sizes at once, so "at this size" would point at nothing; the
+   * size is a slot, and it sits where no noun has to agree with it.
+   *
+   * The two per head claims are worded differently on purpose. Both hold at the
+   * same time more often than not, and two sentences that open the same way and
+   * end in different figures read as one sentence printed twice. Each still
+   * stands alone: neither refers to the other, so all four combinations of the
+   * pair read correctly.
+   */
   claims: {
-    /** "<before><our cost a head><mid><the Team rate><after>" */
-    belowTeamRate: { before: string; mid: string; after: string };
-    /** "<before><our cost a head><mid><the Individual rate><after>" */
-    belowIndividualRate: { before: string; mid: string; after: string };
+    /** "<size><head count><before><our cost a head><mid><the Team rate><after>" */
+    belowTeamRate: { size: string; before: string; mid: string; after: string };
+    /** "<size><head count><before><our cost a head><mid><the Individual rate><after>" */
+    belowIndividualRate: { size: string; before: string; mid: string; after: string };
     /** "<before><our monthly fee><mid><the Team seat ceiling><then><what a firm
-        that size pays on Team><after>" */
+        that size pays on Team><after>". No head count slot, because both sides
+        of this one are fixed: it is the claim that holds at every size the fee
+        covers, and falls away with the tier rather than with the size. */
     belowTeamCeiling: { before: string; mid: string; then: string; after: string };
   };
-  /** Stands in for the claims where not one of them is true at this size. */
-  noClaims: string;
+  /** Stands in for the claims where not one of them is true. It takes the same
+      head count slot, for the same reason: "<size><head count><after>". */
+  noClaims: { size: string; after: string };
 
   /** Whose prices the two reference rows are, and when we read them.
       "<before><doviloop.dev><mid><the date they were read><after>" */
@@ -333,6 +379,14 @@ export interface Content {
     eyebrow: string;
     title: string;
 
+    /** The active tier's own name, dropped into the founding block so that one
+        block is correct on every tier that sells a capped price against a
+        trade. Both `founding` and `early` are capped and both waive nothing the
+        other does not, so a block that said "founding" in fixed type would be
+        wrong the morning the first tier sells out. `standard` is here for
+        completeness; the block it feeds is replaced by `spotsClosed` there. */
+    tierNames: { founding: string; early: string; standard: string };
+
     feesTitle: string;
     /** The monthly fee for the firm, then the one off setup fee. */
     fees: [PriceFee, PriceFee];
@@ -341,10 +395,12 @@ export interface Content {
         person, and both numbers come from the offer. */
     covers: {
       title: string;
-      /** "<before><people covered><after>" */
-      people: { before: string; after: string };
-      /** "<before><drafts a month, pooled><after>" */
-      drafts: { before: string; after: string };
+      /** A label, then the ceiling: "People covered, up to: 20". `note` is the
+          sentence that follows it and carries no figure, so neither half has to
+          agree with a number. */
+      people: { label: string; note: string };
+      /** The same shape again, for the pooled draft cap. */
+      drafts: { label: string; note: string };
       note: string;
     };
 
@@ -356,16 +412,29 @@ export interface Content {
         places. On the uncapped tier there is no trade left to offer, and
         `spotsClosed` is the one line that stands in for the whole block. */
     founding: {
-      eyebrow: string;
+      /** "<before><the active tier's name><after>". */
+      eyebrow: { before: string; after: string };
       title: string;
       lede: string;
-      /** "<before><places in all><mid><places still open><after>" */
-      spots: { before: string; mid: string; after: string };
+      /** A label, then the count, then the total: "Places still open: 3 of 5".
+          The numeral ends its clause and nothing after it agrees with it, so
+          the line is right at one place left as well as at five. One is the
+          state that matters most commercially, and zero is unreachable: the
+          tier advances the moment the last place is spent. */
+      spots: { label: string; of: string };
       spotsClosed: string;
       givesTitle: string;
       gives: [string, string, string, string];
       getsTitle: string;
-      gets: [string, string];
+      /** The two halves of what the trade gives back, named rather than
+          indexed, because they are not interchangeable. `fee` holds on any
+          capped tier and names it. `setup` is rendered only where the tier
+          actually waives the setup fee. */
+      gets: {
+        /** "<before><the active tier's name><after>". */
+        fee: { before: string; after: string };
+        setup: string;
+      };
       note: string;
     };
 
@@ -378,10 +447,11 @@ export interface Content {
     /** Three stops on the timeline. The last one is the one that strikes the
         monthly total out and replaces it with nothing. */
     stops: [PriceStop, PriceStop, PriceStop];
-    /** `sub` splits around the number of people the fee covers. There is no
-        `figure`: the monthly total is the offer's, read at render time. `zero`
-        is what replaces it when the last stop strikes it out. */
-    total: { term: string; sub: { before: string; after: string }; per: string; zero: string };
+    /** `sub` is a label with the covered head count after it, the same shape
+        the coverage list uses. There is no `figure`: the monthly total is the
+        offer's, read at render time. `zero` is what replaces it when the last
+        stop strikes it out. */
+    total: { term: string; sub: { label: string }; per: string; zero: string };
 
     askEyebrow: string;
     ask: { before: string; link: string; after: string };
