@@ -262,17 +262,23 @@ export function Hero({
             01
           </p>
 
+          {/* The outcome, then the time it is reached by. The clock is the
+              one this headline is allowed to name: clockOut is when the work
+              is done, and the promise is the finishing, not the starting.
+              clockIn still opens the worked example, where the hour is the
+              beginning of a morning rather than the end of a job. */}
           <h1 id="hero-title">
             {c.hero.title.before}
             <span className="hero-hl">{c.hero.title.mark}</span>
+            {c.hero.title.mid}
+            <span className="hero-clock">{c.hero.clockOut}</span>
             {c.hero.title.after}
           </h1>
 
-          <p className="hero-deck">
-            {c.hero.deck.before}
-            <span className="hero-clock">{c.hero.clockIn}</span>
-            {c.hero.deck.after}
-          </p>
+          {/* One sentence, and everything in it is an answer to a doubt the
+              headline raises: drafted from what, in whose words, and who is
+              on the hook for sending it. */}
+          <p className="hero-deck">{c.hero.deck}</p>
 
           <div className="hero-act">
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
@@ -327,10 +333,15 @@ export function Hero({
 
           <a className="hero-sheet hero-deal" href="#demo" onClick={() => focusTarget('demo')}>
             <span className="hero-sheet-face">
-              <span className="hero-lab">{c.hero.deal.exampleLabel}</span>
-              <span className="hero-from">{c.hero.deal.from}</span>
+                <span className="hero-lab">{c.hero.deal.draftLabel}</span>
+              <span className="hero-from">{c.hero.deal.to}</span>
               <span className="hero-lab">{c.hero.deal.subjectLabel}</span>
               <span className="hero-subj">{c.hero.deal.subject}</span>
+              {/* The first line of the draft itself, word for word out of the
+                  letter the worked example goes on to show in full. This is the
+                  only thing in the hero that is the product rather than a
+                  description of it. */}
+              <span className="hero-draft">{c.hero.deal.preview}</span>
               <span className="hero-sr">{c.hero.deal.sr}</span>
             </span>
           </a>

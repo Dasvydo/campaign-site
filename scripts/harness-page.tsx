@@ -216,7 +216,7 @@ const PAYBACK_UNIT_MAX = 9;
        further down, assembled, because half a sentence proves nothing now that
        the other half comes from the offer. */
     const mustAppear = [
-      c.hero.title.mark, c.hero.deck.after, c.hero.cta, c.hero.dateline,
+      c.hero.title.mark, c.hero.deck, c.hero.cta, c.hero.dateline,
       c.hero.deal.subject,
       c.demo.title, c.demo.lede, c.demo.pickLead, c.demo.close,
       ...c.demo.desks.map((d) => d.tab),
@@ -274,6 +274,16 @@ const PAYBACK_UNIT_MAX = 9;
        half-finished migration breaks: the words arrive and the number does
        not, or the number arrives somewhere else on the band. */
     const assembled: Array<[string, string]> = [
+      /* The headline. It grew a slot when it started promising an outcome
+         rather than describing a mechanism, and the hour in that slot is the
+         whole promise: forty replies drafted, by then. A headline that lost it
+         would still read as a sentence, which is why presence of the words is
+         not enough on its own. */
+      [
+        'the headline, with the hour the work is finished by',
+        c.hero.title.before + c.hero.title.mark + c.hero.title.mid + c.hero.clockOut +
+          c.hero.title.after,
+      ],
       ['the flat firm fee, on the fee sheet', firmFee.term + money(tier.price) + firmFee.per],
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],
       ['people covered by the fee', c.price.covers.people.label + figure(OFFER.covers)],
@@ -651,6 +661,13 @@ const PAYBACK_UNIT_MAX = 9;
       blankKeys,
       missing,
       unassembled,
+      /* The hero card quotes the draft the worked example goes on to show in
+         full. Asserted against the copy rather than the DOM on purpose: the
+         demo renders that letter behind a desk picker, so the two strings can
+         be held to each other here without driving the picker, and an excerpt
+         that stopped being an excerpt is a defect in the content whether or
+         not the section it belongs to happens to be on screen. */
+      previewIsExcerpt: c.hero.draft.body.includes(c.hero.deal.preview),
       /* The ledger: three rows, three figures, and the window the unit beside
          the last of them can carry. */
       ledgerRowCount: ledger.length,

@@ -184,6 +184,10 @@ async function main() {
       check(p.canonical.endsWith(p.locale === 'en' ? '/' : `/${p.locale}`), `    canonical points at this locale`, p.canonical);
       check(p.hreflangs.length === 4, `    hreflang alternates for all locales plus x-default`, p.hreflangs.join(','));
       check(p.hasSkipLink && p.hasMainLandmark && p.hasFooter, `    skip link, main landmark and footer present`);
+      check(
+        p.previewIsExcerpt,
+        `    the hero quotes the draft the worked example shows, word for word`,
+      );
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 6, `    the qualifier asks exactly 6 questions`, String(p.questionCount));
       check(p.labelledControls, `    every control has a real label element`);

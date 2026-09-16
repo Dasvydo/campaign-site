@@ -35,23 +35,25 @@ export const lt: Content = {
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
     tab: 'Pažiūrėkite, ar tinkame',
 
-    title: { before: 'Parašyta iš ', mark: 'jūsų pačių bylų', after: '. Išsiųsta jūsų žmonių.' },
-    deck: {
-      before: 'Dabar ',
-      after:
-        '. Laukia keturiasdešimt laiškų. Kiekvienas jau turi atsakymo juodraštį, parašytą iš Jūsų pačių bylų.',
+    title: {
+      before: 'Keturiasdešimt laiškų. ',
+      mark: 'Keturiasdešimt atsakymų juodraščių',
+      mid: '. ',
+      after: ' val.',
     },
+    deck: 'Parašyta iš Jūsų pačių bylų, Jūsų pačių žodžiais. Jūsų žmonės juos perskaito ir išsiunčia.',
 
-    cta: 'Pažiūrėkite, ar tinkame',
+    cta: 'Pažiūrėkite, ar tinkame. Taip arba ne.',
     ctaNote: 'Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
-      exampleLabel: 'Laiško pavyzdys',
-      from: 'Nuo gyventojos iš 214 buto',
+      draftLabel: 'Atsakymo juodraštis, paruoštas',
+      to: 'Gyventojai iš 214 buto',
       subjectLabel: 'Tema',
       subject: 'Atsiskaitymas už užstatą, vis dar nieko',
-      sr: 'Perskaitykite jį išnagrinėtame pavyzdyje.',
+      preview: 'Ačiū, kad priminėte, ir atsiprašome, kad teko.',
+      sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
     },
 
     bar: {

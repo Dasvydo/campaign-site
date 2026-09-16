@@ -35,23 +35,25 @@ export const da: Content = {
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
     tab: 'Se om vi passer sammen',
 
-    title: { before: 'Skrevet ud fra ', mark: 'jeres egne sager', after: '. Sendt af jeres folk.' },
-    deck: {
-      before: 'Klokken er ',
-      after:
-        '. Fyrre mails venter. De har alle sammen allerede et svar i udkast, skrevet ud fra jeres egne sager.',
+    title: {
+      before: 'Fyrre mails ind. ',
+      mark: 'Fyrre svar i udkast',
+      mid: '. Klokken ',
+      after: '.',
     },
+    deck: 'Skrevet ud fra jeres egne sager, i jeres egne ord. Jeres folk læser dem igennem og sender.',
 
-    cta: 'Se om vi passer sammen',
+    cta: 'Se om det passer. Få et ja eller nej.',
     ctaNote: 'De første to uger er gratis. Intet kort, og ingen betaling.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {
-      exampleLabel: 'Eksempel på en mail',
-      from: 'Fra en beboer i lejlighed 214',
+      draftLabel: 'Svar i udkast, klar',
+      to: 'Til beboeren i lejlighed 214',
       subjectLabel: 'Emne',
       subject: 'Fraflytningsopgørelse, stadig intet',
-      sr: 'Læs den i det gennemgåede eksempel.',
+      preview: 'Tak fordi du rykker, og undskyld at det har været nødvendigt.',
+      sr: 'Læs hele udkastet i det gennemgåede eksempel.',
     },
 
     bar: {

@@ -310,21 +310,39 @@ export interface Content {
     tab: string;
 
     /** The headline is split so the highlighter can fall on the right phrase in
-        each language rather than on a fixed word count. */
-    title: { before: string; mark: string; after: string };
-    /** The deck is split around hero.clockIn, so the time is written once. */
-    deck: { before: string; after: string };
+        each language rather than on a fixed word count, and so the time the
+        work is finished by is written once, in hero.clockOut, rather than typed
+        into three translations of the same sentence. The headline carries the
+        outcome: what the reader ends up with, and when. */
+    title: { before: string; mark: string; mid: string; after: string };
+    /** One sentence, no slots. The deck clarifies the promise the headline
+        makes rather than making one of its own, which is why the figures it
+        used to carry moved up into the headline. */
+    deck: string;
 
     cta: string;
     ctaNote: string;
 
-    /** The pile of letters, and the one dealt off the top of it. */
+    /** The pile of letters, and the one dealt off the top of it.
+
+        The card is the drafted reply rather than the message that asked for
+        it. The pile behind it is already the problem, forty of it, and a hero
+        that shows nothing but the problem is asking the reader to imagine the
+        part they are being sold. So the card is the thing they get: who it is
+        going to, what it is about, and the first line of it in the words it
+        was actually drafted in.
+
+        `preview` is held to being an exact substring of hero.draft.body, which
+        the page harness checks in all three languages. It is the same letter as
+        the one the worked example opens with, and an excerpt that had drifted
+        from it would be a hero promising a draft the demo then fails to show. */
     pileAlt: string;
     deal: {
-      exampleLabel: string;
-      from: string;
+      draftLabel: string;
+      to: string;
       subjectLabel: string;
       subject: string;
+      preview: string;
       sr: string;
     };
 

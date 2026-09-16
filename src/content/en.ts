@@ -32,23 +32,25 @@ export const en: Content = {
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
     tab: 'Check if we are a fit',
 
-    title: { before: 'Written from ', mark: 'your files', after: '. Sent by your people.' },
-    deck: {
-      before: 'It is ',
-      after:
-        '. Forty emails are waiting. Every one already has a reply, drafted from your own files.',
+    title: {
+      before: 'Forty emails in. ',
+      mark: 'Forty replies drafted',
+      mid: '. By ',
+      after: '.',
     },
+    deck: 'Drafted from your own files, in your own wording. Your people read them and send.',
 
-    cta: 'Check if we are a fit',
+    cta: 'Check the fit. Get a yes or no.',
     ctaNote: 'The first two weeks are free. No card, and nothing taken.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {
-      exampleLabel: 'Example message',
-      from: 'From a resident in flat 214',
+      draftLabel: 'Draft reply, ready',
+      to: 'To the resident in flat 214',
       subjectLabel: 'Subject',
       subject: 'Deposit statement, still nothing',
-      sr: 'Read this one in the worked example.',
+      preview: 'Thank you for chasing this, and sorry you have had to.',
+      sr: 'Read the whole draft in the worked example.',
     },
 
     bar: {

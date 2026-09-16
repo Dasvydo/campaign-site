@@ -499,6 +499,16 @@
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
   font-weight:400; font-size:23px; line-height:1.18;
 }
+/* The first line of the draft. Ruled off above rather than labelled, because
+   the rule is what an email client puts between a header and a body and the
+   reader already knows how to read it. Full ink, not muted: this is the one
+   thing on the card that is the product itself, and a proof that has been
+   greyed down to sit politely behind the subject is not doing its job. */
+.hero-draft{
+  display:block; margin:13px 0 0; padding-top:11px;
+  border-top:1px solid var(--taupe);
+  font-size:14.5px; line-height:1.5; color:var(--ink);
+}
 
 .hero-stack > .hero-sheet:nth-child(1){--x:1%;   --y:4%;   --r:2.2deg;   --sd:412ms; --dl:40ms}
 .hero-stack > .hero-sheet:nth-child(2){--x:-14%; --y:-5%;  --r:-11deg;   --sd:366ms; --dl:49ms}
