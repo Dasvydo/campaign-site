@@ -549,18 +549,18 @@ export const en: Content = {
   compare: {
     eyebrow: 'The sum per head',
     title: 'What each person costs',
-    lede: 'One fee for the firm, however many of you there are. Move the head count and watch which line climbs and which one does not.',
+    lede: 'One price for the whole firm, however many of you there are.',
 
     headsLabel: 'People who write mail:',
 
-    keepLabel: 'You keep every month, next to Managed:',
+    keepLabel: 'You keep, against paying per seat:',
     yearLabel: 'Over a year:',
 
     firmLabel: 'The firm pays:',
     perHeadLabel: 'Each person:',
 
-    ourPlan: 'This offer',
-    ourLegend: 'One fee for the firm, at every size below.',
+    ourLine: 'Your firm',
+    refLine: 'Per seat',
 
     managedPlan: 'Managed',
     managedSize: { label: 'Sold by the seat, from a head count of:' },
@@ -572,7 +572,7 @@ export const en: Content = {
       after: '. There is no size on this scale it will quote for.',
     },
 
-    axisLabel: 'People who write mail',
+    sourceLabel: 'Where these figures come from',
 
     rangeNote: {
       before: 'The scale stops at the head count the fee covers: ',

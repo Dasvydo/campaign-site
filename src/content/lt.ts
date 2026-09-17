@@ -554,18 +554,18 @@ export const lt: Content = {
   compare: {
     eyebrow: 'Suma vienam žmogui',
     title: 'Kiek kainuoja kiekvienas žmogus',
-    lede: 'Vienas mokestis visai įmonei, kad ir kiek Jūsų būtų. Pastumkite žmonių skaičių ir pamatysite, kuri linija kyla, o kuri ne.',
+    lede: 'Viena kaina visai įmonei, kad ir kiek Jūsų būtų.',
 
     headsLabel: 'Žmonių, rašančių laiškus:',
 
-    keepLabel: 'Tiek sutaupote per mėnesį, palyginti su Prižiūrimu planu:',
+    keepLabel: 'Tiek sutaupote, palyginti su mokėjimu už kiekvieną vietą:',
     yearLabel: 'Per metus:',
 
     firmLabel: 'Įmonė moka:',
     perHeadLabel: 'Kiekvienam žmogui:',
 
-    ourPlan: 'Šis pasiūlymas',
-    ourLegend: 'Vienas mokestis visai įmonei, esant bet kuriam dydžiui žemiau.',
+    ourLine: 'Jūsų įmonė',
+    refLine: 'Už vietą',
 
     managedPlan: 'Prižiūrimas planas',
     managedSize: { label: 'Parduodamas po vietą, nuo tokio žmonių skaičiaus:' },
@@ -577,7 +577,7 @@ export const lt: Content = {
       after: '. Šioje skalėje nėra dydžio, kuriam jis teiktų pasiūlymą.',
     },
 
-    axisLabel: 'Žmonių, rašančių laiškus',
+    sourceLabel: 'Iš kur šie skaičiai',
 
     rangeNote: {
       before: 'Skalė baigiasi ties tokiu žmonių skaičiumi, kurį dengia mokestis: ',

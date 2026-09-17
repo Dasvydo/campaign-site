@@ -326,7 +326,7 @@ const smallestSoldTo = (): number => {
       c.compare.eyebrow, c.compare.title, c.compare.lede,
       c.compare.headsLabel, c.compare.keepLabel, c.compare.yearLabel,
       c.compare.firmLabel, c.compare.perHeadLabel,
-      c.compare.ourPlan, c.compare.ourLegend, c.compare.axisLabel,
+      c.compare.ourLine, c.compare.refLine, c.compare.sourceLabel,
       /* One plan is drawn and two are only named. Team and Individual both sit
          in sentences with a figure in them, so those sentences are asserted
          assembled rather than listed here. */
@@ -635,8 +635,8 @@ const smallestSoldTo = (): number => {
       en.hero.title.mark, en.nav.cta, en.demo.title, en.demo.pickLead,
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
-      en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.axisLabel,
-      en.compare.ourPlan, en.compare.perHeadLabel, en.compare.keepLabel,
+      en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.sourceLabel,
+      en.compare.ourLine, en.compare.refLine, en.compare.perHeadLabel, en.compare.keepLabel,
       ...en.demo.desks.map((d) => d.tab),
       ...en.demo.desks[0].sources.map((x) => x.label),
       ...en.who.groups.map((g) => g.line),

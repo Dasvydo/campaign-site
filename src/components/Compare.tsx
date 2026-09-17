@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import type { Content } from '../content/types';
+import { Disclosure } from './Disclosure';
 import {
   OFFER,
   activeTier,
@@ -55,16 +56,42 @@ import {
  * numbers through `aria-valuetext` on every change, and the live region says
  * what moved. A described SVG here would make a screen reader read the same
  * three amounts twice.
+ *
+ * It has no axes and no legend, which is deliberate in both cases.
+ *
+ * No horizontal axis, because the control directly above it is one: it is the
+ * same width, it carries the head count and both ends of the scale, and the
+ * dots move under it as it moves. A second row of the same numbers underneath
+ * would be the chart repeating the control.
+ *
+ * No vertical axis, because direct labels do the job better and the rule of
+ * thumb is direct labels before gridlines, gridlines before a second axis.
+ * Five gridlines and five amounts nobody needs to read were more ink than the
+ * two lines they were behind.
+ *
+ * No legend, because the name rides each line. A legend exists so identity is
+ * never carried by colour alone; with two marks and a word on each, it would
+ * restate the labels in a second place and cost the space the whole section is
+ * trying to give back. What the names say is what the plans are, not what they
+ * are called: a visitor has never read the product site, and the plan names
+ * are in the disclosure underneath for anyone who wants to check the rate.
  */
 
 /* The drawing, in its own coordinate space. The viewBox leaves room below the
    plot for the axis labels and above it for the upper line's own figure, so
    nothing is drawn outside the bounds at any head count. */
-/* `left` is wide enough for the topmost tick with its currency on it, in the
-   widest of the three groupings this page publishes in. A gutter sized for the
-   bare numeral clipped the thousands digit off, which is the failure this
-   comment exists to stop somebody tidying back in. */
-const VIEW = { w: 660, h: 340, left: 86, right: 18, top: 18, bottom: 54 };
+/* The plot runs nearly the full width, because it is read against the control
+   above it rather than against an axis of its own. `right` holds the two names
+   the two names, which sit on their own lines at the left rather than off the
+   right hand ends. Hung off the ends they needed a margin wide enough for the
+   longest of them in three languages at two type sizes, and "Jeres virksomhed"
+   at the phone size did not fit any margin worth giving up. On the line, they
+   cost nothing and cannot be clipped. */
+/* The vertical scale starts at zero and is not cropped. The band between the
+   lines is the saving, so its size against the whole is the claim; lifting the
+   baseline would inflate it. The room that leaves under the flat line is where
+   that line's own name sits. */
+const VIEW = { w: 660, h: 232, left: 8, right: 18, top: 22, bottom: 6 };
 
 export function Compare({ c }: { c: Content }) {
   const tier = activeTier();
@@ -103,9 +130,6 @@ export function Compare({ c }: { c: Content }) {
   const ourY = py(tier.price);
   const manFirst = managedMonthly(first);
   const manLast = managedMonthly(last);
-
-  /* Four ticks plus zero, each naming a value the chart actually reaches. */
-  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(ceiling * f));
 
   /* What the slider says when it moves, assembled from the same labels the
      readout prints so the spoken version cannot drift from the seen one. Each
@@ -197,27 +221,10 @@ export function Compare({ c }: { c: Content }) {
             {announce}
           </p>
 
-          {/* The drawing. See the note at the top of this file for why it is
-              hidden from assistive technology rather than described. */}
+          {/* The drawing. See the note at the top of this file for why it has
+              no axes, no legend, and is hidden from assistive technology. */}
           <div className="cmp-chart">
             <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} aria-hidden="true" focusable="false">
-              {ticks.map((value) => (
-                <g key={value}>
-                  <line
-                    className="cmp-grid"
-                    x1={VIEW.left}
-                    y1={py(value)}
-                    x2={VIEW.w - VIEW.right}
-                    y2={py(value)}
-                  />
-                  {/* The highest tick wears the unit so the axis is not a
-                      column of bare numerals, and the others stay quiet. */}
-                  <text className="cmp-tick cmp-tick-y" x={VIEW.left - 10} y={py(value) + 4} textAnchor="end">
-                    {value === ticks[ticks.length - 1] ? money(value) : figure(value)}
-                  </text>
-                </g>
-              ))}
-
               {manFirst === null || manLast === null ? null : (
                 <>
                   {/* The money, as an area rather than a number. */}
@@ -232,98 +239,87 @@ export function Compare({ c }: { c: Content }) {
                     className="cmp-line-ref"
                     d={`M${px(first)} ${py(manFirst)} L${px(last)} ${py(manLast)}`}
                   />
+                  {/* The name sits on the line it names, above this one and
+                      below the other, so neither is ever inside the wash. */}
+                  <text
+                    className="cmp-name cmp-name-ref"
+                    x={px(first) + 10}
+                    y={py(manFirst) - 12}
+                  >
+                    {c.compare.refLine}
+                  </text>
                 </>
               )}
 
               <path className="cmp-line-ours" d={`M${px(first)} ${ourY} L${px(last)} ${ourY}`} />
+              <text className="cmp-name cmp-name-ours" x={px(first) + 10} y={ourY + 26}>
+                {c.compare.ourLine}
+              </text>
 
+              {/* Where the reader is on the control, on both lines. The dots
+                  carry a ring in the surface colour so they stay legible where
+                  they sit on a line. No drop line to the foot of the plot:
+                  there is no axis down there to drop to any more. */}
               {managed === null ? null : (
-                <>
-                  <line
-                    className="cmp-marker"
-                    x1={px(heads)}
-                    y1={py(managed)}
-                    x2={px(heads)}
-                    y2={py(0)}
-                  />
-                  <circle className="cmp-dot-ref" cx={px(heads)} cy={py(managed)} r={5} />
-                </>
+                <circle className="cmp-dot-ref" cx={px(heads)} cy={py(managed)} r={5} />
               )}
               <circle className="cmp-dot-ours" cx={px(heads)} cy={ourY} r={5} />
-
-              {sizes
-                .filter((n) => n === first || n === last || (n - first) % 2 === 0)
-                .map((n) => (
-                  <text
-                    className="cmp-tick cmp-tick-x"
-                    key={n}
-                    x={px(n)}
-                    y={VIEW.h - 34}
-                    textAnchor="middle"
-                  >
-                    {figure(n)}
-                  </text>
-                ))}
-              <text
-                className="cmp-tick cmp-tick-x"
-                x={(VIEW.left + VIEW.w - VIEW.right) / 2}
-                y={VIEW.h - 8}
-                textAnchor="middle"
-              >
-                {c.compare.axisLabel}
-              </text>
             </svg>
           </div>
 
-          <ul className="cmp-legend">
-            <li>
-              <span className="cmp-swatch cmp-swatch-ours" aria-hidden="true" />
-              <span>
-                <b>{c.compare.ourPlan}</b> {c.compare.ourLegend}
-              </span>
-            </li>
-            <li>
-              <span className="cmp-swatch cmp-swatch-ref" aria-hidden="true" />
-              <span>
-                <b>{c.compare.managedPlan}</b> {c.compare.managedSize.label}{' '}
-                {figure(OFFER.compare.managedMin)}
-              </span>
-            </li>
-          </ul>
         </div>
 
-        <div className="cmp-notes">
-          {/* Team, named and not drawn. */}
-          <p className="cmp-note">
-            <b>{c.compare.teamPlan}</b>
-            {c.compare.teamOut.before}
-            <span className="cmp-fig">{figure(OFFER.compare.teamMax)}</span>
-            {c.compare.teamOut.after}
-          </p>
+        {/* Everything a reader does not need in order to understand the
+            picture, and does need in order to check it. Behind a disclosure
+            rather than gone: the plans this offer is not, the head count the
+            fee covers, and whose published rates these are. It is the same
+            native <details> the terms band uses, so it opens with no script,
+            and find-in-page can open it. */}
+        <div className="cmp-more">
+          <Disclosure label={c.compare.sourceLabel}>
+            <div className="cmp-notes">
+              {/* The plan the grey line is, named for a reader who wants to go
+                  and check the rate on the product site. */}
+              <p className="cmp-note">
+                <b>{c.compare.managedPlan}</b>
+                {' '}
+                {c.compare.managedSize.label}{' '}
+                <span className="cmp-fig">{figure(OFFER.compare.managedMin)}</span>
+              </p>
 
-          <p className="cmp-note">
-            {c.compare.rangeNote.before}
-            <span className="cmp-fig">{figure(OFFER.covers)}</span>
-            {c.compare.rangeNote.after}
-          </p>
+              {/* Team, named and not drawn. */}
+              <p className="cmp-note">
+                <b>{c.compare.teamPlan}</b>
+                {c.compare.teamOut.before}
+                <span className="cmp-fig">{figure(OFFER.compare.teamMax)}</span>
+                {c.compare.teamOut.after}
+              </p>
 
-          {/* Individual, named and never ranked. */}
-          <p className="cmp-note">
-            <b>{c.compare.individualPlan}</b>
-            {c.compare.individualNote.before}
-            <span className="cmp-fig">{money(OFFER.compare.individual)}</span>
-            {c.compare.individualNote.after}
-          </p>
+              <p className="cmp-note">
+                {c.compare.rangeNote.before}
+                <span className="cmp-fig">{figure(OFFER.covers)}</span>
+                {c.compare.rangeNote.after}
+              </p>
 
-          <p className="cmp-source">
-            {c.compare.sourceNote.before}
-            <a href="https://doviloop.dev" rel="noreferrer">
-              {c.compare.sourceNote.link}
-            </a>
-            {c.compare.sourceNote.mid}
-            {OFFER.compare.readAt}
-            {c.compare.sourceNote.after}
-          </p>
+              {/* Individual, named and never ranked. */}
+              <p className="cmp-note">
+                <b>{c.compare.individualPlan}</b>
+                {c.compare.individualNote.before}
+                <span className="cmp-fig">{money(OFFER.compare.individual)}</span>
+                {c.compare.individualNote.after}
+              </p>
+
+              <p className="cmp-source">
+                {c.compare.sourceNote.before}
+                <a href="https://doviloop.dev" rel="noreferrer">
+                  {c.compare.sourceNote.link}
+                </a>
+                {c.compare.sourceNote.mid}
+                {OFFER.compare.readAt}
+                {c.compare.sourceNote.after}
+              </p>
+            </div>
+          </Disclosure>
         </div>
       </div>
     </section>

@@ -3491,42 +3491,37 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
 }
 
-/* --- the drawing ------------------------------------------------------ */
+/* --- the drawing ------------------------------------------------------
+   No axes and no legend. The control above is the horizontal axis, and each
+   line carries its own name, so what is left in here is two lines, the wash
+   between them, and the two dots that follow the control. */
 .cmp-chart{ margin-top:26px }
 .cmp-chart svg{ display:block; width:100%; height:auto; max-width:100% }
 
-.cmp-grid{ stroke:rgba(37,29,24,.09); stroke-width:1; fill:none }
-.cmp-tick{ font-family:var(--cmp-sans); font-size:12px; fill:var(--muted) }
 .cmp-band{ fill:var(--amber); opacity:.13 }
 .cmp-line-ref{ stroke:rgba(37,29,24,.42); stroke-width:2; fill:none; stroke-linecap:round }
 .cmp-line-ours{ stroke:var(--amber); stroke-width:3; fill:none; stroke-linecap:round }
-.cmp-marker{ stroke:var(--ink); stroke-width:1; stroke-dasharray:3 4; fill:none; opacity:.45 }
+
+/* The ring is the surface colour, so a dot stays legible sitting on its own
+   line. A stroke drawn to separate marks would be ink that is not data. */
 .cmp-dot-ours{ fill:var(--amber); stroke:var(--card); stroke-width:2.5 }
 .cmp-dot-ref{ fill:var(--ink); stroke:var(--card); stroke-width:2.5 }
 
-/* The marker and both dots are the only things that move, so they are the only
-   things that carry a transition. The lines and the band are fixed. */
-.cmp-marker,.cmp-dot-ours,.cmp-dot-ref{
-  transition:cx var(--cmp-t-micro) var(--cmp-e-out),
-             cy var(--cmp-t-micro) var(--cmp-e-out),
-             x1 var(--cmp-t-micro) var(--cmp-e-out),
-             x2 var(--cmp-t-micro) var(--cmp-e-out),
-             y1 var(--cmp-t-micro) var(--cmp-e-out);
-}
+/* The names ride the ends of the lines they name. Ink colours rather than the
+   line's own colour: the mark beside the word is what carries identity. */
+.cmp-name{ font-family:var(--cmp-sans); font-size:17px; font-weight:500 }
+.cmp-name-ours{ fill:var(--ink) }
+.cmp-name-ref{ fill:var(--muted) }
 
-.cmp-legend{
-  display:flex; flex-wrap:wrap; gap:10px 28px;
-  margin:20px 0 0; padding:0; list-style:none;
-  font-size:14px; color:var(--muted);
+/* Only the dots move, so they are the only things that carry a transition. */
+.cmp-dot-ours,.cmp-dot-ref{
+  transition:cx var(--cmp-t-micro) var(--cmp-e-out),
+             cy var(--cmp-t-micro) var(--cmp-e-out);
 }
-.cmp-legend li{ display:flex; align-items:baseline; gap:10px; max-width:42ch }
-.cmp-legend b{ color:var(--ink); font-weight:500 }
-.cmp-swatch{ width:18px; height:3px; border-radius:2px; flex:none; transform:translateY(-4px) }
-.cmp-swatch-ours{ background:var(--amber) }
-.cmp-swatch-ref{ background:rgba(37,29,24,.42) }
 
 /* --- the notes under it ------------------------------------------------ */
-.cmp-notes{ margin-top:34px; max-width:64ch }
+.cmp-more{ margin-top:26px }
+.cmp-notes{ max-width:64ch }
 .cmp-note{
   margin:0 0 14px; font-size:15px; line-height:1.55; color:var(--muted);
 }
@@ -3558,12 +3553,13 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
      label nobody can read is worse than a gridline with none. What the chart
      is carrying on a phone is the shape: one line flat, one climbing, and the
      money shaded between them. */
-  .cmp-tick-y{ display:none }
-  .cmp-tick-x{ font-size:21px }
+  /* The drawing scales to about half here, so the two names it carries are
+     set in viewBox units that land near the body size once scaled down. */
+  .cmp-name{ font-size:32px }
 }
 
 @media (prefers-reduced-motion:reduce){
-  .cmp-marker,.cmp-dot-ours,.cmp-dot-ref,.cmp-source a{ transition:none }
+  .cmp-dot-ours,.cmp-dot-ref,.cmp-source a{ transition:none }
 }
 
 .price-per-mark{

@@ -555,18 +555,18 @@ export const da: Content = {
   compare: {
     eyebrow: 'Regnestykket per person',
     title: 'Hvad hver person koster',
-    lede: 'Én pris for hele virksomheden, uanset hvor mange I er. Flyt antallet af personer, og se hvilken kurve der stiger, og hvilken der ikke gør.',
+    lede: 'Én pris for hele virksomheden, uanset hvor mange I er.',
 
     headsLabel: 'Personer, der skriver mail:',
 
-    keepLabel: 'Det sparer I hver måned i forhold til Administreret:',
+    keepLabel: 'Det sparer I i forhold til at betale per plads:',
     yearLabel: 'På et år:',
 
     firmLabel: 'Virksomheden betaler:',
     perHeadLabel: 'Per person:',
 
-    ourPlan: 'Det her tilbud',
-    ourLegend: 'Én pris for hele virksomheden, ved hver eneste størrelse herunder.',
+    ourLine: 'Jeres virksomhed',
+    refLine: 'Per plads',
 
     managedPlan: 'Administreret',
     managedSize: { label: 'Sælges per plads, fra et antal personer på:' },
@@ -578,7 +578,7 @@ export const da: Content = {
       after: '. Der er ingen størrelse på den her skala, den giver tilbud på.',
     },
 
-    axisLabel: 'Personer, der skriver mail',
+    sourceLabel: 'Hvor tallene her kommer fra',
 
     rangeNote: {
       before: 'Skalaen stopper ved det antal personer, prisen dækker: ',

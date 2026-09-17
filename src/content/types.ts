@@ -218,10 +218,16 @@ export interface CompareCopy {
   firmLabel: string;
   perHeadLabel: string;
 
-  /** What the two lines are. `ourLegend` says the thing the flat line is
-      showing, in words, for a reader who takes the shape in before the axes. */
-  ourPlan: string;
-  ourLegend: string;
+  /** The names that ride the two lines.
+   *
+   *  Plain language, not plan names. A visitor landing here has never read the
+   *  product site, and asking them to learn what "Managed" is before the biggest
+   *  figure in the section means anything is the thing that made this section
+   *  hard. What Managed is, is per seat pricing, so the chart says per seat. The
+   *  plan it refers to is named in the disclosure underneath, where a reader who
+   *  wants to go and check the published rate can find it. */
+  ourLine: string;
+  refLine: string;
 
   /** The plan the flat line is drawn against, and the floor it starts at.
       `managedSize` is a label with the count after it, "People, at least: 10",
@@ -242,9 +248,11 @@ export interface CompareCopy {
   teamSize: { label: string };
   teamOut: { before: string; after: string };
 
-  /** Under the horizontal axis. No colon and no figure: it names what the axis
-      counts, and the reader reads the count off the control. */
-  axisLabel: string;
+  /** The summary on the disclosure holding everything a reader does not need
+      in order to understand the picture, and does need in order to check it:
+      the two plans this offer is not, the head count the fee covers, and whose
+      published rates these are. */
+  sourceLabel: string;
 
   /** Why the control stops where it does, so a reader who runs it to the end
       knows the ceiling is the offer's and not the widget's.
