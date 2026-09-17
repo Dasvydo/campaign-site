@@ -483,17 +483,34 @@ export interface Content {
     eyebrow: string;
     title: string;
 
-    /** The active tier's own name, dropped into the founding block so that one
-        block is correct on every tier that sells a capped price against a
-        trade. Both `founding` and `early` are capped and both waive nothing the
-        other does not, so a block that said "founding" in fixed type would be
-        wrong the morning the first tier sells out. `standard` is here for
-        completeness; the block it feeds is replaced by `spotsClosed` there. */
-    tierNames: { founding: string; early: string; standard: string };
+    /** The founding cohort's own name, dropped into the block that describes
+        the trade. One word rather than a name per tier: the page no longer
+        sells a price ladder, so there is one cohort and one name for it. The
+        block it feeds is replaced by `spotsClosed` once the cohort is full. */
+    cohortName: string;
 
     feesTitle: string;
     /** The monthly fee for the firm, then the one off setup fee. */
     fees: [PriceFee, PriceFee];
+
+    /** The two packages, smallest firm first.
+
+        Only the words live here. Every figure beside them, the fee, the
+        coverage and the pooled draft cap, is read from the offer at render
+        time, which is why a row carries an `id` rather than a price: the row
+        has to be matched to the right package, and matching it by position
+        would put Firm's fee beside Desk's name the first time somebody
+        reordered the list. A row whose id names no package renders nothing. */
+    packages: {
+      title: string;
+      lede: string;
+      rows: readonly { id: string; name: string; note: string }[];
+      /** Column headings. Neither carries a figure. */
+      feeLabel: string;
+      peopleLabel: string;
+      draftsLabel: string;
+      note: string;
+    };
 
     /** What the flat fee covers. Both ceilings are firm level rather than per
         person, and both numbers come from the offer. */

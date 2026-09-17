@@ -61,8 +61,13 @@ function arrayLengths(node, prefix = '', out = new Map()) {
    a missed translation. "Cookies" is there for the same reason: it is the word
    Danish uses, and a consent notice that invented a native-sounding synonym
    would be less clear, not more. Exact match only, so "Send it" is still
-   flagged. */
-const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send|Cookies)$/;
+   flagged.
+
+   Desk and Firm are the two package names. They are product names in the same
+   way DoviLoop is, they appear on an invoice and in a support conversation in
+   whatever language it happens in, and translating one of them would mean a
+   Danish reader and an English reader could not talk about the same package. */
+const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send|Cookies|Desk|Firm)$/;
 const isShared = (v) =>
   typeof v !== 'string' ||
   SHARED.test(v.trim()) ||

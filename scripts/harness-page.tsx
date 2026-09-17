@@ -31,13 +31,13 @@ import { TEAM_SIZES, route } from '../src/lib/contract';
 import type { Locale } from '../src/lib/contract';
 import {
   OFFER,
-  activeTier,
+  headlinePackage,
   belowManagedFloor,
   belowTeamCeiling,
   comparison,
-  isCapped,
+  foundingOpen,
   modelledMultiple,
-  remainingSpots,
+  remainingFoundingPlaces,
   setupDue,
   formatCount,
   formatMoney,
@@ -147,10 +147,10 @@ const smallestSoldTo = (): number => {
   /* Read once, outside the loop. The three locales are three renderings of one
      offer, so every figure below has to be the same in all three, and reading
      the tier three times would hide a counter that moved mid-run. */
-  const tier = activeTier();
-  const capped = isCapped(tier);
-  const spotsLeft = remainingSpots(tier);
-  const setupWaived = tier.setupWaived && setupDue(tier) === 0;
+  const tier = headlinePackage();
+  const capped = foundingOpen();
+  const spotsLeft = remainingFoundingPlaces();
+  const setupWaived = setupDue() === 0;
 
   for (const locale of ['en', 'da', 'lt'] as Locale[]) {
     const host = document.createElement('div');
@@ -243,7 +243,7 @@ const smallestSoldTo = (): number => {
     const text = stepOneText + '\n' + stepTwoText;
     const c = content[locale];
     const [firmFee, setupFee] = c.price.fees;
-    const tierName = c.price.tierNames[tier.id];
+    const tierName = c.price.cohortName;
 
     /* The three ways the page prints a number, copied from <Price /> and
        <Compare /> so an assembled string is assembled exactly the way the
@@ -352,11 +352,11 @@ const smallestSoldTo = (): number => {
       ],
       ['the flat firm fee, on the fee sheet', firmFee.term + money(tier.price) + firmFee.per],
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],
-      ['people covered by the fee', c.price.covers.people.label + figure(OFFER.covers)],
-      ['the pooled draft cap', c.price.covers.drafts.label + figure(OFFER.draftCap)],
+      ['people covered by the fee', c.price.covers.people.label + figure(tier.covers)],
+      ['the pooled draft cap', c.price.covers.drafts.label + figure(tier.draftCap)],
       [
         'the monthly total under the timeline',
-        c.price.total.term + c.price.total.sub.label + ' ' + figure(OFFER.covers) + money(tier.price),
+        c.price.total.term + c.price.total.sub.label + ' ' + figure(tier.covers) + money(tier.price),
       ],
       /* The plan with no row. Everything else in this section is arithmetic
          the table or a claim would give away if it went missing, and this is
@@ -383,7 +383,7 @@ const smallestSoldTo = (): number => {
             [
               'the spots counter',
               c.price.founding.spots.label + figure(spotsLeft ?? 0) +
-                c.price.founding.spots.of + figure(tier.total ?? 0),
+                c.price.founding.spots.of + figure(OFFER.founding.places),
             ],
             [
               'what the trade gives back, naming the tier on show',

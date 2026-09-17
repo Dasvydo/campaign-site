@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Content, NumberRow } from '../content/types';
-import { activeTier, formatCount, formatMoney, modelledMultiple } from '../lib/offer';
+import { formatCount, formatMoney, headlinePackage, modelledMultiple } from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -94,11 +94,11 @@ export function Numbers({ c }: { c: Content }) {
   // it and the figure computed from it cannot disagree, and anything that does
   // not parse to a figure leaves the helper with nothing to work from, so the
   // ledger prints a blank rather than a guess.
-  const tier = activeTier();
+  const pkg = headlinePackage();
   const saving = Number.parseFloat(
     c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
   );
-  const multiple = modelledMultiple(saving, MODEL_FIRM, tier);
+  const multiple = modelledMultiple(saving, MODEL_FIRM, pkg);
 
   /* The figure for one row, or an empty string where there is none to print.
 

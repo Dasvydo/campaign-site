@@ -439,7 +439,7 @@ export const lt: Content = {
     eyebrow: 'Dvi savaitės, tada nusprendžiate',
     title: 'Kiek kainuoja',
 
-    tierNames: { founding: 'steigiamasis', early: 'ankstyvasis', standard: 'standartinis' },
+    cohortName: 'steigiamasis',
 
     feesTitle: 'Kainos',
     fees: [
@@ -454,10 +454,23 @@ export const lt: Content = {
         note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.',
         waived: {
           label: 'Netaikomas',
-          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ', šiame etape netaikomas.' },
+          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ' netaikomas, kol yra laisvų vietų.' },
         },
       },
     ],
+
+    packages: {
+      title: 'Du paketai',
+      lede: 'Abiejuose tas pats produktas. Skiriasi tik tai, kiek žmonių apima ir kiek juodraščių dalijasi visa įmonė.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'Įmonei iki dešimties žmonių.' },
+        { id: 'firm', name: 'Firm', note: 'Įmonei iki dvidešimties. Tokia pati kaina prie vienuolikos žmonių kaip ir prie dvidešimties.' },
+      ],
+      feeLabel: 'Per mėnesį, visai įmonei',
+      peopleLabel: 'Apimami žmonės, iki',
+      draftsLabel: 'Juodraščiai per mėnesį, bendri',
+      note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
+    },
 
     covers: {
       title: 'Ką apima mokestis',
@@ -477,10 +490,10 @@ export const lt: Content = {
       title: 'Mainai, o ne nuolaida',
       lede: {
         noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
-        trade: 'Šios vietos yra mainai: mažesnis mokestis už Jūsų vardą prie šio darbo.',
+        trade: 'Šios vietos yra mainai: netaikomas įdiegimo mokestis už Jūsų vardą prie šio darbo.',
       },
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
-      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Žemiau nurodytas mokestis yra standartinis, ir nėra dėl ko mainytis.',
+      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau toks pat, kokį mokėjo jie; įdiegimo mokestis dabar taikomas visas.',
       givesTitle: 'Ką duodate Jūs',
       gives: [
         'Atsiliepimą produkto svetainei, savais žodžiais.',
@@ -490,10 +503,10 @@ export const lt: Content = {
       ],
       getsTitle: 'Ką gaunate Jūs',
       gets: {
-        fee: { before: 'Įmonei taikomas ', after: ' mėnesinis mokestis vietoj standartinio.' },
+        fee: { before: 'Vieta tarp ', after: ' penkių, o tiek įmonių vienas žmogus gali iš tikrųjų aprėpti vienu metu.' },
         setup: 'Visas įdiegimo mokestis netaikomas.',
       },
-      note: 'Jei nenorite būti įvardyti, rinkitės standartinį mokestį, ir niekas kitas produkte nesikeičia.',
+      note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
     },
 
     freeTitle: 'Pirmos dvi savaitės nemokamos',
@@ -544,7 +557,7 @@ export const lt: Content = {
 
     askEyebrow: 'Prieš užsakydami',
     ask: {
-      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
+      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo trijų žmonių. Mažesnėms komandoms planas svetainėje ',
       link: 'doviloop.dev',
       after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
     },

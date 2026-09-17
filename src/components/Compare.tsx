@@ -2,7 +2,7 @@ import type { Content } from '../content/types';
 import type { Comparison } from '../lib/offer';
 import {
   OFFER,
-  activeTier,
+  headlinePackage,
   belowManagedFloor,
   belowTeamCeiling,
   comparison,
@@ -142,8 +142,8 @@ export function Compare({ c }: { c: Content }) {
 
   /* Read once, so the table and the claims are answering for the same tier
      even if this render straddled a change to the counts. */
-  const tier = activeTier();
-  const rows = SIZES.map((n) => comparison(n, tier)).filter(isCovered);
+  const pkg = headlinePackage();
+  const rows = SIZES.map((n) => comparison(n, pkg)).filter(isCovered);
 
   /* The two ends of the curve are the two ends of the table, so the sentence
      cannot describe a size the reader cannot also see. Two distinct rows are
@@ -159,8 +159,8 @@ export function Compare({ c }: { c: Content }) {
      fee is under what the smallest firm that plan takes pays, which on the
      shipped ladder is every tier; the Team one goes when the fee passes what
      the largest firm Team takes pays, which happens at the uncapped tier. */
-  const floorHolds = belowManagedFloor(tier);
-  const ceilingHolds = belowTeamCeiling(tier);
+  const floorHolds = belowManagedFloor(pkg);
+  const ceilingHolds = belowTeamCeiling(pkg);
 
   const anyClaim = floorHolds || ceilingHolds || (smallest !== null && largest !== null);
 
@@ -257,7 +257,7 @@ export function Compare({ c }: { c: Content }) {
                   {t.claims.belowManagedFloor.mid}
                   <b className="cmp-fig">{money(managedFloorMonthly())}</b>
                   {t.claims.belowManagedFloor.then}
-                  <b className="cmp-fig">{money(tier.price)}</b>
+                  <b className="cmp-fig">{money(pkg.price)}</b>
                   {t.claims.belowManagedFloor.after}
                 </li>
               )}
@@ -269,7 +269,7 @@ export function Compare({ c }: { c: Content }) {
                   {t.claims.belowTeamCeiling.mid}
                   <b className="cmp-fig">{money(teamCeilingMonthly())}</b>
                   {t.claims.belowTeamCeiling.then}
-                  <b className="cmp-fig">{money(tier.price)}</b>
+                  <b className="cmp-fig">{money(pkg.price)}</b>
                   {t.claims.belowTeamCeiling.after}
                 </li>
               )}

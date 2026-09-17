@@ -439,7 +439,7 @@ export const da: Content = {
     eyebrow: 'To uger, så bestemmer I',
     title: 'Hvad det koster',
 
-    tierNames: { founding: 'allerførste', early: 'tidlige', standard: 'almindelige' },
+    cohortName: 'allerførste',
 
     feesTitle: 'Priserne',
     fees: [
@@ -454,10 +454,23 @@ export const da: Content = {
         note: 'En workshop på jeres egen rigtige post.',
         waived: {
           label: 'Bortfalder',
-          say: { before: 'Opsætningsprisen på ', after: ' bortfalder på det her trin.' },
+          say: { before: 'Opsætningsprisen på ', after: ' bortfalder, så længe der er ledige pladser.' },
         },
       },
     ],
+
+    packages: {
+      title: 'De to pakker',
+      lede: 'Samme produkt i begge. Det, der ændrer sig, er hvor mange mennesker det dækker, og hvor mange udkast firmaet deles om.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'Til et firma op til ti personer.' },
+        { id: 'firm', name: 'Firm', note: 'Til et firma op til tyve. Samme pris ved elleve personer som ved tyve.' },
+      ],
+      feeLabel: 'Pr. måned, hele firmaet',
+      peopleLabel: 'Personer dækket, op til',
+      draftsLabel: 'Udkast om måneden, fælles',
+      note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
+    },
 
     covers: {
       title: 'Hvad prisen dækker',
@@ -477,10 +490,10 @@ export const da: Content = {
       title: 'En byttehandel, ikke en rabat',
       lede: {
         noProofYet: 'Vi har endnu ingen kunder at pege på.',
-        trade: 'De her pladser er en byttehandel: en lavere pris for jeres navn på arbejdet.',
+        trade: 'De her pladser er en byttehandel: opsætningsprisen bortfalder, for jeres navn på arbejdet.',
       },
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
-      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Prisen nedenfor er den almindelige, og der er ikke noget at bytte for den.',
+      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er den samme, de betalte; opsætningsprisen opkræves nu fuldt ud.',
       givesTitle: 'Det, I giver',
       gives: [
         'En udtalelse til produktsiden, med jeres egne ord.',
@@ -491,12 +504,12 @@ export const da: Content = {
       getsTitle: 'Det, I får',
       gets: {
         fee: {
-          before: 'Prisen om måneden for hele virksomheden på de ',
-          after: ' pladser, ikke den almindelige pris.',
+          before: 'En plads blandt de ',
+          after: ' fem, hvilket er så mange virksomheder, én person kan give rigtig opmærksomhed ad gangen.',
         },
         setup: 'Opsætningsprisen bortfalder helt.',
       },
-      note: 'Vil I helst ikke nævnes, tager I den almindelige pris, og intet andet ved produktet ændrer sig.',
+      note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
     },
 
     freeTitle: 'De første to uger er gratis',
@@ -545,7 +558,7 @@ export const da: Content = {
 
     askEyebrow: 'Inden I booker',
     ask: {
-      before: 'Tilbuddet er sat til virksomheder på ti personer og opefter. Under det gør planen på ',
+      before: 'Tilbuddet er sat til virksomheder på tre personer og opefter. Under det gør planen på ',
       link: 'doviloop.dev',
       after: ' det samme arbejde og koster væsentligt mindre.',
     },

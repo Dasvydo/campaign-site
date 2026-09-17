@@ -2,14 +2,13 @@
  * Does the offer say anything it cannot prove?
  *
  * src/lib/offer.ts is the only place in the application allowed to hold a
- * price, and the page now argues from those numbers rather than merely
- * printing them: at ten people this costs less per head than Team, at fifteen
- * less than Individual, and so on. Three things can go wrong with an argument
- * like that. The configuration can be edited into a state that contradicts
- * itself, for instance more places sold than a tier has. A claim can be written
- * down as a fact and then quietly stop being true when the tier advances, which
- * is exactly what happens to two of the comparisons at the uncapped tier. Or
- * the configuration can be edited away from the offer we actually agreed to
+ * price, and the page argues from those numbers rather than merely printing
+ * them: at ten people this costs less per head than Team, at fifteen less than
+ * Individual, and so on. Three things can go wrong with an argument like that.
+ * The configuration can be edited into a state that contradicts itself, for
+ * instance more places sold than the founding cohort has. A claim can be
+ * written down as a fact and then quietly stop being true when a price moves.
+ * Or the configuration can be edited away from the offer we actually agreed to
  * sell, which is the one failure a self consistent module can never notice
  * about itself.
  *
@@ -19,26 +18,29 @@
  * different things.
  *
  * What this script PROVES. `SPEC` below pins every commercial number by hand,
- * and the first section compares OFFER against it field by field, so a price, a
- * tier capacity, a setup waiver, the coverage, the pooled draft cap, the setup
- * fee or a published rival rate that drifts away from the agreed offer fails
- * here and names the field that moved. The per head figures, the break even
- * headcounts and the full Team firm total are likewise written out below as
- * literals, computed by hand away from this code, so the module has to arrive
- * at those same answers rather than merely agree with its own division.
+ * and the first section compares OFFER against it field by field, so a price,
+ * a coverage, a pooled draft cap, the cohort capacity, the setup fee, the
+ * guarantee or a published rival rate that drifts away from the agreed offer
+ * fails here and names the field that moved. The per head figures, the break
+ * even headcounts, the full Team firm total and the Managed floor are likewise
+ * written out below as literals, computed by hand away from this code, so the
+ * module has to arrive at those same answers rather than merely agree with its
+ * own division.
  *
  * What this script does NOT prove. The structural sections further down, the
  * claim table aside, read their expectations from the configuration they were
- * handed: the invariant cases, the ladder advancing by hand, the frozen tree,
- * the guards on impossible headcounts. Those are internal consistency checks.
- * They show that the helpers agree with each other and with whatever
- * configuration they are given, and they would go on passing if the offer
- * changed. `SPEC` and the hand written literals are the part that will not.
+ * handed: the invariant cases, the frozen tree, the guards on impossible
+ * headcounts. Those are internal consistency checks. They show that the helpers
+ * agree with each other and with whatever configuration they are given, and
+ * they would go on passing if the offer changed. `SPEC` and the hand written
+ * literals are the part that will not.
  *
  * It prints the comparisons that are FALSE as loudly as the ones that are
  * true. A claim that does not hold is not a failure of this script, it is the
  * thing this script exists to surface, and the page is expected to render
- * nothing where the arithmetic runs out.
+ * nothing where the arithmetic runs out. Desk covers ten people, so two of the
+ * three headcounts below have no Desk figure at all, and that absence is
+ * checked rather than skipped.
  *
  *   node scripts/verify-offer.mjs
  *   node scripts/verify-offer.mjs --demo-failure   (proves the exit path)
@@ -59,11 +61,10 @@ const HEADCOUNTS = [10, 15, 20];
  * duplication is deliberate, it is the only duplication in the project that is,
  * and tidying it away would delete the only check in this file that can catch a
  * configuration edited into an offer nobody agreed to sell. An expectation
- * computed from OFFER will agree with OFFER whatever OFFER says; set the
- * founding price to 39 and every derived comparison in this script quietly
- * recomputes itself and passes. A pinned copy cannot do that. It is the
- * difference between proving the module is consistent and proving the module
- * still sells the offer.
+ * computed from OFFER will agree with OFFER whatever OFFER says; set the Desk
+ * price to 14 and every derived comparison in this script quietly recomputes
+ * itself and passes. A pinned copy cannot do that. It is the difference between
+ * proving the module is consistent and proving the module still sells the offer.
  *
  * It does not weaken the rule that governs src/. That rule is that the page has
  * exactly one place to read a price from, so that two parts of the page can
@@ -75,15 +76,14 @@ const HEADCOUNTS = [10, 15, 20];
  */
 const SPEC = {
   currency: 'USD',
-  covers: 20,
-  draftCap: 8000,
   setupFee: 500,
-  tiers: {
-    founding: { price: 390, total: 5, setupWaived: true },
-    early: { price: 490, total: 10, setupWaived: false },
-    standard: { price: 590, total: null, setupWaived: false },
+  guaranteeDrafts: 150,
+  founding: { places: 5, started: 0, held: 0 },
+  packages: {
+    desk: { price: 149, covers: 10, draftCap: 4000 },
+    firm: { price: 199, covers: 20, draftCap: 8000 },
   },
-  compare: { individual: 29, team: 59, teamMax: 9 },
+  compare: { individual: 29, team: 59, teamMax: 9, managed: 89, managedMin: 10 },
 };
 
 /**
@@ -91,25 +91,30 @@ const SPEC = {
  *
  * Worked out on paper from SPEC and typed in as literals. Nothing below is an
  * expression over OFFER, which is what makes it an expectation rather than an
- * echo: 490 divided by 15 is 32.67 because somebody did that division, so if
+ * echo: 199 divided by 15 is 13.27 because somebody did that division, so if
  * the module ever returns something else, one of the two is wrong and the
  * script says so instead of agreeing with itself.
+ *
+ * `null` means the package does not cover a firm that size and the module is
+ * required to refuse a figure rather than divide anyway. Desk stops at ten, so
+ * it is null at fifteen and at twenty, and those two entries are the ones that
+ * would catch a coverage ceiling quietly going missing.
  */
 const PER_HEAD = {
-  founding: { 10: 39.00, 15: 26.00, 20: 19.50 },
-  early: { 10: 49.00, 15: 32.67, 20: 24.50 },
-  standard: { 10: 59.00, 15: 39.33, 20: 29.50 },
+  desk: { 10: 14.90, 15: null, 20: null },
+  firm: { 10: 19.90, 15: 13.27, 20: 9.95 },
 };
 
 /** The smallest firm at which each claim starts to hold. Null means never. */
 const BREAK_EVEN = {
-  founding: { team: 7, individual: 14 },
-  early: { team: 9, individual: 17 },
-  standard: { team: 11, individual: null },
+  desk: { team: 3, individual: 6 },
+  firm: { team: 4, individual: 7 },
 };
 
 /** Nine seats at 59 USD. What the largest firm Team will sell to pays. */
 const TEAM_CEILING_MONTHLY = 531;
+/** Ten seats at 89 USD. What the smallest firm Managed will sell to pays. */
+const MANAGED_FLOOR_MONTHLY = 890;
 
 let failures = 0;
 const check = (ok, label, detail = '') => {
@@ -134,9 +139,10 @@ async function loadOffer() {
 
 const offer = await loadOffer();
 const {
-  OFFER, activeTier, remainingSpots, perPerson, comparison, belowTeamRate,
-  belowIndividualRate, belowTeamCeiling, teamCeilingMonthly, breakEvenHeadcount,
-  setupDue, firstMonthTotal, coversHeadcount, validateOffer, assertOfferValid,
+  OFFER, headlinePackage, packageForHeadcount, remainingFoundingPlaces, foundingOpen,
+  perPerson, comparison, belowTeamRate, belowIndividualRate, belowTeamCeiling,
+  belowManagedFloor, teamCeilingMonthly, managedFloorMonthly, breakEvenHeadcount,
+  setupDue, firstMonthTotal, coversHeadcount, maxCovers, validateOffer, assertOfferValid,
   pilotsStarted, noCustomersYet,
   usd,
 } = offer;
@@ -154,41 +160,48 @@ const cents = (v) => (v === null || v === undefined ? null : Math.round(v * 100)
 console.log('\nDoviLoop campaign-site, offer verification\n');
 console.log(`  read from ${OFFER.compare.source} on ${OFFER.compare.readAt}: ` +
   `Individual ${usd(OFFER.compare.individual)} per seat, Team ${usd(OFFER.compare.team)} per seat ` +
-  `up to ${OFFER.compare.teamMax} seats\n`);
+  `up to ${OFFER.compare.teamMax} seats, Managed ${usd(OFFER.compare.managed)} per seat ` +
+  `from ${OFFER.compare.managedMin} seats\n`);
 
 /* 1. the configuration against the pinned specification ------------------- */
 console.log('The configuration against the offer we agreed to sell');
 check(OFFER.currency === SPEC.currency, 'currency is the agreed USD',
   `config says ${String(OFFER.currency)}`);
-for (const id of Object.keys(SPEC.tiers)) {
-  const want = SPEC.tiers[id];
-  const tier = OFFER.tiers[id];
-  if (!tier) {
-    check(false, `tier ${id} is present in the configuration`, 'missing');
+check(OFFER.order.length === Object.keys(SPEC.packages).length,
+  `the offer sells the agreed ${Object.keys(SPEC.packages).length} packages`,
+  `config sells ${OFFER.order.length}`);
+for (const id of Object.keys(SPEC.packages)) {
+  const want = SPEC.packages[id];
+  const pkg = OFFER.packages[id];
+  if (!pkg) {
+    check(false, `package ${id} is present in the configuration`, 'missing');
     continue;
   }
-  check(tier.price === want.price, `${id}.price is the agreed ${want.price} USD`,
-    `config says ${String(tier.price)}`);
-  check(tier.total === want.total,
-    `${id}.total is the agreed ${want.total === null ? 'uncapped tier' : `${want.total} places`}`,
-    `config says ${String(tier.total)}`);
-  check(tier.setupWaived === want.setupWaived,
-    `${id}.setupWaived is the agreed ${String(want.setupWaived)}`,
-    `config says ${String(tier.setupWaived)}`);
+  for (const field of ['price', 'covers', 'draftCap']) {
+    check(pkg[field] === want[field], `${id}.${field} is the agreed ${want[field]}`,
+      `config says ${String(pkg[field])}`);
+  }
 }
 for (const [field, want, got] of [
-  ['covers', SPEC.covers, OFFER.covers],
-  ['draftCap', SPEC.draftCap, OFFER.draftCap],
   ['setupFee', SPEC.setupFee, OFFER.setupFee],
+  ['guaranteeDrafts', SPEC.guaranteeDrafts, OFFER.guaranteeDrafts],
+  ['founding.places', SPEC.founding.places, OFFER.founding.places],
+  ['founding.started', SPEC.founding.started, OFFER.founding.started],
+  ['founding.held', SPEC.founding.held, OFFER.founding.held],
   ['compare.individual', SPEC.compare.individual, OFFER.compare.individual],
   ['compare.team', SPEC.compare.team, OFFER.compare.team],
   ['compare.teamMax', SPEC.compare.teamMax, OFFER.compare.teamMax],
+  ['compare.managed', SPEC.compare.managed, OFFER.compare.managed],
+  ['compare.managedMin', SPEC.compare.managedMin, OFFER.compare.managedMin],
 ]) {
   check(got === want, `${field} is the agreed ${want}`, `config says ${String(got)}`);
 }
 check(teamCeilingMonthly() === TEAM_CEILING_MONTHLY,
   `a full Team firm pays the hand computed ${TEAM_CEILING_MONTHLY} USD a month`,
   `module says ${money(teamCeilingMonthly())}`);
+check(managedFloorMonthly() === MANAGED_FLOOR_MONTHLY,
+  `the smallest Managed firm pays the hand computed ${MANAGED_FLOOR_MONTHLY} USD a month`,
+  `module says ${money(managedFloorMonthly())}`);
 
 /* 2. the shipped configuration -------------------------------------------- */
 console.log('\nThe shipped configuration');
@@ -196,47 +209,71 @@ const shippedProblems = validateOffer();
 check(shippedProblems.length === 0, 'validateOffer finds no problem',
   shippedProblems.join('; ') || 'clean');
 
-const active = activeTier();
-check(active.id === OFFER.declaredTier, 'the active tier is the declared one',
-  `${active.id}, derived from the counts`);
-// An uncapped tier has no places to count, and null minus the counts would be
-// zero, which would read as a sold out tier and fail this check on a perfectly
-// valid configuration. The two cases are therefore asked separately.
-check(
-  active.total === null
-    ? remainingSpots(active) === null
-    : remainingSpots(active) === active.total - active.started - active.held,
-  active.total === null
-    ? 'an uncapped active tier advertises no count of places'
-    : 'remaining places are total minus started minus held',
-  active.total === null
-    ? 'uncapped, so remainingSpots is null'
-    : `${remainingSpots(active)} of ${active.total} open`);
-const lastOnLadder = OFFER.tiers[OFFER.order[OFFER.order.length - 1]];
-check(lastOnLadder.total === null,
-  'the last tier on the ladder is uncapped, so the page can never be left standing on a spent tier',
-  `${lastOnLadder.id} declares ${lastOnLadder.total === null ? 'no capacity' : `${lastOnLadder.total} places`}`);
-check(Object.isFrozen(OFFER) && Object.isFrozen(OFFER.tiers) &&
-  Object.isFrozen(OFFER.tiers.founding) && Object.isFrozen(OFFER.compare),
+const lead = headlinePackage();
+check(lead.id === OFFER.order[OFFER.order.length - 1],
+  'the page leads with the largest package, which is the one every claim must survive',
+  `${lead.id} at ${usd(lead.price)}`);
+check(maxCovers() === SPEC.packages.firm.covers,
+  `the offer ceiling is the agreed ${SPEC.packages.firm.covers} people`,
+  `module says ${maxCovers()}`);
+check(remainingFoundingPlaces() === SPEC.founding.places - SPEC.founding.started - SPEC.founding.held,
+  'remaining founding places are places minus started minus held',
+  `${remainingFoundingPlaces()} of ${OFFER.founding.places} open`);
+check(Object.isFrozen(OFFER) && Object.isFrozen(OFFER.packages) &&
+  Object.isFrozen(OFFER.packages.desk) && Object.isFrozen(OFFER.founding) &&
+  Object.isFrozen(OFFER.compare),
   'the config is frozen all the way down, not just at the top');
 let wrote = false;
 try {
-  OFFER.tiers.founding.started = 99;
-  wrote = OFFER.tiers.founding.started === 99;
+  OFFER.founding.started = 99;
+  wrote = OFFER.founding.started === 99;
 } catch {
   wrote = false;
 }
 check(!wrote, 'a count cannot be written at runtime');
-check(setupDue(OFFER.tiers.founding) === 0,
-  'the founding tier waives setup, as the trade says');
-check(setupDue(OFFER.tiers.standard) === OFFER.setupFee &&
-  firstMonthTotal(OFFER.tiers.standard) === OFFER.tiers.standard.price + OFFER.setupFee,
-  'every other tier charges setup on the first invoice',
-  `first month ${usd(firstMonthTotal(OFFER.tiers.standard))}`);
-check(OFFER.covers > 0 && OFFER.draftCap > 0,
-  'coverage and the pooled draft cap are firm level facts',
-  `${OFFER.covers} people, ${OFFER.draftCap} drafts per month pooled`);
+
+/* The waiver is a property of the cohort and not of a package, which is the
+   whole point of the 2026-09-17 restructure: the monthly fee a reader sees does
+   not depend on when they read it, only the setup fee does. Both states are
+   walked, because the second one is the one nobody will look at again. */
+check(foundingOpen() && setupDue() === 0,
+  'setup is waived while founding places remain, as the trade says');
+const cohortFull = clone();
+cohortFull.founding.started = cohortFull.founding.places;
+check(!foundingOpen(cohortFull) && setupDue(cohortFull) === OFFER.setupFee,
+  'and is charged in full once the cohort is spent',
+  `${usd(setupDue(cohortFull))} due`);
+for (const id of OFFER.order) {
+  const pkg = OFFER.packages[id];
+  check(firstMonthTotal(pkg) === pkg.price,
+    `${id} bills only the monthly fee on the first invoice while the cohort is open`,
+    `first month ${usd(firstMonthTotal(pkg))}`);
+  check(firstMonthTotal(pkg, cohortFull) === pkg.price + OFFER.setupFee,
+    `and ${id} bills the fee plus setup once it is spent`,
+    `first month ${usd(firstMonthTotal(pkg, cohortFull))}`);
+  check(pkg.covers > 0 && pkg.draftCap > 0,
+    `${id} coverage and pooled draft cap are firm level facts`,
+    `${pkg.covers} people, ${pkg.draftCap} drafts per month pooled`);
+}
 check(OFFER.currency === 'USD', 'prices are USD everywhere');
+
+/* 2b. which package a firm of a given size is quoted ---------------------- */
+/* The ladder is the reader's own headcount now, so the mapping from a firm size
+   to a package is the thing that replaced advancing a tier by hand. Above the
+   ceiling it has to refuse rather than quote the largest package, because a
+   firm of thirty is a custom quote and a page that silently quoted them Firm
+   would be selling coverage nobody agreed to honour. */
+console.log('\nWhich package a firm of each size is quoted');
+for (const [n, want] of [[1, 'desk'], [10, 'desk'], [11, 'firm'], [20, 'firm'], [21, null]]) {
+  const got = packageForHeadcount(n);
+  check((got?.id ?? null) === want,
+    `a firm of ${n} is quoted ${want === null ? 'no package at all' : want}`,
+    `module says ${got?.id ?? 'none'}`);
+}
+for (const n of [0, -3, 7.5, Number.NaN]) {
+  check(packageForHeadcount(n) === null,
+    `and a headcount of ${String(n)} is quoted nothing`);
+}
 
 /* 3. the source itself ---------------------------------------------------- */
 console.log('\nThe module as a source of truth');
@@ -250,25 +287,26 @@ const occurrences = (n) => (src.match(new RegExp(`(?<![\\d.])${n}(?![\\d.])`, 'g
    prose goes stale exactly as readily as one restated in code.
 
    The count expected is not always one. Two of these are different facts that
-   happen to hold the same number: the early tier takes ten firms and the
-   Managed plan starts at ten seats, and neither is the other written twice. So
-   a figure is allowed one appearance for each fact on this list that holds it,
-   and no more. A third `10` typed into a function body still fails, and so
-   does a rate duplicated in a comment, which is what this caught last. */
+   happen to hold the same number: Desk covers ten people and the Managed plan
+   starts at ten seats, and neither is the other written twice. So a figure is
+   allowed one appearance for each fact on this list that holds it, and no more.
+   A third `10` typed into a function body still fails, and so does a rate
+   duplicated in a comment, which is what this caught last. */
 const FIGURES = [
-  ['founding price', OFFER.tiers.founding.price],
-  ['early price', OFFER.tiers.early.price],
-  ['standard price', OFFER.tiers.standard.price],
+  ['Desk price', OFFER.packages.desk.price],
+  ['Firm price', OFFER.packages.firm.price],
+  ['Desk coverage', OFFER.packages.desk.covers],
+  ['Firm coverage', OFFER.packages.firm.covers],
+  ['Desk draft cap', OFFER.packages.desk.draftCap],
+  ['Firm draft cap', OFFER.packages.firm.draftCap],
   ['setup fee', OFFER.setupFee],
+  ['guarantee drafts', OFFER.guaranteeDrafts],
+  ['founding places', OFFER.founding.places],
   ['Individual rate', OFFER.compare.individual],
   ['Team rate', OFFER.compare.team],
   ['Team seat ceiling', OFFER.compare.teamMax],
   ['Managed rate', OFFER.compare.managed],
   ['Managed seat floor', OFFER.compare.managedMin],
-  ['coverage', OFFER.covers],
-  ['pooled draft cap', OFFER.draftCap],
-  ['founding places', OFFER.tiers.founding.total],
-  ['early places', OFFER.tiers.early.total],
 ];
 for (const [label, value] of FIGURES) {
   const sharing = FIGURES.filter(([, v]) => v === value);
@@ -287,119 +325,112 @@ check(!readFileSync(join(root, 'scripts/verify-offer.mjs'), 'utf8').includes(EM_
 
 /* 4. cost per person, against hand computed figures ----------------------- */
 console.log('\nCost per person, against figures computed by hand');
-console.log('    tier      people   flat   per head   by hand');
+console.log('    package   people   flat   per head   by hand');
 for (const id of OFFER.order) {
-  const tier = OFFER.tiers[id];
+  const pkg = OFFER.packages[id];
   for (const n of HEADCOUNTS) {
     const want = PER_HEAD[id]?.[n];
-    const got = perPerson(n, tier);
-    console.log(`    ${id.padEnd(9)}${pad(n, 6)}${pad(usd(tier.price), 8)}${pad(money(got), 10)}` +
-      `${pad(want === undefined ? 'none' : usd(want), 10)}`);
-    check(want !== undefined, `there is a hand computed figure for ${id} at ${n} people`);
-    check(cents(got) === want,
-      `${id} at ${n} people costs the hand computed ${want === undefined ? '?' : usd(want)} per head`,
+    const got = perPerson(n, pkg);
+    console.log(`    ${id.padEnd(10)}${pad(n, 6)}${pad(usd(pkg.price), 8)}${pad(money(got), 10)}` +
+      `${pad(want === undefined || want === null ? 'none' : usd(want), 10)}`);
+    check(want !== undefined, `there is a hand computed entry for ${id} at ${n} people`);
+    check(cents(got) === (want ?? null),
+      want === null
+        ? `${id} refuses a per head figure at ${n} people, which it does not cover`
+        : `${id} at ${n} people costs the hand computed ${want === undefined ? '?' : usd(want)} per head`,
       `module says ${money(got)}`);
   }
 }
-const firstTier = OFFER.tiers[OFFER.order[0]];
-check(perPerson(HEADCOUNTS[0], firstTier) > perPerson(HEADCOUNTS[HEADCOUNTS.length - 1], firstTier),
-  'cost per person falls as the firm grows, which is the point of a flat fee');
-
-/* 5. the claims, at every tier and headcount ------------------------------ */
-console.log('\nClaims, resolved rather than asserted');
-console.log('    tier      people  per head   below Team  below Individual  below full Team firm');
-const falseAtStandard = [];
 for (const id of OFFER.order) {
-  const tier = OFFER.tiers[id];
+  const pkg = OFFER.packages[id];
+  check(perPerson(1, pkg) > perPerson(pkg.covers, pkg),
+    `cost per person falls as the firm grows on ${id}, which is the point of a flat fee`,
+    `${money(perPerson(1, pkg))} at one person, ${money(perPerson(pkg.covers, pkg))} at ${pkg.covers}`);
+}
+
+/* 5. the claims, at every package and headcount --------------------------- */
+console.log('\nClaims, resolved rather than asserted');
+console.log('    package   people  per head   below Team  below Individual  below full Team firm');
+const falseSomewhere = [];
+for (const id of OFFER.order) {
+  const pkg = OFFER.packages[id];
   for (const n of HEADCOUNTS) {
     // Both sides of this comparison come from the pinned figures above, not
     // from the module, so a config edit cannot move the expectation with it.
     const each = PER_HEAD[id]?.[n];
-    if (each === undefined || !SPEC.tiers[id]) {
+    if (each === undefined || !SPEC.packages[id]) {
       check(false, `${id} at ${n} people has a pinned figure to be checked against`,
         'no entry in the hand computed table');
       continue;
     }
-    const covered = n > 0 && n <= SPEC.covers;
+    const covered = n > 0 && n <= SPEC.packages[id].covers;
     const want = {
-      belowTeamRate: covered && each < SPEC.compare.team,
-      belowIndividualRate: covered && each < SPEC.compare.individual,
-      belowTeamCeiling: SPEC.tiers[id].price < TEAM_CEILING_MONTHLY,
+      belowTeamRate: covered && each !== null && each < SPEC.compare.team,
+      belowIndividualRate: covered && each !== null && each < SPEC.compare.individual,
+      belowTeamCeiling: SPEC.packages[id].price < TEAM_CEILING_MONTHLY,
+      belowManagedFloor: SPEC.packages[id].price < MANAGED_FLOOR_MONTHLY,
     };
-    const got = comparison(n, tier).claims;
-    console.log(`    ${id.padEnd(9)}${pad(n, 6)}${pad(usd(each), 10)}${pad(yn(got.belowTeamRate), 13)}` +
-      `${pad(yn(got.belowIndividualRate), 18)}${pad(yn(got.belowTeamCeiling), 22)}`);
+    const got = comparison(n, pkg).claims;
+    console.log(`    ${id.padEnd(10)}${pad(n, 6)}${pad(each === null ? 'none' : usd(each), 10)}` +
+      `${pad(yn(got.belowTeamRate), 13)}${pad(yn(got.belowIndividualRate), 18)}` +
+      `${pad(yn(got.belowTeamCeiling), 22)}`);
     check(
       got.belowTeamRate === want.belowTeamRate &&
       got.belowIndividualRate === want.belowIndividualRate &&
-      got.belowTeamCeiling === want.belowTeamCeiling,
-      `${id} at ${n} people resolves all three claims as the hand arithmetic does`,
-      `Team ${yn(want.belowTeamRate)}, Individual ${yn(want.belowIndividualRate)}, full Team firm ${yn(want.belowTeamCeiling)}`,
+      got.belowTeamCeiling === want.belowTeamCeiling &&
+      got.belowManagedFloor === want.belowManagedFloor,
+      `${id} at ${n} people resolves all four claims as the hand arithmetic does`,
+      `Team ${yn(want.belowTeamRate)}, Individual ${yn(want.belowIndividualRate)}, ` +
+      `full Team firm ${yn(want.belowTeamCeiling)}, Managed floor ${yn(want.belowManagedFloor)}`,
     );
-    if (id === 'standard') {
-      for (const [claim, value] of Object.entries(got)) {
-        if (!value) falseAtStandard.push(`${claim} at ${n} people`);
-      }
+    for (const [claim, value] of Object.entries(got)) {
+      if (!value) falseSomewhere.push(`${id}: ${claim} at ${n} people`);
     }
   }
 }
 
 /* 6. the comparisons that do NOT hold ------------------------------------- */
-console.log('\nWhat the page may NOT say at the uncapped tier');
-const standard = OFFER.tiers.standard;
-for (const line of falseAtStandard) console.log(`    FALSE  ${line}`);
-check(falseAtStandard.length > 0,
-  'the uncapped tier has claims that fail, and they are named rather than hidden',
-  `${falseAtStandard.length} of ${HEADCOUNTS.length * 3} do not hold`);
-check(!belowTeamCeiling(standard),
-  'the whole firm total is NOT below what a full Team firm pays, at the uncapped tier',
-  `${usd(standard.price)} against ${usd(teamCeilingMonthly())}`);
-check(belowTeamCeiling(OFFER.tiers.founding) && belowTeamCeiling(OFFER.tiers.early),
-  'the same claim does hold at both capped tiers, so it is computed and not fixed');
-
-// The headcount where the uncapped per head meets the Team seat rate exactly is
-// the solution of price / n = team rate, and nothing else. It is currently ten,
-// which is also one more than the Team seat ceiling, and reaching for that
-// number instead would make this check pass by coincidence: the two have
-// nothing to do with each other and would part company the moment a price
-// moved. So it is derived from the equality under test, and the derivation is
-// guarded, because a headcount of 10.17 people cannot be asked about and a
-// check that quietly asks nothing is worse than no check.
-const meetsTeamRate = standard.price / OFFER.compare.team;
-const askable = Number.isInteger(meetsTeamRate) && meetsTeamRate > 0 && meetsTeamRate <= OFFER.covers;
-check(askable,
-  'the uncapped per head meets the Team rate at a whole, coverable headcount',
-  `${usd(standard.price)} / ${usd(OFFER.compare.team)} = ${meetsTeamRate}`);
-if (askable) {
-  check(perPerson(meetsTeamRate, standard) === OFFER.compare.team,
-    `and at ${meetsTeamRate} people it is an equality rather than an approximation`,
-    `${money(perPerson(meetsTeamRate, standard))} against ${usd(OFFER.compare.team)}`);
-  check(!belowTeamRate(meetsTeamRate, standard),
-    'per head at the uncapped tier is NOT below the Team rate where it merely equals it',
-    `${money(perPerson(meetsTeamRate, standard))} is not less than ${usd(OFFER.compare.team)}`);
+console.log('\nWhat the page may NOT say');
+for (const line of falseSomewhere) console.log(`    FALSE  ${line}`);
+check(falseSomewhere.length > 0,
+  'some claims fail, and they are named rather than hidden',
+  `${falseSomewhere.length} of ${OFFER.order.length * HEADCOUNTS.length * 4} do not hold`);
+const desk = OFFER.packages.desk;
+check(!belowTeamRate(desk.covers + 1, desk) && !belowIndividualRate(desk.covers + 1, desk),
+  'Desk makes no per head claim one person past its own coverage, however good the division would look',
+  `${money(perPerson(desk.covers + 1, desk))} at ${desk.covers + 1} people`);
+for (const id of OFFER.order) {
+  check(belowManagedFloor(OFFER.packages[id]) && belowTeamCeiling(OFFER.packages[id]),
+    `${id} is below both the Managed floor and the full Team firm total, which is the page's argument`,
+    `${usd(OFFER.packages[id].price)} against ${usd(MANAGED_FLOOR_MONTHLY)} and ${usd(TEAM_CEILING_MONTHLY)}`);
 }
-check(!belowIndividualRate(OFFER.covers, standard),
-  'per head at the uncapped tier is NOT below the Individual rate even at full coverage',
-  `${money(perPerson(OFFER.covers, standard))} against ${usd(OFFER.compare.individual)}`);
+/* Strictness, at the one size where it could bite. A package priced at exactly
+   the Managed floor is not cheaper than it, and the page may not say cheaper
+   when it is equal. Constructed rather than waited for. */
+const atFloor = clone();
+atFloor.packages.firm.price = MANAGED_FLOOR_MONTHLY;
+check(!belowManagedFloor(atFloor.packages.firm, atFloor),
+  'a package priced at exactly the Managed floor is NOT below it',
+  `${usd(MANAGED_FLOOR_MONTHLY)} is not less than ${usd(MANAGED_FLOOR_MONTHLY)}`);
 
 /* 7. where each claim starts to hold, against hand computed sizes --------- */
 console.log('\nWhere each claim starts to hold');
 for (const id of OFFER.order) {
-  const tier = OFFER.tiers[id];
+  const pkg = OFFER.packages[id];
   for (const against of ['team', 'individual']) {
     const want = BREAK_EVEN[id]?.[against] ?? null;
-    const got = breakEvenHeadcount(against, tier);
+    const got = breakEvenHeadcount(against, pkg);
     const rate = against === 'team' ? SPEC.compare.team : SPEC.compare.individual;
     check(got === want,
       `${id} goes below the ${against} rate at ` +
       `${want === null ? 'no covered size, by hand' : `${want} people, by hand`}`,
       got === null
-        ? `module says never inside ${OFFER.covers} people`
-        : `module says ${got} people, ${money(perPerson(got, tier))} against ${usd(rate)}`);
+        ? `module says never inside ${pkg.covers} people`
+        : `module says ${got} people, ${money(perPerson(got, pkg))} against ${usd(rate)}`);
     if (got !== null && got > 1) {
       const holds = against === 'team' ? belowTeamRate : belowIndividualRate;
-      check(!holds(got - 1, tier), 'and does not claim it one person earlier',
-        `${money(perPerson(got - 1, tier))} against ${usd(rate)}`);
+      check(!holds(got - 1, pkg), 'and does not claim it one person earlier',
+        `${money(perPerson(got - 1, pkg))} against ${usd(rate)}`);
     }
   }
 }
@@ -407,9 +438,9 @@ for (const id of OFFER.order) {
 /* 8. headcounts that would break naive arithmetic ------------------------- */
 console.log('\nHeadcounts a component might actually pass in');
 for (const n of [0, -3, 7.5, Number.NaN, Number.POSITIVE_INFINITY]) {
-  const each = perPerson(n, active);
+  const each = perPerson(n, lead);
   check(each === null, `perPerson(${String(n)}) is null, not Infinity or NaN`, String(each));
-  const c = comparison(n, active);
+  const c = comparison(n, lead);
   check(!c.claims.belowTeamRate && !c.claims.belowIndividualRate,
     `and no per head claim is made at ${String(n)} people`);
 }
@@ -417,33 +448,38 @@ for (const n of [0, -3, 7.5, Number.NaN, Number.POSITIVE_INFINITY]) {
 // which is exactly what makes it dangerous: without this the page would print a
 // confident figure for a firm that cannot exist.
 check(!coversHeadcount(7.5), 'a fractional headcount is not covered');
-const fractional = comparison(7.5, active);
+const fractional = comparison(7.5, lead);
 check(fractional.covered === false && fractional.perPerson === null,
   'and it yields no coverage and no per head figure',
   `covered ${String(fractional.covered)}, per head ${money(fractional.perPerson)}`);
 check(!fractional.claims.belowTeamRate && !fractional.claims.belowIndividualRate,
   'and makes no per head claim at all');
-const over = OFFER.covers + 1;
-check(!coversHeadcount(over) && perPerson(over, active) === null &&
-  !belowTeamRate(over, active) && !belowIndividualRate(over, active),
+const over = maxCovers() + 1;
+check(!coversHeadcount(over, lead) && perPerson(over, lead) === null &&
+  !belowTeamRate(over, lead) && !belowIndividualRate(over, lead),
   'a firm larger than the coverage gets no per head figure, however good the division would look',
-  `${over} people, per head ${money(perPerson(over, active))}`);
-check(comparison(OFFER.compare.teamMax + 1, active).teamMonthly === null,
+  `${over} people, per head ${money(perPerson(over, lead))}`);
+check(comparison(OFFER.compare.teamMax + 1, lead).teamMonthly === null,
   'there is no Team price to compare against above the Team seat ceiling');
-check(comparison(OFFER.compare.teamMax, active).teamMonthly === TEAM_CEILING_MONTHLY,
+check(comparison(OFFER.compare.teamMax, lead).teamMonthly === TEAM_CEILING_MONTHLY,
   'and there is one at the ceiling itself, at the hand computed total',
   usd(TEAM_CEILING_MONTHLY));
+check(comparison(OFFER.compare.managedMin - 1, lead).managedMonthly === null,
+  'there is no Managed price to compare against below the Managed seat floor');
+check(comparison(OFFER.compare.managedMin, lead).managedMonthly === MANAGED_FLOOR_MONTHLY,
+  'and there is one at the floor itself, at the hand computed total',
+  usd(MANAGED_FLOOR_MONTHLY));
 
-/* 9. the five invariants, each violated on purpose ------------------------ */
+/* 9. the invariants, each violated on purpose ----------------------------- */
 console.log('\nThe validator, given configurations that are wrong');
 const brokenCases = [
   {
-    label: 'a tier sold past its capacity',
+    label: 'a founding cohort sold past its capacity',
     match: /oversold/i,
     make: () => {
       const c = clone();
-      c.tiers.founding.started = c.tiers.founding.total;
-      c.tiers.founding.held = 1;
+      c.founding.started = c.founding.places;
+      c.founding.held = 1;
       return c;
     },
   },
@@ -452,47 +488,62 @@ const brokenCases = [
     match: /non-negative whole number/i,
     make: () => {
       const c = clone();
-      c.tiers.founding.held = -1;
-      c.tiers.early.started = 1.5;
+      c.founding.held = -1;
+      c.packages.desk.covers = 1.5;
       return c;
     },
   },
   {
-    label: 'a ladder that does not climb',
-    match: /must increase/i,
+    label: 'a ladder whose prices do not climb',
+    match: /prices must increase/i,
     make: () => {
       const c = clone();
-      c.tiers.early.price = c.tiers.founding.price - 1;
+      c.packages.firm.price = c.packages.desk.price - 1;
       return c;
     },
   },
   {
-    label: 'a declared tier the counts contradict',
-    match: /declaredTier/i,
+    // The failure the two package shape makes possible that the tier ladder did
+    // not. A larger package that covered fewer people would make
+    // packageForHeadcount quote the smaller one to a firm it cannot serve, and
+    // every helper downstream would go on answering truthfully about a package
+    // that should never have been offered.
+    label: 'a larger package that covers fewer people',
+    match: /coverage must increase/i,
     make: () => {
       const c = clone();
-      c.declaredTier = 'standard';
+      c.packages.firm.covers = c.packages.desk.covers - 1;
       return c;
     },
   },
   {
-    // The one a reviewer found by hand. Give the last tier a capacity and spend
-    // the whole ladder, and activeTier has nowhere left to fall through to: it
-    // hands back a capped tier with no places on it, and the page offers the
-    // trade beside a counter reading none of however many. Nothing downstream
-    // can catch it, because every helper it asks is being told the truth about
-    // a tier that genuinely is the active one.
-    label: 'a capacity on the last tier of the ladder',
-    match: /last tier on the ladder must be uncapped/i,
+    label: 'a larger package that pools fewer drafts',
+    match: /draft caps must increase/i,
     make: () => {
       const c = clone();
-      const lastId = c.order[c.order.length - 1];
-      for (const id of c.order) {
-        if (id !== lastId) c.tiers[id].started = c.tiers[id].total;
-      }
-      c.tiers[lastId].total = 4;
-      c.tiers[lastId].started = 4;
-      c.declaredTier = lastId;
+      c.packages.firm.draftCap = c.packages.desk.draftCap - 1;
+      return c;
+    },
+  },
+  {
+    // The one the page is built on. A package priced at or above what the
+    // smallest Managed firm pays turns every saving in the comparison table
+    // into a premium, and no component can catch it: they would all be
+    // rendering a true sentence about a price nobody should be charging.
+    label: 'a package priced past the Managed floor the page argues against',
+    match: /not below the Managed floor/i,
+    make: () => {
+      const c = clone();
+      c.packages.firm.price = MANAGED_FLOOR_MONTHLY;
+      return c;
+    },
+  },
+  {
+    label: 'a guarantee of no drafts at all',
+    match: /guaranteeDrafts/i,
+    make: () => {
+      const c = clone();
+      c.guaranteeDrafts = 0;
       return c;
     },
   },
@@ -515,74 +566,50 @@ for (const { label, match, make } of brokenCases) {
 /* "We have no customers to point at yet" is the only sentence on the page that
    is a statement about us. It cannot be checked by rendering it: it goes false
    while reading exactly as it always did, on a day nobody edits the page. So
-   the states it has to be right in are walked here.
-
-   The fourth of these is the one the gate exists for. Gating on the tier would
-   have passed it: founding is still the active tier with four pilots running,
-   and the sentence would have been on a live page contradicting four
-   customers. */
+   the states it has to be right in are walked here. */
 console.log('\nThe claim that we have nobody to point at yet');
 check(pilotsStarted(OFFER) === 0 && noCustomersYet(OFFER),
   'the shipped offer has started nobody, so the page may still say so');
 
 const one = clone();
-one.tiers.founding.started = 1;
+one.founding.started = 1;
 check(pilotsStarted(one) === 1 && !noCustomersYet(one),
   'one pilot started takes the claim off the page',
   `started ${pilotsStarted(one)}`);
 
 const held = clone();
-held.tiers.founding.held = held.tiers.founding.total;
+held.founding.held = held.founding.places;
 check(pilotsStarted(held) === 0 && noCustomersYet(held),
   'a held place is a booked call, not a customer, so the claim stands');
 
 const nearlyFull = clone();
-nearlyFull.tiers.founding.started = nearlyFull.tiers.founding.total - 1;
-check(activeTier(nearlyFull).id === 'founding' && !noCustomersYet(nearlyFull),
-  'the claim is gone well before the tier turns over, which the tier alone would miss',
-  `${pilotsStarted(nearlyFull)} started, still on ${activeTier(nearlyFull).id}`);
+nearlyFull.founding.started = nearlyFull.founding.places - 1;
+check(foundingOpen(nearlyFull) && !noCustomersYet(nearlyFull),
+  'the claim is gone well before the cohort fills, which the cohort alone would miss',
+  `${pilotsStarted(nearlyFull)} started, ${remainingFoundingPlaces(nearlyFull)} place(s) left`);
 
-const onEarly = clone();
-onEarly.tiers.founding.started = onEarly.tiers.founding.total;
-onEarly.declaredTier = 'early';
-check(!noCustomersYet(onEarly),
-  'and it is gone on every tier above founding',
-  `started ${pilotsStarted(onEarly)}`);
-
-const late = clone();
-late.tiers.founding.started = late.tiers.founding.total;
-late.tiers.early.started = late.tiers.early.total;
-late.declaredTier = 'standard';
-check(pilotsStarted(late) === late.tiers.founding.total + late.tiers.early.total,
-  'pilots are counted across the whole ladder, not just the tier on show',
-  `${pilotsStarted(late)} started`);
-
-/* 10. the ladder advancing by hand ---------------------------------------- */
-console.log('\nAdvancing a tier, which is a hand edit and nothing else');
+/* 10. spending the cohort, which is a hand edit and nothing else ---------- */
+console.log('\nSpending a founding place, which is a hand edit and nothing else');
 const filled = clone();
-filled.tiers.founding.started = filled.tiers.founding.total;
-filled.declaredTier = 'early';
-check(activeTier(filled).id === 'early' && validateOffer(filled).length === 0,
-  'a spent founding tier moves the page to early, and validates',
-  `${remainingSpots(activeTier(filled))} places left on early`);
+filled.founding.started = filled.founding.places;
+check(!foundingOpen(filled) && validateOffer(filled).length === 0,
+  'a spent cohort closes the waiver, and validates',
+  `${remainingFoundingPlaces(filled)} places left, setup now ${usd(setupDue(filled))}`);
 const heldOut = clone();
-heldOut.tiers.founding.held = heldOut.tiers.founding.total;
-heldOut.declaredTier = 'early';
-check(activeTier(heldOut).id === 'early' && validateOffer(heldOut).length === 0,
-  'soft holds alone are enough to close a tier, so bookings cannot oversell it');
-const spent = clone();
-spent.tiers.founding.started = spent.tiers.founding.total;
-spent.tiers.early.started = spent.tiers.early.total;
-spent.declaredTier = 'standard';
-check(activeTier(spent).id === 'standard' && remainingSpots(activeTier(spent)) === null &&
-  validateOffer(spent).length === 0,
-  'with every capped tier spent the page is uncapped, and advertises no count');
+heldOut.founding.held = heldOut.founding.places;
+check(!foundingOpen(heldOut) && validateOffer(heldOut).length === 0,
+  'soft holds alone are enough to close the cohort, so bookings cannot oversell it');
+for (const id of filled.order) {
+  check(filled.packages[id].price === OFFER.packages[id].price,
+    `and ${id} costs the same monthly fee after the cohort is spent as before it`,
+    `${usd(filled.packages[id].price)} either way`);
+}
 
 /* 11. the exit path, on request ------------------------------------------- */
 if (process.argv.includes('--demo-failure')) {
   console.log('\nDemonstration: a broken configuration shipped as if it were real');
   const bad = clone();
-  bad.tiers.founding.held = bad.tiers.founding.total + 1;
+  bad.founding.held = bad.founding.places + 1;
   check(validateOffer(bad).length === 0,
     'this check is meant to fail, to prove the exit code is not decorative',
     validateOffer(bad).join('; '));

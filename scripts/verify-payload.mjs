@@ -408,11 +408,11 @@ async function main() {
        offer would drift from the first; a patch that stops matching throws. */
     console.log('\nThe claim about us, rendered in both states');
     const startedPilot = (src) => {
-      const out = src.replace(/(id: 'founding'[^\n]*?)started: 0/, '$1started: 1');
+      const out = src.replace(/(founding: \{[^\n]*?)started: 0/, '$1started: 1');
       if (out === src) {
         throw new Error(
-          'could not start a founding pilot in src/lib/offer.ts: the tier line has changed shape, ' +
-            'so this check is no longer testing what it says it is',
+          'could not start a founding pilot in src/lib/offer.ts: the founding cohort line has ' +
+            'changed shape, so this check is no longer testing what it says it is',
         );
       }
       return out;

@@ -436,7 +436,7 @@ export const en: Content = {
     eyebrow: 'Two weeks, then you decide',
     title: 'What it costs',
 
-    tierNames: { founding: 'founding', early: 'early', standard: 'standard' },
+    cohortName: 'founding',
 
     feesTitle: 'The fees',
     fees: [
@@ -451,10 +451,23 @@ export const en: Content = {
         note: 'A workshop on your team’s own real mail.',
         waived: {
           label: 'Waived',
-          say: { before: 'The setup fee of ', after: ' is waived on this tier.' },
+          say: { before: 'The setup fee of ', after: ' is waived while the founding places are open.' },
         },
       },
     ],
+
+    packages: {
+      title: 'The two packages',
+      lede: 'Same product in both. What changes is how many people it covers and how many drafts the firm shares.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'For a firm up to ten people.' },
+        { id: 'firm', name: 'Firm', note: 'For a firm up to twenty. The same fee at eleven people as at twenty.' },
+      ],
+      feeLabel: 'Per month, whole firm',
+      peopleLabel: 'People covered, up to',
+      draftsLabel: 'Drafts a month, pooled',
+      note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
+    },
 
     covers: {
       title: 'What the fee covers',
@@ -474,10 +487,10 @@ export const en: Content = {
       title: 'A trade, not a discount',
       lede: {
         noProofYet: 'We have no customers to point at yet.',
-        trade: 'These places are a trade: a lower fee for your name on the work.',
+        trade: 'These places are a trade: the setup fee waived, for your name on the work.',
       },
       spots: { label: 'Places still open:', of: ' of ' },
-      spotsClosed: 'The places that came with a trade are taken. The fee below is the standard one, and there is nothing to trade for it.',
+      spotsClosed: 'The places that came with a trade are taken. The monthly fee below is the same one they paid; the setup fee is now charged in full.',
       givesTitle: 'What you give',
       gives: [
         'A testimonial for the product site, in your own words.',
@@ -487,10 +500,10 @@ export const en: Content = {
       ],
       getsTitle: 'What you get',
       gets: {
-        fee: { before: 'The ', after: ' monthly fee for the firm, instead of the standard one.' },
+        fee: { before: 'A place in the ', after: ' five, which is as many firms as one person can give real attention to at once.' },
         setup: 'The setup fee waived, in full.',
       },
-      note: 'If you would rather not be named, take the standard fee and nothing else about the product changes.',
+      note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
     },
 
     freeTitle: 'The first two weeks are free',
@@ -539,7 +552,7 @@ export const en: Content = {
 
     askEyebrow: 'Before you book',
     ask: {
-      before: 'This offer is priced for firms of ten and up. Below that, the plan on ',
+      before: 'This offer is priced for firms of three and up. Below that, the plan on ',
       link: 'doviloop.dev',
       after: ' does the same drafting and costs a great deal less.',
     },
