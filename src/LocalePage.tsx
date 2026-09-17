@@ -6,6 +6,7 @@ import { applyConsent, initAnalytics, setAnalyticsContext, track } from './lib/a
 import { initMetaPixel, pixelTrack, revokeMetaPixel } from './lib/pixel';
 import { onConsentChange } from './lib/consent';
 import { flushLeadQueue } from './lib/lead';
+import { env } from './lib/env';
 import { Consent } from './components/Consent';
 import { Rail } from './components/Rail';
 import { Hero } from './components/Hero';
@@ -17,13 +18,19 @@ import { Compare } from './components/Compare';
 import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
 
-/* teams.doviloop.dev 301s to www.doviloop.dev: it is not dead, which is worse
-   than dead. Ads pointing there would have returned 200 and landed every paid
-   click on the product homepage, with no qualifier and no instrumentation. The
-   ad-engine repo was repointed at the deployment on 2026-09-14 and this is the
-   same correction: canonical, og:url and every hreflang alternate now name the
-   origin the page is actually served from. */
-const SITE_ORIGIN = 'https://campaign-site-azure.vercel.app';
+/* teams.doviloop.dev does not serve this page: it is a registrar URL-forward
+   that 301s to http://doviloop.dev and chains on to the product homepage. It is
+   not dead, which is worse than dead - ads pointing there would return 200 and
+   land every paid click on a page with no qualifier and no instrumentation.
+   canonical, og:url and every hreflang alternate therefore name the origin the
+   page is actually served from.
+
+   It comes from env rather than a literal because it has to change on the day
+   that forward is removed and the domain is pointed here, and a value in Vercel
+   is a better instrument for that than a code edit. Default unchanged, so today
+   this behaves exactly as the literal did. ad-engine/docs/FUNNEL-HANDOFF.md
+   holds the cutover order. */
+const SITE_ORIGIN = env.siteOrigin;
 
 export function LocalePage({ locale }: { locale: Locale }) {
   const c = content[locale];

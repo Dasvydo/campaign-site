@@ -100,6 +100,9 @@ async function main() {
         'import.meta.env.VITE_POSTHOG_KEY': '""',
         'import.meta.env.VITE_POSTHOG_HOST': '""',
         'import.meta.env.VITE_META_PIXEL_ID': '""',
+        // Empty on purpose: exercises the default in src/lib/env.ts,
+        // which is the origin the page serves from today.
+        'import.meta.env.VITE_SITE_ORIGIN': '""',
         'process.env.NODE_ENV': '"development"',
       },
       loader: { '.css': 'empty' },
@@ -152,6 +155,9 @@ async function main() {
         'import.meta.env.VITE_POSTHOG_KEY': '""',
         'import.meta.env.VITE_POSTHOG_HOST': '""',
         'import.meta.env.VITE_META_PIXEL_ID': '""',
+        // Empty on purpose: exercises the default in src/lib/env.ts,
+        // which is the origin the page serves from today.
+        'import.meta.env.VITE_SITE_ORIGIN': '""',
         'process.env.NODE_ENV': '"development"',
       },
       loader: { '.css': 'empty' },
@@ -436,6 +442,9 @@ async function main() {
           'import.meta.env.VITE_POSTHOG_KEY': '""',
           'import.meta.env.VITE_POSTHOG_HOST': '""',
           'import.meta.env.VITE_META_PIXEL_ID': '""',
+          // Empty on purpose: exercises the default in src/lib/env.ts,
+          // which is the origin the page serves from today.
+          'import.meta.env.VITE_SITE_ORIGIN': '""',
           'process.env.NODE_ENV': '"development"',
         },
         loader: { '.css': 'empty' },
@@ -605,6 +614,9 @@ async function main() {
           'import.meta.env.VITE_POSTHOG_KEY': '""',
           'import.meta.env.VITE_POSTHOG_HOST': '""',
           'import.meta.env.VITE_META_PIXEL_ID': '""',
+          // Empty on purpose: exercises the default in src/lib/env.ts,
+          // which is the origin the page serves from today.
+          'import.meta.env.VITE_SITE_ORIGIN': '""',
           'process.env.NODE_ENV': '"development"',
         },
       });

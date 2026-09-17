@@ -17,10 +17,26 @@ and the ad breaks silently — nothing throws, the leads just misfile.
   lead files itself as `direct`.
 - **`src/lib/contract.ts:31`** — exactly four UTM fields exist. A fifth parameter,
   including a Meta `{{macro}}`, is read by nothing and vanishes.
-- **`src/LocalePage.tsx:26`** — `SITE_ORIGIN` is pinned to the `.vercel.app` host
-  and is written into `canonical`, `og:url` and every `hreflang`. It must be
-  flipped to `https://teams.doviloop.dev` on the same day that domain starts
-  serving this page.
+- **`VITE_SITE_ORIGIN`** — the origin written into `canonical`, `og:url` and every
+  `hreflang`. Meta scrapes `og:url` for the ad's link preview. It defaults to the
+  `.vercel.app` deployment; set it to `https://teams.doviloop.dev` in Vercel on
+  the day that domain starts serving this page. It was a literal in
+  `src/LocalePage.tsx:26` until 2026-09-17; same default, so nothing changed today.
+
+## What the page claims, that an ad may not
+
+The `numbers` block renders `430 USD saved per month, for each person` and a
+multiple computed from it at runtime. **The page is allowed to** — it carries
+"These are a model, not a measurement" in the same eyeline. An ad carries no
+disclosure, so `ad-engine`'s claims gate now blocks both. Scan this repo's copy
+with:
+
+```
+cd ../ad-engine && python -m engine.cli check --landing ../campaign-site/src/content
+```
+
+Advisory only; it does not fail. Price is **out of scope** and deliberately still
+passes the gate.
 
 ## Status as of 2026-09-16
 
