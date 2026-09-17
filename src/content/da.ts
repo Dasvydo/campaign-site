@@ -42,7 +42,7 @@ export const da: Content = {
     },
     deck: 'Skrevet ud fra jeres egne sager, i jeres egne ord. Jeres folk læser dem igennem og sender.',
 
-    ctaNote: 'De første to uger er gratis. Intet kort, og ingen betaling.',
+    ctaNote: 'Få et ja eller nej. De første to uger er gratis. Intet kort, og ingen betaling.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {

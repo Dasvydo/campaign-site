@@ -39,7 +39,7 @@ export const en: Content = {
     },
     deck: 'Drafted from your own files, in your own wording. Your people read them and send.',
 
-    ctaNote: 'The first two weeks are free. No card, and nothing taken.',
+    ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {

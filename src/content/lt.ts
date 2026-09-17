@@ -42,7 +42,7 @@ export const lt: Content = {
     },
     deck: 'Parašyta iš Jūsų pačių bylų, Jūsų pačių žodžiais. Jūsų žmonės juos perskaito ir išsiunčia.',
 
-    ctaNote: 'Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
+    ctaNote: 'Taip arba ne. Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
