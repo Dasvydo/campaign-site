@@ -555,57 +555,47 @@ export const da: Content = {
   compare: {
     eyebrow: 'Regnestykket per person',
     title: 'Hvad hver person koster',
-    lede: 'Én pris for hele virksomheden betyder, at prisen per person falder, i takt med at virksomheden vokser. Her er, hvor den lander, med de to virksomhedsabonnementer fra produktsiden ved siden af.',
+    lede: 'Én pris for hele virksomheden, uanset hvor mange I er. Flyt antallet af personer, og se hvilken kurve der stiger, og hvilken der ikke gør.',
 
-    planLabel: 'Abonnement',
-    perHeadLabel: 'Per person',
-    firmLabel: 'Virksomheden',
+    headsLabel: 'Personer, der skriver mail:',
+
+    keepLabel: 'Det sparer I hver måned i forhold til Administreret:',
+    yearLabel: 'På et år:',
+
+    firmLabel: 'Virksomheden betaler:',
+    perHeadLabel: 'Per person:',
 
     ourPlan: 'Det her tilbud',
-    ourSize: { label: 'Personer:' },
+    ourLegend: 'Én pris for hele virksomheden, ved hver eneste størrelse herunder.',
+
+    managedPlan: 'Administreret',
+    managedSize: { label: 'Sælges per plads, fra et antal personer på:' },
 
     teamPlan: 'Team-planen',
     teamSize: { label: 'Personer, højst:' },
+    teamOut: {
+      before: ' holder op med at sælge ved et antal personer på ',
+      after: '. Der er ingen størrelse på den her skala, den giver tilbud på.',
+    },
 
-    managedPlan: 'Administreret',
-    managedSize: { label: 'Personer, mindst:' },
+    axisLabel: 'Personer, der skriver mail',
 
-    claimsTitle: 'Hvad det svarer til',
-    claims: {
-      belowManagedFloor: {
-        before:
-          'Administreret er abonnementet til en virksomhed af den her størrelse. Det starter ved et antal personer på ',
-        mid: ', og den mindste virksomhed, det tager, betaler ',
-        then: ' om måneden. Hele virksomheden betaler ',
-        after: ' om måneden her.',
-      },
-      belowTeamCeiling: {
-        before: 'Team-planen sælges ikke til flere personer end ',
-        mid: '. Den største virksomhed, planen kan sælge til, betaler ',
-        then: ' om måneden. Hele virksomheden betaler ',
-        after: ' om måneden her, i alle de størrelser, prisen dækker.',
-      },
-      curve: {
-        smallOpen: 'Er antallet af personer ',
-        smallCost: ', koster hver person ',
-        largeOpen: ' om måneden. Er antallet af personer ',
-        largeCost: ', koster hver person ',
-        after: ' om måneden. Prisen for hele virksomheden er den samme i begge tilfælde, så prisen per person falder, i takt med at virksomheden vokser.',
-      },
+    rangeNote: {
+      before: 'Skalaen stopper ved det antal personer, prisen dækker: ',
+      after: '. Derover siger vi det og finder ud af det sammen med jer.',
     },
 
     individualPlan: 'Individuel',
-
     individualNote: {
       before:
-        ' er abonnementet til én person på produktsiden. Det købes én plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
+        ' er abonnementet til én person på produktsiden. Det købes en plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
       after: ' om måneden.',
     },
 
     sourceNote: {
-      before: 'Taksterne for Team, Administreret og Individuel her er de offentliggjorte priser på ',
+      before: 'Priserne for Administreret og Individuel her er de offentlige priser på ',
       link: 'doviloop.dev',
-      mid: ', aflæst ',
+      mid: ', aflæst den ',
       after: '. Vi har ikke justeret dem.',
     },
   },

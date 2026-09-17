@@ -389,6 +389,66 @@ export function managedFloorMonthly(offer: Offer = OFFER): number {
 }
 
 /**
+ * What the same firm would pay on the published Managed rate, or null where
+ * Managed will not sell to a firm that size.
+ *
+ * The counterpart of `teamMonthly`, and bounded at the other end: Team refuses
+ * firms above its seat ceiling, Managed refuses them below its floor. Null is
+ * the honest answer in both cases, because below ten seats there is no Managed
+ * price to set anything against.
+ *
+ * This exists because the comparison stopped being a table of three fixed head
+ * counts and became a figure a reader moves. A reader who can choose the head
+ * count can choose one the published rate says nothing about, and a component
+ * handed a raw multiplication would print a Managed price for a firm Managed
+ * would turn away.
+ */
+export function managedMonthly(headcount: number, offer: Offer = OFFER): number | null {
+  // Whole people only, for the same reason `coversHeadcount` insists on it.
+  if (!Number.isInteger(headcount) || headcount <= 0) return null;
+  if (headcount < offer.compare.managedMin) return null;
+  return headcount * offer.compare.managed;
+}
+
+/**
+ * What a firm keeps every month by paying one firm fee instead of Managed's
+ * per seat rate, or null where the two cannot be compared at all.
+ *
+ * Null rather than zero or a negative wherever either side is missing: above
+ * the coverage ceiling this offer has no agreed price, and below the Managed
+ * floor that plan has none, so there is no difference to report in either
+ * direction. Where both exist the subtraction is left to say what it says. It
+ * is not clamped at zero, because a page that can only ever print a saving is
+ * a page that would keep printing one after the saving stopped being real.
+ */
+export function keptVsManaged(
+  headcount: number,
+  tier: TierConfig = activeTier(),
+  offer: Offer = OFFER,
+): number | null {
+  if (!coversHeadcount(headcount, offer)) return null;
+  const managed = managedMonthly(headcount, offer);
+  if (managed === null) return null;
+  return managed - tier.price;
+}
+
+/**
+ * The head counts this comparison may be moved across: every size the flat fee
+ * covers that Managed will also quote for.
+ *
+ * Derived from the offer rather than written down, so the control cannot offer
+ * a size the arithmetic behind it refuses to price. The lower bound is the
+ * Managed floor because below it there is nothing to compare against, and the
+ * upper bound is the coverage ceiling because above it this offer has no per
+ * head figure to show.
+ */
+export function comparableHeadcounts(offer: Offer = OFFER): number[] {
+  const out: number[] = [];
+  for (let n = offer.compare.managedMin; n <= offer.covers; n += 1) out.push(n);
+  return out;
+}
+
+/**
  * Is our whole monthly bill below what the smallest Managed firm pays?
  *
  * The claim that matters most of the three, because Managed is the only plan

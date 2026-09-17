@@ -32,18 +32,27 @@ import type { Locale } from '../src/lib/contract';
 import {
   OFFER,
   activeTier,
-  belowManagedFloor,
-  belowTeamCeiling,
+  comparableHeadcounts,
   comparison,
   isCapped,
+  keptVsManaged,
   modelledMultiple,
   remainingSpots,
   setupDue,
   formatCount,
   formatMoney,
-  managedFloorMonthly,
-  teamCeilingMonthly,
 } from '../src/lib/offer';
+
+/* React tracks an input's value on the DOM node, so assigning `.value` and
+   firing an event is ignored: the tracker sees no change and swallows it. The
+   native setter writes past the tracker, which is how a range input can be
+   driven from a test at all. */
+function setNativeValue(el: HTMLInputElement, value: string): void {
+  const proto = Object.getPrototypeOf(el) as object;
+  const desc = Object.getOwnPropertyDescriptor(proto, 'value');
+  if (desc?.set) desc.set.call(el, value);
+  else el.value = value;
+}
 
 /* The page after the port and after the flat fee landed: hero, the worked
    example, who it is for, what it is worth, what it costs, what each person
@@ -115,10 +124,6 @@ function leaves(value: unknown, path = '', out: Array<[string, string]> = []): A
   }
   return out;
 }
-
-/** The head count out of a size cell, "People: 15" and its two translations. */
-const sizeOf = (el: Element | null): number =>
-  Number((el?.textContent ?? '').replace(/\D+/g, ''));
 
 /* The firm the ledger models, in people.
 
@@ -316,17 +321,18 @@ const smallestSoldTo = (): number => {
             ...(setupWaived ? [c.price.founding.gets.setup] : []),
           ]
         : [c.price.founding.spotsClosed]),
-      /* The sum per head. The table's own figures are arithmetic and are
-         checked against the offer below; these are the words around them. */
+      /* The sum per head. Every figure in this section is arithmetic and is
+         driven against the offer below; these are the words around them. */
       c.compare.eyebrow, c.compare.title, c.compare.lede,
-      c.compare.planLabel, c.compare.perHeadLabel, c.compare.firmLabel,
-      c.compare.ourPlan, c.compare.ourSize.label,
-      /* One reference plan, because the table now holds firm level plans only.
-         Individual is named in prose under the table, and its sentence has a
-         figure in it, so it is asserted assembled rather than listed here. */
-      c.compare.teamPlan, c.compare.teamSize.label,
-      c.compare.managedPlan, c.compare.managedSize.label, c.compare.individualPlan,
-      c.compare.claimsTitle, c.compare.sourceNote.link,
+      c.compare.headsLabel, c.compare.keepLabel, c.compare.yearLabel,
+      c.compare.firmLabel, c.compare.perHeadLabel,
+      c.compare.ourPlan, c.compare.ourLegend, c.compare.axisLabel,
+      /* One plan is drawn and two are only named. Team and Individual both sit
+         in sentences with a figure in them, so those sentences are asserted
+         assembled rather than listed here. */
+      c.compare.managedPlan, c.compare.managedSize.label,
+      c.compare.teamPlan, c.compare.individualPlan,
+      c.compare.sourceNote.link,
       c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel,
       c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel, c.form.submit,
       c.footer.tagline, c.footer.privacyLink, c.footer.officeLabel,
@@ -366,8 +372,22 @@ const smallestSoldTo = (): number => {
          three languages without a single check noticing. */
       [
         'the Individual note, with the seat rate it publishes',
-        c.compare.individualNote.before + money(OFFER.compare.individual) +
-          c.compare.individualNote.after,
+        c.compare.individualPlan + c.compare.individualNote.before +
+          money(OFFER.compare.individual) + c.compare.individualNote.after,
+      ],
+      /* Team is named only to say it will not quote a firm this size, so the
+         sentence and the ceiling it turns on are held together. */
+      [
+        'the Team note, with the seat ceiling it stops at',
+        c.compare.teamPlan + c.compare.teamOut.before +
+          figure(OFFER.compare.teamMax) + c.compare.teamOut.after,
+      ],
+      /* Why the control stops where it does. The ceiling is the offer's
+         coverage, so a widget that grew a wider range than the fee covers
+         would leave this sentence describing a limit it no longer has. */
+      [
+        'the range note, with the head count the fee covers',
+        c.compare.rangeNote.before + figure(OFFER.covers) + c.compare.rangeNote.after,
       ],
       [
         'the source note, with the date the rival rates were read',
@@ -461,174 +481,107 @@ const smallestSoldTo = (): number => {
       .filter((r) => r.amount !== '' && (r.amount !== r.want || r.line !== r.wantLine))
       .map((r) => `${r.key}: "${r.line}", offer says "${r.wantLine}"`);
 
-    /* The comparison table, read back out of the DOM rather than trusted. Each
-       of our rows carries the head count it is arguing about, so the arithmetic
-       can be redone here from the offer and set against what the cell printed.
-       A row whose per head figure does not equal `comparison(n).perPerson` is a
-       page doing its own division. */
-    const ourRowEls = Array.from(host.querySelectorAll('#compare .cmp-row-ours'));
-    const ourRows = ourRowEls.map((row) => {
-      const size = sizeOf(row.querySelector('.cmp-plan-size'));
-      const cells = Array.from(row.querySelectorAll('.cmp-num')).map((td) => td.textContent ?? '');
-      const want = comparison(size, tier);
-      return {
-        size,
-        perHead: cells[0] ?? '',
-        firm: cells[1] ?? '',
-        wantPerHead: want.perPerson === null ? null : cell(want.perPerson),
-        wantFirm: cell(want.monthly),
-        covered: want.covered,
+    /* The comparison, driven rather than read.
+
+       It stopped being a table of three fixed head counts and became a control
+       a reader moves, so a check that reads cells out of the DOM once would now
+       be checking one arbitrary position of a slider. This drives it instead:
+       every head count the offer says is comparable is selected in turn, and at
+       each one the three figures the page prints are set against the arithmetic
+       the offer would do. A page doing its own division fails at whichever size
+       it does it at, and names that size.
+
+       The sizes are the offer's, not a list written here. `comparableHeadcounts`
+       is every head count the flat fee covers that Managed will also quote for,
+       which is exactly the range the control is allowed to offer. Reading it
+       from the same helper the component reads means a coverage change moves
+       both together, and the separate check below is what stops the control
+       quietly offering a size outside it. */
+    const slider = host.querySelector<HTMLInputElement>('#compare .cmp-range');
+    const sizes = comparableHeadcounts();
+    const sliderRange = slider ? [Number(slider.min), Number(slider.max)] : [];
+    const wantRange = [sizes[0], sizes[sizes.length - 1]];
+
+    const readFig = (sel: string): string =>
+      (host.querySelector(`#compare ${sel}`)?.textContent ?? '').trim();
+
+    const badSizes: string[] = [];
+    const uncoveredSizes: string[] = [];
+    for (const n of sizes) {
+      if (!slider) break;
+      await act(async () => {
+        setNativeValue(slider, String(n));
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+        slider.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+
+      const want = comparison(n, tier);
+      /* The offer refuses a per head figure outside coverage, so a size that
+         still printed one would be the page dividing where it was told not to. */
+      if (!want.covered && readFig('[data-cmp-head]') !== '') uncoveredSizes.push(String(n));
+
+      const wantKept = keptVsManaged(n, tier);
+      const got = {
+        keep: readFig('[data-cmp-keep]'),
+        firm: readFig('[data-cmp-firm]'),
+        head: readFig('[data-cmp-head]'),
       };
-    });
-    const badRows = ourRows
-      .filter((r) => r.perHead !== r.wantPerHead || r.firm !== r.wantFirm)
-      .map((r) => `${r.size}: ${r.perHead}/${r.firm}, offer says ${r.wantPerHead}/${r.wantFirm}`);
-    /* No per head figure outside coverage. A firm the flat fee does not cover
-       would get the most flattering number on the page out of a division the
-       offer has refused to honour. */
-    const uncoveredRows = ourRows.filter((r) => !r.covered).map((r) => String(r.size));
-
-    /* The one reference row is somebody else's published rate, printed as it is
-       read. Team is the only plan in the table that is not ours, because it is
-       the only other plan a firm can buy for the whole firm, and both of its
-       cells are a firm's figures: the seat rate it sells at, and what the
-       largest firm it will take pays every month.
-
-       How many such rows there should be is derived rather than written down.
-       The offer can put exactly these two figures in a reference row, and the
-       table gives every row one figure per numeric column, so the rows to
-       expect is those cells over the columns the table has. Add a row for a
-       plan the offer has no reference cells for and the arithmetic stops
-       agreeing, which is the same failure as printing the wrong rate. */
-    const numCols = host.querySelectorAll('#compare .cmp-table thead .cmp-col-num').length;
-    const refCells = Array.from(host.querySelectorAll('#compare .cmp-row-ref .cmp-num')).map(
-      (td) => td.textContent ?? '',
-    );
-    const wantRefCells = [
-      cell(OFFER.compare.team), cell(teamCeilingMonthly()),
-      cell(OFFER.compare.managed), cell(managedFloorMonthly()),
-    ];
-    const wantRefRowCount = numCols > 0 ? wantRefCells.length / numCols : 0;
-    const badRefCells =
-      refCells.length === wantRefCells.length && refCells.every((v, i) => v === wantRefCells[i])
-        ? []
-        : [`${refCells.join(',')} against ${wantRefCells.join(',')}`];
+      const wantShown = {
+        keep: wantKept === null ? '' : money(wantKept),
+        firm: money(want.monthly),
+        head: want.perPerson === null ? '' : money(want.perPerson),
+      };
+      if (
+        got.keep !== wantShown.keep ||
+        got.firm !== wantShown.firm ||
+        got.head !== wantShown.head
+      ) {
+        badSizes.push(
+          `${n}: ${got.keep}/${got.firm}/${got.head}, ` +
+            `offer says ${wantShown.keep}/${wantShown.firm}/${wantShown.head}`,
+        );
+      }
+    }
 
     /* The comparison this section was rebuilt to stop making, measured as an
-       absence.
+       absence, and carried over from the table it replaced.
 
        Individual is a plan for one person, bought a seat at a time, so its seat
-       rate is not a firm's cost a head and cannot be read down the same column
-       as one. Printed there it was set against our per head figure, and at the
-       ten person floor this page advertises that is the one comparison this
-       offer loses: the flat fee only falls past that seat rate well above it.
-       The plan therefore has no row, and these are the two measurements that
-       fail if somebody gives it one again.
+       rate is not a firm's cost a head. Set beside ours it is the one
+       comparison this offer loses at the ten person floor the whole page
+       advertises: ten seats cost less than this fee, and the flat fee only
+       passes that rate well above it. The plan is therefore named in the notes
+       underneath and drawn nowhere, and this is what fails if somebody puts it
+       back on the chart or in the readout.
 
-       The first is the row by name, which catches the obvious way back. The
-       second is the shape of the mistake rather than its wording, and catches a
-       row that reaches the same reading under another name or none: our cost a
-       head and that seat rate printed as two cells of one row is a comparison
-       to any reader, whatever the row is called. Both the figure the page
-       printed and the figure the offer would have produced count as ours, so a
-       row that pairs the rate with a per head cell still fails while the cell
-       itself is being reported wrong elsewhere. */
-    const rowText = (el: Element): string => (el.textContent ?? '').replace(/\s+/g, ' ').trim();
-    /* Both shapes of every amount this check looks for.
-
-       An amount is written two ways in this section now, with its unit and
-       without, and which one a cell uses is a styling decision somebody making
-       this mistake again would not think about. The seat rate reads bare inside
-       a table and with its unit in the prose it is published in today; our own
-       per head figure is the reverse. Matching only the shape each happens to
-       wear right now would mean a row that paired them the other way round
-       walked straight past a check written to stop exactly that pairing. */
+       Both shapes of the rate are looked for, with its unit and without, because
+       which one a figure wears is a styling decision somebody making this
+       mistake again would not think about. And the region searched is the panel
+       rather than the section, so the note under it stays legal: naming the plan
+       and its published rate in prose is the thing we decided to keep doing. */
     const bothShapes = (value: number): string[] => [cell(value), money(value)];
     const individualRates = new Set(bothShapes(OFFER.compare.individual));
-    const individualNamedInTable = Array.from(host.querySelectorAll('#compare .cmp-table tr'))
-      .filter((tr) => rowText(tr).includes(c.compare.individualPlan))
-      .map(rowText);
-    const ourPerHead = new Set(
-      ourRows
-        .flatMap((r) => [
-          r.perHead.trim(),
-          ...(r.wantPerHead === null ? [] : [r.wantPerHead, `${r.wantPerHead} ${OFFER.currency}`]),
-        ])
-        .filter((v) => v !== ''),
-    );
-    const individualPairedRows = Array.from(
-      host.querySelectorAll('#compare tr, #compare [role="row"]'),
-    )
-      .filter((row) => {
-        const cells = Array.from(row.querySelectorAll('td, th, .cmp-num, .cmp-fig')).map((el) =>
-          (el.textContent ?? '').trim(),
-        );
-        return cells.some((v) => ourPerHead.has(v)) && cells.some((v) => individualRates.has(v));
-      })
-      .map(rowText);
-
-    /* Which claims the offer says hold at this tier, over exactly the sizes the
-       table put on show. Derived, never listed: the point of the gate is that a
-       tier change takes the sentences it stops supporting off the page without
-       anybody remembering to, and an expectation written down here by hand
-       would go stale on the same morning the copy would have.
-
-       Two claims, and each is asked the one question that gates it. The ceiling
-       claim is asked of the tier alone, because both sides of it are fixed: it
-       holds wherever the flat fee is under what the largest firm Team will take
-       pays, at every size or at none. The curve claim is asked of the table,
-       because it compares our own figures with each other and so has no rate to
-       fall short of: it needs two covered sizes to draw a line between and
-       nothing else. Coverage is read off `comparison()` rather than off the
-       rows, so a size the offer has stopped covering takes the curve with it
-       even if the table were still printing it.
-
-       There is no third branch. The section has no fallback sentence, because
-       with the curve ungated there is no reachable state in which the claims
-       list is empty and the table is not. */
-    const shown = ourRows.map((r) => comparison(r.size, tier));
-    const coveredShown = shown.filter((r) => r.perPerson !== null);
-    const claimsExpected = [
-      ...(belowManagedFloor(tier) ? ['belowManagedFloor'] : []),
-      ...(belowTeamCeiling(tier) ? ['belowTeamCeiling'] : []),
-      ...(coveredShown.length > 1 ? ['curve'] : []),
+    const panelText = (host.querySelector('#compare .cmp-panel')?.textContent ?? '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const individualInPanel = [
+      ...(panelText.includes(c.compare.individualPlan) ? [c.compare.individualPlan] : []),
+      ...[...individualRates].filter((r) => r !== '' && panelText.includes(r)),
     ];
-    const claimsRendered = host.querySelectorAll('#compare .cmp-claim').length;
 
-    /* Every figure inside a claim has to be one the offer can produce. This is
-       the check that catches a number typed into the copy: the sentences are
-       fragments with slots, and a fragment that grew a numeral would read
-       correctly and be wrong.
-
-       Neither rival seat rate is in this set, and both absences are the same
-       rule. They are real figures of the offer's, and one of them is printed
-       on the page in the note under the table, but no claim may carry either:
-       a claim that did would be the per seat comparison this section was
-       rebuilt to stop making, and it would arrive wearing the offer's own
-       number. The Team rate has a cell of its own in the table, which is a
-       firm's published rate presented as one and not an argument; a sentence
-       is the other thing. So both are stray figures here.
-
-       Every entry is in the shape a claim would print it: head counts as
-       counts, amounts with the unit the sentence around them has no column
-       head to borrow. An amount allowed here bare would let a claim print one
-       with no currency on it and pass, which is the ambiguity the formatters
-       were added to remove. */
+    /* Every figure printed in the notes has to be one the offer can produce.
+       The notes are fragments with slots, and a fragment that grew a numeral
+       would read perfectly while saying something the offer never said. */
     const allowedFigures = new Set<string>([
-      ...ourRows.flatMap((r) => [
-        figure(r.size),
-        ...(r.wantPerHead === null ? [] : [`${r.wantPerHead} ${OFFER.currency}`]),
-      ]),
-      money(tier.price),
       figure(OFFER.compare.teamMax),
-      money(teamCeilingMonthly()),
+      figure(OFFER.covers),
+      money(OFFER.compare.individual),
       figure(OFFER.compare.managedMin),
-      money(managedFloorMonthly()),
     ]);
-    const claimFigures = Array.from(host.querySelectorAll('#compare .cmp-claim .cmp-fig')).map(
-      (el) => el.textContent ?? '',
+    const noteFigures = Array.from(host.querySelectorAll('#compare .cmp-fig')).map(
+      (el) => (el.textContent ?? '').trim(),
     );
-    const strayFigures = claimFigures.filter((f) => !allowedFigures.has(f));
+    const strayFigures = noteFigures.filter((f) => !allowedFigures.has(f));
 
     /* Nothing from the model this page replaced, anywhere it rendered except
        the comparison.
@@ -682,8 +635,8 @@ const smallestSoldTo = (): number => {
       en.hero.title.mark, en.nav.cta, en.demo.title, en.demo.pickLead,
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
-      en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.claimsTitle,
-      en.compare.ourPlan, en.compare.perHeadLabel,
+      en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.axisLabel,
+      en.compare.ourPlan, en.compare.perHeadLabel, en.compare.keepLabel,
       ...en.demo.desks.map((d) => d.tab),
       ...en.demo.desks[0].sources.map((x) => x.label),
       ...en.who.groups.map((g) => g.line),
@@ -792,17 +745,21 @@ const smallestSoldTo = (): number => {
       wantMultiple,
       ledgerBlank,
       ledgerBad,
-      ourRowCount: ourRows.length,
-      refRowCount: host.querySelectorAll('#compare .cmp-row-ref').length,
-      wantRefRowCount,
-      badRows,
-      uncoveredRows,
-      badRefCells,
-      individualNamedInTable,
-      individualPairedRows,
-      claimsExpected,
-      claimsRendered,
-      claimFigureCount: claimFigures.length,
+      /* The control, and what it prints at every size it offers. */
+      sliderFound: Boolean(slider),
+      sliderRange,
+      wantRange,
+      sizesDriven: sizes.length,
+      badSizes,
+      uncoveredSizes,
+      /* Both lines are drawn, and the money between them is shaded. */
+      chartLines: host.querySelectorAll('#compare .cmp-line-ours, #compare .cmp-line-ref').length,
+      chartBand: host.querySelectorAll('#compare .cmp-band').length,
+      /* The plan that must not be on the chart or in the readout. */
+      individualInPanel,
+      individualNamedInNotes: (
+        host.querySelector('#compare .cmp-notes')?.textContent ?? ''
+      ).includes(c.compare.individualPlan),
       strayFigures,
       stale,
       leaked,

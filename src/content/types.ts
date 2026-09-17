@@ -192,86 +192,67 @@ export interface CompareCopy {
   title: string;
   lede: string;
 
-  /** Column heads, in the order the table reads them. */
-  planLabel: string;
-  perHeadLabel: string;
+  /** The control. A head count the reader moves, so the label carries its own
+      colon and the count lands after it: "People who write mail: 14". Never a
+      sentence wrapped around the digit, because the number changes under the
+      reader's finger and no language should have to agree a noun with it
+      eleven times. */
+  headsLabel: string;
+
+  /**
+   * The lead figure: what a firm keeps every month by paying one firm fee
+   * rather than the Managed seat rate.
+   *
+   * Written whole in each language, naming the Managed plan inside the
+   * sentence rather than composing it from `managedPlan`. "Next to Managed"
+   * puts that name in a case slot, and Lithuanian wants the instrumental there
+   * while the nominative is what the legend needs. A composed label would be
+   * right in one place and wrong in the other, so the translator writes the
+   * sentence and the name in it, and carries its own colon.
+   */
+  keepLabel: string;
+  /** The same figure over twelve months. Label, then the figure. */
+  yearLabel: string;
+
+  /** The two supporting figures, both labels with the figure after them. */
   firmLabel: string;
+  perHeadLabel: string;
 
-  /** Our own rows, one per head count on show. The size cell is a label with
-      the count after it, "People: 12", and not a sentence wrapped around a
-      digit, so no language has to make a noun agree with a number it is handed
-      at render time. `label` carries its own colon, so the punctuation belongs
-      to the translator rather than to the component. */
+  /** What the two lines are. `ourLegend` says the thing the flat line is
+      showing, in words, for a reader who takes the shape in before the axes. */
   ourPlan: string;
-  ourSize: { label: string };
+  ourLegend: string;
 
-  /** The two reference rows. Both are firm level plans, so both can be read
-      down the same per head column as ours. Individual cannot and has no row.
-
-      One is a ceiling and one is a floor, which is why one row each is enough.
-      Team stops selling at nine seats, so `teamSize` takes the largest firm it
-      will take: "People, at most: 9". Managed starts at ten, so `managedSize`
-      takes the smallest: "People, at least: 10". Between them they are the
-      whole of what a firm at these head counts could buy instead. Both are the
-      same label shape as `ourSize`, for the same reason. */
-  teamPlan: string;
-  teamSize: { label: string };
+  /** The plan the flat line is drawn against, and the floor it starts at.
+      `managedSize` is a label with the count after it, "People, at least: 10",
+      for the same reason `headsLabel` is. */
   managedPlan: string;
   managedSize: { label: string };
 
-  /** The plan with no row, named so that the page and the product site call it
-      the same thing. All three names are the ones doviloop.dev prints in that
-      language, which is not always the English one: the point of naming a
-      rival plan at all is that a reader can go and find it. */
-  individualPlan: string;
-
-  claimsTitle: string;
   /**
-   * Three claims, independent of one another. None refers to another, so every
-   * ordering and every reachable combination reads correctly.
+   * Team, which is named but never drawn.
+   *
+   * It stops selling at nine seats, and this comparison starts at ten, so there
+   * is no size on the control where Team has a price at all. That absence is
+   * the point rather than an omission: the cheaper looking plan will not quote
+   * a firm this size. "<before><the Team seat ceiling><after>", the count
+   * ending its clause with no noun behind it to agree with.
    */
-  claims: {
-    /** The claim that matters most, and the only one about a plan a firm at
-        these head counts can actually buy. Rendered where `belowManagedFloor`
-        holds, which with the shipped ladder is every tier, unlike the Team
-        claim which falls away at the uncapped one.
-        "<before><the Managed seat floor><mid><what the smallest firm Managed
-        will take pays every month><then><our flat monthly fee for the whole
-        firm><after>"
-        Same shape as the Team claim and the same reason for it: no head count
-        slot, because both sides are fixed, and the floor lands at the end of
-        its clause with no noun after it to agree with. */
-    belowManagedFloor: { before: string; mid: string; then: string; after: string };
-    /** The lead claim, rendered only where `belowTeamCeiling` holds on the
-        active tier.
-        "<before><the Team seat ceiling><mid><what the largest firm Team will
-        take pays every month><then><our flat monthly fee for the whole
-        firm><after>"
-        No head count slot: both sides of this claim are fixed, so it falls away
-        with the tier rather than with the size. The ceiling is a count of
-        people and lands at the end of its clause, with no noun after it to
-        agree with. */
-    belowTeamCeiling: { before: string; mid: string; then: string; after: string };
-    /** Always rendered wherever the table has two covered sizes to draw
-        between, because it is true at every tier and every size.
-        "<smallOpen><the smallest head count on show><smallCost><what each
-        person costs at that size><largeOpen><the largest head count on
-        show><largeCost><what each person costs at that size><after>"
-        Both head counts end their clauses. Write the sentence so it is right
-        whatever the four figures turn out to be: the only thing it may assert
-        is that the fee for the firm does not change between the two sizes and
-        that the cost per head therefore falls, which holds at every tier. */
-    curve: {
-      smallOpen: string;
-      smallCost: string;
-      largeOpen: string;
-      largeCost: string;
-      after: string;
-    };
-  };
+  teamPlan: string;
+  teamSize: { label: string };
+  teamOut: { before: string; after: string };
+
+  /** Under the horizontal axis. No colon and no figure: it names what the axis
+      counts, and the reader reads the count off the control. */
+  axisLabel: string;
+
+  /** Why the control stops where it does, so a reader who runs it to the end
+      knows the ceiling is the offer's and not the widget's.
+      "<before><the head count the fee covers><after>" */
+  rangeNote: { before: string; after: string };
 
   /**
-   * The Individual plan, named under the table instead of given a row in it.
+   * The Individual plan, named under the chart instead of drawn on it.
    * "<before><what one Individual seat costs a month><after>"
    *
    * This is the only place the page says the Individual plan exists, and it
@@ -282,15 +263,22 @@ export interface CompareCopy {
    * against our cost a head, and no arithmetic on it: a firm that wants a
    * separate knowledge base for every person can multiply it themselves.
    *
+   * That restraint is not a style note. At the ten person floor this page
+   * advertises, ten Individual seats cost less than this offer does, and the
+   * flat fee only passes that seat rate well above it. Drawing the plan on the
+   * chart, or setting its rate beside our cost a head, would be the page
+   * arguing against itself at the bottom of its own range.
+   *
    * One figure only, and it ends its clause with no noun behind it to agree
    * with. The rate is doviloop.dev's, so it is covered by `sourceNote`, which
    * is rendered directly after this and names both published rates.
    */
+  individualPlan: string;
   individualNote: { before: string; after: string };
 
   /** Whose prices the published rates in this section are, and when we read
-      them. It covers the Team rate in the table and the Individual rate in the
-      note above it, so it names both rather than pointing at a row.
+      them. It covers the Managed rate on the chart and the Individual rate in
+      the note above it, so it names both rather than pointing at a line.
       "<before><doviloop.dev><mid><the date they were read><after>" */
   sourceNote: { before: string; link: string; mid: string; after: string };
 }

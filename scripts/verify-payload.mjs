@@ -260,71 +260,68 @@ async function main() {
         `    the founding block counts its places on the ${p.tierOnShow} tier`,
         p.tierIsCapped ? 'capped tier, counter expected' : 'uncapped tier, counter must be gone',
       );
-      check(p.ourRowCount === 3, `    the table compares three head counts`, String(p.ourRowCount));
-      /* One reference row, and the count is derived in the harness rather than
-         written here: the offer has exactly two figures a reference row may
-         print, and the table gives each row one figure per numeric column. A
-         second reference row is therefore a row the offer has no cells for. */
+      /* The control offers exactly the sizes the offer can price, and not one
+         more. Both ends are derived in the harness from `comparableHeadcounts`,
+         never written here, so widening the coverage moves the control and this
+         check together rather than failing it. A slider that reached past the
+         coverage ceiling would be offering a head count the arithmetic behind
+         it returns null for. */
+      check(p.sliderFound, `    the comparison is something a reader can move`, 'no range input');
       check(
-        p.refRowCount === p.wantRefRowCount,
-        `    beside both firm plans a firm this size could otherwise buy`,
-        `${p.refRowCount} rendered, the offer's reference cells fill ${p.wantRefRowCount}`,
+        p.sliderRange.join(',') === p.wantRange.join(','),
+        `    and it offers exactly the head counts the offer can price`,
+        `${p.sliderRange.join(' to ')}, offer prices ${p.wantRange.join(' to ')}`,
+      );
+      /* Every size, driven. This is the check that catches a page doing its own
+         division: at each head count the control offers, the three figures on
+         the panel are set against what the offer would compute, and a mismatch
+         names the size it happened at. */
+      check(
+        p.sizesDriven > 1 && p.badSizes.length === 0,
+        `    every figure is the offer's own arithmetic, at all ${p.sizesDriven} sizes`,
+        p.badSizes.slice(0, 3).join(' | '),
       );
       check(
-        p.badRows.length === 0,
-        `    every per head figure is the offer's own division`,
-        p.badRows.join(' | '),
+        p.uncoveredSizes.length === 0,
+        `    and no cost a head where the fee does not cover the firm`,
+        p.uncoveredSizes.join(','),
       );
+      /* Two lines and the money between them. The argument is the gap, so a
+         chart that lost the band would still look like a chart and would have
+         stopped making it. */
       check(
-        p.uncoveredRows.length === 0,
-        `    and no head count the flat fee does not cover`,
-        p.uncoveredRows.join(','),
-      );
-      check(
-        p.badRefCells.length === 0,
-        `    the reference rows print the published rates unaltered`,
-        p.badRefCells.join(' | '),
+        p.chartLines === 2 && p.chartBand === 1,
+        `    both lines are drawn, with the difference shaded between them`,
+        `${p.chartLines} line(s), ${p.chartBand} band(s)`,
       );
       /* The mistake this section was rebuilt to undo, asserted as an absence.
-         The table set our cost per head against the Individual seat rate, and
-         at the ten person floor this page advertises that is the comparison
-         this offer loses: the flat fee only falls past that seat rate at
-         fourteen people on the founding tier, seventeen on early, and never on
-         standard. So Individual has no row, and is named in prose under the
-         table with its published rate and no comparison.
+         The old table set our cost per head against the Individual seat rate,
+         and at the ten person floor this page advertises that is the comparison
+         this offer loses: the flat fee only passes that seat rate at fourteen
+         people on the founding tier, seventeen on early, and never on standard.
+         So Individual is drawn nowhere and named only in the notes underneath,
+         with its published rate and no comparison.
 
-         Two checks, because there are two ways back. The first is the row by
-         name. The second is the shape of it: our per head figure and that seat
-         rate printed as two cells of one row, which reads as a comparison
-         whatever the row is called, and which would catch a reinstatement that
-         renamed the plan or dropped the name altogether. */
+         The panel is searched rather than the section, by name and by rate in
+         both the shapes a figure wears here, so a reinstatement fails whether
+         it keeps the plan's name or drops it. The second check is the other
+         half of the same decision: naming it in the notes is the thing we
+         decided to keep doing, so a page that quietly dropped it there would
+         be hiding a public rate rather than being careful. */
       check(
-        p.individualNamedInTable.length === 0,
-        `    no row in the table names the Individual plan`,
-        p.individualNamedInTable.slice(0, 2).join(' | '),
+        p.individualInPanel.length === 0,
+        `    the Individual plan is nowhere on the chart or in the readout`,
+        p.individualInPanel.join(' | '),
       );
       check(
-        p.individualPairedRows.length === 0,
-        `    and nothing sets our cost a head against the Individual seat rate`,
-        p.individualPairedRows.slice(0, 2).join(' | '),
-      );
-      /* The gate, measured. The expectation is derived in the harness from the
-         offer over the sizes the table actually showed, never listed here, so
-         that advancing a tier moves this check with the page instead of
-         failing it. At most two now: the Team ceiling claim wherever the active
-         tier's flat fee is under what the largest firm Team will take pays, and
-         the curve claim wherever the table has two covered sizes to draw
-         between. There is no fallback line to count, because with the curve
-         ungated the claims list is never empty while the table is not. */
-      check(
-        p.claimsRendered === p.claimsExpected.length,
-        `    only the claims the arithmetic supports are rendered`,
-        `${p.claimsRendered} on the page, offer holds ${p.claimsExpected.length}: ${p.claimsExpected.join(',') || 'none'}`,
+        p.individualNamedInNotes,
+        `    and is still named underneath, where its rate is published without a comparison`,
+        'the note naming it has gone',
       );
       check(
-        p.claimFigureCount > 0 && p.strayFigures.length === 0,
-        `    no figure inside a claim that the offer cannot produce`,
-        p.strayFigures.join(',') || `${p.claimFigureCount} figures, all the offer's`,
+        p.strayFigures.length === 0,
+        `    no figure in the notes that the offer cannot produce`,
+        p.strayFigures.join(',') || "all the offer's",
       );
     }
 

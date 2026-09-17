@@ -549,46 +549,37 @@ export const en: Content = {
   compare: {
     eyebrow: 'The sum per head',
     title: 'What each person costs',
-    lede: 'One fee for the firm means the cost per head falls as the firm grows. Here is where it lands, with the two firm plans on the product site set beside it.',
+    lede: 'One fee for the firm, however many of you there are. Move the head count and watch which line climbs and which one does not.',
 
-    planLabel: 'Plan',
-    perHeadLabel: 'Each person',
-    firmLabel: 'The firm',
+    headsLabel: 'People who write mail:',
+
+    keepLabel: 'You keep every month, next to Managed:',
+    yearLabel: 'Over a year:',
+
+    firmLabel: 'The firm pays:',
+    perHeadLabel: 'Each person:',
 
     ourPlan: 'This offer',
-    ourSize: { label: 'People:' },
+    ourLegend: 'One fee for the firm, at every size below.',
+
+    managedPlan: 'Managed',
+    managedSize: { label: 'Sold by the seat, from a head count of:' },
 
     teamPlan: 'Team',
     teamSize: { label: 'People, at most:' },
+    teamOut: {
+      before: ' stops selling at a head count of ',
+      after: '. There is no size on this scale it will quote for.',
+    },
 
-    managedPlan: 'Managed',
-    managedSize: { label: 'People, at least:' },
+    axisLabel: 'People who write mail',
 
-    claimsTitle: 'What that works out as',
-    claims: {
-      belowManagedFloor: {
-        before: 'Managed is the plan for a firm of this size. It starts at a head count of ',
-        mid: ', and the smallest firm it takes pays ',
-        then: ' a month. The whole firm pays ',
-        after: ' a month here.',
-      },
-      belowTeamCeiling: {
-        before: 'Team stops selling at a head count of ',
-        mid: '. The largest firm it will take pays ',
-        then: ' a month. The whole firm pays ',
-        after: ' a month here, at every size the fee covers.',
-      },
-      curve: {
-        smallOpen: 'At a head count of ',
-        smallCost: ', each person costs ',
-        largeOpen: ' a month. At a head count of ',
-        largeCost: ', each person costs ',
-        after: ' a month. The fee for the firm is the same at both, so the cost per head falls as the firm grows.',
-      },
+    rangeNote: {
+      before: 'The scale stops at the head count the fee covers: ',
+      after: '. Past that we will say so and work it out with you.',
     },
 
     individualPlan: 'Individual',
-
     individualNote: {
       before:
         ' is the plan for one person on the product site. It is bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
@@ -596,7 +587,7 @@ export const en: Content = {
     },
 
     sourceNote: {
-      before: 'The Team, Managed and Individual rates here are the published prices on ',
+      before: 'The Managed and Individual rates here are the published prices on ',
       link: 'doviloop.dev',
       mid: ', read on ',
       after: '. We have not adjusted them.',

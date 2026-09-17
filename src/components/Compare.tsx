@@ -1,321 +1,330 @@
+import { useId, useState } from 'react';
 import type { Content } from '../content/types';
-import type { Comparison } from '../lib/offer';
 import {
   OFFER,
   activeTier,
-  belowManagedFloor,
-  belowTeamCeiling,
-  comparison,
+  comparableHeadcounts,
   formatCount,
   formatMoney,
-  managedFloorMonthly,
-  teamCeilingMonthly,
+  keptVsManaged,
+  managedMonthly,
+  perPerson,
 } from '../lib/offer';
 
 /**
- * The sum per head, and the two claims it is allowed to support.
+ * The sum per head, drawn rather than tabulated.
  *
- * This is the section that makes the argument rather than asserting it. One
- * flat fee for the whole firm means the cost per person falls as the firm
- * grows, and the only way a reader can check that is to see the division done
- * in front of them. So the table is the substance of the section, and the
- * claims underneath it are a reading of the table, never a replacement for it.
+ * One flat fee for the whole firm means the cost per person falls as the firm
+ * grows. That used to be a table of three head counts with three paragraphs
+ * reading it back, and a reader had to assemble the shape in their head from
+ * nine cells. The shape is the argument, so the section now draws it: one line
+ * that climbs with head count and one that does not, with the money between
+ * them shaded in. A reader who never touches the control still sees it, which
+ * matters because most will not touch it.
  *
- * What is in the table, and what is not.
+ * What is drawn, and what is not.
  *
- * The table holds firm level plans and nothing else: our own fee at three head
- * counts, and both of the firm plans the product site publishes. That is what a
- * grid with a per head column implies it is doing.
+ * Two lines, both firm level. Ours, flat, because the fee does not move. And
+ * Managed, because it is the only plan on the product site a firm at these head
+ * counts can actually buy.
  *
- * Those two are a ceiling and a floor, which is why one row each is enough.
- * Team stops selling at its seat ceiling, so a firm at the head counts this
- * page is sold to cannot buy it at all; its row is the last point where that
- * plan touches these sizes. Managed starts at its seat floor, which is the
- * smallest firm this page is sold to, so it is the plan such a firm would
- * actually be put on, and its row is the first point where it touches. Between
- * them they are the whole of what a firm at these head counts could buy
- * instead of this offer.
+ * Team is named and never drawn. It stops selling at its seat ceiling, which is
+ * below every head count on this scale, so there is no point on the chart where
+ * Team has a price. That absence is the honest reading and the stronger one:
+ * the cheaper looking plan will not quote a firm this size at all. Inventing a
+ * dashed line for it would be drawing a price nobody can buy.
  *
- * The lead claim is therefore Managed, not Team: it is the one comparison a
- * reader is really choosing between, and unlike the Team claim it holds at
- * every tier on the ladder rather than only the capped ones. The Team claim
- * stays because a reader looking at the product site will see that plan first
- * and is owed the reason it is not what they would be sold.
+ * Individual has no line either, and for the opposite reason. It is a plan for
+ * one person, bought a seat at a time, so its seat rate is not a firm's cost a
+ * head. Set against ours it is the one comparison this offer loses at the ten
+ * person floor the whole page advertises: ten seats cost less than this fee,
+ * and the flat fee only passes that rate well above it. So the plan is named in
+ * prose underneath with its published rate, and nothing is claimed about it in
+ * either direction. The rate is public and hiding it would be worse than saying
+ * it. What we do not do is invite the comparison by drawing it.
  *
- * Individual has no row, and that is the point of this file's last revision.
- * It is a plan for one person, bought a seat at a time, so its seat rate is not
- * a firm's cost a head and cannot be read down the same column as one. Printed
- * there it was read against our cost a head, which at the smallest firm this
- * page is sold to is the comparison we lose: the flat fee only falls past that
- * seat rate well above the ten person floor the meta description, the dateline,
- * the qualifying note and the form routing all advertise. So the plan is named
- * in prose under the table instead, with its published seat rate, and nothing
- * is claimed about it in either direction. The rate is public; hiding it would
- * be worse than saying it. What we stop doing is inviting the per head
- * comparison by putting it in a column.
+ * Every figure comes from src/lib/offer.ts at render time, and the ones that
+ * can be asked for outside coverage come back null rather than as a division
+ * this offer has not agreed to honour. The scale itself is the offer's too:
+ * `comparableHeadcounts` is every size the fee covers that Managed will also
+ * quote for, so the control cannot be moved to a head count the arithmetic
+ * behind it refuses to price.
  *
- * What renders at each tier, under the shipped offer.
- *
- * The curve claim renders at all three tiers. It compares nothing: it states
- * what each person costs at the smallest and the largest head count the table
- * shows, and the fact that the fee for the firm does not move between them.
- * That is true at every tier and at every pair of sizes, so it is not gated on
- * arithmetic. It is skipped only where the table has fewer than two covered
- * sizes to draw a line between, which the shipped coverage does not produce.
- *
- * The Team ceiling claim renders at the two capped tiers, whose flat fee is
- * under what the largest firm Team will take pays, and does not render at the
- * uncapped tier, whose flat fee is above it. Nothing softens or hedges it
- * there: the gate reads `belowTeamCeiling` off the offer, and a claim that does
- * not hold is simply not on the page.
- *
- * So at the uncapped tier the section is the table, the curve, the note naming
- * Individual, and the source note. There is no "none of this holds" fallback
- * sentence, because with the
- * curve ungated there is no reachable state in which the claims list is empty
- * and the table is not. A fallback for an unreachable state is copy maintained
- * in three languages and read in none.
- *
- * Three rules hold the rest of it together.
- *
- * Nothing here is written down. Every figure on screen comes out of offer.ts
- * through the three formatters below, and the published rates are the ones the
- * offer file records with the date they were read. There is no number in this
- * file except the three head counts the table compares at, which are sizes,
- * not prices.
- *
- * No sentence is a sentence. Each claim is a set of fragments with slots for
- * figures, and the component decides whether it appears at all.
- *
- * No per head figure outside coverage. `comparison(n).perPerson` is null for a
- * head count the flat fee does not cover, and the rows are filtered on exactly
- * that null before anything is rendered. A firm above the ceiling would get the
- * most flattering figure on the page out of a division the offer has not agreed
- * to honour, so it gets no figure at all. The filter also means that lowering
- * `OFFER.covers` quietly drops the sizes it no longer covers from the table,
- * and from the two ends of the curve, instead of leaving them to be believed.
- *
- * No folio number, unlike the other sections. The folios are a continuous run
- * across the sections that were already here, and opening a slot in the middle
- * of that run would mean editing six other components to insert one. This block
- * reads as the second half of the terms it follows, which is where it sits.
+ * The chart is aria-hidden on purpose. It is a second rendering of figures the
+ * readout above it already carries in text, the slider announces the same
+ * numbers through `aria-valuetext` on every change, and the live region says
+ * what moved. A described SVG here would make a screen reader read the same
+ * three amounts twice.
  */
 
-/* Sizes, not prices. A ten person firm is the smallest this offer is sold to,
-   twenty is the largest the flat fee covers, and fifteen is the middle of that
-   range: three points are enough to show which way the line runs. Anything the
-   offer stops covering is dropped below rather than shown. */
-const SIZES = [10, 15, 20] as const;
-
-/** A comparison whose head count the flat fee actually covers. */
-type CoveredComparison = Comparison & { readonly perPerson: number };
-
-/**
- * The only door a per person figure gets through. Written as a type guard so
- * the filter narrows for the compiler too: past this point `perPerson` is a
- * number, and no cell has to remember to check it a second time.
- */
-function isCovered(row: Comparison): row is CoveredComparison {
-  return row.perPerson !== null;
-}
+/* The drawing, in its own coordinate space. The viewBox leaves room below the
+   plot for the axis labels and above it for the upper line's own figure, so
+   nothing is drawn outside the bounds at any head count. */
+/* `left` is wide enough for the topmost tick with its currency on it, in the
+   widest of the three groupings this page publishes in. A gutter sized for the
+   bare numeral clipped the thousands digit off, which is the failure this
+   comment exists to stop somebody tidying back in. */
+const VIEW = { w: 660, h: 340, left: 86, right: 18, top: 18, bottom: 54 };
 
 export function Compare({ c }: { c: Content }) {
-  const t = c.compare;
+  const tier = activeTier();
+  const sizes = comparableHeadcounts();
+  const first = sizes[0];
+  const last = sizes[sizes.length - 1];
 
-  /* Three ways to print a figure, all of them in the language the section is
-     being read in. This section exists so a reader can check the division
-     themselves, and they cannot check a figure whose decimal mark they read as
-     a thousands separator: the per head figure at the largest covered firm is
-     nineteen and a half, which written the English way is a four figure sum in
-     Danish.
+  /* Opens at the middle of the scale rather than at either end. At the floor
+     the saving is at its smallest and at the ceiling at its largest, and
+     opening on either would be choosing the most or least flattering point
+     before the reader has touched anything. */
+  const [heads, setHeads] = useState(() => sizes[Math.floor(sizes.length / 2)]);
 
-     `cell` and `money` differ by one word, and the difference is where the
-     figure sits. A cell is under a column head that has already named the
-     currency once, and repeating it down the column would be printing the same
-     word in every row. A claim is a sentence standing on its own, and an
-     amount in a sentence with no unit beside it is a number the reader has to
-     take on trust, which is the one thing this section refuses to ask of them.
-     `figure` is for the head counts, which are not amounts at all. */
-  const cell = (value: number): string => formatMoney(value, c.htmlLang);
-  const money = (value: number): string => `${cell(value)} ${OFFER.currency}`;
+  const sliderId = useId();
+
+  const money = (value: number): string => `${formatMoney(value, c.htmlLang)} ${OFFER.currency}`;
   const figure = (value: number): string => formatCount(value, c.htmlLang);
 
-  /* Read once, so the table and the claims are answering for the same tier
-     even if this render straddled a change to the counts. */
-  const tier = activeTier();
-  const rows = SIZES.map((n) => comparison(n, tier)).filter(isCovered);
+  /* Null anywhere the offer has no agreed answer. Nothing below renders a
+     figure without checking, because a component that renders null as "0 USD"
+     is the failure these helpers return null to prevent. */
+  const perHead = perPerson(heads, tier);
+  const managed = managedMonthly(heads);
+  const kept = keptVsManaged(heads, tier);
 
-  /* The two ends of the curve are the two ends of the table, so the sentence
-     cannot describe a size the reader cannot also see. Two distinct rows are
-     needed for a curve to be a curve: with one size covered, or none, there is
-     a figure but no fall, and the honest thing is to say nothing rather than to
-     compare a size with itself. */
-  const smallest = rows.length > 1 ? rows[0] : null;
-  const largest = rows.length > 1 ? rows[rows.length - 1] : null;
+  /* The scale is fixed across the whole control rather than fitted to the
+     head count on show. A scale that refitted on every step would keep the
+     two lines the same distance apart at every size, which is the exact
+     opposite of what this section is about. */
+  const ceiling = managedMonthly(last) ?? tier.price;
+  const px = (n: number): number =>
+    VIEW.left + ((n - first) / (last - first)) * (VIEW.w - VIEW.left - VIEW.right);
+  const py = (value: number): number =>
+    VIEW.top + (1 - value / ceiling) * (VIEW.h - VIEW.top - VIEW.bottom);
 
-  /* Neither of these has a size in it at all: both sides of each are fixed, so
-     they turn on the tier and nothing else. They are asked separately because
-     they fall away at different points. The Managed one holds wherever the flat
-     fee is under what the smallest firm that plan takes pays, which on the
-     shipped ladder is every tier; the Team one goes when the fee passes what
-     the largest firm Team takes pays, which happens at the uncapped tier. */
-  const floorHolds = belowManagedFloor(tier);
-  const ceilingHolds = belowTeamCeiling(tier);
+  const ourY = py(tier.price);
+  const manFirst = managedMonthly(first);
+  const manLast = managedMonthly(last);
 
-  const anyClaim = floorHolds || ceilingHolds || (smallest !== null && largest !== null);
+  /* Four ticks plus zero, each naming a value the chart actually reaches. */
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(ceiling * f));
+
+  /* What the slider says when it moves, assembled from the same labels the
+     readout prints so the spoken version cannot drift from the seen one. Each
+     label carries its own colon, so nothing is punctuated here. */
+  const announce =
+    `${c.compare.headsLabel} ${figure(heads)}. ` +
+    (kept === null ? '' : `${c.compare.keepLabel} ${money(kept)}. `) +
+    (perHead === null ? '' : `${c.compare.perHeadLabel} ${money(perHead)}.`);
 
   return (
     <section id="compare" aria-labelledby="compare-h">
       <div className="cmp-wrap">
         <header className="cmp-head">
-          <p className="cmp-eyebrow">{t.eyebrow}</p>
+          <p className="cmp-eyebrow">{c.compare.eyebrow}</p>
           <h2 className="cmp-h" id="compare-h">
-            {t.title}
+            {c.compare.title}
           </h2>
+          <p className="cmp-lede">{c.compare.lede}</p>
         </header>
 
-        <div className="cmp-sheet">
-          {/* A real table with a real caption. The lede is the caption rather
-              than a paragraph above it because the lede is already the sentence
-              that says what is being compared against what, which is exactly
-              what a caption owes a screen reader, and printing it twice to
-              satisfy both would be printing it twice. */}
-          <table className="cmp-table">
-            <caption className="cmp-cap">{t.lede}</caption>
-            <thead>
-              <tr>
-                <th scope="col" className="cmp-col-plan">
-                  {t.planLabel}
-                </th>
-                <th scope="col" className="cmp-col-num">
-                  {t.perHeadLabel} <span className="cmp-unit">{OFFER.currency}</span>
-                </th>
-                <th scope="col" className="cmp-col-num">
-                  {t.firmLabel} <span className="cmp-unit">{OFFER.currency}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr className="cmp-row cmp-row-ours" key={r.headcount}>
-                  <th scope="row" className="cmp-plan">
-                    <span className="cmp-plan-name">{t.ourPlan}</span>
-                    <span className="cmp-plan-size">
-                      {t.ourSize.label} {figure(r.headcount)}
-                    </span>
-                  </th>
-                  <td className="cmp-num cmp-num-lead">{cell(r.perPerson)}</td>
-                  <td className="cmp-num">{cell(r.monthly)}</td>
-                </tr>
+        <div className="cmp-panel">
+          {/* The control, and the figures it moves. The readout comes before
+              the drawing in the document so that the numbers are reached first
+              by a screen reader and by anyone reading at a narrow width. */}
+          <div className="cmp-control">
+            <div className="cmp-control-head">
+              <label className="cmp-control-label" htmlFor={sliderId}>
+                {c.compare.headsLabel}
+              </label>
+              <output className="cmp-control-count" htmlFor={sliderId}>
+                {figure(heads)}
+              </output>
+            </div>
+
+            <input
+              className="cmp-range"
+              id={sliderId}
+              type="range"
+              min={first}
+              max={last}
+              step={1}
+              value={heads}
+              aria-valuetext={announce}
+              onChange={(e) => setHeads(Number(e.target.value))}
+            />
+
+            <div className="cmp-ticks" aria-hidden="true">
+              <span>{figure(first)}</span>
+              <span>{figure(last)}</span>
+            </div>
+          </div>
+
+          <div className="cmp-readout">
+            {/* The lead figure. Rendered only where both sides of it exist,
+                which on this scale they always do; the guard is here because
+                the scale is read from the offer and an offer edited to a
+                narrower coverage would otherwise print a saving from null. */}
+            {kept === null ? null : (
+              <div className="cmp-keep">
+                <p className="cmp-term">{c.compare.keepLabel}</p>
+                <p className="cmp-keep-fig" data-cmp-keep>
+                  {money(kept)}
+                </p>
+                <p className="cmp-year">
+                  {c.compare.yearLabel} {money(kept * 12)}
+                </p>
+              </div>
+            )}
+
+            <dl className="cmp-pair">
+              <div className="cmp-pair-row">
+                <dt className="cmp-term">{c.compare.firmLabel}</dt>
+                <dd className="cmp-pair-fig" data-cmp-firm>
+                  {money(tier.price)}
+                </dd>
+              </div>
+              {perHead === null ? null : (
+                <div className="cmp-pair-row">
+                  <dt className="cmp-term">{c.compare.perHeadLabel}</dt>
+                  <dd className="cmp-pair-fig" data-cmp-head>
+                    {money(perHead)}
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          <p className="cmp-sr" role="status" aria-live="polite">
+            {announce}
+          </p>
+
+          {/* The drawing. See the note at the top of this file for why it is
+              hidden from assistive technology rather than described. */}
+          <div className="cmp-chart">
+            <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} aria-hidden="true" focusable="false">
+              {ticks.map((value) => (
+                <g key={value}>
+                  <line
+                    className="cmp-grid"
+                    x1={VIEW.left}
+                    y1={py(value)}
+                    x2={VIEW.w - VIEW.right}
+                    y2={py(value)}
+                  />
+                  {/* The highest tick wears the unit so the axis is not a
+                      column of bare numerals, and the others stay quiet. */}
+                  <text className="cmp-tick cmp-tick-y" x={VIEW.left - 10} y={py(value) + 4} textAnchor="end">
+                    {value === ticks[ticks.length - 1] ? money(value) : figure(value)}
+                  </text>
+                </g>
               ))}
 
-              {/* The only row here that is not ours, because it is the only
-                  other plan a firm can buy for the whole firm. */}
-              <tr className="cmp-row cmp-row-ref">
-                <th scope="row" className="cmp-plan">
-                  <span className="cmp-plan-name">{t.teamPlan}</span>
-                  <span className="cmp-plan-size">
-                    {t.teamSize.label} {figure(OFFER.compare.teamMax)}
-                  </span>
-                </th>
-                {/* The firm cell here is a real total for a real firm: the seat
-                    rate at the seat ceiling, which is the largest bill Team can
-                    produce and the figure the lead claim is argued against. */}
-                <td className="cmp-num">{cell(OFFER.compare.team)}</td>
-                <td className="cmp-num">{cell(teamCeilingMonthly())}</td>
-              </tr>
+              {manFirst === null || manLast === null ? null : (
+                <>
+                  {/* The money, as an area rather than a number. */}
+                  <path
+                    className="cmp-band"
+                    d={
+                      `M${px(first)} ${ourY} L${px(last)} ${ourY} ` +
+                      `L${px(last)} ${py(manLast)} L${px(first)} ${py(manFirst)} Z`
+                    }
+                  />
+                  <path
+                    className="cmp-line-ref"
+                    d={`M${px(first)} ${py(manFirst)} L${px(last)} ${py(manLast)}`}
+                  />
+                </>
+              )}
 
-              {/* The other one, and the only plan in the table a firm at these
-                  head counts can actually buy. Its firm cell is the smallest
-                  bill it can produce, the seat rate at the seat floor, which is
-                  the figure the lead claim is argued against. */}
-              <tr className="cmp-row cmp-row-ref">
-                <th scope="row" className="cmp-plan">
-                  <span className="cmp-plan-name">{t.managedPlan}</span>
-                  <span className="cmp-plan-size">
-                    {t.managedSize.label} {figure(OFFER.compare.managedMin)}
-                  </span>
-                </th>
-                <td className="cmp-num">{cell(OFFER.compare.managed)}</td>
-                <td className="cmp-num">{cell(managedFloorMonthly())}</td>
-              </tr>
-            </tbody>
-          </table>
+              <path className="cmp-line-ours" d={`M${px(first)} ${ourY} L${px(last)} ${ourY}`} />
+
+              {managed === null ? null : (
+                <>
+                  <line
+                    className="cmp-marker"
+                    x1={px(heads)}
+                    y1={py(managed)}
+                    x2={px(heads)}
+                    y2={py(0)}
+                  />
+                  <circle className="cmp-dot-ref" cx={px(heads)} cy={py(managed)} r={5} />
+                </>
+              )}
+              <circle className="cmp-dot-ours" cx={px(heads)} cy={ourY} r={5} />
+
+              {sizes
+                .filter((n) => n === first || n === last || (n - first) % 2 === 0)
+                .map((n) => (
+                  <text
+                    className="cmp-tick cmp-tick-x"
+                    key={n}
+                    x={px(n)}
+                    y={VIEW.h - 34}
+                    textAnchor="middle"
+                  >
+                    {figure(n)}
+                  </text>
+                ))}
+              <text
+                className="cmp-tick cmp-tick-x"
+                x={(VIEW.left + VIEW.w - VIEW.right) / 2}
+                y={VIEW.h - 8}
+                textAnchor="middle"
+              >
+                {c.compare.axisLabel}
+              </text>
+            </svg>
+          </div>
+
+          <ul className="cmp-legend">
+            <li>
+              <span className="cmp-swatch cmp-swatch-ours" aria-hidden="true" />
+              <span>
+                <b>{c.compare.ourPlan}</b> {c.compare.ourLegend}
+              </span>
+            </li>
+            <li>
+              <span className="cmp-swatch cmp-swatch-ref" aria-hidden="true" />
+              <span>
+                <b>{c.compare.managedPlan}</b> {c.compare.managedSize.label}{' '}
+                {figure(OFFER.compare.managedMin)}
+              </span>
+            </li>
+          </ul>
         </div>
 
-        {/* Outside the table on purpose. These are prose about the figures, not
-            more figures, and a cell is the wrong place to put an argument. */}
-        {anyClaim && (
-          <div className="cmp-claims">
-            <h3 className="cmp-claims-h">{t.claimsTitle}</h3>
+        <div className="cmp-notes">
+          {/* Team, named and not drawn. */}
+          <p className="cmp-note">
+            <b>{c.compare.teamPlan}</b>
+            {c.compare.teamOut.before}
+            <span className="cmp-fig">{figure(OFFER.compare.teamMax)}</span>
+            {c.compare.teamOut.after}
+          </p>
 
-            <ul className="cmp-claim-list" role="list">
-              {floorHolds && (
-                <li className="cmp-claim">
-                  {t.claims.belowManagedFloor.before}
-                  <b className="cmp-fig">{figure(OFFER.compare.managedMin)}</b>
-                  {t.claims.belowManagedFloor.mid}
-                  <b className="cmp-fig">{money(managedFloorMonthly())}</b>
-                  {t.claims.belowManagedFloor.then}
-                  <b className="cmp-fig">{money(tier.price)}</b>
-                  {t.claims.belowManagedFloor.after}
-                </li>
-              )}
+          <p className="cmp-note">
+            {c.compare.rangeNote.before}
+            <span className="cmp-fig">{figure(OFFER.covers)}</span>
+            {c.compare.rangeNote.after}
+          </p>
 
-              {ceilingHolds && (
-                <li className="cmp-claim">
-                  {t.claims.belowTeamCeiling.before}
-                  <b className="cmp-fig">{figure(OFFER.compare.teamMax)}</b>
-                  {t.claims.belowTeamCeiling.mid}
-                  <b className="cmp-fig">{money(teamCeilingMonthly())}</b>
-                  {t.claims.belowTeamCeiling.then}
-                  <b className="cmp-fig">{money(tier.price)}</b>
-                  {t.claims.belowTeamCeiling.after}
-                </li>
-              )}
+          {/* Individual, named and never ranked. */}
+          <p className="cmp-note">
+            <b>{c.compare.individualPlan}</b>
+            {c.compare.individualNote.before}
+            <span className="cmp-fig">{money(OFFER.compare.individual)}</span>
+            {c.compare.individualNote.after}
+          </p>
 
-              {smallest !== null && largest !== null && (
-                <li className="cmp-claim">
-                  {t.claims.curve.smallOpen}
-                  <b className="cmp-fig">{figure(smallest.headcount)}</b>
-                  {t.claims.curve.smallCost}
-                  <b className="cmp-fig">{money(smallest.perPerson)}</b>
-                  {t.claims.curve.largeOpen}
-                  <b className="cmp-fig">{figure(largest.headcount)}</b>
-                  {t.claims.curve.largeCost}
-                  <b className="cmp-fig">{money(largest.perPerson)}</b>
-                  {t.claims.curve.after}
-                </li>
-              )}
-            </ul>
-          </div>
-        )}
-
-        {/* The plan that is not in the table, said plainly. A sentence rather
-            than a row, because prose can say what a plan is and a column can
-            only say what it costs a head, and what this plan costs a head is
-            not a figure a firm can compare itself with. It sits directly above
-            the source note so the rate in it is attributed by the same
-            sentence that attributes the rate in the table. */}
-        <p className="cmp-src">
-          <b className="cmp-plan-name">{t.individualPlan}</b>
-          {t.individualNote.before}
-          <b className="cmp-fig">{money(OFFER.compare.individual)}</b>
-          {t.individualNote.after}
-        </p>
-
-        {/* Somebody else's prices, so they carry whose they are and when we read
-            them. A comparison whose basis is invisible is a claim the reader has
-            to take on trust, and this whole section exists so they do not. */}
-        <p className="cmp-src">
-          {t.sourceNote.before}
-          <a className="cmp-src-link" href="https://doviloop.dev" rel="noopener">
-            {t.sourceNote.link}
-          </a>
-          {t.sourceNote.mid}
-          <time dateTime={OFFER.compare.readAt}>{OFFER.compare.readAt}</time>
-          {t.sourceNote.after}
-        </p>
+          <p className="cmp-source">
+            {c.compare.sourceNote.before}
+            <a href="https://doviloop.dev" rel="noreferrer">
+              {c.compare.sourceNote.link}
+            </a>
+            {c.compare.sourceNote.mid}
+            {OFFER.compare.readAt}
+            {c.compare.sourceNote.after}
+          </p>
+        </div>
       </div>
     </section>
   );
