@@ -74,27 +74,6 @@ export interface DemoDesk {
   clauses: DemoClause[];
 }
 
-/** One figure in the ledger.
-    `key` says where the figure comes from, because one of the two is
-    arithmetic on the offer and the other is copy. `multiple` is computed at
-    render time from the flat fee, so it carries no `amount` here and a price
-    change cannot leave a stale number on the page. `saving` is an input to the
-    model rather than a price of ours, so it is written down. */
-export interface NumberRow {
-  key: 'multiple' | 'saving';
-  /** The figure itself, without the hedge and without the unit. Present only
-      on the `saving` row; the others are filled from the offer. */
-  amount?: string;
-  /** What follows the figure: "x", " USD". Leading space where one is wanted.
-      Neither unit still standing here inflects in any of the three languages,
-      which is what makes a bare unit beside a numeral safe on this line. The
-      one that did was the day count beside the payback, and it went with the
-      row. A unit added here that does inflect brings the whole counted noun
-      problem back with it, and wants a sentence rather than a slot. */
-  unit: string;
-  label: string;
-}
-
 /** One line of the arithmetic behind a figure. */
 export interface BasisRow {
   term: string;
@@ -440,23 +419,55 @@ export interface Content {
     desks: [DemoDesk, DemoDesk, DemoDesk];
   };
 
+  /**
+   * The arithmetic, in three beats a reader can do in their head.
+   *
+   * What mail costs the firm now, what this costs, and what is left. They are
+   * one subtraction, printed in order, driven by one head count the reader
+   * moves. That is deliberate: the page used to state a saving and leave the
+   * reader to take it on trust, because the figure it was subtracted from was
+   * never on the screen.
+   *
+   * Every label carries its own colon and the figure lands after it, for the
+   * reason the whole file gives: the head count changes under the reader's
+   * finger and no language should have to agree a noun with it eleven times.
+   */
   numbers: {
     eyebrow: string;
     title: string;
-    /** "about ", set before every figure, so the hedge is written once. */
+    /** "about ", set before every modelled figure, so the hedge is written
+        once. The fee does not take it: that one is a price, not a model. */
     about: string;
-    /* Pinned to a length on purpose: the ledger is a fixed set of figures, not
-       a list that grows, and a locale quietly carrying a different number of
-       them is a page that says something different in one language. Two since
-       the payback came off. */
-    rows: [NumberRow, NumberRow];
+
+    /** The control. */
+    headsLabel: string;
+
+    /** The three beats, in the order they are read. */
+    spendLabel: string;
+    feeLabel: string;
+    keepLabel: string;
+    /** The third beat again over twelve months. */
+    yearLabel: string;
+
+    /**
+     * The one assumption the whole section rests on: what an hour of mail a
+     * person stops writing is worth to the firm, a month.
+     *
+     * A string, parsed once, because it is the single input to every figure
+     * above and the disclosure has to be able to name it. It is not a price
+     * and does not belong in the offer: it is an assumption this section
+     * argues from, and changing it changes the sentence in `basis` as much as
+     * it changes the sum.
+     */
+    saving: string;
+    savingLabel: string;
+
     /** "These are a model, not a measurement." The mark is highlighted. */
     lede: { before: string; mark: string; after: string };
-    /** The disclosure that carries the basis of every figure above. */
+    /** The disclosure that carries the basis of every figure above, the
+        assumption they are built on, and the comparison with the plans on the
+        product site for the reader who is choosing between them. */
     moreLabel: string;
-    /* One entry per figure above, same length for the same reason: a figure
-       with no basis is an unexplained number, and a basis with no figure is an
-       explanation of something the reader cannot see. */
     basis: [BasisRow, BasisRow];
     notes: [string, string];
   };

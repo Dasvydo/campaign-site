@@ -13,7 +13,6 @@ import { Demo } from './components/Demo';
 import { Numbers } from './components/Numbers';
 import { WhoFor } from './components/WhoFor';
 import { Price } from './components/Price';
-import { Compare } from './components/Compare';
 import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
 
@@ -132,7 +131,6 @@ export function LocalePage({ locale }: { locale: Locale }) {
           onCta={() => track('booking_click', { placement: 'price' })}
         />
 
-        <Compare c={c} />
 
         <Qualifier
           c={c}

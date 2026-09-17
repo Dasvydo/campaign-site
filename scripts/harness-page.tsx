@@ -33,10 +33,9 @@ import {
   OFFER,
   activeTier,
   comparableHeadcounts,
-  comparison,
   isCapped,
-  keptVsManaged,
-  modelledMultiple,
+  modelledKept,
+  modelledSpend,
   remainingSpots,
   setupDue,
   formatCount,
@@ -62,7 +61,7 @@ function setNativeValue(el: HTMLInputElement, value: string): void {
    between the terms and the form on purpose: it is the second half of the
    terms, read before anybody is asked for an email address. The order below is
    the document order the page is asserted to have, not just a set of ids. */
-const SECTION_IDS = ['hero', 'demo', 'who', 'numbers', 'price', 'compare', 'qualifier'];
+const SECTION_IDS = ['hero', 'demo', 'who', 'numbers', 'price', 'qualifier'];
 
 /* The numbers and the framing the old per seat model put on the page. 890 USD
    a month for ten seats, 89 USD a seat, and a minimum written as a count of
@@ -291,7 +290,9 @@ const smallestSoldTo = (): number => {
       c.demo.desks[0].letter.from, c.demo.desks[0].letter.subject,
       ...c.demo.desks[0].sources.map((x) => x.label),
       c.who.title, ...c.who.groups.map((g) => g.line), c.who.notes.seats.mark,
-      c.numbers.title, c.numbers.lede.mark, ...c.numbers.rows.map((r) => r.label),
+      c.numbers.title, c.numbers.lede.mark,
+      c.numbers.headsLabel, c.numbers.spendLabel, c.numbers.feeLabel,
+      c.numbers.keepLabel, c.numbers.moreLabel,
       c.price.eyebrow, c.price.title, c.price.feesTitle, c.price.freeTitle,
       c.price.freeNote, c.price.termsLabel, c.price.whenTitle,
       /* The fee sheet still has a term and a period per line. What it no longer
@@ -323,10 +324,8 @@ const smallestSoldTo = (): number => {
         : [c.price.founding.spotsClosed]),
       /* The sum per head. Every figure in this section is arithmetic and is
          driven against the offer below; these are the words around them. */
-      c.compare.eyebrow, c.compare.title, c.compare.lede,
-      c.compare.headsLabel, c.compare.keepLabel, c.compare.yearLabel,
-      c.compare.firmLabel, c.compare.perHeadLabel,
-      c.compare.ourLine, c.compare.refLine, c.compare.sourceLabel,
+      /* The plans on the product site, now a footnote under the arithmetic
+         rather than a section of their own. Still in the DOM, so still here. */
       /* One plan is drawn and two are only named. Team and Individual both sit
          in sentences with a figure in them, so those sentences are asserted
          assembled rather than listed here. */
@@ -425,88 +424,34 @@ const smallestSoldTo = (): number => {
     ];
     const unassembled = assembled.filter(([, s]) => !text.includes(s)).map(([label]) => label);
 
-    /* The ledger, read back out of the DOM rather than trusted.
+    /* The arithmetic, driven rather than read.
 
-       This is the section that already shipped blank. When the content contract
-       moved the multiple off a written amount, the component
-       went on printing the amount that was no longer there, and the page read
-       "about  x" and "about  days" in all three locales for two commits. Every
-       suite passed throughout, because the labels were still on the page and a
-       label is a word.
+       It stopped being two fixed figures on paper slips and became three that
+       one control moves, so this drives the control: every head count the
+       offer says it may offer is selected in turn, and at each one the three
+       figures on the panel are set against what the model would compute. A
+       page doing its own arithmetic fails at whichever size it does it at, and
+       names that size.
 
-       So the numerals are measured here, one row at a time. The saving is read
-       back out of the copy exactly the way <Numbers /> reads it, because it is
-       the assumption the other two figures are computed from rather than a
-       price of ours, and the two computed figures are asked of the offer's own
-       helpers instead of being worked out again in this file. Redoing the
-       arithmetic here would produce a check that agrees with a wrong
-       implementation, which is the circular test the offer guard already had to
-       be rescued from. */
-    const saving = Number.parseFloat(
-      c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
-    );
-    const wantMultiple = modelledMultiple(saving, MODEL_FIRM, tier);
-    /* Two of these are counts and one is an amount, which is the split
-       <Numbers /> makes and the reason the saving is asked of the parsed number
-       rather than handed back out of the copy: the component prints what it
-       computed from, so an expectation built from the raw string would agree
-       with a component that had stopped doing that. */
-    const wantFigure = (key: string, amount?: string): string => {
-      if (key === 'multiple') return wantMultiple === null ? '' : figure(wantMultiple);
-      return saving > 0 && amount ? cell(saving) : '';
-    };
+       The saving is parsed from the copy, once, exactly as the component does,
+       because it is the single input to all three and an expectation built from
+       the raw string would agree with a component that had stopped reading it.
+       The two computed figures are asked of the offer's own helpers rather than
+       worked out again here: redoing the arithmetic in this file would produce
+       a check that agrees with a wrong implementation, which is the circular
+       test the offer guard already had to be rescued from. */
+    const saving = Number.parseFloat(c.numbers.saving);
 
-    const ledger = Array.from(host.querySelectorAll('#numbers .numbers-slip')).map((li, i) => {
-      const row = c.numbers.rows[i];
-      const want = row ? wantFigure(row.key, row.amount).trim() : '';
-      return {
-        key: row ? row.key : `row ${i + 1}`,
-        amount: (li.querySelector('.numbers-amt')?.textContent ?? '').trim(),
-        unit: (li.querySelector('.numbers-unit')?.textContent ?? '').trim(),
-        /* The whole hedged line as one string, so a figure that reaches the
-           page but lands outside the sentence it belongs to still fails. */
-        line: li.querySelector('.numbers-fig')?.textContent ?? '',
-        want,
-        wantLine: row ? c.numbers.about + want + row.unit : '',
-      };
-    });
-
-    /* The failure that shipped, kept as a check of its own. It cannot be folded
-       into the comparison below, because a saving that stops parsing takes the
-       expectation blank at the same moment it takes the page blank, and a check
-       that only compared the two would pass on exactly the regression it exists
-       to catch. */
-    const ledgerBlank = ledger.filter((r) => r.amount === '').map((r) => r.key);
-    const ledgerBad = ledger
-      .filter((r) => r.amount !== '' && (r.amount !== r.want || r.line !== r.wantLine))
-      .map((r) => `${r.key}: "${r.line}", offer says "${r.wantLine}"`);
-
-    /* The comparison, driven rather than read.
-
-       It stopped being a table of three fixed head counts and became a control
-       a reader moves, so a check that reads cells out of the DOM once would now
-       be checking one arbitrary position of a slider. This drives it instead:
-       every head count the offer says is comparable is selected in turn, and at
-       each one the three figures the page prints are set against the arithmetic
-       the offer would do. A page doing its own division fails at whichever size
-       it does it at, and names that size.
-
-       The sizes are the offer's, not a list written here. `comparableHeadcounts`
-       is every head count the flat fee covers that Managed will also quote for,
-       which is exactly the range the control is allowed to offer. Reading it
-       from the same helper the component reads means a coverage change moves
-       both together, and the separate check below is what stops the control
-       quietly offering a size outside it. */
-    const slider = host.querySelector<HTMLInputElement>('#compare .cmp-range');
+    const slider = host.querySelector<HTMLInputElement>('#numbers .numbers-range');
     const sizes = comparableHeadcounts();
     const sliderRange = slider ? [Number(slider.min), Number(slider.max)] : [];
     const wantRange = [sizes[0], sizes[sizes.length - 1]];
 
     const readFig = (sel: string): string =>
-      (host.querySelector(`#compare ${sel}`)?.textContent ?? '').trim();
+      (host.querySelector(`#numbers ${sel}`)?.textContent ?? '').trim();
 
     const badSizes: string[] = [];
-    const uncoveredSizes: string[] = [];
+    const unhedged: string[] = [];
     for (const n of sizes) {
       if (!slider) break;
       await act(async () => {
@@ -515,53 +460,62 @@ const smallestSoldTo = (): number => {
         slider.dispatchEvent(new Event('change', { bubbles: true }));
       });
 
-      const want = comparison(n, tier);
-      /* The offer refuses a per head figure outside coverage, so a size that
-         still printed one would be the page dividing where it was told not to. */
-      if (!want.covered && readFig('[data-cmp-head]') !== '') uncoveredSizes.push(String(n));
-
-      const wantKept = keptVsManaged(n, tier);
+      const wantSpend = modelledSpend(saving, n);
+      const wantKept = modelledKept(saving, n, tier);
       const got = {
-        keep: readFig('[data-cmp-keep]'),
-        firm: readFig('[data-cmp-firm]'),
-        head: readFig('[data-cmp-head]'),
+        spend: readFig('[data-n-spend]'),
+        fee: readFig('[data-n-fee]'),
+        keep: readFig('[data-n-keep]'),
       };
-      const wantShown = {
-        keep: wantKept === null ? '' : money(wantKept),
-        firm: money(want.monthly),
-        head: want.perPerson === null ? '' : money(want.perPerson),
+      /* Both modelled figures wear the hedge and the fee does not, because the
+         fee is a price and the other two are assumptions. Asserting the hedge
+         as part of the line is what stops it being tidied off one of them. */
+      const want = {
+        spend: wantSpend === null ? '' : c.numbers.about + money(wantSpend),
+        fee: money(tier.price),
+        keep:
+          wantKept === null
+            ? ''
+            : c.numbers.about + money(wantKept) + c.numbers.yearLabel + ' ' + money(wantKept * 12),
       };
-      if (
-        got.keep !== wantShown.keep ||
-        got.firm !== wantShown.firm ||
-        got.head !== wantShown.head
-      ) {
+      if (got.spend !== want.spend || got.fee !== want.fee || got.keep !== want.keep) {
         badSizes.push(
-          `${n}: ${got.keep}/${got.firm}/${got.head}, ` +
-            `offer says ${wantShown.keep}/${wantShown.firm}/${wantShown.head}`,
+          `${n}: ${got.spend} / ${got.fee} / ${got.keep}, ` +
+            `model says ${want.spend} / ${want.fee} / ${want.keep}`,
         );
+      }
+      if (want.fee !== '' && got.fee.includes(c.numbers.about.trim())) {
+        unhedged.push(`${n}: the fee is wearing the hedge`);
       }
     }
 
-    /* The comparison this section was rebuilt to stop making, measured as an
-       absence, and carried over from the table it replaced.
+    /* The bar, which is the only picture in the section: one length split where
+       the fee falls. Its share is read back off the DOM and set against the
+       division, so a bar that stopped tracking the figures beside it fails
+       rather than going on looking plausible. */
+    const barEl = host.querySelector<HTMLElement>('#numbers [data-n-bar] .numbers-bar-fee');
+    const barWidth = barEl ? barEl.style.width : '';
+    const spendNow = modelledSpend(saving, Number(slider?.value ?? 0));
+    const wantBar =
+      spendNow === null || spendNow <= 0
+        ? ''
+        : `${Math.min(1, tier.price / spendNow) * 100}%`;
+
+    /* The comparison this section swallowed, and the decision it carries.
 
        Individual is a plan for one person, bought a seat at a time, so its seat
-       rate is not a firm's cost a head. Set beside ours it is the one
-       comparison this offer loses at the ten person floor the whole page
-       advertises: ten seats cost less than this fee, and the flat fee only
-       passes that rate well above it. The plan is therefore named in the notes
-       underneath and drawn nowhere, and this is what fails if somebody puts it
-       back on the chart or in the readout.
-
-       Both shapes of the rate are looked for, with its unit and without, because
-       which one a figure wears is a styling decision somebody making this
-       mistake again would not think about. And the region searched is the panel
-       rather than the section, so the note under it stays legal: naming the plan
-       and its published rate in prose is the thing we decided to keep doing. */
+       rate is not a firm's cost a head. At the ten person floor this page
+       advertises, ten seats cost less than this fee, and the flat fee only
+       passes that rate well above it. It is named in the disclosure with its
+       published rate and nothing is claimed about it in either direction; what
+       must never happen is the rate appearing beside the figures the section
+       argues from. The panel is searched, not the section, so the note under it
+       stays legal, and both shapes of the rate are looked for because which one
+       a figure wears is a styling decision somebody making this mistake again
+       would not think about. */
     const bothShapes = (value: number): string[] => [cell(value), money(value)];
     const individualRates = new Set(bothShapes(OFFER.compare.individual));
-    const panelText = (host.querySelector('#compare .cmp-panel')?.textContent ?? '')
+    const panelText = (host.querySelector('#numbers .numbers-panel')?.textContent ?? '')
       .replace(/\s+/g, ' ')
       .trim();
     const individualInPanel = [
@@ -569,16 +523,18 @@ const smallestSoldTo = (): number => {
       ...[...individualRates].filter((r) => r !== '' && panelText.includes(r)),
     ];
 
-    /* Every figure printed in the notes has to be one the offer can produce.
-       The notes are fragments with slots, and a fragment that grew a numeral
-       would read perfectly while saying something the offer never said. */
+    /* Every figure printed in the disclosure has to be one the offer or the
+       model can produce. These are fragments with slots, and a fragment that
+       grew a numeral would read perfectly while saying something neither the
+       offer nor the model ever said. */
     const allowedFigures = new Set<string>([
+      money(saving),
       figure(OFFER.compare.teamMax),
       figure(OFFER.covers),
       money(OFFER.compare.individual),
       figure(OFFER.compare.managedMin),
     ]);
-    const noteFigures = Array.from(host.querySelectorAll('#compare .cmp-fig')).map(
+    const noteFigures = Array.from(host.querySelectorAll('#numbers .numbers-fig')).map(
       (el) => (el.textContent ?? '').trim(),
     );
     const strayFigures = noteFigures.filter((f) => !allowedFigures.has(f));
@@ -607,8 +563,10 @@ const smallestSoldTo = (): number => {
        A little of the surrounding text rides along with each hit, because the
        numeral being on the page is only half of what a reader of the failure
        needs. */
-    const compareText = host.querySelector('#compare')?.textContent ?? '';
-    const outside = compareText ? text.split(compareText).join('\n') : text;
+    /* The plans the scan must not trip over are cited inside the disclosure
+       under the arithmetic now, rather than in a section of their own. */
+    const citedText = host.querySelector('#numbers .numbers-plans')?.textContent ?? '';
+    const outside = citedText ? text.split(citedText).join('\n') : text;
     const stale = STALE.flatMap(({ label, re }) => {
       const m = re.exec(outside);
       if (!m) return [];
@@ -635,8 +593,10 @@ const smallestSoldTo = (): number => {
       en.hero.title.mark, en.nav.cta, en.demo.title, en.demo.pickLead,
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
-      en.compare.title, en.compare.eyebrow, en.compare.lede, en.compare.sourceLabel,
-      en.compare.ourLine, en.compare.refLine, en.compare.perHeadLabel, en.compare.keepLabel,
+      /* Not a plan name: "Team" is a substring of the Danish "Team-planen",
+         so it would report a leak on a page that had translated it correctly. */
+      en.numbers.spendLabel, en.numbers.keepLabel, en.numbers.headsLabel,
+      en.numbers.feeLabel,
       ...en.demo.desks.map((d) => d.tab),
       ...en.demo.desks[0].sources.map((x) => x.label),
       ...en.who.groups.map((g) => g.line),
@@ -730,35 +690,29 @@ const smallestSoldTo = (): number => {
          that stopped being an excerpt is a defect in the content whether or
          not the section it belongs to happens to be on screen. */
       previewIsExcerpt: c.hero.draft.body.includes(c.hero.deal.preview),
-      /* The ledger: three rows, three figures, and the window the unit beside
-         the last of them can carry. */
-      ledgerRowCount: ledger.length,
-      ledgerRowsInContent: c.numbers.rows.length,
-      modelFirm: MODEL_FIRM,
-      smallestSoldTo: smallestSoldTo(),
-      modelFirmMatchesContract: MODEL_FIRM === smallestSoldTo(),
+      /* The one assumption everything here is computed from. */
       ledgerSaving: Number.isFinite(saving)
         ? String(saving)
-        : `"${c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? ''}" does not parse to a figure`,
+        : `"${c.numbers.saving}" does not parse to a figure`,
       ledgerSavingIsNumeric: Number.isFinite(saving) && saving > 0,
-      ledgerModelled: wantMultiple !== null,
-      wantMultiple,
-      ledgerBlank,
-      ledgerBad,
+      smallestSoldTo: smallestSoldTo(),
+      rangeStartsAtSmallestSold: sizes[0] === smallestSoldTo(),
+      unhedged,
+      barWidth,
+      wantBar,
       /* The control, and what it prints at every size it offers. */
       sliderFound: Boolean(slider),
       sliderRange,
       wantRange,
       sizesDriven: sizes.length,
       badSizes,
-      uncoveredSizes,
+
       /* Both lines are drawn, and the money between them is shaded. */
-      chartLines: host.querySelectorAll('#compare .cmp-line-ours, #compare .cmp-line-ref').length,
-      chartBand: host.querySelectorAll('#compare .cmp-band').length,
+
       /* The plan that must not be on the chart or in the readout. */
       individualInPanel,
       individualNamedInNotes: (
-        host.querySelector('#compare .cmp-notes')?.textContent ?? ''
+        host.querySelector('#numbers .numbers-plans')?.textContent ?? ''
       ).includes(c.compare.individualPlan),
       strayFigures,
       stale,

@@ -1,22 +1,34 @@
-import { useEffect, useRef } from 'react';
-import type { Content, NumberRow } from '../content/types';
-import { activeTier, formatCount, formatMoney, modelledMultiple } from '../lib/offer';
+import { useEffect, useId, useRef, useState } from 'react';
+import type { Content } from '../content/types';
+import {
+  OFFER,
+  activeTier,
+  comparableHeadcounts,
+  formatCount,
+  formatMoney,
+  modelledKept,
+  modelledSpend,
+} from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
-/**
- * The firm the ledger models, in people.
- *
- * Ten is not a sample size somebody picked. It is the smallest firm this is
- * sold to, and the basis under the figures names it out loud in all three
- * languages: a figure that holds at the smallest firm holds at every size
- * above it. It lives here rather than in the offer because it is an assumption
- * this section argues from and not a term of the offer, and because a change
- * to it is a change to the sentence in the disclosure as much as to the sum.
- */
-const MODEL_FIRM = 10;
 
 /**
- * Two figures, and the arithmetic behind them one click away.
+ * The arithmetic, in three beats a reader can do in their head.
+ *
+ * What mail costs the firm now, what this costs, and what is left. One
+ * subtraction, printed in order, driven by one head count the reader moves.
+ *
+ * It used to state a saving and leave the reader to take it on trust, because
+ * the figure it was subtracted from was never on the screen. Two savings were
+ * on the page at that point, on two baselines that never met: one against the
+ * firm's own time and one against a published seat rate. A reader could not
+ * reconcile them, so they stopped trying.
+ *
+ * This is the first baseline, and it is the one a reader arriving from an
+ * advertisement is actually choosing against: not another plan, but doing
+ * nothing. The comparison with the plans on the product site is still here,
+ * under the disclosure, for the smaller number of readers who are choosing
+ * between them.
  *
  * Every figure is hedged with "about" and none of them is a measurement, which
  * the lede says out loud rather than burying in small print. There are no
@@ -36,7 +48,10 @@ export function Numbers({ c }: { c: Content }) {
     const sec = secRef.current;
     if (!sec) return;
 
-    const slips = Array.from(sec.querySelectorAll('.numbers-slip'));
+    /* The three beats settle in as they arrive. They used to be paper slips,
+       one per figure, and are now the rows of one subtraction, so the reveal
+       follows the rows. */
+    const slips = Array.from(sec.querySelectorAll('.numbers-beat'));
     const marks = Array.from(sec.querySelectorAll('.numbers-hl'));
     const settle = () => {
       sec.classList.remove('numbers-anim');
@@ -88,35 +103,48 @@ export function Numbers({ c }: { c: Content }) {
     };
   }, []);
 
-  // One of the two figures is arithmetic on the offer and the other is copy, so
-  // the tier is read here and the saving is read back out of the row that
-  // prints it. Keeping the saving in one place means the disclosure that states
-  // it and the figure computed from it cannot disagree, and anything that does
-  // not parse to a figure leaves the helper with nothing to work from, so the
-  // ledger prints a blank rather than a guess.
+  /* The one assumption, read once. Everything on this section is arithmetic on
+     it, so the disclosure that states it and the figures computed from it
+     cannot disagree, and a string that does not parse leaves every helper with
+     nothing to work from and the section printing blanks rather than guesses. */
   const tier = activeTier();
-  const saving = Number.parseFloat(
-    c.numbers.rows.find((r) => r.key === 'saving')?.amount ?? '',
-  );
-  const multiple = modelledMultiple(saving, MODEL_FIRM, tier);
+  const saving = Number.parseFloat(c.numbers.saving);
 
-  /* The figure for one row, or an empty string where there is none to print.
+  /* The head counts this may be moved across: the sizes the flat fee covers.
+     Read from the offer rather than written here, so the control cannot offer
+     a firm size the arithmetic behind it refuses to answer for. */
+  const sizes = comparableHeadcounts();
+  const first = sizes[0];
+  const last = sizes[sizes.length - 1];
 
-     Two formatters, because the two rows are not the same kind of thing. The
-     multiple is a count, of times over, with no decimal part to write. The
-     saving is an amount in the currency its unit names, so it keeps whatever
-     cents it was written with and gets the decimal mark of the language
-     reading it.
+  /* Opens in the middle. At either end one of the three figures is at its
+     smallest or its largest, and opening on either would be choosing the least
+     or most flattering point before the reader has touched anything. */
+  const [heads, setHeads] = useState(() => sizes[Math.floor(sizes.length / 2)]);
+  const sliderId = useId();
 
-     The saving goes back out through the formatter rather than straight out of
-     the copy it came from. It is read as a number a line above to compute the
-     multiple, so printing the string it was parsed from would let the page show
-     one figure and argue from another. Today they are the same, and this is
-     what keeps them so. */
-  const figureFor = (r: NumberRow): string => {
-    if (r.key === 'multiple') return multiple === null ? '' : formatCount(multiple, c.htmlLang);
-    return saving > 0 && r.amount ? formatMoney(saving, c.htmlLang) : '';
-  };
+  const money = (value: number): string => `${formatMoney(value, c.htmlLang)} ${OFFER.currency}`;
+  const figure = (value: number): string => formatCount(value, c.htmlLang);
+
+  /* The three beats. Null anywhere the model has no answer, and nothing below
+     renders one without checking: a component that prints null as "0 USD" is
+     the failure these helpers return null to prevent. */
+  const spend = modelledSpend(saving, heads);
+  const kept = modelledKept(saving, heads, tier);
+
+  /* The bar. One length, split where the fee falls, so what the firm pays is
+     seen as the share of the total it actually is rather than asserted to be
+     small. Null spend leaves no bar rather than a full one. */
+  const feeShare = spend === null || spend <= 0 ? null : Math.min(1, tier.price / spend);
+
+  /* Said when the control moves, assembled from the same labels the beats
+     print, so the spoken version cannot drift from the seen one. Each label
+     carries its own colon, so nothing is punctuated here. */
+  const announce =
+    `${c.numbers.headsLabel} ${figure(heads)}. ` +
+    (spend === null ? '' : `${c.numbers.spendLabel} ${money(spend)}. `) +
+    `${c.numbers.feeLabel} ${money(tier.price)}. ` +
+    (kept === null ? '' : `${c.numbers.keepLabel} ${money(kept)}.`);
 
   return (
     <section id="numbers" aria-labelledby="numbers-h" ref={secRef}>
@@ -131,53 +159,154 @@ export function Numbers({ c }: { c: Content }) {
           </h2>
         </header>
 
-        <div className="numbers-grid">
-          <ul className="numbers-ledger" role="list">
-            {c.numbers.rows.map((r, i) => (
-              <li className="numbers-slip" key={r.label}>
-                <div className="numbers-index">
-                  <span className="numbers-entry" aria-hidden="true">
-                    {'0' + (i + 1)}
-                  </span>
-                  <p className="numbers-fig">
-                    <span className="numbers-about">{c.numbers.about}</span>
-                    <span className="numbers-amt">{figureFor(r)}</span>
-                    <span className="numbers-unit">{r.unit}</span>
-                  </p>
-                </div>
-                <div className="numbers-body">
-                  <h3 className="numbers-label">{r.label}</h3>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="numbers-caveat">
-            <span className="numbers-hair" aria-hidden="true" />
-            <p className="numbers-lede">
-              {c.numbers.lede.before}
-              <span className="numbers-hl">
-                <span className="numbers-hl-soak">{c.numbers.lede.mark}</span>
-              </span>
-              {c.numbers.lede.after}
-            </p>
-
-            <Disclosure label={c.numbers.moreLabel}>
-              <dl className="disc-dl">
-                {c.numbers.basis.map((b) => (
-                  <div key={b.term}>
-                    <dt>{b.term}</dt>
-                    <dd>{b.def}</dd>
-                  </div>
-                ))}
-              </dl>
-              {c.numbers.notes.map((n) => (
-                <p className="disc-p" key={n}>
-                  {n}
-                </p>
-              ))}
-            </Disclosure>
+        <div className="numbers-panel">
+          <div className="numbers-control">
+            <div className="numbers-control-head">
+              <label className="numbers-control-label" htmlFor={sliderId}>
+                {c.numbers.headsLabel}
+              </label>
+              <output className="numbers-control-count" htmlFor={sliderId}>
+                {figure(heads)}
+              </output>
+            </div>
+            <input
+              className="numbers-range"
+              id={sliderId}
+              type="range"
+              min={first}
+              max={last}
+              step={1}
+              value={heads}
+              aria-valuetext={announce}
+              onChange={(e) => setHeads(Number(e.target.value))}
+            />
+            <div className="numbers-ticks" aria-hidden="true">
+              <span>{figure(first)}</span>
+              <span>{figure(last)}</span>
+            </div>
           </div>
+
+          {/* The three beats, in the order they are read, so the subtraction is
+              one a reader can do in their head from what is on the screen. */}
+          <dl className="numbers-beats">
+            {spend === null ? null : (
+              <div className="numbers-beat">
+                <dt className="numbers-term">{c.numbers.spendLabel}</dt>
+                <dd className="numbers-amt" data-n-spend>
+                  <span className="numbers-about">{c.numbers.about}</span>
+                  {money(spend)}
+                </dd>
+              </div>
+            )}
+            <div className="numbers-beat numbers-beat-fee">
+              <dt className="numbers-term">{c.numbers.feeLabel}</dt>
+              {/* No hedge on this one. It is a price, not a model. */}
+              <dd className="numbers-amt" data-n-fee>
+                {money(tier.price)}
+              </dd>
+            </div>
+            {kept === null ? null : (
+              <div className="numbers-beat numbers-beat-keep">
+                <dt className="numbers-term">{c.numbers.keepLabel}</dt>
+                <dd className="numbers-keep" data-n-keep>
+                  <span className="numbers-about">{c.numbers.about}</span>
+                  {money(kept)}
+                  <span className="numbers-year">
+                    {c.numbers.yearLabel} {money(kept * 12)}
+                  </span>
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          {/* What the firm pays, as a share of what mail costs it now. Hidden
+              from assistive technology: it is a second rendering of the two
+              figures above it, and the live region already says them. */}
+          {feeShare === null ? null : (
+            <div className="numbers-bar" aria-hidden="true" data-n-bar>
+              <span className="numbers-bar-fee" style={{ width: `${feeShare * 100}%` }} />
+            </div>
+          )}
+
+          <p className="numbers-sr" role="status" aria-live="polite">
+            {announce}
+          </p>
+        </div>
+
+        <div className="numbers-caveat">
+          <span className="numbers-hair" aria-hidden="true" />
+          <p className="numbers-lede">
+            {c.numbers.lede.before}
+            <span className="numbers-hl">
+              <span className="numbers-hl-soak">{c.numbers.lede.mark}</span>
+            </span>
+            {c.numbers.lede.after}
+          </p>
+
+          <Disclosure label={c.numbers.moreLabel}>
+            <p className="disc-p">
+              {c.numbers.savingLabel}{' '}
+              <b className="numbers-fig">{money(saving)}</b>
+            </p>
+            <dl className="disc-dl">
+              {c.numbers.basis.map((b) => (
+                <div key={b.term}>
+                  <dt>{b.term}</dt>
+                  <dd>{b.def}</dd>
+                </div>
+              ))}
+            </dl>
+            {c.numbers.notes.map((n) => (
+              <p className="disc-p" key={n}>
+                {n}
+              </p>
+            ))}
+
+            {/* The comparison with the plans on the product site. It is a
+                different argument from the one above: that one is against the
+                firm's own time, which is the choice a reader arriving from an
+                advertisement is actually making, and this one is against
+                somebody's published rate, which only matters to a reader
+                already choosing between plans. So it sits here, under them. */}
+            <div className="numbers-plans">
+              <p className="disc-p">
+                <b>{c.compare.managedPlan}</b>{' '}
+                {c.compare.managedSize.label}{' '}
+                <span className="numbers-fig">{figure(OFFER.compare.managedMin)}</span>
+              </p>
+              <p className="disc-p">
+                <b>{c.compare.teamPlan}</b>
+                {c.compare.teamOut.before}
+                <span className="numbers-fig">{figure(OFFER.compare.teamMax)}</span>
+                {c.compare.teamOut.after}
+              </p>
+              {/* Individual is named and never ranked. At the ten person floor
+                  this page advertises, ten seats cost less than this fee, and
+                  the flat fee only passes that rate well above it. The rate is
+                  public and hiding it would be worse than saying it; what we do
+                  not do is set it against a cost a head. */}
+              <p className="disc-p">
+                <b>{c.compare.individualPlan}</b>
+                {c.compare.individualNote.before}
+                <span className="numbers-fig">{money(OFFER.compare.individual)}</span>
+                {c.compare.individualNote.after}
+              </p>
+              <p className="disc-p">
+                {c.compare.rangeNote.before}
+                <span className="numbers-fig">{figure(OFFER.covers)}</span>
+                {c.compare.rangeNote.after}
+              </p>
+              <p className="disc-p numbers-src">
+                {c.compare.sourceNote.before}
+                <a href="https://doviloop.dev" rel="noreferrer">
+                  {c.compare.sourceNote.link}
+                </a>
+                {c.compare.sourceNote.mid}
+                {OFFER.compare.readAt}
+                {c.compare.sourceNote.after}
+              </p>
+            </div>
+          </Disclosure>
         </div>
       </div>
     </section>

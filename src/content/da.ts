@@ -389,16 +389,23 @@ export const da: Content = {
     eyebrow: 'Vores eget regnestykke',
     title: 'Hvad det er værd',
     about: 'cirka\u00a0',
-    rows: [
-      { key: 'multiple', unit: 'x', label: 'sparet tid, holdt op mod det, virksomheden betaler' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, for hver person' },
-    ],
+
+    headsLabel: 'Personer, der skriver mail:',
+
+    spendLabel: 'Posten koster jer nu:',
+    feeLabel: 'Det her koster:',
+    keepLabel: 'Tilbage til jer:',
+    yearLabel: 'På et år:',
+
+    saving: '430',
+    savingLabel: 'Antaget sparet for én person, én måned:',
+
     lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
     moreLabel: 'Vis regnestykket',
     basis: [
       {
-        term: 'Faktoren',
-        def: 'Besparelsen nedenfor ganget med ti personer, holdt op mod den ene månedspris, virksomheden betaler. Ti personer er den mindste virksomhed, vi sælger det her til, så et tal, der holder der, holder i alle størrelser derover.',
+        term: 'Hvad posten koster jer nu',
+        def: 'Den antagne besparelse for én person ganget med antallet af personer, der skriver mail. Flyt antallet, og tallet flytter sig med.',
       },
       {
         term: 'Besparelsen',

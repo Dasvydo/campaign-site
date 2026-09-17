@@ -386,16 +386,23 @@ export const en: Content = {
     eyebrow: 'Our own arithmetic',
     title: 'What it is worth',
     about: 'about\u00a0',
-    rows: [
-      { key: 'multiple', unit: 'x', label: 'time saved, against what the firm pays' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'saved per month, for each person' },
-    ],
+
+    headsLabel: 'People who write mail:',
+
+    spendLabel: 'Mail costs you now:',
+    feeLabel: 'This costs:',
+    keepLabel: 'You keep:',
+    yearLabel: 'Over a year:',
+
+    saving: '430',
+    savingLabel: 'Assumed saved for one person, one month:',
+
     lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
     moreLabel: 'Show the arithmetic',
     basis: [
       {
-        term: 'The multiple',
-        def: 'The saving below multiplied by ten people, against the one monthly fee the firm pays. Ten is the smallest firm we sell this to, so a figure that holds there holds at every size above it.',
+        term: 'What mail costs you now',
+        def: 'The saving assumed for one person, multiplied by the people who write mail. Move the count and it moves with it.',
       },
       {
         term: 'The saving',

@@ -617,6 +617,54 @@ export function modelledMultiple(
 }
 
 /**
+ * What mail is modelled to be costing the firm every month before any of this.
+ *
+ * The saving assumed for one person, times the people who write mail. It is
+ * the first of the three figures the page's arithmetic runs on, and the only
+ * one of them that is not read off a price: it is an assumption about a firm's
+ * own time, which is why every component that prints it prints the hedge
+ * beside it and why the disclosure under it says what the assumption is.
+ *
+ * Null on the same terms as every other model figure here. `modelIsAnswerable`
+ * refuses a saving that is not a positive finite number and a head count the
+ * fee does not cover, so a firm outside coverage gets no figure rather than a
+ * flattering one, and a component cannot render null by accident.
+ */
+export function modelledSpend(
+  savingPerPersonPerMonth: number,
+  headcount: number,
+  offer: Offer = OFFER,
+): number | null {
+  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
+  return savingPerPersonPerMonth * headcount;
+}
+
+/**
+ * What is left of that after the firm has paid for this.
+ *
+ * The third beat, and the only subtraction on the page a reader can do in
+ * their head from the two figures printed above it. That is the point of
+ * printing all three: a saving with no visible derivation is a number a reader
+ * has to take on trust, and this page does not ask for trust it has not earned.
+ *
+ * Not clamped at zero. If the modelled spend ever fell below the fee the honest
+ * answer is a negative, and a page that could only ever print a saving would
+ * keep printing one after the saving stopped being real. The assumption would
+ * have to change a long way before that happened, which is an argument for
+ * leaving the arithmetic alone rather than for guarding it.
+ */
+export function modelledKept(
+  savingPerPersonPerMonth: number,
+  headcount: number,
+  tier: TierConfig = activeTier(),
+  offer: Offer = OFFER,
+): number | null {
+  const spend = modelledSpend(savingPerPersonPerMonth, headcount, offer);
+  if (spend === null) return null;
+  return spend - tier.price;
+}
+
+/**
  * Rounds to cents for display only. Never used by a claim: a claim reads the
  * exact value, so a figure that rounds down to look like a win cannot make a
  * sentence appear that the arithmetic does not support.

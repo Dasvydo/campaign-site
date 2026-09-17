@@ -266,10 +266,10 @@ async function main() {
          check together rather than failing it. A slider that reached past the
          coverage ceiling would be offering a head count the arithmetic behind
          it returns null for. */
-      check(p.sliderFound, `    the comparison is something a reader can move`, 'no range input');
+      check(p.sliderFound, `    the arithmetic is something a reader can move`, 'no range input');
       check(
         p.sliderRange.join(',') === p.wantRange.join(','),
-        `    and it offers exactly the head counts the offer can price`,
+        `    and it offers exactly the head counts the offer can answer for`,
         `${p.sliderRange.join(' to ')}, offer prices ${p.wantRange.join(' to ')}`,
       );
       /* Every size, driven. This is the check that catches a page doing its own
@@ -278,21 +278,24 @@ async function main() {
          names the size it happened at. */
       check(
         p.sizesDriven > 1 && p.badSizes.length === 0,
-        `    every figure is the offer's own arithmetic, at all ${p.sizesDriven} sizes`,
+        `    all three figures are the model's own arithmetic, at all ${p.sizesDriven} sizes`,
         p.badSizes.slice(0, 3).join(' | '),
       );
+      /* The hedge belongs to the two modelled figures and not to the fee. A
+         hedge on the price would be the page apologising for a number it knows
+         exactly, and losing it from the other two would be a model presented as
+         a measurement, which is the one thing this section may never do. */
       check(
-        p.uncoveredSizes.length === 0,
-        `    and no cost a head where the fee does not cover the firm`,
-        p.uncoveredSizes.join(','),
+        p.unhedged.length === 0,
+        `    the hedge is on the model and not on the price`,
+        p.unhedged.join(' | '),
       );
-      /* Two lines and the money between them. The argument is the gap, so a
-         chart that lost the band would still look like a chart and would have
-         stopped making it. */
+      /* The only picture in the section, held to the figures beside it. A bar
+         that stopped tracking them would go on looking perfectly plausible. */
       check(
-        p.chartLines === 2 && p.chartBand === 1,
-        `    both lines are drawn, with the difference shaded between them`,
-        `${p.chartLines} line(s), ${p.chartBand} band(s)`,
+        p.barWidth === p.wantBar && p.wantBar !== '',
+        `    the bar is the fee's real share of what mail costs now`,
+        `bar ${p.barWidth || 'missing'}, the division gives ${p.wantBar || 'nothing'}`,
       );
       /* The mistake this section was rebuilt to undo, asserted as an absence.
          The old table set our cost per head against the Individual seat rate,
@@ -345,46 +348,23 @@ async function main() {
     console.log('\nThe ledger, figure by figure');
     for (const p of pages) {
       console.log(`  /${p.locale === 'en' ? '' : p.locale}`);
-      check(
-        p.ledgerRowCount === 2 && p.ledgerRowCount === p.ledgerRowsInContent,
-        `    the ledger renders two rows`,
-        `${p.ledgerRowCount} rendered, ${p.ledgerRowsInContent} in the content file`,
-      );
-      /* <Numbers /> keeps the modelled firm to itself and does not export it, so
-         the harness restates it. This is what keeps the restatement honest: the
-         ledger models the smallest firm the qualifier will take a lead from, and
-         the contract is where that count actually lives. */
-      check(
-        p.modelFirmMatchesContract,
-        `    the ledger models the smallest firm the qualifier accepts`,
-        `models ${p.modelFirm}, the qualifier opens at ${p.smallestSoldTo}`,
-      );
-      /* The input the other two figures are divisions of. A saving that stops
-         parsing is the exact edit that reproduced the regression: it is still a
-         non-empty string, so it passes every content check, and it leaves both
-         helpers with nothing to answer with. */
+      /* The input all three figures are built from. A saving that stops parsing
+         is the exact edit that reproduced the regression this section once
+         shipped: it is still a non-empty string, so it passes every content
+         check, and it leaves every helper with nothing to answer with. */
       check(
         p.ledgerSavingIsNumeric,
         `    the saving in the copy parses to a figure the model can use`,
         p.ledgerSaving,
       );
+      /* The control opens at the smallest firm the qualifier will take a lead
+         from. Below that the page sends a reader to the product site, so a
+         control that started lower would be pricing a firm this offer turns
+         away, and the contract is where that count actually lives. */
       check(
-        p.ledgerModelled,
-        `    and the offer returns the computed figure from it`,
-        `multiple ${p.wantMultiple === null ? 'null' : p.wantMultiple}`,
-      );
-      /* The failure that shipped, named as itself. Asserted on its own rather
-         than through the comparison below, because a blank expectation and a
-         blank page agree with each other. */
-      check(
-        p.ledgerBlank.length === 0,
-        `    no ledger figure is blank`,
-        p.ledgerBlank.join(', '),
-      );
-      check(
-        p.ledgerBad.length === 0,
-        `    every ledger figure is the offer's own arithmetic, in its own line`,
-        p.ledgerBad.join(' | '),
+        p.rangeStartsAtSmallestSold,
+        `    and the control starts at the smallest firm the qualifier accepts`,
+        `the qualifier opens at ${p.smallestSoldTo}`,
       );
     }
 

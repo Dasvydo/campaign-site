@@ -389,16 +389,23 @@ export const lt: Content = {
     eyebrow: 'Mūsų pačių skaičiavimas',
     title: 'Kiek tai verta',
     about: 'maždaug\u00a0',
-    rows: [
-      { key: 'multiple', unit: 'x', label: 'sutaupyto laiko, palyginti su tuo, kiek moka įmonė' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienam žmogui' },
-    ],
+
+    headsLabel: 'Žmonių, rašančių laiškus:',
+
+    spendLabel: 'Laiškai Jums kainuoja dabar:',
+    feeLabel: 'Tai kainuoja:',
+    keepLabel: 'Jums lieka:',
+    yearLabel: 'Per metus:',
+
+    saving: '430',
+    savingLabel: 'Numanomai sutaupoma vienam žmogui per mėnesį:',
+
     lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
     moreLabel: 'Parodyti skaičiavimą',
     basis: [
       {
-        term: 'Daugiklis',
-        def: 'Žemiau nurodytas sutaupymas, padaugintas iš dešimties žmonių, palyginti su vienu mėnesiniu mokesčiu, kurį moka įmonė. Dešimt yra mažiausia įmonė, kuriai tai parduodame, tad skaičius, galiojantis ten, galioja ir kiekvienam didesniam dydžiui.',
+        term: 'Kiek laiškai Jums kainuoja dabar',
+        def: 'Numanomas sutaupymas vienam žmogui, padaugintas iš žmonių, rašančių laiškus, skaičiaus. Pastumkite skaičių, ir suma pasikeis kartu.',
       },
       {
         term: 'Sutaupymas',

@@ -1605,123 +1605,128 @@
   text-wrap:balance;
 }
 
-.numbers-grid{
-  display:grid;
-  grid-template-columns:repeat(12,minmax(0,1fr));
-  column-gap:24px;
-  row-gap:48px;
-  align-items:start;
-}
-.numbers-ledger{ grid-column:1 / span 7 }
-.numbers-caveat{ grid-column:9 / span 4 }
-
-@media (max-width:1023px){
-  .numbers-grid{ grid-template-columns:minmax(0,1fr); column-gap:0; row-gap:64px }
-  .numbers-ledger{ grid-column:1 / -1 }
-  .numbers-caveat{ grid-column:1 / -1; max-width:560px }
-}
-
-.numbers-ledger{
-  list-style:none;
-  margin:0; padding:0;
-  display:flex; flex-direction:column; gap:16px;
-}
-
-.numbers-slip{
-  position:relative;
-  background-color:var(--card);
-  background-image:var(--nm-fibre), var(--nm-blotch);
-  background-size:180px 180px, 520px 520px;
-  border:1px solid var(--border);
-  border-radius:var(--radius-sm);
-  box-shadow:var(--nm-lift);
-  padding:clamp(20px,2.2vw,28px);
-  display:grid;
-  grid-template-columns:180px minmax(0,1fr);
-  column-gap:24px;
-  align-items:start;
-  transform:rotate(var(--nm-r,0deg));
-  transform-origin:top left;
-}
-.numbers-slip:nth-child(1){ --nm-r:-.4deg;  --nm-i:0 }
-.numbers-slip:nth-child(2){ --nm-r:.55deg;  --nm-i:1 }
-.numbers-slip:nth-child(3){ --nm-r:-.28deg; --nm-i:2 }
-
-.numbers-body{ border-left:1px solid var(--taupe); padding-left:24px }
-
-@media (max-width:559px){
-  .numbers-slip{ grid-template-columns:minmax(0,1fr); row-gap:16px }
-  .numbers-body{ border-left:0; padding-left:0 }
-
-  .numbers-slip,
-  .numbers-slip:nth-child(1),
-  .numbers-slip:nth-child(2),
-  .numbers-slip:nth-child(3){ --nm-r:0deg }
-}
-
-.numbers-entry{
-  display:block;
-  font-size:12.5px; font-weight:500;
-  letter-spacing:.16em; text-transform:uppercase;
-  color:var(--muted);
+/* The panel the three beats live in. One sheet on the desk, like every other
+   object on this page, rather than a card per figure: the three figures are
+   one subtraction and belong inside one edge. */
+.numbers-panel{
+  background:var(--card);
+  border-radius:3px;
+  box-shadow:
+    1px 2px 2px -1px rgba(37,29,24,.18),
+    2px 6px 12px -4px rgba(37,29,24,.16),
+    inset 1px 1px 0 var(--edge);
+  padding:clamp(20px,3vw,34px);
   font-variant-numeric:tabular-nums lining;
-  margin:0 0 8px;
 }
 
-.numbers-fig{
+/* --- the control -------------------------------------------------------- */
+.numbers-control-head{
+  display:flex; flex-wrap:wrap; gap:6px 24px;
+  align-items:baseline; justify-content:space-between; margin-bottom:10px;
+}
+.numbers-control-label{ font-size:14px; color:var(--muted) }
+.numbers-control-count{
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-size:26px; line-height:1;
+}
+.numbers-range{
+  -webkit-appearance:none; appearance:none;
+  display:block; width:100%; height:34px; margin:0;
+  background:transparent; cursor:pointer;
+}
+.numbers-range:focus-visible{ outline:2px solid var(--amber); outline-offset:6px; border-radius:2px }
+.numbers-range::-webkit-slider-runnable-track{ height:3px; background:rgba(37,29,24,.18); border-radius:2px }
+.numbers-range::-moz-range-track{ height:3px; background:rgba(37,29,24,.18); border-radius:2px }
+/* 26px, because this is dragged with a thumb on a phone and 24 is the floor
+   rather than the aim. */
+.numbers-range::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:26px; height:26px; margin-top:-11.5px; border-radius:50%;
+  background:var(--amber); border:2px solid var(--card);
+  box-shadow:0 2px 5px rgba(37,29,24,.3);
+}
+.numbers-range::-moz-range-thumb{
+  width:26px; height:26px; border-radius:50%;
+  background:var(--amber); border:2px solid var(--card);
+  box-shadow:0 2px 5px rgba(37,29,24,.3);
+}
+.numbers-ticks{
+  display:flex; justify-content:space-between;
+  font-size:12px; letter-spacing:.06em; color:var(--muted);
+}
+
+/* --- the three beats ----------------------------------------------------
+   Read down, in order, as a subtraction: what mail costs now, what this
+   costs, what is left. The rule above the third is the line of the sum. */
+.numbers-beats{
+  margin:24px 0 0; padding-top:20px;
+  border-top:1px solid rgba(37,29,24,.16);
+}
+.numbers-beat{
+  display:flex; flex-wrap:wrap; gap:2px 20px;
+  align-items:baseline; justify-content:space-between;
+  padding:12px 0;
+}
+.numbers-beat-keep{
+  margin-top:8px; padding-top:20px;
+  border-top:2px solid var(--ink);
+}
+.numbers-term{ font-size:15px; line-height:1.4; color:var(--muted); margin:0 }
+.numbers-amt{
   margin:0;
-  font-weight:400;
-  line-height:1;
-  color:var(--ink);
-  font-variant-numeric:tabular-nums lining;
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-size:clamp(24px, 18px + 1vw, 30px); line-height:1.1;
+}
+/* The one figure the reader came for. */
+.numbers-keep{
+  margin:0; color:var(--amber-text);
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-size:clamp(36px, 24px + 2.2vw, 54px);
+  line-height:1; letter-spacing:-.012em;
+  text-align:right;
 }
 .numbers-about{
-  font-family:var(--nm-sans);
-  font-size:17px;
-  color:var(--muted);
-  letter-spacing:0;
-  margin-right:.06em;
+  font-family:"DM Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:.42em; color:var(--muted); letter-spacing:.02em;
 }
-.numbers-amt{
-  font-family:var(--nm-serif);
-  font-size:40px;
-  letter-spacing:-.012em;
+.numbers-year{
+  display:block; margin-top:10px;
+  font-family:"DM Sans","Helvetica Neue",Arial,sans-serif;
+  font-size:14px; line-height:1.4; color:var(--muted); letter-spacing:0;
 }
-.numbers-unit{
-  font-family:var(--nm-sans);
-  font-size:23px;
-  letter-spacing:.005em;
-  color:var(--ink);
-}
-
-.numbers-label{
-  margin:0;
-  font-family:var(--nm-sans);
-  font-size:17px;
-  font-weight:500;
-  line-height:1.35;
-  color:var(--ink);
-  max-width:26ch;
+/* Narrow: every beat stacks, rather than one wrapping and the next not. Two
+   rows that break differently read as a mistake even when both fit. */
+@media (max-width:639px){
+  .numbers-beat{ display:block }
+  .numbers-term{ margin-bottom:4px }
+  .numbers-keep,.numbers-amt{ text-align:left }
+  .numbers-keep{ font-size:clamp(34px, 24px + 3vw, 46px) }
 }
 
-.numbers-basis{
-  margin:12px 0 0;
-  padding-top:12px;
-  border-top:1px dashed var(--taupe);
-  font-size:14px;
-  line-height:1.5;
-  color:var(--muted);
-  max-width:56ch;
+/* --- the share ----------------------------------------------------------
+   One length, split where the fee falls. What the firm pays is seen as the
+   share of the total it is, rather than asserted to be small. */
+.numbers-bar{
+  margin-top:24px; height:12px; border-radius:2px;
+  background:rgba(245,155,10,.16); overflow:hidden;
 }
-.numbers-tag{
-  display:inline-block;
-  font-size:12.5px; font-weight:500;
-  letter-spacing:.14em; text-transform:uppercase;
-  color:var(--muted);
-  margin-right:calc(10px - .14em);
-  vertical-align:baseline;
+.numbers-bar-fee{
+  display:block; height:100%; background:var(--ink); border-radius:2px 0 0 2px;
+  transition:width 260ms cubic-bezier(.2,.8,.3,1);
 }
 
+.numbers-sr{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+.numbers-fig{ color:var(--ink); font-weight:500 }
+.numbers-plans{ margin-top:18px; padding-top:14px; border-top:1px solid rgba(37,29,24,.14) }
+.numbers-src a{ color:inherit }
+
+@media (prefers-reduced-motion:reduce){
+  .numbers-bar-fee{ transition:none }
+}
 .numbers-caveat::before{
   content:"";
   display:block;
@@ -1785,7 +1790,7 @@
   transition:background-size 480ms var(--e-soak) 200ms;
 }
 
-.numbers-anim .numbers-slip{
+.numbers-anim .numbers-beat{
   opacity:0;
   transform:translateY(7px) rotate(calc(var(--nm-r,0deg) - 1.5deg));
   transition:
@@ -1793,13 +1798,13 @@
      transform var(--nm-t-micro) var(--nm-e-out);
   transition-delay:calc(var(--nm-i,0) * var(--nm-stag));
 }
-.numbers-anim .numbers-slip.numbers-in{
+.numbers-anim .numbers-beat.numbers-in{
   opacity:1;
   transform:translateY(0) rotate(var(--nm-r,0deg));
 }
 @media (max-width:559px){
-  .numbers-anim .numbers-slip{ transform:translateY(7px) }
-  .numbers-anim .numbers-slip.numbers-in{ transform:none }
+  .numbers-anim .numbers-beat{ transform:translateY(7px) }
+  .numbers-anim .numbers-beat.numbers-in{ transform:none }
 }
 
 .numbers-anim .numbers-hl,
@@ -1808,8 +1813,8 @@
 .numbers-anim .numbers-hl.numbers-marked .numbers-hl-soak{ background-size:100% .72em }
 
 @media (prefers-reduced-motion:reduce){
-  .numbers-anim .numbers-slip,
-  .numbers-slip{ opacity:1 !important; transform:rotate(var(--nm-r,0deg)) !important }
+  .numbers-anim .numbers-beat,
+  .numbers-beat{ opacity:1 !important; transform:none !important }
   .numbers-anim .numbers-hl,
   .numbers-anim .numbers-hl .numbers-hl-soak,
   .numbers-hl,
@@ -1826,7 +1831,7 @@
 
 @media (forced-colors:active){
   .numbers-hl, .numbers-hl-soak{ background-image:none }
-  .numbers-slip{ border:1px solid CanvasText }
+  .numbers-beat{ border:1px solid CanvasText }
 }
 
 /* ============================================================
@@ -3337,230 +3342,6 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   .consent-mark::after{ transition:none }
 }
 
-
-/* ============================================================
-   SECTION: compare   "The sum per head"
-   The one block on the page that shows its working, and now the
-   only one a reader can operate. A flat fee divided by a head
-   count is the whole argument, and the shape of that argument is
-   two lines: one that climbs with the firm and one that does not.
-   So the section draws them, with the money between them shaded,
-   and puts a control on the head count.
-
-   The figures come first in the document and the drawing second.
-   The drawing is a second rendering of what the readout already
-   says in words, which is why it is aria-hidden, and why a narrow
-   screen that has room for one of the two gets the numbers.
-
-   Ground: cream. It follows the charcoal terms band and is
-   followed by the cream form, and a third tone in between would
-   turn one argument into two exhibits. It is left out of the
-   TONAL RHYTHM rule above for the same reason: cream is already
-   the desk, and this section is still standing on it.
-
-   No folio. The folios are a continuous run over the sections
-   that were already here and this block has no number of its
-   own, so the header opens on the eyebrow instead.
-   ============================================================ */
-
-#compare{
-  --cmp-sans : "DM Sans", "Helvetica Neue", Arial, sans-serif;
-  --cmp-serif: "Playfair Display", "Iowan Old Style", Georgia, serif;
-
-  /* the same sheet shadow every other paper object on the page wears, so the
-     panel reads as one more thing laid on the desk */
-  --cmp-lift:
-      1px 2px 2px -1px rgba(37,29,24,.18),
-      2px 6px 12px -4px rgba(37,29,24,.16),
-      inset 1px 1px 0 var(--edge);
-
-  --cmp-t-micro:160ms; --cmp-t-in:260ms;
-  --cmp-e-out:cubic-bezier(.2,.8,.3,1);
-
-  background:var(--cream);
-  color:var(--ink);
-  font-family:var(--cmp-sans);
-  font-size:17px;
-  line-height:1.55;
-  padding-block:96px 80px;
-  overflow-x:clip;
-  /* every figure in this section sits under or beside another figure, so the
-     digits are fixed width throughout rather than per cell */
-  font-variant-numeric:tabular-nums lining;
-}
-@media (max-width:1023px){ #compare{ padding-block:56px 48px } }
-
-.cmp-wrap{
-  max-width:1080px;
-  margin-inline:auto;
-  padding-inline:clamp(16px,4vw,48px);
-}
-
-.cmp-head{ margin:0 0 36px }
-.cmp-eyebrow{
-  margin:0 0 12px;
-  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--muted);
-}
-.cmp-h{
-  font-family:var(--cmp-serif); font-weight:400;
-  font-size:clamp(32px, 22px + 2.1vw, 52px);
-  line-height:1.05; letter-spacing:-.014em;
-  margin:0 0 14px; text-wrap:balance;
-}
-.cmp-lede{ margin:0; max-width:58ch; color:var(--muted); font-size:17px }
-
-.cmp-panel{
-  background:var(--card);
-  border-radius:3px;
-  box-shadow:var(--cmp-lift);
-  padding:clamp(18px,3vw,32px);
-}
-
-/* --- the control ---------------------------------------------------- */
-.cmp-control-head{
-  display:flex; flex-wrap:wrap; gap:6px 24px;
-  align-items:baseline; justify-content:space-between;
-  margin-bottom:10px;
-}
-.cmp-control-label{ font-size:14px; color:var(--muted) }
-.cmp-control-count{
-  font-family:var(--cmp-serif); font-size:26px; line-height:1;
-}
-
-.cmp-range{
-  -webkit-appearance:none; appearance:none;
-  display:block; width:100%; height:34px; margin:0;
-  background:transparent; cursor:pointer;
-}
-.cmp-range:focus-visible{ outline:2px solid var(--amber); outline-offset:6px; border-radius:2px }
-.cmp-range::-webkit-slider-runnable-track{ height:3px; background:rgba(37,29,24,.18); border-radius:2px }
-.cmp-range::-moz-range-track{ height:3px; background:rgba(37,29,24,.18); border-radius:2px }
-/* 26px, because this is dragged with a thumb on a phone and the 24px minimum
-   target is the floor rather than the aim. */
-.cmp-range::-webkit-slider-thumb{
-  -webkit-appearance:none; appearance:none;
-  width:26px; height:26px; margin-top:-11.5px; border-radius:50%;
-  background:var(--amber); border:2px solid var(--card);
-  box-shadow:0 2px 5px rgba(37,29,24,.3);
-}
-.cmp-range::-moz-range-thumb{
-  width:26px; height:26px; border-radius:50%;
-  background:var(--amber); border:2px solid var(--card);
-  box-shadow:0 2px 5px rgba(37,29,24,.3);
-}
-.cmp-ticks{
-  display:flex; justify-content:space-between;
-  font-size:12px; letter-spacing:.06em; color:var(--muted);
-}
-
-/* --- the figures ----------------------------------------------------- */
-.cmp-readout{
-  display:grid; gap:24px 40px; align-items:start;
-  margin-top:26px; padding-top:22px;
-  border-top:1px solid var(--rule, rgba(37,29,24,.16));
-}
-@media (min-width:640px){
-  .cmp-readout{ grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) }
-}
-
-.cmp-term{ margin:0 0 8px; font-size:14px; line-height:1.4; color:var(--muted) }
-
-/* The lead figure. It is the largest thing in the section because it is the
-   one a reader came to find out, and amber because it is the only figure here
-   that is ours to offer rather than someone else's to publish. */
-.cmp-keep-fig{
-  margin:0; font-family:var(--cmp-serif);
-  font-size:clamp(40px, 26px + 2.6vw, 60px);
-  line-height:1; letter-spacing:-.012em; color:var(--amber-text);
-}
-.cmp-year{ margin:12px 0 0; font-size:14px; color:var(--muted) }
-
-.cmp-pair{ margin:0 }
-.cmp-pair-row{
-  display:flex; flex-wrap:wrap; gap:4px 16px;
-  align-items:baseline; justify-content:space-between;
-  padding:10px 0; border-top:1px solid rgba(37,29,24,.1);
-}
-.cmp-pair-row:first-child{ border-top:none; padding-top:0 }
-.cmp-pair-row .cmp-term{ margin:0 }
-.cmp-pair-fig{ margin:0; font-family:var(--cmp-serif); font-size:22px; line-height:1.1 }
-
-.cmp-sr{
-  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
-}
-
-/* --- the drawing ------------------------------------------------------
-   No axes and no legend. The control above is the horizontal axis, and each
-   line carries its own name, so what is left in here is two lines, the wash
-   between them, and the two dots that follow the control. */
-.cmp-chart{ margin-top:26px }
-.cmp-chart svg{ display:block; width:100%; height:auto; max-width:100% }
-
-.cmp-band{ fill:var(--amber); opacity:.13 }
-.cmp-line-ref{ stroke:rgba(37,29,24,.42); stroke-width:2; fill:none; stroke-linecap:round }
-.cmp-line-ours{ stroke:var(--amber); stroke-width:3; fill:none; stroke-linecap:round }
-
-/* The ring is the surface colour, so a dot stays legible sitting on its own
-   line. A stroke drawn to separate marks would be ink that is not data. */
-.cmp-dot-ours{ fill:var(--amber); stroke:var(--card); stroke-width:2.5 }
-.cmp-dot-ref{ fill:var(--ink); stroke:var(--card); stroke-width:2.5 }
-
-/* The names ride the ends of the lines they name. Ink colours rather than the
-   line's own colour: the mark beside the word is what carries identity. */
-.cmp-name{ font-family:var(--cmp-sans); font-size:17px; font-weight:500 }
-.cmp-name-ours{ fill:var(--ink) }
-.cmp-name-ref{ fill:var(--muted) }
-
-/* Only the dots move, so they are the only things that carry a transition. */
-.cmp-dot-ours,.cmp-dot-ref{
-  transition:cx var(--cmp-t-micro) var(--cmp-e-out),
-             cy var(--cmp-t-micro) var(--cmp-e-out);
-}
-
-/* --- the notes under it ------------------------------------------------ */
-.cmp-more{ margin-top:26px }
-.cmp-notes{ max-width:64ch }
-.cmp-note{
-  margin:0 0 14px; font-size:15px; line-height:1.55; color:var(--muted);
-}
-.cmp-note b{ color:var(--ink); font-weight:500 }
-.cmp-fig{ color:var(--ink); font-weight:500 }
-
-.cmp-source{
-  margin:18px 0 0; padding-top:14px;
-  border-top:1px solid rgba(37,29,24,.12);
-  font-size:14px; line-height:1.5; color:var(--muted);
-}
-.cmp-source a{
-  color:inherit; text-decoration:none;
-  border-bottom:1px solid rgba(37,29,24,.3);
-  transition:border-color var(--cmp-t-micro) var(--cmp-e-out);
-}
-.cmp-source a:hover{ border-bottom-color:var(--amber-text) }
-.cmp-source a:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; border-radius:2px }
-
-@media (max-width:719px){
-  .cmp-lede{ font-size:16px }
-  .cmp-pair-fig{ font-size:20px }
-  .cmp-note{ font-size:14px }
-
-  /* The drawing is scaled down to about half here, which would put the axis
-     text at roughly six pixels. The horizontal labels are bumped to stay
-     legible at that scale; the vertical ones go, because every amount they
-     name is already printed at full size in the readout directly above, and a
-     label nobody can read is worse than a gridline with none. What the chart
-     is carrying on a phone is the shape: one line flat, one climbing, and the
-     money shaded between them. */
-  /* The drawing scales to about half here, so the two names it carries are
-     set in viewBox units that land near the body size once scaled down. */
-  .cmp-name{ font-size:32px }
-}
-
-@media (prefers-reduced-motion:reduce){
-  .cmp-dot-ours,.cmp-dot-ref,.cmp-source a{ transition:none }
-}
 
 .price-per-mark{
   display:inline-block; margin-top:6px;
