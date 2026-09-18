@@ -168,12 +168,12 @@ async function main() {
       check(p.leaked.length === 0, `    no English master copy leaked in`, p.leaked.slice(0, 2).join(' | '));
       check(
         p.sectionsFound.length === p.sectionsExpected.length,
-        `    all ${p.sectionsExpected.length} sections present, the sum per head included`,
+        `    all ${p.sectionsExpected.length} sections present`,
         p.sectionsFound.join(','),
       );
-      /* Presence would pass with the comparison table stapled to the bottom of
-         the page. It has to read as the second half of the terms: after the
-         price, before anybody is asked for an email address. */
+      /* Presence would pass with the sections in any order. The calculator
+         has to come before the price, and the price before anybody is asked
+         for an email address. */
       check(
         p.sectionOrder.join(',') === p.sectionsExpected.join(','),
         `    the sections are in document order`,
@@ -218,7 +218,7 @@ async function main() {
        offer's own number, assembled in the order the component lays them out,
        and the comparison table is read back out of the DOM and set against what
        `comparison()` says it should hold. */
-    console.log('\nThe price, and the sum per head');
+    console.log('\nThe price, the cards and the calculator');
     for (const p of pages) {
       console.log(`  /${p.locale === 'en' ? '' : p.locale}`);
       check(
@@ -260,111 +260,79 @@ async function main() {
         `    the founding block counts its places on the ${p.tierOnShow} tier`,
         p.tierIsCapped ? 'capped tier, counter expected' : 'uncapped tier, counter must be gone',
       );
-      /* The control offers exactly the sizes the offer can price, and not one
-         more. Both ends are derived in the harness from `comparableHeadcounts`,
-         never written here, so widening the coverage moves the control and this
-         check together rather than failing it. A slider that reached past the
-         coverage ceiling would be offering a head count the arithmetic behind
-         it returns null for. */
-      check(p.sliderFound, `    the arithmetic is something a reader can move`, 'no range input');
+      /* The two packages, in the open. One card per package the offer sells,
+         the one the offer leads with lit at rest, and the total under the
+         timeline reading that package's fee. */
       check(
-        p.sliderRange.join(',') === p.wantRange.join(','),
-        `    and it offers exactly the head counts the offer can answer for`,
-        `${p.sliderRange.join(' to ')}, offer prices ${p.wantRange.join(' to ')}`,
-      );
-      /* Every size, driven. This is the check that catches a page doing its own
-         division: at each head count the control offers, the three figures on
-         the panel are set against what the offer would compute, and a mismatch
-         names the size it happened at. */
-      check(
-        p.sizesDriven > 1 && p.badSizes.length === 0,
-        `    all three figures are the model's own arithmetic, at all ${p.sizesDriven} sizes`,
-        p.badSizes.slice(0, 3).join(' | '),
-      );
-      /* The hedge belongs to the two modelled figures and not to the fee. A
-         hedge on the price would be the page apologising for a number it knows
-         exactly, and losing it from the other two would be a model presented as
-         a measurement, which is the one thing this section may never do. */
-      check(
-        p.unhedged.length === 0,
-        `    the hedge is on the model and not on the price`,
-        p.unhedged.join(' | '),
-      );
-      /* The only picture in the section, held to the figures beside it. A bar
-         that stopped tracking them would go on looking perfectly plausible. */
-      check(
-        p.barWidth === p.wantBar && p.wantBar !== '',
-        `    the bar is the fee's real share of what mail costs now`,
-        `bar ${p.barWidth || 'missing'}, the division gives ${p.wantBar || 'nothing'}`,
-      );
-      /* The mistake this section was rebuilt to undo, asserted as an absence.
-         The old table set our cost per head against the Individual seat rate,
-         and at the ten person floor this page advertises that is the comparison
-         this offer loses: the flat fee only passes that seat rate at fourteen
-         people on the founding tier, seventeen on early, and never on standard.
-         So Individual is drawn nowhere and named only in the notes underneath,
-         with its published rate and no comparison.
-
-         The panel is searched rather than the section, by name and by rate in
-         both the shapes a figure wears here, so a reinstatement fails whether
-         it keeps the plan's name or drops it. The second check is the other
-         half of the same decision: naming it in the notes is the thing we
-         decided to keep doing, so a page that quietly dropped it there would
-         be hiding a public rate rather than being careful. */
-      check(
-        p.individualInPanel.length === 0,
-        `    the Individual plan is nowhere on the chart or in the readout`,
-        p.individualInPanel.join(' | '),
+        p.cardIds.join(',') === p.wantCardIds.join(','),
+        `    one card per package, in the offer's order`,
+        `${p.cardIds.join(',') || 'none'} against ${p.wantCardIds.join(',')}`,
       );
       check(
-        p.individualNamedInNotes,
-        `    and is still named underneath, where its rate is published without a comparison`,
-        'the note naming it has gone',
+        p.litAtRest.length === 1 && p.litAtRest[0] === p.tierOnShow,
+        `    exactly one card is lit at rest, and it is the package the offer leads with`,
+        `lit: ${p.litAtRest.join(',') || 'none'}; offer leads with ${p.tierOnShow}`,
       );
       check(
-        p.strayFigures.length === 0,
-        `    no figure in the notes that the offer cannot produce`,
-        p.strayFigures.join(',') || "all the offer's",
+        p.totalAtRest === p.wantTotalAtRest,
+        `    and the total under the timeline reads that package's fee`,
+        `"${p.totalAtRest}" against "${p.wantTotalAtRest}"`,
+      );
+      /* Pressing a card is what makes it a control rather than a picture:
+         the total and the coverage under it have to follow. */
+      check(
+        p.cardDrives.length === 0,
+        `    pressing a card moves the total and the coverage to that package`,
+        p.cardDrives.join(' | '),
       );
     }
 
-    /* 3d. the ledger, figure by figure ------------------------------------- */
-    /* The section that has already shipped blank. Two of its three rows are
-       arithmetic on src/lib/offer.ts and the third is the assumption they are
-       computed from, and when the content contract moved the first two off
-       written amounts the component kept printing the amount that was no longer
-       there. The page read "about  x" and "about  days" in all three locales
-       through two commits, and every suite passed: the labels were on the page,
-       the blank-key check saw three non-empty strings in the locale file, and
-       nothing anywhere looked at a numeral.
-
-       So the numerals are asserted, per locale and per row, against what
-       `modelledMultiple` returns for the saving that locale's copy carries. The expectation is read out of those helpers
-       rather than recomputed in the harness on purpose: a check that redoes the
-       arithmetic is a second implementation of it, and it would go on agreeing
-       with a wrong one. Nothing here is asserted from the words beside the
-       figures, because the words were all still correct on the day the figures
-       went missing. */
-    console.log('\nThe ledger, figure by figure');
+    /* 3d. the calculator, driven ------------------------------------------ */
+    /* Four controls, one sum. The harness sets every control through the
+       native setter to a grid of values and reads the five figures back at
+       each point, against what src/lib/value.ts computes. Nothing is
+       recomputed in the harness: a check that redoes the arithmetic is a
+       second implementation, and it would agree with a wrong first one. */
+    console.log('\nThe calculator, driven across its ranges');
     for (const p of pages) {
       console.log(`  /${p.locale === 'en' ? '' : p.locale}`);
-      /* The input all three figures are built from. A saving that stops parsing
-         is the exact edit that reproduced the regression this section once
-         shipped: it is still a non-empty string, so it passes every content
-         check, and it leaves every helper with nothing to answer with. */
+      check(p.calcFound, `    four range inputs, one per figure the reader supplies`, 'a control is missing');
+      /* Both ends and the step of every control come from value.ts, so a
+         control that offered an input the model refuses would be the page
+         asking a question it cannot answer. */
       check(
-        p.ledgerSavingIsNumeric,
-        `    the saving in the copy parses to a figure the model can use`,
-        p.ledgerSaving,
+        p.badBounds.length === 0,
+        `    every control offers exactly the range the model will answer for`,
+        p.badBounds.join(' | '),
       );
-      /* The control opens at the smallest firm the qualifier will take a lead
-         from. Below that the page sends a reader to the product site, so a
-         control that started lower would be pricing a firm this offer turns
-         away, and the contract is where that count actually lives. */
+      /* Where each opens: the smallest package's coverage, the illustrative
+         volume, the market's hourly figure, and the assumed minutes. The
+         hourly one is the market's, which is the check that catches a page
+         opening a Lithuanian reader on a Danish wage. */
       check(
-        p.rangeStartsAtSmallestSold,
-        `    and the control starts at the smallest firm the qualifier accepts`,
-        `the qualifier opens at ${p.smallestSoldTo}`,
+        p.badOpen.length === 0,
+        `    and opens where the model says, in this market`,
+        p.badOpen.join(' | '),
+      );
+      check(
+        p.pointsDriven > 20 && p.badPoints.length === 0,
+        `    all five figures are the model's own arithmetic, at all ${p.pointsDriven} points`,
+        p.badPoints.slice(0, 3).join(' | '),
+      );
+      /* The hedge belongs to the modelled figures and not to the fee. A hedge
+         on the fee would be the page apologising for a number it knows
+         exactly, and losing it from the others would be a model presented as
+         a measurement, which is the one thing this section may never do. */
+      check(
+        p.unhedged.length === 0,
+        `    the hedge is on the model and not on the fee`,
+        p.unhedged.join(' | '),
+      );
+      /* The only picture in the section, held to the figures beside it. */
+      check(
+        p.barBad.length === 0,
+        `    the bar is the fee's real share of what the hours cost`,
+        p.barBad.slice(0, 2).join(' | '),
       );
     }
 
@@ -385,11 +353,11 @@ async function main() {
        offer would drift from the first; a patch that stops matching throws. */
     console.log('\nThe claim about us, rendered in both states');
     const startedPilot = (src) => {
-      const out = src.replace(/(id: 'founding'[^\n]*?)started: 0/, '$1started: 1');
+      const out = src.replace(/(founding: \{[^\n]*?)started: 0/, '$1started: 1');
       if (out === src) {
         throw new Error(
-          'could not start a founding pilot in src/lib/offer.ts: the tier line has changed shape, ' +
-            'so this check is no longer testing what it says it is',
+          'could not start a founding pilot in src/lib/offer.ts: the founding cohort line has ' +
+            'changed shape, so this check is no longer testing what it says it is',
         );
       }
       return out;

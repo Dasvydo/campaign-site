@@ -2,7 +2,7 @@
  * The offer, as a single source of truth.
  *
  * Every price the campaign page says out loud is derived from this file. Not
- * because duplication is untidy, but because the page now makes an arithmetic
+ * because duplication is untidy, but because the page makes an arithmetic
  * argument rather than a promise: "at your size this costs less per person than
  * the plans on doviloop.dev". An argument like that is only as honest as its
  * inputs, and an input that exists in two places is an input that will disagree
@@ -14,11 +14,26 @@
  * seats. The campaign page used to sell per seat too, with a ten seat minimum,
  * which made it read as roughly three times the price per head of the product
  * it is selling. That is the wrong shape of number to put in front of a firm
- * that is counting people. So Managed is a flat monthly fee for the whole firm:
- * the total does not move when the firm grows, which means the cost per person
- * falls as the firm grows. The comparison helpers below exist to say exactly
- * where it falls past each published rate, and to refuse to say it where it
- * does not.
+ * that is counting people. So each package is a flat monthly fee for the whole
+ * firm: the total does not move when the firm grows, which means the cost per
+ * person falls as the firm grows. The comparison helpers below exist to say
+ * exactly where it falls past each published rate, and to refuse to say it
+ * where it does not.
+ *
+ * Why two packages and not a scarcity ladder.
+ *
+ * Until 2026-09-17 this file held three tiers at rising prices, advanced by
+ * capacity: founding, early, standard. That shape asks the reader to believe a
+ * price will go up, which is a claim about the future and the weakest thing on
+ * a page otherwise built out of arithmetic. It also had one coverage number for
+ * all three, so a firm of six and a firm of twenty were quoted the same fee for
+ * very different amounts of work.
+ *
+ * The ladder is now the buyer's own headcount. Desk covers up to ten mailboxes,
+ * Firm up to twenty, and a reader picks by counting their own people rather
+ * than by being told to hurry. Both packages carry the same product; the only
+ * things that move are coverage and the pooled draft allowance, because those
+ * are the only two things that actually cost more to serve.
  *
  * Why the caps are firm level and not per seat.
  *
@@ -26,53 +41,54 @@
  * people on a per seat allowance would be a multiple of what any one of them
  * could ever use. The draft cap is therefore pooled across the firm, and the
  * coverage is a ceiling on people rather than a price per person. Both are
- * commitments the offer can actually keep.
+ * commitments the offer can actually keep, and both are set so that a customer
+ * sitting exactly at the cap is still served at a positive margin.
  *
- * Why tiers carry a capacity and not a date.
+ * Both caps allow five hundred drafts a person a month. They allowed four
+ * hundred until 2026-09-18, which was not a decision anybody took: it fell out
+ * of picking round numbers, and it meant a customer at the usage the founder
+ * actually expects would have been over the cap in their first month, every
+ * month. The cap is a commitment, so it is the figure the cost to serve should
+ * be read at, not the usage somebody hopes for. The working is in
+ * flow-savvy-automations/docs/economics/OFFER.md, section 6.
  *
- * The founding price is not a discount. It is a trade: a testimonial, a sixty
- * day case study, a logo, two feedback calls. The thing being traded for is a
- * place in a cohort we can give real attention to, and attention runs out at a
- * headcount of firms, not on a Friday. A countdown would be theatre, and the
- * kind of theatre a buyer has seen reset on the first of every month. A count
- * of places is a fact, and this file is where that fact lives.
+ * Why the founding cohort is not a price.
  *
- * Why a spot can be held as well as started.
- *
- * Each capped tier tracks two numbers. `started` is pilots actually running: a
- * place that has been spent. `held` is setup calls that are booked but have not
- * started yet: a soft hold. Without the soft hold, five firms could book the
- * last five places on a page that still advertised five places open, and we
- * would have sold ten seats at a table for five. The hold is soft because a
- * booking that never turns into a pilot should give the place back, which is a
- * human decision made by lowering the number here, not an expiry this file
- * pretends to know how to compute.
- *
- * Tiers advance by hand, in one direction only. There is no automation that
- * promotes a tier, because the promotion is a commercial decision and the only
- * safe way to make it is to look at the counts and edit them. What this file
- * does guarantee is that a hand edit cannot leave the page lying: the active
- * tier is derived from the counts, and `validateOffer` refuses a configuration
- * whose declared tier disagrees with what its counts imply.
- *
- * Prices are USD everywhere, to match doviloop.dev. No currency conversion is
- * offered, because a converted price is a price we would have to keep true.
+ * The founding trade is a testimonial, a sixty day case study, a logo and two
+ * feedback calls, and what it buys is the five hundred dollar setup fee waived.
+ * It is not a discount on the monthly fee, so nothing about the price a firm
+ * reads today depends on when they read it. Five places, because WF4 polls
+ * every sixty seconds at roughly 0.8 seconds a mailbox, which at seventy per
+ * cent headroom is about fifty two mailboxes across every customer at once.
+ * The scarcity is a fact about the architecture, not a device, and when it
+ * stops being true the number here moves.
  */
 
-export type TierId = 'founding' | 'early' | 'standard';
+export type PackageId = 'desk' | 'firm';
 
-export interface TierConfig {
-  readonly id: TierId;
-  /** Flat USD per month for the whole firm, at any covered headcount. */
+export interface PackageConfig {
+  readonly id: PackageId;
+  /** Flat EUR per month for the whole firm, at any covered headcount. */
   readonly price: number;
-  /** Places in this tier, or null when the tier is uncapped. */
-  readonly total: number | null;
+  /** Largest firm this package is sold to, in mailboxes. */
+  readonly covers: number;
+  /** Drafts per month, pooled across the whole firm rather than per seat. */
+  readonly draftCap: number;
+}
+
+/**
+ * The founding trade, which is a capacity rather than a date.
+ *
+ * A countdown would be theatre, and the thing that actually runs out is
+ * attention and polling headroom, both of which are counted in firms.
+ */
+export interface FoundingCohort {
+  /** Places in the cohort. */
+  readonly places: number;
   /** Pilots actually running. A place that has been spent. */
   readonly started: number;
   /** Setup calls booked but not started. A soft hold on a place. */
   readonly held: number;
-  /** Whether the one off setup fee is waived as part of the trade. */
-  readonly setupWaived: boolean;
 }
 
 /**
@@ -84,8 +100,24 @@ export interface TierConfig {
  * point of this page is that they should not have to. When doviloop.dev moves a
  * rate, this is the one place that has to be corrected, and `readAt` is what
  * tells a reviewer how stale the comparison has become.
+ *
+ * Only doviloop.dev appears here. Fyxer, Superhuman and Copilot are all
+ * cheaper to argue against and all more dangerous: their prices came from
+ * pricing round-ups rather than vendor pages, and an unverified third party
+ * price on a public page is a comparative claim with nothing behind it. They
+ * stay out of this file until somebody has read them off the vendor's own
+ * pricing page. See OFFER.md, blocker 4.
  */
 export interface CompareRates {
+  /** The currency the rates below are PUBLISHED in, which is not ours.
+
+      doviloop.dev prices in dollars and this offer prices in euro, so every
+      rate here is converted through `OFFER.fx` before it meets one of our own
+      figures. The raw numbers stay as published: converting them at rest would
+      make `source` and `readAt` describe numbers nobody ever published, and the
+      next person to check the comparison against the live pricing page would
+      find two figures that disagree for a reason the file does not explain. */
+  readonly currency: 'USD';
   /** Individual plan, USD per seat per month. */
   readonly individual: number;
   /** Team plan, USD per seat per month. */
@@ -104,31 +136,47 @@ export interface CompareRates {
   readonly readAt: string;
 }
 
+/**
+ * The rate somebody else's dollars are read at.
+ *
+ * One rate, one date, in one place, for the same reason a price is: a
+ * comparison converted at a rate nobody wrote down is a comparison nobody can
+ * check. It moves when a reviewer decides the comparison has gone stale, which
+ * is what `readAt` is for.
+ */
+export interface FxRate {
+  /** US dollars per one euro. */
+  readonly usdPerEur: number;
+  /** ISO-8601 date the rate was read. */
+  readonly readAt: string;
+}
+
 export interface Offer {
-  readonly currency: 'USD';
-  /** Tier order, cheapest first. Also the order capacity is consumed in. */
-  readonly order: readonly TierId[];
-  readonly tiers: Readonly<Record<TierId, TierConfig>>;
-  /**
-   * The tier we believe we are on. Written by hand, never trusted: it exists so
-   * that `validateOffer` can catch a hand edit that contradicts the counts.
-   * Read `activeTier()` instead of this.
-   */
-  readonly declaredTier: TierId;
-  /** People covered by the flat fee, at every tier. */
-  readonly covers: number;
-  /** Drafts per month, pooled across the whole firm rather than per seat. */
-  readonly draftCap: number;
-  /** One off setup fee in USD, waived only where a tier says so. */
+  /** What WE charge in. Every figure this module returns is in this currency. */
+  readonly currency: 'EUR';
+  /** Package order, smallest firm first. Also the order the page prints them in. */
+  readonly order: readonly PackageId[];
+  readonly packages: Readonly<Record<PackageId, PackageConfig>>;
+  readonly founding: FoundingCohort;
+  /** One off setup fee in EUR, waived while founding places remain. */
   readonly setupFee: number;
+  /**
+   * Drafts promised in the first thirty days, below which the month is free.
+   *
+   * Counted from n8n execution records rather than from anything the customer
+   * has to track, and set well under what the smallest covered firm is expected
+   * to produce, so it is a promise that can be kept rather than a forecast.
+   */
+  readonly guaranteeDrafts: number;
   readonly compare: CompareRates;
+  readonly fx: FxRate;
 }
 
 /**
  * Freezes the whole tree rather than the top level, because a top level freeze
- * leaves `OFFER.tiers.founding.started` writable, and a count that can be
- * written at runtime is a count that can disagree with the one the validator
- * checked at build time.
+ * leaves `OFFER.founding.started` writable, and a count that can be written at
+ * runtime is a count that can disagree with the one the validator checked at
+ * build time.
  */
 function deepFreeze<T>(value: T): T {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -146,29 +194,22 @@ function deepFreeze<T>(value: T): T {
  * the page follows; if a component needs a number, it imports a helper from
  * this file and never a literal.
  *
- * Advancing a tier by hand, which is the edit this file exists to survive:
- * one, set `started` to the pilots actually running on that tier; two, set
- * `held` to the setup calls booked but not yet begun; three, when a tier has
- * no places left, move `declaredTier` on to the next tier along `order`; four,
- * run `npm run verify:offer`, which the build runs for you and which refuses
- * the edit, by name, if the counts and the declared tier disagree.
+ * Spending a founding place, which is the edit this file exists to survive:
+ * one, set `founding.started` to the pilots actually running; two, set
+ * `founding.held` to the setup calls booked but not yet begun; three, run
+ * `npm run verify:offer`, which the build runs for you and which refuses the
+ * edit, by name, if the counts oversell the cohort.
  */
 export const OFFER: Offer = deepFreeze({
-  currency: 'USD',
-  order: ['founding', 'early', 'standard'],
-  tiers: {
-    // Setup waived: this is the half of the trade the founding firms get back
-    // for the testimonial, the case study, the logo and the feedback calls.
-    founding: { id: 'founding', price: 390, total: 5, started: 0, held: 0, setupWaived: true },
-    early: { id: 'early', price: 490, total: 10, started: 0, held: 0, setupWaived: false },
-    // Uncapped, and the tier every claim on the page has to survive, because it
-    // is the one the page will spend most of its life on.
-    standard: { id: 'standard', price: 590, total: null, started: 0, held: 0, setupWaived: false },
+  currency: 'EUR',
+  order: ['desk', 'firm'],
+  packages: {
+    desk: { id: 'desk', price: 149, covers: 10, draftCap: 5000 },
+    firm: { id: 'firm', price: 199, covers: 20, draftCap: 10000 },
   },
-  declaredTier: 'founding',
-  covers: 20,
-  draftCap: 8000,
+  founding: { places: 5, started: 0, held: 0 },
   setupFee: 500,
+  guaranteeDrafts: 150,
   /* Somebody else's published prices, all read on the date below.
 
      doviloop.dev sells three plans and all three are here. Individual is a
@@ -186,6 +227,7 @@ export const OFFER: Offer = deepFreeze({
      rate this file carries appears exactly once, and the build guard enforces
      it. They are all three lines below. */
   compare: {
+    currency: 'USD',
     individual: 29,
     team: 59,
     teamMax: 9,
@@ -194,169 +236,102 @@ export const OFFER: Offer = deepFreeze({
     source: 'doviloop.dev pricing bundle',
     readAt: '2026-09-16',
   },
+  /* Read on the date below. Everything doviloop.dev publishes is in dollars and
+     everything here is in euro, so this is the one number that lets the two be
+     compared at all. */
+  fx: { usdPerEur: 1.148, readAt: '2026-09-17' },
 } as Offer);
 
 /* -------------------------------------------------------------------------
  * Reading the offer
  * ---------------------------------------------------------------------- */
 
-/** One tier by id. Present so callers never index `OFFER.tiers` by hand. */
-export function tierById(id: TierId, offer: Offer = OFFER): TierConfig {
-  return offer.tiers[id];
+/** One package by id. Present so callers never index `OFFER.packages` by hand. */
+export function packageById(id: PackageId, offer: Offer = OFFER): PackageConfig {
+  return offer.packages[id];
 }
 
-/** True for a tier that has a finite number of places. */
-export function isCapped(tier: TierConfig): boolean {
-  return tier.total !== null;
+/** Every package, smallest firm first. The order the page prints them in. */
+export function packages(offer: Offer = OFFER): readonly PackageConfig[] {
+  return offer.order.map((id) => offer.packages[id]);
 }
 
 /**
- * Places still advertised as open, or null when the tier is uncapped.
+ * The package the page leads with, and the default for every helper here.
+ *
+ * The largest, because it is the one carrying the strongest per head number and
+ * the one every claim on the page has to survive. A claim that holds on Firm at
+ * its own coverage is the weaker of the two and so the safer default: Desk is
+ * cheaper per firm but dearer per head, and a page that defaulted to the
+ * flattering one would be arguing from the package fewer readers buy.
+ */
+export function headlinePackage(offer: Offer = OFFER): PackageConfig {
+  return offer.packages[offer.order[offer.order.length - 1]];
+}
+
+/** The largest firm any package is sold to. The offer's ceiling, in people. */
+export function maxCovers(offer: Offer = OFFER): number {
+  return Math.max(...offer.order.map((id) => offer.packages[id].covers));
+}
+
+/**
+ * The smallest package that covers a firm this size, or null above the ceiling.
+ *
+ * Null rather than the largest package, because above the ceiling there is no
+ * package: a firm of thirty is a custom quote and the page must say so rather
+ * than quote them Firm and hope. The search runs along `order`, which the
+ * validator holds in increasing coverage, so the first hit is the smallest.
+ */
+export function packageForHeadcount(
+  headcount: number,
+  offer: Offer = OFFER,
+): PackageConfig | null {
+  if (!Number.isInteger(headcount) || headcount <= 0) return null;
+  for (const id of offer.order) {
+    if (headcount <= offer.packages[id].covers) return offer.packages[id];
+  }
+  return null;
+}
+
+/**
+ * Places still advertised as open in the founding cohort.
  *
  * Both a started pilot and a soft hold take a place off the board. Clamped at
- * zero so an overbooked tier reads as full rather than as a negative number on
- * a public page; the overbooking itself is caught by `validateOffer`, which is
+ * zero so an oversold cohort reads as full rather than as a negative number on
+ * a public page; the overselling itself is caught by `validateOffer`, which is
  * the right place to make noise about it.
  */
-export function remainingSpots(tier: TierConfig = activeTier()): number | null {
-  if (tier.total === null) return null;
-  return Math.max(0, tier.total - tier.started - tier.held);
+export function remainingFoundingPlaces(offer: Offer = OFFER): number {
+  const f = offer.founding;
+  return Math.max(0, f.places - f.started - f.held);
 }
 
-/**
- * The tier the counts imply, which is the only tier the page may advertise.
- *
- * Walks the tiers cheapest first and stops at the first capped tier with a
- * place left. When every capped tier is spent, the uncapped tier is what is
- * left, and that is deliberately the last entry in `order`. Derived rather
- * than declared so that no hand edit can put the page on a tier its own counts
- * have already sold out.
- */
-export function activeTier(offer: Offer = OFFER): TierConfig {
-  for (const id of offer.order) {
-    const tier = offer.tiers[id];
-    if (tier.total === null) return tier;
-    if ((remainingSpots(tier) ?? 0) > 0) return tier;
-  }
-  return offer.tiers[offer.order[offer.order.length - 1]];
+/** Is the founding trade still on the table? Derived, never declared. */
+export function foundingOpen(offer: Offer = OFFER): boolean {
+  return remainingFoundingPlaces(offer) > 0;
 }
 
-/** The setup fee actually due on a tier. Zero where the tier waives it. */
-export function setupDue(tier: TierConfig = activeTier(), offer: Offer = OFFER): number {
-  return tier.setupWaived ? 0 : offer.setupFee;
+/** The setup fee actually due. Zero while founding places remain. */
+export function setupDue(offer: Offer = OFFER): number {
+  return foundingOpen(offer) ? 0 : offer.setupFee;
 }
 
 /** What lands on the first invoice: one month plus whatever setup is due. */
-export function firstMonthTotal(tier: TierConfig = activeTier(), offer: Offer = OFFER): number {
-  return tier.price + setupDue(tier, offer);
-}
-
-/* -------------------------------------------------------------------------
- * The arithmetic the page argues from
- * ---------------------------------------------------------------------- */
-
-/**
- * Whether the flat fee actually covers a firm this size.
- *
- * Everything below, including `perPerson` itself, refuses to produce a per
- * person number outside coverage. A firm of thirty would get a flattering
- * figure out of a division we have not agreed to honour, and a flattering
- * number we cannot honour is worse than no number.
- *
- * A headcount has to be a whole number, for the same reason the validator
- * insists the tier counts are whole numbers: it is a count of people. Seven and
- * a half people is not a smaller firm, it is a bad input, and a bad input that
- * divides cleanly is the kind that reaches a page unnoticed.
- */
-export function coversHeadcount(headcount: number, offer: Offer = OFFER): boolean {
-  return (
-    Number.isInteger(headcount) && headcount > 0 && headcount <= offer.covers
-  );
-}
-
-/**
- * Flat monthly fee divided by people. The whole argument, in one line.
- *
- * Null outside coverage, not just for arithmetic that would misbehave. Zero, a
- * negative, a fraction, NaN and Infinity are all refused, and so is any firm
- * larger than `covers`: there is no agreed price per head out there, so there is
- * no number to hand a component. Returning a raw division above the ceiling
- * would put the most flattering figure on the page in exactly the case we have
- * not committed to serve, and it would only take one component forgetting to
- * read `covered` first. Null is a value a component cannot render by accident.
- */
-export function perPerson(
-  headcount: number,
-  tier: TierConfig = activeTier(),
+export function firstMonthTotal(
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
-): number | null {
-  if (!coversHeadcount(headcount, offer)) return null;
-  return tier.price / headcount;
+): number {
+  return pkg.price + setupDue(offer);
 }
 
 /**
- * What the same firm would pay on the published Team rate, or null when the
- * firm is too large for Team to sell to it at all. Null is the honest answer
- * there: above the Team seat ceiling there is no Team price to compare with.
- */
-export function teamMonthly(headcount: number, offer: Offer = OFFER): number | null {
-  // Whole people only, for the same reason `coversHeadcount` insists on it.
-  if (!Number.isInteger(headcount) || headcount <= 0) return null;
-  if (headcount > offer.compare.teamMax) return null;
-  return headcount * offer.compare.team;
-}
-
-/** What the same firm would pay buying Individual seats, at any size. */
-export function individualMonthly(headcount: number, offer: Offer = OFFER): number | null {
-  if (!Number.isInteger(headcount) || headcount <= 0) return null;
-  return headcount * offer.compare.individual;
-}
-
-/** What the largest firm Team will sell to pays every month. A fixed ceiling. */
-export function teamCeilingMonthly(offer: Offer = OFFER): number {
-  return offer.compare.teamMax * offer.compare.team;
-}
-
-/**
- * Is our cost per head below the published Team seat rate, at this size and on
- * this tier? Computed, never assumed, and strict rather than "at or below":
- * equal is not cheaper, and the page may not say cheaper when it is equal.
- * This matters at the uncapped tier, where the per head figure meets the Team
- * rate exactly at one particular headcount.
- */
-export function belowTeamRate(
-  headcount: number,
-  tier: TierConfig = activeTier(),
-  offer: Offer = OFFER,
-): boolean {
-  const each = perPerson(headcount, tier, offer);
-  if (each === null) return false;
-  return each < offer.compare.team;
-}
-
-/** The same question against the Individual seat rate, which is the harder bar. */
-export function belowIndividualRate(
-  headcount: number,
-  tier: TierConfig = activeTier(),
-  offer: Offer = OFFER,
-): boolean {
-  const each = perPerson(headcount, tier, offer);
-  if (each === null) return false;
-  return each < offer.compare.individual;
-}
-
-/**
- * How many pilots have started, across the whole ladder.
+ * How many pilots have started.
  *
  * Started, never held. A held place is a booked call, and a booked call is not
- * a customer anyone could be pointed at. Summed over every tier rather than
- * read off the active one, because the active tier's own count says nothing
- * about the tiers already spent: at `early` the founding places are full by
- * definition, and a question about whether this business has customers is a
- * question about all of them.
+ * a customer anyone could be pointed at.
  */
 export function pilotsStarted(offer: Offer = OFFER): number {
-  return offer.order.reduce((n, id) => n + (offer.tiers[id]?.started ?? 0), 0);
+  return offer.founding.started;
 }
 
 /**
@@ -368,13 +343,116 @@ export function pilotsStarted(offer: Offer = OFFER): number {
  * true the day the page goes up and false from the first pilot onward, and
  * nothing about rendering it could ever notice: a sentence does not stop
  * reading like a sentence when it stops being true.
- *
- * Gated on the count and not on the tier. The tier is the coarser signal and
- * would have left the claim standing through the first four founding pilots,
- * every one of them a customer we could by then point at.
  */
 export function noCustomersYet(offer: Offer = OFFER): boolean {
   return pilotsStarted(offer) === 0;
+}
+
+/* -------------------------------------------------------------------------
+ * The arithmetic the page argues from
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Whether a package actually covers a firm this size.
+ *
+ * Everything below, including `perPerson` itself, refuses to produce a per
+ * person number outside coverage. A firm of thirty would get a flattering
+ * figure out of a division we have not agreed to honour, and a flattering
+ * number we cannot honour is worse than no number.
+ *
+ * A headcount has to be a whole number, for the same reason the validator
+ * insists the cohort counts are whole numbers: it is a count of people. Seven
+ * and a half people is not a smaller firm, it is a bad input, and a bad input
+ * that divides cleanly is the kind that reaches a page unnoticed.
+ */
+export function coversHeadcount(
+  headcount: number,
+  pkg: PackageConfig = headlinePackage(),
+): boolean {
+  return Number.isInteger(headcount) && headcount > 0 && headcount <= pkg.covers;
+}
+
+/**
+ * Flat monthly fee divided by people. The whole argument, in one line.
+ *
+ * Null outside coverage, not just for arithmetic that would misbehave. Zero, a
+ * negative, a fraction, NaN and Infinity are all refused, and so is any firm
+ * larger than the package covers: there is no agreed price per head out there,
+ * so there is no number to hand a component. Returning a raw division above the
+ * ceiling would put the most flattering figure on the page in exactly the case
+ * we have not committed to serve, and it would only take one component
+ * forgetting to read `covered` first. Null is a value a component cannot render
+ * by accident.
+ */
+export function perPerson(
+  headcount: number,
+  pkg: PackageConfig = headlinePackage(),
+): number | null {
+  if (!coversHeadcount(headcount, pkg)) return null;
+  return pkg.price / headcount;
+}
+
+/**
+ * One published dollar rate, in the currency we charge in, to the cent.
+ *
+ * Every comparison on the page runs through here, so a rival rate can never
+ * meet one of our own figures without being converted first. That was the
+ * failure this function exists to make impossible: our price moved to euro on
+ * 2026-09-18 while doviloop.dev went on publishing dollars, and a subtraction
+ * between the two would have read as a saving while being a currency error.
+ *
+ * Rounded to cents at the SEAT rate, never at the total. A page that printed a
+ * seat rate and a firm total which did not multiply out would be a page a
+ * reader can catch in an arithmetic mistake, and the few cents that costs are
+ * worth less than that.
+ */
+export function inOurCurrency(published: number, offer: Offer = OFFER): number {
+  return Math.round((published / offer.fx.usdPerEur) * 100) / 100;
+}
+
+/** The published Individual seat rate, per seat per month, in our currency. */
+export function individualSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.individual, offer);
+}
+
+/** The published Team seat rate, per seat per month, in our currency. */
+export function teamSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.team, offer);
+}
+
+/** The published Managed seat rate, per seat per month, in our currency. */
+export function managedSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.managed, offer);
+}
+
+/**
+ * What the same firm would pay on the published Team rate, or null when the
+ * firm is too large for Team to sell to it at all. Null is the honest answer
+ * there: above the Team seat ceiling there is no Team price to compare with.
+ */
+export function teamMonthly(headcount: number, offer: Offer = OFFER): number | null {
+  // Whole people only, for the same reason `coversHeadcount` insists on it.
+  if (!Number.isInteger(headcount) || headcount <= 0) return null;
+  if (headcount > offer.compare.teamMax) return null;
+  return headcount * teamSeatRate(offer);
+}
+
+/** What the same firm would pay buying Individual seats, at any size. */
+export function individualMonthly(headcount: number, offer: Offer = OFFER): number | null {
+  if (!Number.isInteger(headcount) || headcount <= 0) return null;
+  return headcount * individualSeatRate(offer);
+}
+
+/** What the same firm would pay on the published Managed rate, at any size it sells to. */
+export function managedMonthly(headcount: number, offer: Offer = OFFER): number | null {
+  if (!Number.isInteger(headcount) || headcount <= 0) return null;
+  if (headcount < offer.compare.managedMin) return null;
+  return headcount * managedSeatRate(offer);
+}
+
+/** What the largest firm Team will sell to pays every month. A fixed ceiling. */
+export function teamCeilingMonthly(offer: Offer = OFFER): number {
+  return offer.compare.teamMax * teamSeatRate(offer);
 }
 
 /**
@@ -385,67 +463,33 @@ export function noCustomersYet(offer: Offer = OFFER): boolean {
  * where somebody else's per seat pricing meets the sizes sold here.
  */
 export function managedFloorMonthly(offer: Offer = OFFER): number {
-  return offer.compare.managedMin * offer.compare.managed;
+  return offer.compare.managedMin * managedSeatRate(offer);
 }
 
 /**
- * What the same firm would pay on the published Managed rate, or null where
- * Managed will not sell to a firm that size.
- *
- * The counterpart of `teamMonthly`, and bounded at the other end: Team refuses
- * firms above its seat ceiling, Managed refuses them below its floor. Null is
- * the honest answer in both cases, because below ten seats there is no Managed
- * price to set anything against.
- *
- * This exists because the comparison stopped being a table of three fixed head
- * counts and became a figure a reader moves. A reader who can choose the head
- * count can choose one the published rate says nothing about, and a component
- * handed a raw multiplication would print a Managed price for a firm Managed
- * would turn away.
+ * Is our cost per head below the published Team seat rate, at this size and on
+ * this package? Computed, never assumed, and strict rather than "at or below":
+ * equal is not cheaper, and the page may not say cheaper when it is equal.
  */
-export function managedMonthly(headcount: number, offer: Offer = OFFER): number | null {
-  // Whole people only, for the same reason `coversHeadcount` insists on it.
-  if (!Number.isInteger(headcount) || headcount <= 0) return null;
-  if (headcount < offer.compare.managedMin) return null;
-  return headcount * offer.compare.managed;
-}
-
-/**
- * What a firm keeps every month by paying one firm fee instead of Managed's
- * per seat rate, or null where the two cannot be compared at all.
- *
- * Null rather than zero or a negative wherever either side is missing: above
- * the coverage ceiling this offer has no agreed price, and below the Managed
- * floor that plan has none, so there is no difference to report in either
- * direction. Where both exist the subtraction is left to say what it says. It
- * is not clamped at zero, because a page that can only ever print a saving is
- * a page that would keep printing one after the saving stopped being real.
- */
-export function keptVsManaged(
+export function belowTeamRate(
   headcount: number,
-  tier: TierConfig = activeTier(),
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
-): number | null {
-  if (!coversHeadcount(headcount, offer)) return null;
-  const managed = managedMonthly(headcount, offer);
-  if (managed === null) return null;
-  return managed - tier.price;
+): boolean {
+  const each = perPerson(headcount, pkg);
+  if (each === null) return false;
+  return each < teamSeatRate(offer);
 }
 
-/**
- * The head counts this comparison may be moved across: every size the flat fee
- * covers that Managed will also quote for.
- *
- * Derived from the offer rather than written down, so the control cannot offer
- * a size the arithmetic behind it refuses to price. The lower bound is the
- * Managed floor because below it there is nothing to compare against, and the
- * upper bound is the coverage ceiling because above it this offer has no per
- * head figure to show.
- */
-export function comparableHeadcounts(offer: Offer = OFFER): number[] {
-  const out: number[] = [];
-  for (let n = offer.compare.managedMin; n <= offer.covers; n += 1) out.push(n);
-  return out;
+/** The same question against the Individual seat rate, which is the harder bar. */
+export function belowIndividualRate(
+  headcount: number,
+  pkg: PackageConfig = headlinePackage(),
+  offer: Offer = OFFER,
+): boolean {
+  const each = perPerson(headcount, pkg);
+  if (each === null) return false;
+  return each < individualSeatRate(offer);
 }
 
 /**
@@ -454,39 +498,37 @@ export function comparableHeadcounts(offer: Offer = OFFER): number[] {
  * The claim that matters most of the three, because Managed is the only plan
  * on the product site a firm at these head counts can actually buy. Team they
  * cannot: it stops at nine. Individual is sold by the seat to one person. So
- * this is the comparison a reader is really choosing between, and it is the
- * one that holds at every tier on the ladder rather than only the capped ones.
+ * this is the comparison a reader is really choosing between.
  *
- * Computed all the same, and strict rather than "at or below". A ladder that
- * ever priced a tier at or above the Managed floor would take the sentence off
- * the page instead of printing something untrue, which is the whole reason
- * none of these is written as copy.
+ * Computed all the same, and strict rather than "at or below". A package
+ * priced at or above the Managed floor would take the sentence off the page
+ * instead of printing something untrue, which is the whole reason none of
+ * these is written as copy.
  */
 export function belowManagedFloor(
-  tier: TierConfig = activeTier(),
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
 ): boolean {
-  return tier.price < managedFloorMonthly(offer);
+  return pkg.price < managedFloorMonthly(offer);
 }
 
 /**
  * Is our whole monthly bill below what the largest Team firm pays?
  *
- * Independent of headcount, because both sides of it are fixed. It is true at
- * the two capped tiers and false at the uncapped one, which is exactly why it
- * is computed: the sentence it supports has to disappear from the page when the
- * tier advances, without anyone remembering to go and delete it.
+ * Independent of headcount, because both sides of it are fixed. It is computed
+ * rather than written as copy so that the sentence it supports disappears from
+ * the page by itself if a package is ever priced past the Team ceiling.
  */
 export function belowTeamCeiling(
-  tier: TierConfig = activeTier(),
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
 ): boolean {
-  return tier.price < teamCeilingMonthly(offer);
+  return pkg.price < teamCeilingMonthly(offer);
 }
 
-/** Every claim the page can make about one headcount on one tier, resolved. */
+/** Every claim the page can make about one headcount on one package, resolved. */
 export interface Comparison {
-  readonly tier: TierId;
+  readonly pkg: PackageId;
   readonly headcount: number;
   /** False when the flat fee does not cover a firm this size. */
   readonly covered: boolean;
@@ -497,14 +539,19 @@ export interface Comparison {
   /** Null above the Team seat ceiling, where there is nothing to compare. */
   readonly teamMonthly: number | null;
   readonly individualMonthly: number | null;
+  /** Null below the Managed seat floor, where Managed will not sell. */
+  readonly managedMonthly: number | null;
   readonly teamCeilingMonthly: number;
+  readonly managedFloorMonthly: number;
   /** Positive numbers mean we are cheaper. Null where the rival has no price. */
   readonly savedVsTeam: number | null;
   readonly savedVsIndividual: number | null;
+  readonly savedVsManaged: number | null;
   readonly claims: {
     readonly belowTeamRate: boolean;
     readonly belowIndividualRate: boolean;
     readonly belowTeamCeiling: boolean;
+    readonly belowManagedFloor: boolean;
   };
 }
 
@@ -516,34 +563,39 @@ export interface Comparison {
  */
 export function comparison(
   headcount: number,
-  tier: TierConfig = activeTier(),
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
 ): Comparison {
-  const each = perPerson(headcount, tier, offer);
+  const each = perPerson(headcount, pkg);
   const team = teamMonthly(headcount, offer);
   const individual = individualMonthly(headcount, offer);
+  const managed = managedMonthly(headcount, offer);
   return {
-    tier: tier.id,
+    pkg: pkg.id,
     headcount,
-    covered: coversHeadcount(headcount, offer),
-    monthly: tier.price,
+    covered: coversHeadcount(headcount, pkg),
+    monthly: pkg.price,
     perPerson: each,
     teamMonthly: team,
     individualMonthly: individual,
+    managedMonthly: managed,
     teamCeilingMonthly: teamCeilingMonthly(offer),
-    savedVsTeam: team === null ? null : team - tier.price,
-    savedVsIndividual: individual === null ? null : individual - tier.price,
+    managedFloorMonthly: managedFloorMonthly(offer),
+    savedVsTeam: team === null ? null : team - pkg.price,
+    savedVsIndividual: individual === null ? null : individual - pkg.price,
+    savedVsManaged: managed === null ? null : managed - pkg.price,
     claims: {
-      belowTeamRate: belowTeamRate(headcount, tier, offer),
-      belowIndividualRate: belowIndividualRate(headcount, tier, offer),
-      belowTeamCeiling: belowTeamCeiling(tier, offer),
+      belowTeamRate: belowTeamRate(headcount, pkg, offer),
+      belowIndividualRate: belowIndividualRate(headcount, pkg, offer),
+      belowTeamCeiling: belowTeamCeiling(pkg, offer),
+      belowManagedFloor: belowManagedFloor(pkg, offer),
     },
   };
 }
 
 /**
- * The smallest firm at which a per head claim starts to hold on a tier, or null
- * when it never holds inside coverage.
+ * The smallest firm at which a per head claim starts to hold on a package, or
+ * null when it never holds inside coverage.
  *
  * Searched rather than solved with a division and a ceiling, because the search
  * asks the same predicate the page will ask, and a closed form would be a
@@ -551,12 +603,12 @@ export function comparison(
  */
 export function breakEvenHeadcount(
   against: 'team' | 'individual',
-  tier: TierConfig = activeTier(),
+  pkg: PackageConfig = headlinePackage(),
   offer: Offer = OFFER,
 ): number | null {
   const holds = against === 'team' ? belowTeamRate : belowIndividualRate;
-  for (let n = 1; n <= offer.covers; n += 1) {
-    if (holds(n, tier, offer)) return n;
+  for (let n = 1; n <= pkg.covers; n += 1) {
+    if (holds(n, pkg, offer)) return n;
   }
   return null;
 }
@@ -580,12 +632,12 @@ export function breakEvenHeadcount(
 function modelIsAnswerable(
   savingPerPersonPerMonth: number,
   headcount: number,
-  offer: Offer,
+  pkg: PackageConfig,
 ): boolean {
   return (
     Number.isInteger(savingPerPersonPerMonth) &&
     savingPerPersonPerMonth > 0 &&
-    coversHeadcount(headcount, offer)
+    coversHeadcount(headcount, pkg)
   );
 }
 
@@ -597,7 +649,7 @@ function modelIsAnswerable(
  * can render the result straight and get a blank where there is nothing
  * honest to print, in the same way `perPerson` refuses a figure it cannot
  * stand behind. A fee of zero is refused too: it would divide to Infinity, and
- * the ladder invariants do not forbid it.
+ * the invariants do not forbid it.
  *
  * Both figures here round to the nearest whole number. Rounding down would
  * understate the case for no reason a reader benefits from, and rounding up
@@ -608,68 +660,14 @@ function modelIsAnswerable(
 export function modelledMultiple(
   savingPerPersonPerMonth: number,
   headcount: number,
-  tier: TierConfig = activeTier(),
-  offer: Offer = OFFER,
+  pkg: PackageConfig = headlinePackage(),
 ): number | null {
-  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
-  if (!(tier.price > 0)) return null;
-  return Math.round((savingPerPersonPerMonth * headcount) / tier.price);
+  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, pkg)) return null;
+  if (!(pkg.price > 0)) return null;
+  return Math.round((savingPerPersonPerMonth * headcount) / pkg.price);
 }
 
-/**
- * What mail is modelled to be costing the firm every month before any of this.
- *
- * The saving assumed for one person, times the people who write mail. It is
- * the first of the three figures the page's arithmetic runs on, and the only
- * one of them that is not read off a price: it is an assumption about a firm's
- * own time, which is why every component that prints it prints the hedge
- * beside it and why the disclosure under it says what the assumption is.
- *
- * Null on the same terms as every other model figure here. `modelIsAnswerable`
- * refuses a saving that is not a positive finite number and a head count the
- * fee does not cover, so a firm outside coverage gets no figure rather than a
- * flattering one, and a component cannot render null by accident.
- */
-export function modelledSpend(
-  savingPerPersonPerMonth: number,
-  headcount: number,
-  offer: Offer = OFFER,
-): number | null {
-  if (!modelIsAnswerable(savingPerPersonPerMonth, headcount, offer)) return null;
-  return savingPerPersonPerMonth * headcount;
-}
-
-/**
- * What is left of that after the firm has paid for this.
- *
- * The third beat, and the only subtraction on the page a reader can do in
- * their head from the two figures printed above it. That is the point of
- * printing all three: a saving with no visible derivation is a number a reader
- * has to take on trust, and this page does not ask for trust it has not earned.
- *
- * Not clamped at zero. If the modelled spend ever fell below the fee the honest
- * answer is a negative, and a page that could only ever print a saving would
- * keep printing one after the saving stopped being real. The assumption would
- * have to change a long way before that happened, which is an argument for
- * leaving the arithmetic alone rather than for guarding it.
- */
-export function modelledKept(
-  savingPerPersonPerMonth: number,
-  headcount: number,
-  tier: TierConfig = activeTier(),
-  offer: Offer = OFFER,
-): number | null {
-  const spend = modelledSpend(savingPerPersonPerMonth, headcount, offer);
-  if (spend === null) return null;
-  return spend - tier.price;
-}
-
-/**
- * Rounds to cents for display only. Never used by a claim: a claim reads the
- * exact value, so a figure that rounds down to look like a win cannot make a
- * sentence appear that the arithmetic does not support.
- */
-export function usd(value: number): string {
+export function amount(value: number): string {
   const cents = toCents(value);
   return Number.isInteger(cents) ? String(cents) : cents.toFixed(2);
 }
@@ -812,18 +810,12 @@ export function formatCount(value: number, locale?: string | null): string {
   return grouped(Math.round(value), locale, 0);
 }
 
-/* -------------------------------------------------------------------------
- * The guard
- * ---------------------------------------------------------------------- */
-
 /**
  * Everything wrong with a configuration, as sentences a person can act on.
  *
- * Returns a list rather than throwing so the same function can serve two
- * callers with different needs: the pre-flight script, which wants to print all
- * of the problems at once, and the build guard, which wants to stop. It takes
- * the offer as an argument rather than reading the shipped one so a candidate
- * edit can be checked before it is shipped, which is what the script does.
+ * Takes the offer as an argument rather than reading the shipped one so a
+ * candidate edit can be checked before it is shipped, which is what the script
+ * does.
  */
 export function validateOffer(offer: Offer = OFFER): string[] {
   const problems: string[] = [];
@@ -833,76 +825,99 @@ export function validateOffer(offer: Offer = OFFER): string[] {
     }
   };
 
+  // First: every package listed in order exists, and its three numbers
+  // are the kind of number they claim to be. A fractional coverage or a
+  // negative price would silently poison every derived figure on the page.
   for (const id of offer.order) {
-    const tier = offer.tiers[id];
-    if (!tier) {
-      problems.push(`tier ${id} is listed in order but missing from tiers`);
+    const pkg = offer.packages[id];
+    if (!pkg) {
+      problems.push(`package ${id} is listed in order but missing from packages`);
       continue;
     }
-
-    // Invariant 2: counts are counts. A fractional or negative count would
-    // silently poison every derived number that reads them.
-    count(`${id}.started`, tier.started);
-    count(`${id}.held`, tier.held);
-    if (tier.total !== null) count(`${id}.total`, tier.total);
-
-    // Invariant 1: a tier cannot owe more places than it has. This is the one
-    // that catches a booking taken against a tier that is already spent.
-    if (tier.total !== null && tier.started + tier.held > tier.total) {
-      problems.push(
-        `${id} is oversold: ${tier.started} started plus ${tier.held} held exceeds ${tier.total} places`,
-      );
+    count(`${id}.covers`, pkg.covers);
+    count(`${id}.draftCap`, pkg.draftCap);
+    if (typeof pkg.price !== 'number' || !(pkg.price > 0)) {
+      problems.push(`${id}.price must be a positive number, found ${String(pkg.price)}`);
     }
+    if (pkg.covers <= 0) problems.push(`${id}.covers must be at least one person`);
+    if (pkg.draftCap <= 0) problems.push(`${id}.draftCap must be at least one draft`);
   }
 
-  // Invariant 3: the ladder only ever goes up. A tier that is cheaper than the
-  // one before it would make advancing a tier a price cut, and would make the
-  // scarcity argument on the page an argument for waiting.
+  if (offer.order.length === 0) problems.push('the offer must sell at least one package');
+
+  // Next: the ladder only ever goes up, in all three of the numbers that
+  // define a package. A larger package that cost less, covered fewer people or
+  // pooled fewer drafts would make `packageForHeadcount` quote the wrong one
+  // and would make the table on the page an argument for buying downward.
   for (let i = 1; i < offer.order.length; i += 1) {
-    const prev = offer.tiers[offer.order[i - 1]];
-    const next = offer.tiers[offer.order[i]];
-    if (prev && next && !(prev.price < next.price)) {
+    const prev = offer.packages[offer.order[i - 1]];
+    const next = offer.packages[offer.order[i]];
+    if (!prev || !next) continue;
+    if (!(prev.price < next.price)) {
       problems.push(
-        `tier prices must increase along the ladder: ${prev.id} at ${prev.price} is not below ${next.id} at ${next.price}`,
+        `package prices must increase along the ladder: ${prev.id} at ${prev.price} is not below ${next.id} at ${next.price}`,
+      );
+    }
+    if (!(prev.covers < next.covers)) {
+      problems.push(
+        `package coverage must increase along the ladder: ${prev.id} covers ${prev.covers} which is not below ${next.id} at ${next.covers}`,
+      );
+    }
+    if (!(prev.draftCap < next.draftCap)) {
+      problems.push(
+        `package draft caps must increase along the ladder: ${prev.id} pools ${prev.draftCap} which is not below ${next.id} at ${next.draftCap}`,
       );
     }
   }
 
-  // Invariant 4: what we say we are selling is what the counts say we can sell.
-  const implied = activeTier(offer);
-  if (implied.id !== offer.declaredTier) {
+  // Then: the founding cohort cannot owe more places than it has. This
+  // is the one that catches a booking taken against a cohort already spent.
+  count('founding.places', offer.founding.places);
+  count('founding.started', offer.founding.started);
+  count('founding.held', offer.founding.held);
+  if (offer.founding.started + offer.founding.held > offer.founding.places) {
     problems.push(
-      `declaredTier is ${offer.declaredTier} but the counts imply ${implied.id}`,
+      `the founding cohort is oversold: ${offer.founding.started} started plus ` +
+        `${offer.founding.held} held exceeds ${offer.founding.places} places`,
     );
   }
 
-  // A fifth invariant, and the only one about the shape of the ladder rather
-  // than its numbers: it has to end somewhere it cannot run out. The last
-  // tier is what `activeTier` falls through to once every capped tier ahead of
-  // it is spent, so a capacity on that last tier is a capacity the page can be
-  // left standing on with no places behind it: a trade offered against nothing,
-  // beside a counter reading none of however many. Nothing downstream can catch
-  // it, because every helper it would ask is answering truthfully about a tier
-  // that genuinely is the active one. It has to be refused here.
-  const last = offer.tiers[offer.order[offer.order.length - 1]];
-  if (last && last.total !== null) {
-    problems.push(
-      `the last tier on the ladder must be uncapped, so the page always has a ` +
-        `tier to fall back to: ${last.id} declares ${last.total} places`,
-    );
+  // Then: every package must be cheaper for the whole firm than the
+  // smallest firm Managed will sell to pays. This is the claim the page is
+  // built on, and a package that failed it would leave the comparison table
+  // printing a saving that was actually a premium. Checked here rather than
+  // left to the component, because a component can only decline to render a
+  // sentence: it cannot decline to ship a price.
+  const floor = managedFloorMonthly(offer);
+  for (const id of offer.order) {
+    const pkg = offer.packages[id];
+    if (pkg && !(pkg.price < floor)) {
+      problems.push(
+        `${id} at ${pkg.price} is not below the Managed floor of ${floor}, so the ` +
+          `comparison the page is built on does not hold for it`,
+      );
+    }
   }
 
-  // Not one of the numbered five, but the same class of mistake: a coverage or cap of
-  // zero would make every per person number on the page meaningless.
-  count('covers', offer.covers);
-  count('draftCap', offer.draftCap);
+  // Last: the guarantee has to be a promise the smallest covered firm
+  // can actually be held to. Zero drafts would be a guarantee of nothing.
+  count('guaranteeDrafts', offer.guaranteeDrafts);
+  if (offer.guaranteeDrafts <= 0) {
+    problems.push('guaranteeDrafts must be at least one draft');
+  }
+
   count('setupFee', offer.setupFee);
-  if (offer.covers <= 0) problems.push('covers must be at least one person');
-  if (offer.draftCap <= 0) problems.push('draftCap must be at least one draft');
+  if (typeof offer.fx.usdPerEur !== 'number' || !(offer.fx.usdPerEur > 0)) {
+    problems.push(
+      `fx.usdPerEur must be a positive number, found ${String(offer.fx.usdPerEur)}`,
+    );
+  }
   for (const [label, value] of [
     ['compare.individual', offer.compare.individual],
     ['compare.team', offer.compare.team],
     ['compare.teamMax', offer.compare.teamMax],
+    ['compare.managed', offer.compare.managed],
+    ['compare.managedMin', offer.compare.managedMin],
   ] as const) {
     if (typeof value !== 'number' || !(value > 0)) {
       problems.push(`${label} must be a positive number, found ${String(value)}`);

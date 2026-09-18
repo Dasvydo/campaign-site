@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
+import { OFFER, formatMoney } from '../lib/offer';
+import { heroBreakEvenHourly } from '../lib/value';
 
 /**
  * The hero: masthead, the argument, and the pile of forty letters.
@@ -65,6 +67,7 @@ export function Hero({
   onCta: () => void;
 }) {
   const heroRef = useRef<HTMLElement | null>(null);
+  const payback = heroBreakEvenHourly();
   const tallyRef = useRef<SVGSVGElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
 
@@ -279,6 +282,23 @@ export function Hero({
               headline raises: drafted from what, in whose words, and who is
               on the hook for sending it. */}
           <p className="hero-deck">{c.hero.deck}</p>
+
+          {/* The one value figure the page states flatly. It is the fee
+              divided by the hours handed back at a stated volume, so it is
+              arithmetic on our own price rather than a claim about anyone's
+              staff: the reader knows what their people cost and does the
+              comparison themselves. Read from src/lib/value.ts, never typed,
+              and hedged in the copy because the volume it assumes is a
+              choice. */}
+          {payback !== null ? (
+            <p className="hero-payback" data-hero-payback>
+              {c.hero.payback.before}
+              <span className="hero-payback-fig">
+                {formatMoney(payback, c.htmlLang)} {OFFER.currency}
+              </span>
+              {c.hero.payback.after}
+            </p>
+          ) : null}
 
           <div className="hero-act">
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>

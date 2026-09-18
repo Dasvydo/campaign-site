@@ -44,6 +44,11 @@ export const da: Content = {
 
     ctaNote: 'Få et ja eller nej. De første to uger er gratis. Intet kort, og ingen betaling.',
 
+    payback: {
+      before: 'Det tjener sig selv hjem, hvis de folk, der svarer på jeres mails, koster mere end cirka ',
+      after: ' i timen.',
+    },
+
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {
       draftLabel: 'Svar i udkast, klar',
@@ -387,29 +392,39 @@ export const da: Content = {
 
   numbers: {
     eyebrow: 'Vores eget regnestykke',
-    title: 'Hvad det er værd',
+    title: 'Hvad I beholder',
+    lede: { before: 'Jeres post, jeres timepris. ', mark: 'Siden regner det ud', after: ' og påstår aldrig en besparelse.' },
     about: 'cirka\u00a0',
-
-    headsLabel: 'Personer, der skriver mail:',
-
-    spendLabel: 'Posten koster jer nu:',
-    feeLabel: 'Det her koster:',
-    keepLabel: 'Tilbage til jer:',
-    yearLabel: 'På et år:',
-
-    saving: '430',
-    savingLabel: 'Antaget sparet for én person, én måned:',
-
-    lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
+    inputs: {
+      people: { label: 'Personer, der svarer på mails' },
+      inbound: { label: 'Mails, hver af dem får om måneden' },
+      hourly: { label: 'Hvad en time af deres tid koster' },
+      minutes: { label: 'Minutter sparet pr. udkast', note: 'Jeres skøn. Vi har ikke taget tid på det endnu.' },
+    },
+    beats: {
+      drafts: { label: 'Udkast om måneden:' },
+      draftsNote: { before: 'Målt: ', after: ' % af den indgående post er det samme spørgsmål igen.' },
+      hours: { label: 'Timer, I får tilbage:' },
+      worth: { label: 'Hvad de timer koster jer i dag:' },
+      fee: { label: 'Det her koster:' },
+      keep: { label: 'I beholder:' },
+    },
+    units: { hours: '\u00a0t', perMonth: ' om måneden', perHour: ' i timen' },
+    yearLabel: 'Over et år:',
+    under: 'Med de tal tjener det sig ikke hjem. Det ville vi sige på mødet i stedet for at sælge det til jer.',
     moreLabel: 'Vis regnestykket',
     basis: [
       {
-        term: 'Hvad posten koster jer nu',
-        def: 'Den antagne besparelse for én person ganget med antallet af personer, der skriver mail. Flyt antallet, og tallet flytter sig med.',
+        term: 'Andelen',
+        def: 'Målt på en rigtig postkasse: den andel af den indgående post, der får et udkast, fordi det er det samme spørgsmål igen. Alt andet på panelet er ganget op fra den.',
       },
       {
-        term: 'Besparelsen',
-        def: 'Antagne sparede timer ved en mellemløn, omregnet fra euro. Én person, én måned.',
+        term: 'Minutterne',
+        def: 'Antaget, og endnu aldrig taget tid på. At skrive et svar fra bunden tager omkring fem minutter; at læse et færdigt udkast og sende det tager omkring ét. I kan sætte jeres eget tal ind.',
+      },
+      {
+        term: 'Timen',
+        def: 'Jeres, ikke vores. Hvad en person, der svarer på mails, koster virksomheden i timen, med arbejdsgiveromkostninger oveni. Vi har sat et groft tal ind for det marked, siden læses i.',
       },
     ],
     notes: [
@@ -446,7 +461,7 @@ export const da: Content = {
     eyebrow: 'To uger, så bestemmer I',
     title: 'Hvad det koster',
 
-    tierNames: { founding: 'allerførste', early: 'tidlige', standard: 'almindelige' },
+    cohortName: 'allerførste',
 
     feesTitle: 'Priserne',
     fees: [
@@ -461,10 +476,36 @@ export const da: Content = {
         note: 'En workshop på jeres egen rigtige post.',
         waived: {
           label: 'Bortfalder',
-          say: { before: 'Opsætningsprisen på ', after: ' bortfalder på det her trin.' },
+          say: { before: 'Opsætningsprisen på ', after: ' bortfalder, så længe der er ledige pladser.' },
         },
       },
     ],
+
+    packages: {
+      title: 'De to pakker',
+      lede: 'Samme produkt i begge. Det, der ændrer sig, er hvor mange mennesker det dækker, og hvor mange udkast firmaet deles om.',
+      pick: 'Vælg ved at tælle jeres folk.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'Til et firma op til ti personer.' },
+        { id: 'firm', name: 'Firm', note: 'Til et firma op til tyve. Samme pris ved elleve personer som ved tyve.' },
+      ],
+      feeLabel: 'Pr. måned, hele firmaet',
+      peopleLabel: 'Personer dækket, op til',
+      draftsLabel: 'Udkast om måneden, fælles',
+      note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
+    },
+
+    included: {
+      title: 'I begge pakker',
+      items: [
+        'Jeres hjemmeside læst ind i en vidensbase, og en samtale, der udfylder det, den mangler.',
+        'Jeres dokumenter indekseret, så et udkast kan citere gebyret, fristen og reglen.',
+        'En stemmeprofil for hver person, så et udkast lyder som den, der sender det.',
+        'Et spørgsmål tilbage til jer, når svaret ikke ligger på sagen, i stedet for et gæt.',
+        'Udkastene lander i Outlook. Intet sender sig selv.',
+        'Hostet i EU.',
+      ],
+    },
 
     covers: {
       title: 'Hvad prisen dækker',
@@ -484,10 +525,11 @@ export const da: Content = {
       title: 'En byttehandel, ikke en rabat',
       lede: {
         noProofYet: 'Vi har endnu ingen kunder at pege på.',
-        trade: 'De her pladser er en byttehandel: en lavere pris for jeres navn på arbejdet.',
+        trade: 'De her pladser er en byttehandel: opsætningsprisen bortfalder, for jeres navn på arbejdet.',
       },
+      reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
-      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Prisen nedenfor er den almindelige, og der er ikke noget at bytte for den.',
+      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er den samme, de betalte; opsætningsprisen opkræves nu fuldt ud.',
       givesTitle: 'Det, I giver',
       gives: [
         'En udtalelse til produktsiden, med jeres egne ord.',
@@ -498,12 +540,12 @@ export const da: Content = {
       getsTitle: 'Det, I får',
       gets: {
         fee: {
-          before: 'Prisen om måneden for hele virksomheden på de ',
-          after: ' pladser, ikke den almindelige pris.',
+          before: 'En plads blandt de ',
+          after: ' fem, hvilket er så mange virksomheder, én person kan give rigtig opmærksomhed ad gangen.',
         },
         setup: 'Opsætningsprisen bortfalder helt.',
       },
-      note: 'Vil I helst ikke nævnes, tager I den almindelige pris, og intet andet ved produktet ændrer sig.',
+      note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
     },
 
     freeTitle: 'De første to uger er gratis',
@@ -547,64 +589,16 @@ export const da: Content = {
       term: 'Hele virksomheden',
       sub: { label: 'Personer dækket, op til:' },
       per: 'om måneden',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Inden I booker',
     ask: {
-      before: 'Tilbuddet er sat til virksomheder på ti personer og opefter. Under det gør planen på ',
+      before: 'Tilbuddet er sat til virksomheder på tre personer og opefter. Under det gør planen på ',
       link: 'doviloop.dev',
       after: ' det samme arbejde og koster væsentligt mindre.',
     },
     ctaNote: 'To uger gratis. Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
-  },
-
-  compare: {
-    eyebrow: 'Regnestykket per person',
-    title: 'Hvad hver person koster',
-    lede: 'Én pris for hele virksomheden, uanset hvor mange I er.',
-
-    headsLabel: 'Personer, der skriver mail:',
-
-    keepLabel: 'Det sparer I i forhold til at betale per plads:',
-    yearLabel: 'På et år:',
-
-    firmLabel: 'Virksomheden betaler:',
-    perHeadLabel: 'Per person:',
-
-    ourLine: 'Jeres virksomhed',
-    refLine: 'Per plads',
-
-    managedPlan: 'Administreret',
-    managedSize: { label: 'Sælges per plads, fra et antal personer på:' },
-
-    teamPlan: 'Team-planen',
-    teamSize: { label: 'Personer, højst:' },
-    teamOut: {
-      before: ' holder op med at sælge ved et antal personer på ',
-      after: '. Der er ingen størrelse på den her skala, den giver tilbud på.',
-    },
-
-    sourceLabel: 'Hvor tallene her kommer fra',
-
-    rangeNote: {
-      before: 'Skalaen stopper ved det antal personer, prisen dækker: ',
-      after: '. Derover siger vi det og finder ud af det sammen med jer.',
-    },
-
-    individualPlan: 'Individuel',
-    individualNote: {
-      before:
-        ' er abonnementet til én person på produktsiden. Det købes en plads ad gangen, og hver plads har sin egen vidensbase. Én plads koster ',
-      after: ' om måneden.',
-    },
-
-    sourceNote: {
-      before: 'Priserne for Administreret og Individuel her er de offentlige priser på ',
-      link: 'doviloop.dev',
-      mid: ', aflæst den ',
-      after: '. Vi har ikke justeret dem.',
-    },
   },
 
   form: {

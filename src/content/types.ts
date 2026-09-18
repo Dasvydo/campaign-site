@@ -127,149 +127,6 @@ export interface PriceStop {
   say: { before: string; after: string };
 }
 
-/**
- * The per person table, the two claims that sit under it, and the one plan
- * that is named beside it rather than ranked inside it.
- *
- * Nothing here holds a figure. Our own cost a head is arithmetic on the flat
- * fee, and the rates it is set beside are doviloop.dev's published prices; both
- * are injected at render time, so a price that moves cannot leave a sentence on
- * this page saying otherwise.
- *
- * What the two claims argue, and why they are these two.
- *
- * `belowTeamCeiling` is the lead. It is a firm total against a firm total, not
- * a rate against a rate: Team stops selling at its seat ceiling, so the largest
- * firm Team will take is the largest bill Team can produce, and our one flat
- * fee is set against that. It carries no head count slot, because both sides of
- * it are fixed. It is true on a tier priced under that ceiling and false above
- * it, which is why it is gated on the offer rather than written as a promise.
- *
- * `curve` is the argument that needs no rival at all: one fee for the firm
- * means the cost per head falls as the firm grows. It names the smallest and
- * the largest head count the table shows and what each person costs at each, so
- * the reader can see the line running down rather than be told about it. It is
- * true at every tier and every pair of sizes, so it is ungated.
- *
- * Individual is not argued against, and it is not in the table. The table
- * compares firm level plans by head, so everything in it has to be a plan a
- * firm can buy for the whole firm: our own sizes, and Team at the largest firm
- * it will sell to. Individual is a plan for one person, bought a seat at a
- * time, so a row for it would put its seat rate in the same column a firm reads
- * our cost a head out of, and invite a comparison that is not like for like at
- * any size this offer is sold to. It is named in prose under the table instead,
- * by `individualNote`, which says what the plan is and what a seat costs and
- * claims nothing about it either way.
- *
- * There is no "nothing holds" fallback. With `curve` ungated, the claims list
- * is empty only where the table has fewer than two covered sizes to draw a
- * curve between, which the shipped coverage never produces; a fallback for that
- * would be a sentence maintained in three languages and never seen.
- */
-export interface CompareCopy {
-  eyebrow: string;
-  title: string;
-  lede: string;
-
-  /** The control. A head count the reader moves, so the label carries its own
-      colon and the count lands after it: "People who write mail: 14". Never a
-      sentence wrapped around the digit, because the number changes under the
-      reader's finger and no language should have to agree a noun with it
-      eleven times. */
-  headsLabel: string;
-
-  /**
-   * The lead figure: what a firm keeps every month by paying one firm fee
-   * rather than the Managed seat rate.
-   *
-   * Written whole in each language, naming the Managed plan inside the
-   * sentence rather than composing it from `managedPlan`. "Next to Managed"
-   * puts that name in a case slot, and Lithuanian wants the instrumental there
-   * while the nominative is what the legend needs. A composed label would be
-   * right in one place and wrong in the other, so the translator writes the
-   * sentence and the name in it, and carries its own colon.
-   */
-  keepLabel: string;
-  /** The same figure over twelve months. Label, then the figure. */
-  yearLabel: string;
-
-  /** The two supporting figures, both labels with the figure after them. */
-  firmLabel: string;
-  perHeadLabel: string;
-
-  /** The names that ride the two lines.
-   *
-   *  Plain language, not plan names. A visitor landing here has never read the
-   *  product site, and asking them to learn what "Managed" is before the biggest
-   *  figure in the section means anything is the thing that made this section
-   *  hard. What Managed is, is per seat pricing, so the chart says per seat. The
-   *  plan it refers to is named in the disclosure underneath, where a reader who
-   *  wants to go and check the published rate can find it. */
-  ourLine: string;
-  refLine: string;
-
-  /** The plan the flat line is drawn against, and the floor it starts at.
-      `managedSize` is a label with the count after it, "People, at least: 10",
-      for the same reason `headsLabel` is. */
-  managedPlan: string;
-  managedSize: { label: string };
-
-  /**
-   * Team, which is named but never drawn.
-   *
-   * It stops selling at nine seats, and this comparison starts at ten, so there
-   * is no size on the control where Team has a price at all. That absence is
-   * the point rather than an omission: the cheaper looking plan will not quote
-   * a firm this size. "<before><the Team seat ceiling><after>", the count
-   * ending its clause with no noun behind it to agree with.
-   */
-  teamPlan: string;
-  teamSize: { label: string };
-  teamOut: { before: string; after: string };
-
-  /** The summary on the disclosure holding everything a reader does not need
-      in order to understand the picture, and does need in order to check it:
-      the two plans this offer is not, the head count the fee covers, and whose
-      published rates these are. */
-  sourceLabel: string;
-
-  /** Why the control stops where it does, so a reader who runs it to the end
-      knows the ceiling is the offer's and not the widget's.
-      "<before><the head count the fee covers><after>" */
-  rangeNote: { before: string; after: string };
-
-  /**
-   * The Individual plan, named under the chart instead of drawn on it.
-   * "<before><what one Individual seat costs a month><after>"
-   *
-   * This is the only place the page says the Individual plan exists, and it
-   * exists because the rate is public and hiding it would be worse than saying
-   * it. What it must do is describe the plan: one person, bought a seat at a
-   * time, each seat keeping its own knowledge base. What it must not do is rank
-   * it. No "cheaper", no "better", no "instead of", no setting its seat rate
-   * against our cost a head, and no arithmetic on it: a firm that wants a
-   * separate knowledge base for every person can multiply it themselves.
-   *
-   * That restraint is not a style note. At the ten person floor this page
-   * advertises, ten Individual seats cost less than this offer does, and the
-   * flat fee only passes that seat rate well above it. Drawing the plan on the
-   * chart, or setting its rate beside our cost a head, would be the page
-   * arguing against itself at the bottom of its own range.
-   *
-   * One figure only, and it ends its clause with no noun behind it to agree
-   * with. The rate is doviloop.dev's, so it is covered by `sourceNote`, which
-   * is rendered directly after this and names both published rates.
-   */
-  individualPlan: string;
-  individualNote: { before: string; after: string };
-
-  /** Whose prices the published rates in this section are, and when we read
-      them. It covers the Managed rate on the chart and the Individual rate in
-      the note above it, so it names both rather than pointing at a line.
-      "<before><doviloop.dev><mid><the date they were read><after>" */
-  sourceNote: { before: string; link: string; mid: string; after: string };
-}
-
 export interface SelectOption {
   value: string;
   label: string;
@@ -325,6 +182,17 @@ export interface Content {
 
     /** Sits under the hero button. The button's words are nav.cta. */
     ctaNote: string;
+
+    /** The one value figure the page states flatly, and the reason it may.
+        "<before><the break even hourly cost><after>": the fee divided by the
+        hours handed back, on the largest package at its own coverage and at
+        the low end of the illustrative volume. It is arithmetic on our own
+        price and a stated volume, not a claim about what anyone's staff cost;
+        the reader supplies that and does the comparison. The figure comes
+        from src/lib/value.ts and is hedged with "about" in the copy, because
+        it moves with the volume and the minutes, and the sentence should
+        sound like it knows that. */
+    payback: { before: string; after: string };
 
     /** The pile of letters, and the one dealt off the top of it.
 
@@ -419,56 +287,62 @@ export interface Content {
     desks: [DemoDesk, DemoDesk, DemoDesk];
   };
 
-  /**
-   * The arithmetic, in three beats a reader can do in their head.
-   *
-   * What mail costs the firm now, what this costs, and what is left. They are
-   * one subtraction, printed in order, driven by one head count the reader
-   * moves. That is deliberate: the page used to state a saving and leave the
-   * reader to take it on trust, because the figure it was subtracted from was
-   * never on the screen.
-   *
-   * Every label carries its own colon and the figure lands after it, for the
-   * reason the whole file gives: the head count changes under the reader's
-   * finger and no language should have to agree a noun with it eleven times.
-   */
+  /** The calculator. The visitor supplies four figures and the page does the
+      sum in front of them, in order, so every number on the panel is one the
+      reader can check with a pencil. Nothing here holds a figure: the share
+      of mail that gets a draft and the assumed minutes live in
+      src/lib/value.ts, the fee in src/lib/offer.ts, and the rest is theirs. */
   numbers: {
     eyebrow: string;
     title: string;
+    /** "Your figures, our arithmetic." The mark is highlighted. */
+    lede: { before: string; mark: string; after: string };
     /** "about ", set before every modelled figure, so the hedge is written
-        once. The fee does not take it: that one is a price, not a model. */
+        once. Never set before the fee, which is exact. */
     about: string;
 
-    /** The control. */
-    headsLabel: string;
+    /** The four controls. Each label ends its own clause, and the figure the
+        control shows sits after it, so no language has to agree a noun with
+        a number it is handed at render time. */
+    inputs: {
+      people: { label: string };
+      inbound: { label: string };
+      hourly: { label: string };
+      /** The one input that is an assumption of ours rather than a fact of
+          theirs. `note` says so in words beside the control. */
+      minutes: { label: string; note: string };
+    };
 
-    /** The three beats, in the order they are read. */
-    spendLabel: string;
-    feeLabel: string;
-    keepLabel: string;
-    /** The third beat again over twelve months. */
+    /** The rows of the sum, read down. Each is a label with its colon, then
+        the figure. `fee` takes the package name after its figure, in brackets
+        the component supplies. */
+    beats: {
+      drafts: { label: string };
+      /** Said under the drafts row: "<before><the measured share, as a
+          percentage><after>". The share is read from value.ts, so the one
+          measured figure on the panel arrives from the same place the sum
+          reads it. */
+      draftsNote: { before: string; after: string };
+      hours: { label: string };
+      worth: { label: string };
+      fee: { label: string };
+      keep: { label: string };
+    };
+    /** Units the figures wear. Neither inflects in any of the three
+        languages, which is what makes a bare unit beside a numeral safe. */
+    units: { hours: string; perMonth: string; perHour: string };
+    /** "Over a year:", then the kept figure times twelve. */
     yearLabel: string;
+    /** Printed in place of the year line where the sum comes out below zero.
+        The page says it does not clear rather than hiding the row. */
+    under: string;
 
-    /**
-     * The one assumption the whole section rests on: what an hour of mail a
-     * person stops writing is worth to the firm, a month.
-     *
-     * A string, parsed once, because it is the single input to every figure
-     * above and the disclosure has to be able to name it. It is not a price
-     * and does not belong in the offer: it is an assumption this section
-     * argues from, and changing it changes the sentence in `basis` as much as
-     * it changes the sum.
-     */
-    saving: string;
-    savingLabel: string;
-
-    /** "These are a model, not a measurement." The mark is highlighted. */
-    lede: { before: string; mark: string; after: string };
-    /** The disclosure that carries the basis of every figure above, the
-        assumption they are built on, and the comparison with the plans on the
-        product site for the reader who is choosing between them. */
+    /** The disclosure that carries the basis of every figure above. */
     moreLabel: string;
-    basis: [BasisRow, BasisRow];
+    /* One line per thing the sum rests on: the measured share, the assumed
+       minutes, the hourly cost being theirs. Pinned to a length so a locale
+       cannot quietly carry a different number of them. */
+    basis: [BasisRow, BasisRow, BasisRow];
     notes: [string, string];
   };
 
@@ -490,17 +364,41 @@ export interface Content {
     eyebrow: string;
     title: string;
 
-    /** The active tier's own name, dropped into the founding block so that one
-        block is correct on every tier that sells a capped price against a
-        trade. Both `founding` and `early` are capped and both waive nothing the
-        other does not, so a block that said "founding" in fixed type would be
-        wrong the morning the first tier sells out. `standard` is here for
-        completeness; the block it feeds is replaced by `spotsClosed` there. */
-    tierNames: { founding: string; early: string; standard: string };
+    /** The founding cohort's own name, dropped into the block that describes
+        the trade. One word rather than a name per tier: the page no longer
+        sells a price ladder, so there is one cohort and one name for it. The
+        block it feeds is replaced by `spotsClosed` once the cohort is full. */
+    cohortName: string;
 
     feesTitle: string;
     /** The monthly fee for the firm, then the one off setup fee. */
     fees: [PriceFee, PriceFee];
+
+    /** The two packages, smallest firm first.
+
+        Only the words live here. Every figure beside them, the fee, the
+        coverage and the pooled draft cap, is read from the offer at render
+        time, which is why a row carries an `id` rather than a price: the row
+        has to be matched to the right package, and matching it by position
+        would put Firm's fee beside Desk's name the first time somebody
+        reordered the list. A row whose id names no package renders nothing. */
+    packages: {
+      title: string;
+      lede: string;
+      /** Names the group of package cards for a screen reader, and sits
+          above them for everyone else: pick by counting your people. */
+      pick: string;
+      rows: readonly { id: string; name: string; note: string }[];
+      /** Column headings. Neither carries a figure. */
+      feeLabel: string;
+      peopleLabel: string;
+      draftsLabel: string;
+      note: string;
+    };
+
+    /** What is in the product, and the same in both packages. No figures:
+        these are the things a firm gets, and the ceilings are `covers`. */
+    included: { title: string; items: readonly string[] };
 
     /** What the flat fee covers. Both ceilings are firm level rather than per
         person, and both numbers come from the offer. */
@@ -535,6 +433,14 @@ export interface Content {
           depend on how many firms have taken one, so it is always printed and
           has to read as a whole sentence on its own. */
       lede: { noProofYet: string; trade: string };
+      /** Why the price is what it is, printed beside it in the open so the
+          price never appears without its reason.
+          "<before><the number of places in the cohort><after>". The count is
+          the cohort's total, read from the offer, and it ends its clause: the
+          noun that names what is counted comes before it, so the only
+          reachable count, the one in `OFFER.founding.places`, is the one
+          each translation has to be right for. */
+      reason: { before: string; after: string };
       /** A label, then the count, then the total: "Places still open: 3 of 5".
           The numeral ends its clause and nothing after it agrees with it, so
           the line is right at one place left as well as at five. One is the
@@ -577,10 +483,6 @@ export interface Content {
     /** Sits under the button at the foot of the band. The button is nav.cta. */
     ctaNote: string;
   };
-
-  /** What each person costs here, set beside the two published rates on
-      doviloop.dev. */
-  compare: CompareCopy;
 
   form: {
     eyebrow: string;

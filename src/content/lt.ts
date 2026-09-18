@@ -44,6 +44,11 @@ export const lt: Content = {
 
     ctaNote: 'Taip arba ne. Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
+    payback: {
+      before: 'Tai atsiperka, jei žmonės, atsakantys į Jūsų laiškus, kainuoja daugiau nei maždaug ',
+      after: ' už valandą.',
+    },
+
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
       draftLabel: 'Atsakymo juodraštis, paruoštas',
@@ -387,29 +392,39 @@ export const lt: Content = {
 
   numbers: {
     eyebrow: 'Mūsų pačių skaičiavimas',
-    title: 'Kiek tai verta',
+    title: 'Kiek Jums lieka',
+    lede: { before: 'Jūsų laiškai, Jūsų valandos kaina. ', mark: 'Puslapis suskaičiuoja', after: ' ir niekada neteigia, kiek sutaupysite.' },
     about: 'maždaug\u00a0',
-
-    headsLabel: 'Žmonių, rašančių laiškus:',
-
-    spendLabel: 'Laiškai Jums kainuoja dabar:',
-    feeLabel: 'Tai kainuoja:',
-    keepLabel: 'Jums lieka:',
+    inputs: {
+      people: { label: 'Žmonės, atsakantys į laiškus' },
+      inbound: { label: 'Laiškų, kuriuos kiekvienas gauna per mėnesį' },
+      hourly: { label: 'Kiek kainuoja jų darbo valanda' },
+      minutes: { label: 'Minučių, sutaupomų vienam juodraščiui', note: 'Jūsų įvertis. Mes to dar nematavome.' },
+    },
+    beats: {
+      drafts: { label: 'Juodraščių per mėnesį:' },
+      draftsNote: { before: 'Išmatuota: ', after: ' % gaunamų laiškų yra tas pats klausimas iš naujo.' },
+      hours: { label: 'Valandų, kurias atgaunate:' },
+      worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
+      fee: { label: 'Tai kainuoja:' },
+      keep: { label: 'Jums lieka:' },
+    },
+    units: { hours: '\u00a0val.', perMonth: ' per mėnesį', perHour: ' už valandą' },
     yearLabel: 'Per metus:',
-
-    saving: '430',
-    savingLabel: 'Numanomai sutaupoma vienam žmogui per mėnesį:',
-
-    lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
+    under: 'Su tokiais skaičiais tai neatsiperka. Pokalbio metu tai pasakytume, o ne parduotume.',
     moreLabel: 'Parodyti skaičiavimą',
     basis: [
       {
-        term: 'Kiek laiškai Jums kainuoja dabar',
-        def: 'Numanomas sutaupymas vienam žmogui, padaugintas iš žmonių, rašančių laiškus, skaičiaus. Pastumkite skaičių, ir suma pasikeis kartu.',
+        term: 'Dalis',
+        def: 'Išmatuota tikroje pašto dėžutėje: gaunamų laiškų dalis, kuriai parengiamas juodraštis, nes tai tas pats klausimas iš naujo. Visa kita skydelyje padauginta iš jos.',
       },
       {
-        term: 'Sutaupymas',
-        def: 'Numanomos sutaupytos valandos esant vidutinio lygio atlyginimui, perskaičiuota iš eurų. Vienas žmogus, vienas mėnuo.',
+        term: 'Minutės',
+        def: 'Prielaida, dar niekada neišmatuota. Parašyti atsakymą nuo nulio užtrunka apie penkias minutes; perskaityti parengtą juodraštį ir išsiųsti užtrunka apie vieną. Galite įrašyti savo skaičių.',
+      },
+      {
+        term: 'Valanda',
+        def: 'Jūsų, ne mūsų. Kiek įmonei kainuoja į laiškus atsakančio žmogaus darbo valanda, su darbdavio mokesčiais. Valdiklį atidarėme su apytiksliu skaičiumi rinkai, kurioje skaitomas šis puslapis.',
       },
     ],
     notes: [
@@ -446,7 +461,7 @@ export const lt: Content = {
     eyebrow: 'Dvi savaitės, tada nusprendžiate',
     title: 'Kiek kainuoja',
 
-    tierNames: { founding: 'steigiamasis', early: 'ankstyvasis', standard: 'standartinis' },
+    cohortName: 'steigiamasis',
 
     feesTitle: 'Kainos',
     fees: [
@@ -461,10 +476,36 @@ export const lt: Content = {
         note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.',
         waived: {
           label: 'Netaikomas',
-          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ', šiame etape netaikomas.' },
+          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ' netaikomas, kol yra laisvų vietų.' },
         },
       },
     ],
+
+    packages: {
+      title: 'Du paketai',
+      lede: 'Abiejuose tas pats produktas. Skiriasi tik tai, kiek žmonių apima ir kiek juodraščių dalijasi visa įmonė.',
+      pick: 'Rinkitės suskaičiavę savo žmones.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'Įmonei iki dešimties žmonių.' },
+        { id: 'firm', name: 'Firm', note: 'Įmonei iki dvidešimties. Tokia pati kaina prie vienuolikos žmonių kaip ir prie dvidešimties.' },
+      ],
+      feeLabel: 'Per mėnesį, visai įmonei',
+      peopleLabel: 'Apimami žmonės, iki',
+      draftsLabel: 'Juodraščiai per mėnesį, bendri',
+      note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
+    },
+
+    included: {
+      title: 'Abiejuose paketuose',
+      items: [
+        'Jūsų svetainė perkelta į žinių bazę, o pokalbis užpildo tai, ko joje trūksta.',
+        'Jūsų dokumentai suindeksuoti, kad juodraštis galėtų cituoti mokestį, terminą ir taisyklę.',
+        'Kiekvieno žmogaus balso profilis, kad juodraštis skambėtų kaip tas, kuris jį siunčia.',
+        'Klausimas Jums, kai atsakymo nėra bylose, o ne spėjimas.',
+        'Juodraščiai atsiduria „Outlook“. Niekas nesiunčiama savaime.',
+        'Talpinama ES.',
+      ],
+    },
 
     covers: {
       title: 'Ką apima mokestis',
@@ -484,10 +525,11 @@ export const lt: Content = {
       title: 'Mainai, o ne nuolaida',
       lede: {
         noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
-        trade: 'Šios vietos yra mainai: mažesnis mokestis už Jūsų vardą prie šio darbo.',
+        trade: 'Šios vietos yra mainai: netaikomas įdiegimo mokestis už Jūsų vardą prie šio darbo.',
       },
+      reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
-      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Žemiau nurodytas mokestis yra standartinis, ir nėra dėl ko mainytis.',
+      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau toks pat, kokį mokėjo jie; įdiegimo mokestis dabar taikomas visas.',
       givesTitle: 'Ką duodate Jūs',
       gives: [
         'Atsiliepimą produkto svetainei, savais žodžiais.',
@@ -497,10 +539,10 @@ export const lt: Content = {
       ],
       getsTitle: 'Ką gaunate Jūs',
       gets: {
-        fee: { before: 'Įmonei taikomas ', after: ' mėnesinis mokestis vietoj standartinio.' },
+        fee: { before: 'Vieta tarp ', after: ' penkių, o tiek įmonių vienas žmogus gali iš tikrųjų aprėpti vienu metu.' },
         setup: 'Visas įdiegimo mokestis netaikomas.',
       },
-      note: 'Jei nenorite būti įvardyti, rinkitės standartinį mokestį, ir niekas kitas produkte nesikeičia.',
+      note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
     },
 
     freeTitle: 'Pirmos dvi savaitės nemokamos',
@@ -546,64 +588,16 @@ export const lt: Content = {
       term: 'Visa įmonė',
       sub: { label: 'Aprėpiama žmonių, ne daugiau kaip:' },
       per: 'per mėnesį',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Prieš užsakydami',
     ask: {
-      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
+      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo trijų žmonių. Mažesnėms komandoms planas svetainėje ',
       link: 'doviloop.dev',
       after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
     },
     ctaNote: 'Dvi savaitės nemokamai. Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
-  },
-
-  compare: {
-    eyebrow: 'Suma vienam žmogui',
-    title: 'Kiek kainuoja kiekvienas žmogus',
-    lede: 'Viena kaina visai įmonei, kad ir kiek Jūsų būtų.',
-
-    headsLabel: 'Žmonių, rašančių laiškus:',
-
-    keepLabel: 'Tiek sutaupote, palyginti su mokėjimu už kiekvieną vietą:',
-    yearLabel: 'Per metus:',
-
-    firmLabel: 'Įmonė moka:',
-    perHeadLabel: 'Kiekvienam žmogui:',
-
-    ourLine: 'Jūsų įmonė',
-    refLine: 'Už vietą',
-
-    managedPlan: 'Prižiūrimas planas',
-    managedSize: { label: 'Parduodamas po vietą, nuo tokio žmonių skaičiaus:' },
-
-    teamPlan: 'Komandos planas',
-    teamSize: { label: 'Žmonių, ne daugiau kaip:' },
-    teamOut: {
-      before: ' nebeparduodamas nuo tokio žmonių skaičiaus: ',
-      after: '. Šioje skalėje nėra dydžio, kuriam jis teiktų pasiūlymą.',
-    },
-
-    sourceLabel: 'Iš kur šie skaičiai',
-
-    rangeNote: {
-      before: 'Skalė baigiasi ties tokiu žmonių skaičiumi, kurį dengia mokestis: ',
-      after: '. Viršijus jį, pasakysime ir susitarsime su Jumis.',
-    },
-
-    individualPlan: 'Individualus',
-    individualNote: {
-      before:
-        ' yra planas vienam žmogui produkto svetainėje. Jis perkamas po vieną vietą, ir kiekviena vieta turi savo žinių bazę. Viena vieta kainuoja ',
-      after: ' per mėnesį.',
-    },
-
-    sourceNote: {
-      before: 'Prižiūrimo plano ir Individualaus plano kainos čia yra viešos kainos svetainėje ',
-      link: 'doviloop.dev',
-      mid: ', perskaitytos ',
-      after: '. Mes jų nekoregavome.',
-    },
   },
 
   form: {

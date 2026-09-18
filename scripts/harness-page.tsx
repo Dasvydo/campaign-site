@@ -13,14 +13,12 @@
  * measuring and the deriving; verify-payload.mjs does the asserting, because
  * only this side can import the offer.
  *
- * The ledger in the numbers section is measured the same way, and for a worse
- * reason: it is the one section that has already shipped with its figures
- * missing. Two of its three rows are arithmetic on the offer and the third is
- * the assumption the other two are computed from, so the numerals are read back
- * out of the DOM and set against what `modelledMultiple` and
- * `modelledMultiple` returns. Nothing about the ledger is asserted from the
- * words beside it, because the words were all still correct on the day the
- * figures went blank.
+ *
+ * The calculator is measured by driving it. Its four controls are set to a
+ * grid of values through the native setter, and at every point the figures on
+ * the panel are read back out of the DOM and set against what src/lib/value.ts
+ * computes for those inputs, so a panel doing its own arithmetic fails at the
+ * inputs where it differs and names them.
  */
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
@@ -31,35 +29,37 @@ import { TEAM_SIZES, route } from '../src/lib/contract';
 import type { Locale } from '../src/lib/contract';
 import {
   OFFER,
-  activeTier,
-  comparableHeadcounts,
-  isCapped,
-  modelledKept,
-  modelledSpend,
-  remainingSpots,
+  headlinePackage,
+  foundingOpen,
+  packageById,
+  packages,
+  remainingFoundingPlaces,
   setupDue,
   formatCount,
   formatMoney,
 } from '../src/lib/offer';
-
-/* React tracks an input's value on the DOM node, so assigning `.value` and
-   firing an event is ignored: the tracker sees no change and swallows it. The
-   native setter writes past the tracker, which is how a range input can be
-   driven from a test at all. */
-function setNativeValue(el: HTMLInputElement, value: string): void {
-  const proto = Object.getPrototypeOf(el) as object;
-  const desc = Object.getOwnPropertyDescriptor(proto, 'value');
-  if (desc?.set) desc.set.call(el, value);
-  else el.value = value;
-}
+import type { PackageId } from '../src/lib/offer';
+import {
+  VALUE,
+  draftRatePercent,
+  draftsPerMonth,
+  formatShare,
+  heroBreakEvenHourly,
+  hoursBack,
+  hourlyStart,
+  keptPerMonth,
+  packageFor,
+  peopleRange,
+  worthPerMonth,
+} from '../src/lib/value';
 
 /* The page after the port and after the flat fee landed: hero, the worked
    example, who it is for, what it is worth, what it costs, what each person
    costs, the fit check. "how" and "objections" are gone, the first because the
    worked example shows what it described and the second because the objections
-   are answered where they arise. "compare" is the newest of them and sits
-   between the terms and the form on purpose: it is the second half of the
-   terms, read before anybody is asked for an email address. The order below is
+   are answered where they arise. The comparison with the product site's per
+   seat plans is gone too, since 2026-09-18: it argued from somebody else's
+   rates, and the calculator argues from the reader's own. The order below is
    the document order the page is asserted to have, not just a set of ids. */
 const SECTION_IDS = ['hero', 'demo', 'who', 'numbers', 'price', 'qualifier'];
 
@@ -124,25 +124,35 @@ function leaves(value: unknown, path = '', out: Array<[string, string]> = []): A
   return out;
 }
 
-/* The firm the ledger models, in people.
+/* React tracks an input's value through its own setter, so assigning
+   `el.value` from a test leaves the tracker believing nothing changed and the
+   change event it then hears is ignored. The prototype's setter is the one
+   React did not wrap. */
+function setNativeValue(el: HTMLInputElement, value: string): void {
+  const proto = Object.getPrototypeOf(el) as object;
+  const desc = Object.getOwnPropertyDescriptor(proto, 'value');
+  if (desc?.set) desc.set.call(el, value);
+  else el.value = value;
+}
 
-   <Numbers /> holds this as MODEL_FIRM and does not export it, so it is
-   restated here rather than imported. It is not a price and it is not a figure
-   the page prints: it is the smallest firm this is sold to, which is the count
-   the qualifier's first qualifying band opens at. Everything derived from it
-   below still comes out of src/lib/offer.ts, and `smallestSoldTo` ties the
-   restated constant to the contract so the two cannot drift apart in silence,
-   which is the only way a mirrored constant is safe to keep. */
-const MODEL_FIRM = 10;
-
-/* The smallest head count the qualifier will take a lead from, read off the
-   contract rather than written down: the first band in TEAM_SIZES that routes
-   to anything other than too_small, taken at its lower bound. */
-const smallestSoldTo = (): number => {
-  for (const size of TEAM_SIZES) {
-    if (route(size, 'outlook').outcome !== 'too_small') return Number(size.replace(/\D.*$/, ''));
+/* The grid the calculator is driven across. Every end of every range, the
+   place each control opens, and the smallest and largest firm each package
+   covers, because those are the head counts where the fee row changes package
+   and where a panel reading the wrong one would show. */
+const drivePoints = (): Array<[number, number, number, number]> => {
+  const pr = peopleRange();
+  const heads = new Set<number>([pr.min, pr.start, pr.max, ...packages().map((p) => p.covers), ...packages().map((p) => p.covers + 1)]);
+  const out: Array<[number, number, number, number]> = [];
+  for (const h of [...heads].filter((n) => n >= pr.min && n <= pr.max).sort((a, b) => a - b)) {
+    for (const inb of [VALUE.inbound.min, VALUE.inbound.start, VALUE.inbound.max]) {
+      for (const hr of [VALUE.hourly.min, VALUE.hourly.max]) {
+        for (const min of [VALUE.minutes.min, VALUE.minutesPerDraft.value, VALUE.minutes.max]) {
+          out.push([h, inb, hr, min]);
+        }
+      }
+    }
   }
-  return 0;
+  return out;
 };
 
 (globalThis as unknown as { __RUN_PAGE__: () => Promise<void> }).__RUN_PAGE__ = async () => {
@@ -151,10 +161,10 @@ const smallestSoldTo = (): number => {
   /* Read once, outside the loop. The three locales are three renderings of one
      offer, so every figure below has to be the same in all three, and reading
      the tier three times would hide a counter that moved mid-run. */
-  const tier = activeTier();
-  const capped = isCapped(tier);
-  const spotsLeft = remainingSpots(tier);
-  const setupWaived = tier.setupWaived && setupDue(tier) === 0;
+  const tier = headlinePackage();
+  const capped = foundingOpen();
+  const spotsLeft = remainingFoundingPlaces();
+  const setupWaived = setupDue() === 0;
 
   for (const locale of ['en', 'da', 'lt'] as Locale[]) {
     const host = document.createElement('div');
@@ -247,7 +257,7 @@ const smallestSoldTo = (): number => {
     const text = stepOneText + '\n' + stepTwoText;
     const c = content[locale];
     const [firmFee, setupFee] = c.price.fees;
-    const tierName = c.price.tierNames[tier.id];
+    const tierName = c.price.cohortName;
 
     /* The three ways the page prints a number, copied from <Price /> and
        <Compare /> so an assembled string is assembled exactly the way the
@@ -291,8 +301,10 @@ const smallestSoldTo = (): number => {
       ...c.demo.desks[0].sources.map((x) => x.label),
       c.who.title, ...c.who.groups.map((g) => g.line), c.who.notes.seats.mark,
       c.numbers.title, c.numbers.lede.mark,
-      c.numbers.headsLabel, c.numbers.spendLabel, c.numbers.feeLabel,
-      c.numbers.keepLabel, c.numbers.moreLabel,
+      ...Object.values(c.numbers.inputs).map((i) => i.label), c.numbers.inputs.minutes.note,
+      ...Object.values(c.numbers.beats).map((b) => ('label' in b ? b.label : '')).filter(Boolean),
+      c.numbers.yearLabel, c.numbers.moreLabel, ...c.numbers.basis.map((b) => b.term),
+      ...c.numbers.notes,
       c.price.eyebrow, c.price.title, c.price.feesTitle, c.price.freeTitle,
       c.price.freeNote, c.price.termsLabel, c.price.whenTitle,
       /* The fee sheet still has a term and a period per line. What it no longer
@@ -322,16 +334,10 @@ const smallestSoldTo = (): number => {
             ...(setupWaived ? [c.price.founding.gets.setup] : []),
           ]
         : [c.price.founding.spotsClosed]),
-      /* The sum per head. Every figure in this section is arithmetic and is
-         driven against the offer below; these are the words around them. */
-      /* The plans on the product site, now a footnote under the arithmetic
-         rather than a section of their own. Still in the DOM, so still here. */
-      /* One plan is drawn and two are only named. Team and Individual both sit
-         in sentences with a figure in them, so those sentences are asserted
-         assembled rather than listed here. */
-      c.compare.managedPlan, c.compare.managedSize.label,
-      c.compare.teamPlan, c.compare.individualPlan,
-      c.compare.sourceNote.link,
+      /* The two packages, in the open, and what is in both of them. */
+      c.price.packages.pick, c.price.packages.lede,
+      ...c.price.packages.rows.map((r) => r.name), ...c.price.packages.rows.map((r) => r.note),
+      c.price.included.title, ...c.price.included.items,
       c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel,
       c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel, c.form.submit,
       c.footer.tagline, c.footer.privacyLink, c.footer.officeLabel,
@@ -357,11 +363,11 @@ const smallestSoldTo = (): number => {
       ],
       ['the flat firm fee, on the fee sheet', firmFee.term + money(tier.price) + firmFee.per],
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],
-      ['people covered by the fee', c.price.covers.people.label + figure(OFFER.covers)],
-      ['the pooled draft cap', c.price.covers.drafts.label + figure(OFFER.draftCap)],
+      ['people covered by the fee', c.price.covers.people.label + figure(tier.covers)],
+      ['the pooled draft cap', c.price.covers.drafts.label + figure(tier.draftCap)],
       [
         'the monthly total under the timeline',
-        c.price.total.term + c.price.total.sub.label + ' ' + figure(OFFER.covers) + money(tier.price),
+        c.price.total.term + c.price.total.sub.label + ' ' + figure(tier.covers) + money(tier.price),
       ],
       /* The plan with no row. Everything else in this section is arithmetic
          the table or a claim would give away if it went missing, and this is
@@ -369,29 +375,36 @@ const smallestSoldTo = (): number => {
          into a sentence. Nothing else on the page would move if it arrived
          blank, so a sentence reading "One seat costs  a month" would ship in
          three languages without a single check noticing. */
+      /* The hero's one flat figure. Arithmetic on the fee and a stated
+         volume, read from value.ts; a hero that lost it would still read as
+         a sentence, which is why the words alone prove nothing. */
       [
-        'the Individual note, with the seat rate it publishes',
-        c.compare.individualPlan + c.compare.individualNote.before +
-          money(OFFER.compare.individual) + c.compare.individualNote.after,
+        'the hero line, with the break even hourly cost',
+        c.hero.payback.before + money(heroBreakEvenHourly() ?? NaN) + c.hero.payback.after,
       ],
-      /* Team is named only to say it will not quote a firm this size, so the
-         sentence and the ceiling it turns on are held together. */
+      /* Each package card: its name and then its fee, the way the card lays
+         them out. Two cards, both read from the offer by id. */
+      ...packages().map((p): [string, string] => [
+        `the ${p.id} card, with its fee`,
+        (c.price.packages.rows.find((r) => r.id === p.id)?.name ?? '') + money(p.price) + firmFee.per,
+      ]),
+      ...packages().map((p): [string, string] => [
+        `the ${p.id} card, with its coverage and pooled drafts`,
+        c.price.packages.peopleLabel + ' ' + figure(p.covers) +
+          c.price.packages.draftsLabel + ' ' + figure(p.draftCap),
+      ]),
+      /* The reason beside the price, with the cohort's size in it. */
+      ...(capped
+        ? ([[
+            'the reason the price is low, with the number of places',
+            c.price.founding.reason.before + figure(OFFER.founding.places) + c.price.founding.reason.after,
+          ]] as Array<[string, string]>)
+        : []),
+      /* The one measured figure on the calculator, as a percentage, from
+         value.ts and not from the copy. */
       [
-        'the Team note, with the seat ceiling it stops at',
-        c.compare.teamPlan + c.compare.teamOut.before +
-          figure(OFFER.compare.teamMax) + c.compare.teamOut.after,
-      ],
-      /* Why the control stops where it does. The ceiling is the offer's
-         coverage, so a widget that grew a wider range than the fee covers
-         would leave this sentence describing a limit it no longer has. */
-      [
-        'the range note, with the head count the fee covers',
-        c.compare.rangeNote.before + figure(OFFER.covers) + c.compare.rangeNote.after,
-      ],
-      [
-        'the source note, with the date the rival rates were read',
-        c.compare.sourceNote.before + c.compare.sourceNote.link + c.compare.sourceNote.mid +
-          OFFER.compare.readAt + c.compare.sourceNote.after,
+        'the measured draft share, under the drafts row',
+        c.numbers.beats.draftsNote.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.beats.draftsNote.after,
       ],
       ...(capped
         ? ([
@@ -402,7 +415,7 @@ const smallestSoldTo = (): number => {
             [
               'the spots counter',
               c.price.founding.spots.label + figure(spotsLeft ?? 0) +
-                c.price.founding.spots.of + figure(tier.total ?? 0),
+                c.price.founding.spots.of + figure(OFFER.founding.places),
             ],
             [
               'what the trade gives back, naming the tier on show',
@@ -424,120 +437,165 @@ const smallestSoldTo = (): number => {
     ];
     const unassembled = assembled.filter(([, s]) => !text.includes(s)).map(([label]) => label);
 
-    /* The arithmetic, driven rather than read.
+    /* The calculator, driven rather than trusted.
 
-       It stopped being two fixed figures on paper slips and became three that
-       one control moves, so this drives the control: every head count the
-       offer says it may offer is selected in turn, and at each one the three
-       figures on the panel are set against what the model would compute. A
-       page doing its own arithmetic fails at whichever size it does it at, and
-       names that size.
+       Four range inputs. Each is set through the native setter so React sees
+       the change, and at every point on the grid the five figures on the panel
+       are read back and set against what value.ts computes. The expectation is
+       asked of the helpers rather than worked out again here: a check that
+       redoes the arithmetic is a second implementation that would agree with a
+       wrong first one. */
+    const rangeOf = (name: string): HTMLInputElement | null =>
+      host.querySelector<HTMLInputElement>(`#numbers input[type="range"][name="${name}"]`);
+    const ranges = {
+      people: rangeOf('people'),
+      inbound: rangeOf('inbound'),
+      hourly: rangeOf('hourly'),
+      minutes: rangeOf('minutes'),
+    };
+    const calcFound = Object.values(ranges).every(Boolean);
+    const bounds = (el: HTMLInputElement | null): string =>
+      el ? `${el.min}-${el.max}/${el.step}` : 'missing';
+    const pr = peopleRange();
+    const wantBounds = {
+      people: `${pr.min}-${pr.max}/${pr.step}`,
+      inbound: `${VALUE.inbound.min}-${VALUE.inbound.max}/${VALUE.inbound.step}`,
+      hourly: `${VALUE.hourly.min}-${VALUE.hourly.max}/${VALUE.hourly.step}`,
+      minutes: `${VALUE.minutes.min}-${VALUE.minutes.max}/${VALUE.minutes.step}`,
+    };
+    const badBounds = (Object.keys(ranges) as Array<keyof typeof ranges>)
+      .filter((k) => bounds(ranges[k]) !== wantBounds[k])
+      .map((k) => `${k}: ${bounds(ranges[k])}, value.ts says ${wantBounds[k]}`);
+    /* Where each control opens, against where the model says it should. The
+       hourly one is the market's, not a constant. */
+    const opensAt = {
+      people: Number(ranges.people?.value),
+      inbound: Number(ranges.inbound?.value),
+      hourly: Number(ranges.hourly?.value),
+      minutes: Number(ranges.minutes?.value),
+    };
+    const wantOpen = {
+      people: pr.start,
+      inbound: VALUE.inbound.start,
+      hourly: hourlyStart(c.htmlLang),
+      minutes: VALUE.minutesPerDraft.value,
+    };
+    const badOpen = (Object.keys(opensAt) as Array<keyof typeof opensAt>)
+      .filter((k) => opensAt[k] !== wantOpen[k])
+      .map((k) => `${k} opens at ${opensAt[k]}, value.ts says ${wantOpen[k]}`);
 
-       The saving is parsed from the copy, once, exactly as the component does,
-       because it is the single input to all three and an expectation built from
-       the raw string would agree with a component that had stopped reading it.
-       The two computed figures are asked of the offer's own helpers rather than
-       worked out again here: redoing the arithmetic in this file would produce
-       a check that agrees with a wrong implementation, which is the circular
-       test the offer guard already had to be rescued from. */
-    const saving = Number.parseFloat(c.numbers.saving);
-
-    const slider = host.querySelector<HTMLInputElement>('#numbers .numbers-range');
-    const sizes = comparableHeadcounts();
-    const sliderRange = slider ? [Number(slider.min), Number(slider.max)] : [];
-    const wantRange = [sizes[0], sizes[sizes.length - 1]];
-
-    const readFig = (sel: string): string =>
-      (host.querySelector(`#numbers ${sel}`)?.textContent ?? '').trim();
-
-    const badSizes: string[] = [];
-    const unhedged: string[] = [];
-    for (const n of sizes) {
-      if (!slider) break;
+    const readBeat = (sel: string): string =>
+      (host.querySelector(`#numbers [${sel}] .numbers-amt, #numbers [${sel}] .numbers-keep`)?.childNodes[0]
+        ? Array.from(host.querySelector(`#numbers [${sel}] .numbers-amt, #numbers [${sel}] .numbers-keep`)!.childNodes)
+            .filter((n) => !(n instanceof Element && n.classList.contains('numbers-year')))
+            .map((n) => n.textContent ?? '')
+            .join('')
+        : ''
+      ).trim();
+    const drive = async (h: number, inb: number, hr: number, min: number) => {
       await act(async () => {
-        setNativeValue(slider, String(n));
-        slider.dispatchEvent(new Event('input', { bubbles: true }));
-        slider.dispatchEvent(new Event('change', { bubbles: true }));
+        for (const [el, v] of [
+          [ranges.people, h], [ranges.inbound, inb], [ranges.hourly, hr], [ranges.minutes, min],
+        ] as Array<[HTMLInputElement | null, number]>) {
+          if (!el) continue;
+          setNativeValue(el, String(v));
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       });
-
-      const wantSpend = modelledSpend(saving, n);
-      const wantKept = modelledKept(saving, n, tier);
-      const got = {
-        spend: readFig('[data-n-spend]'),
-        fee: readFig('[data-n-fee]'),
-        keep: readFig('[data-n-keep]'),
-      };
-      /* Both modelled figures wear the hedge and the fee does not, because the
-         fee is a price and the other two are assumptions. Asserting the hedge
-         as part of the line is what stops it being tidied off one of them. */
-      const want = {
-        spend: wantSpend === null ? '' : c.numbers.about + money(wantSpend),
-        fee: money(tier.price),
-        keep:
-          wantKept === null
+    };
+    const badPoints: string[] = [];
+    let pointsDriven = 0;
+    let unhedged: string[] = [];
+    let barBad: string[] = [];
+    if (calcFound) {
+      for (const [h, inb, hr, min] of drivePoints()) {
+        await drive(h, inb, hr, min);
+        pointsDriven += 1;
+        const pkg = packageFor(h);
+        const want = {
+          drafts: draftsPerMonth(h, inb),
+          hours: hoursBack(h, inb, min),
+          worth: worthPerMonth(h, inb, min, hr),
+          fee: pkg?.price ?? null,
+          keep: keptPerMonth(h, inb, min, hr),
+        };
+        const wantText = {
+          drafts: want.drafts === null ? '' : c.numbers.about + figure(want.drafts),
+          hours: want.hours === null ? '' : c.numbers.about + figure(want.hours) + c.numbers.units.hours,
+          worth: want.worth === null ? '' : c.numbers.about + money(want.worth),
+          fee: want.fee === null ? '' : money(want.fee),
+          keep: want.keep === null ? '' : c.numbers.about + money(want.keep),
+        };
+        const got = {
+          drafts: readBeat('data-n-drafts'),
+          hours: readBeat('data-n-hours'),
+          worth: readBeat('data-n-worth'),
+          fee: readBeat('data-n-fee'),
+          keep: readBeat('data-n-keep'),
+        };
+        for (const k of Object.keys(got) as Array<keyof typeof got>) {
+          if (got[k] !== wantText[k]) {
+            badPoints.push(`${h}p/${inb}e/${hr}h/${min}m ${k}: "${got[k]}" against "${wantText[k]}"`);
+          }
+        }
+        /* The fee row names the package the head count lands on. */
+        const feeNote = host.querySelector('#numbers [data-n-fee] .numbers-term-note')?.textContent ?? '';
+        const wantName = pkg ? (c.price.packages.rows.find((r) => r.id === pkg.id)?.name ?? '') : '';
+        if (feeNote.trim() !== wantName) {
+          badPoints.push(`${h}p fee names "${feeNote}", the offer puts them on ${wantName || 'no package'}`);
+        }
+        /* The hedge is on the model and not on the fee. */
+        const hedged = (sel: string) => Boolean(host.querySelector(`#numbers [${sel}] .numbers-about`));
+        unhedged = [
+          ...(['data-n-drafts', 'data-n-hours', 'data-n-worth', 'data-n-keep'].filter((sel) => !hedged(sel))),
+          ...(hedged('data-n-fee') ? ['data-n-fee is hedged'] : []),
+        ];
+        /* The bar is the fee's share of what the hours cost, capped at all of it. */
+        const barEl = host.querySelector<HTMLElement>('#numbers [data-n-bar]');
+        const wantBar =
+          want.worth === null || want.worth <= 0 || want.fee === null
             ? ''
-            : c.numbers.about + money(wantKept) + c.numbers.yearLabel + ' ' + money(wantKept * 12),
-      };
-      if (got.spend !== want.spend || got.fee !== want.fee || got.keep !== want.keep) {
-        badSizes.push(
-          `${n}: ${got.spend} / ${got.fee} / ${got.keep}, ` +
-            `model says ${want.spend} / ${want.fee} / ${want.keep}`,
-        );
+            : `${(Math.min(1, want.fee / want.worth) * 100).toFixed(1)}%`;
+        /* Compared as numbers: the DOM writes "100.0%" back as "100%", and
+           that is a serialisation, not a different width. */
+        const gotBar = barEl?.style.width ?? '';
+        const same =
+          gotBar === wantBar ||
+          (gotBar !== '' && wantBar !== '' && Math.abs(parseFloat(gotBar) - parseFloat(wantBar)) < 0.05);
+        if (!same) barBad.push(`${h}p/${inb}e/${hr}h/${min}m bar ${gotBar || 'missing'} against ${wantBar || 'nothing'}`);
+        /* Where the sum comes out under, the page says so instead of a year line. */
+        const under = Boolean(host.querySelector('#numbers [data-n-under]'));
+        const year = Boolean(host.querySelector('#numbers [data-n-year]'));
+        const wantUnder = want.keep !== null && want.keep < 0;
+        if (under !== wantUnder || year === wantUnder) {
+          badPoints.push(`${h}p/${inb}e/${hr}h/${min}m under=${under} year=${year}, model says under=${wantUnder}`);
+        }
       }
-      if (want.fee !== '' && got.fee.includes(c.numbers.about.trim())) {
-        unhedged.push(`${n}: the fee is wearing the hedge`);
-      }
+      /* Put the controls back where a visitor finds them. */
+      await drive(wantOpen.people, wantOpen.inbound, wantOpen.hourly, wantOpen.minutes);
     }
 
-    /* The bar, which is the only picture in the section: one length split where
-       the fee falls. Its share is read back off the DOM and set against the
-       division, so a bar that stopped tracking the figures beside it fails
-       rather than going on looking plausible. */
-    const barEl = host.querySelector<HTMLElement>('#numbers [data-n-bar] .numbers-bar-fee');
-    const barWidth = barEl ? barEl.style.width : '';
-    const spendNow = modelledSpend(saving, Number(slider?.value ?? 0));
-    const wantBar =
-      spendNow === null || spendNow <= 0
-        ? ''
-        : `${Math.min(1, tier.price / spendNow) * 100}%`;
-
-    /* The comparison this section swallowed, and the decision it carries.
-
-       Individual is a plan for one person, bought a seat at a time, so its seat
-       rate is not a firm's cost a head. At the ten person floor this page
-       advertises, ten seats cost less than this fee, and the flat fee only
-       passes that rate well above it. It is named in the disclosure with its
-       published rate and nothing is claimed about it in either direction; what
-       must never happen is the rate appearing beside the figures the section
-       argues from. The panel is searched, not the section, so the note under it
-       stays legal, and both shapes of the rate are looked for because which one
-       a figure wears is a styling decision somebody making this mistake again
-       would not think about. */
-    const bothShapes = (value: number): string[] => [cell(value), money(value)];
-    const individualRates = new Set(bothShapes(OFFER.compare.individual));
-    const panelText = (host.querySelector('#numbers .numbers-panel')?.textContent ?? '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    const individualInPanel = [
-      ...(panelText.includes(c.compare.individualPlan) ? [c.compare.individualPlan] : []),
-      ...[...individualRates].filter((r) => r !== '' && panelText.includes(r)),
-    ];
-
-    /* Every figure printed in the disclosure has to be one the offer or the
-       model can produce. These are fragments with slots, and a fragment that
-       grew a numeral would read perfectly while saying something neither the
-       offer nor the model ever said. */
-    const allowedFigures = new Set<string>([
-      money(saving),
-      figure(OFFER.compare.teamMax),
-      figure(OFFER.covers),
-      money(OFFER.compare.individual),
-      figure(OFFER.compare.managedMin),
-    ]);
-    const noteFigures = Array.from(host.querySelectorAll('#numbers .numbers-fig')).map(
-      (el) => (el.textContent ?? '').trim(),
-    );
-    const strayFigures = noteFigures.filter((f) => !allowedFigures.has(f));
+    /* The package cards: one per package, the lit one the offer leads with,
+       and pressing the other moves the total under the timeline to its fee. */
+    const cards = Array.from(host.querySelectorAll<HTMLButtonElement>('#price [data-price-pkg]'));
+    const cardIds = cards.map((b) => b.dataset.pricePkg ?? '');
+    const litAtRest = cards.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.dataset.pricePkg);
+    const totalText = () =>
+      (host.querySelector('#price [data-price-strike] .price-total-num')?.textContent ?? '').trim();
+    const totalAtRest = totalText();
+    const cardDrives: string[] = [];
+    for (const b of cards) {
+      await act(async () => b.click());
+      const id = b.dataset.pricePkg as PackageId;
+      const p = OFFER.order.includes(id) ? packageById(id) : null;
+      const want = p ? money(p.price) : '';
+      if (totalText() !== want) cardDrives.push(`${id}: total reads "${totalText()}", offer says "${want}"`);
+      const coverLine = c.price.total.sub.label + ' ' + figure(p?.covers ?? NaN);
+      if (!(host.querySelector('#price')?.textContent ?? '').includes(coverLine)) {
+        cardDrives.push(`${id}: coverage under the total does not read "${coverLine}"`);
+      }
+    }
+    for (const b of cards) if (b.dataset.pricePkg === tier.id) await act(async () => b.click());
 
     /* Nothing from the model this page replaced, anywhere it rendered except
        the comparison.
@@ -563,10 +621,7 @@ const smallestSoldTo = (): number => {
        A little of the surrounding text rides along with each hit, because the
        numeral being on the page is only half of what a reader of the failure
        needs. */
-    /* The plans the scan must not trip over are cited inside the disclosure
-       under the arithmetic now, rather than in a section of their own. */
-    const citedText = host.querySelector('#numbers .numbers-plans')?.textContent ?? '';
-    const outside = citedText ? text.split(citedText).join('\n') : text;
+    const outside = text;
     const stale = STALE.flatMap(({ label, re }) => {
       const m = re.exec(outside);
       if (!m) return [];
@@ -593,10 +648,10 @@ const smallestSoldTo = (): number => {
       en.hero.title.mark, en.nav.cta, en.demo.title, en.demo.pickLead,
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
-      /* Not a plan name: "Team" is a substring of the Danish "Team-planen",
-         so it would report a leak on a page that had translated it correctly. */
-      en.numbers.spendLabel, en.numbers.keepLabel, en.numbers.headsLabel,
-      en.numbers.feeLabel,
+      en.price.packages.pick, en.price.included.title, ...en.price.included.items,
+      en.numbers.lede.mark, en.numbers.beats.keep.label, en.numbers.beats.fee.label,
+      en.numbers.inputs.people.label, en.numbers.inputs.hourly.label, en.numbers.under,
+      en.hero.payback.before,
       ...en.demo.desks.map((d) => d.tab),
       ...en.demo.desks[0].sources.map((x) => x.label),
       ...en.who.groups.map((g) => g.line),
@@ -690,31 +745,21 @@ const smallestSoldTo = (): number => {
          that stopped being an excerpt is a defect in the content whether or
          not the section it belongs to happens to be on screen. */
       previewIsExcerpt: c.hero.draft.body.includes(c.hero.deal.preview),
-      /* The one assumption everything here is computed from. */
-      ledgerSaving: Number.isFinite(saving)
-        ? String(saving)
-        : `"${c.numbers.saving}" does not parse to a figure`,
-      ledgerSavingIsNumeric: Number.isFinite(saving) && saving > 0,
-      smallestSoldTo: smallestSoldTo(),
-      rangeStartsAtSmallestSold: sizes[0] === smallestSoldTo(),
+      /* The calculator, driven across the grid. */
+      calcFound,
+      badBounds,
+      badOpen,
+      pointsDriven,
+      badPoints,
       unhedged,
-      barWidth,
-      wantBar,
-      /* The control, and what it prints at every size it offers. */
-      sliderFound: Boolean(slider),
-      sliderRange,
-      wantRange,
-      sizesDriven: sizes.length,
-      badSizes,
-
-      /* Both lines are drawn, and the money between them is shaded. */
-
-      /* The plan that must not be on the chart or in the readout. */
-      individualInPanel,
-      individualNamedInNotes: (
-        host.querySelector('#numbers .numbers-plans')?.textContent ?? ''
-      ).includes(c.compare.individualPlan),
-      strayFigures,
+      barBad,
+      /* The package cards. */
+      cardIds,
+      wantCardIds: [...OFFER.order],
+      litAtRest,
+      totalAtRest,
+      wantTotalAtRest: money(tier.price),
+      cardDrives,
       stale,
       leaked,
       charCount: text.length,

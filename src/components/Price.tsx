@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import type { Content } from '../content/types';
 import {
   OFFER,
-  activeTier,
+  foundingOpen,
+  packageById,
   formatCount,
   formatMoney,
-  isCapped,
+  headlinePackage,
   noCustomersYet,
-  remainingSpots,
+  remainingFoundingPlaces,
   setupDue,
 } from '../lib/offer';
+import type { PackageId } from '../lib/offer';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -115,18 +117,21 @@ export function Price({
     };
   }, [onSeen]);
 
-  /* The tier the counts imply, read once per render so that every figure on
-     the band, the fee, the waiver and the counter, is describing the same
-     tier. Never `OFFER.declaredTier`: that one is only there to be checked. */
-  const tier = activeTier();
-  const capped = isCapped(tier);
-  const spotsLeft = remainingSpots(tier);
-  /* The tier's own name, so the founding block reads correctly on the morning
-     the first tier sells out and nobody has edited the copy. */
-  const tierName = c.price.tierNames[tier.id];
-  /* Both halves have to agree: the tier has to give the fee away, and the copy
-     has to have the words for it. */
-  const setupWaived = tier.setupWaived && setupDue(tier) === 0;
+  /* The package the band is describing. The reader picks it from the two
+     cards by counting their own people; until they do, it is the one the
+     offer leads with. Held once so that the fee under the timeline, the
+     coverage in the terms and the card that is lit are all the same package. */
+  const [pkgId, setPkgId] = useState<PackageId>(headlinePackage().id);
+  const pkg = packageById(pkgId);
+  /* The founding cohort is the only thing on this page with a capacity now.
+     The price does not move when it fills; the setup fee stops being waived. */
+  const capped = foundingOpen();
+  const spotsLeft = remainingFoundingPlaces();
+  /* The cohort's own name, so the block reads correctly in each language. */
+  const tierName = c.price.cohortName;
+  /* Both halves have to agree: the cohort has to still be giving the fee away,
+     and the copy has to have the words for it. */
+  const setupWaived = setupDue() === 0;
   const [firmFee, setupFee] = c.price.fees;
   const waived = setupWaived ? setupFee.waived : undefined;
 
@@ -164,7 +169,7 @@ export function Price({
      the figure rather than pointing at it: the monthly fee, or the zero that
      replaces it once the pen has gone through it. */
   const shownAt = (i: number): string =>
-    i === c.price.stops.length - 1 ? c.price.total.zero : money(tier.price);
+    i === c.price.stops.length - 1 ? c.price.total.zero : money(pkg.price);
 
   const select = (i: number, moveFocus: boolean) => {
     setStop(i);
@@ -261,6 +266,72 @@ export function Price({
             thing for a cosmetic one. */}
         <div className="price-sheet">
           <div className="price-block price-panel">
+            {/* The two packages, in the open, and the reader picks by
+                counting their own people. The card they pick is the package
+                the total under the timeline and the coverage in the terms
+                describe, so the band never shows one package's fee beside
+                another's ceiling. Both cards print the same three figures,
+                every one read from the offer: a card is matched to its
+                package by id, and a row naming a package that does not exist
+                renders nothing rather than a blank fee. */}
+            <h3 className="price-sr" id="price-packages-h">
+              {c.price.packages.title}
+            </h3>
+            <p className="price-pick">{c.price.packages.pick}</p>
+            <div className="price-pkgs" role="group" aria-labelledby="price-packages-h">
+              {c.price.packages.rows.map((row) => {
+                const p = OFFER.order.includes(row.id as PackageId)
+                  ? packageById(row.id as PackageId)
+                  : null;
+                if (!p) return null;
+                const on = p.id === pkg.id;
+                return (
+                  <button
+                    type="button"
+                    className={'price-pkg' + (on ? ' is-on' : '')}
+                    aria-pressed={on}
+                    data-price-pkg={p.id}
+                    key={p.id}
+                    onClick={() => setPkgId(p.id)}
+                  >
+                    <span className="price-pkg-name">{row.name}</span>
+                    <span className="price-pkg-fee">
+                      <span className="price-pkg-fig">{money(p.price)}</span>
+                      <span className="price-pkg-per">{firmFee.per}</span>
+                    </span>
+                    <span className="price-pkg-line">
+                      {c.price.packages.peopleLabel} {figure(p.covers)}
+                    </span>
+                    <span className="price-pkg-line">
+                      {c.price.packages.draftsLabel} {figure(p.draftCap)}
+                    </span>
+                    <span className="price-pkg-note">{row.note}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
+
+            {/* The price never appears without its reason. */}
+            {capped ? (
+              <p className="price-reason" data-price-reason>
+                {c.price.founding.reason.before}
+                {figure(OFFER.founding.places)}
+                {c.price.founding.reason.after}
+              </p>
+            ) : null}
+
+            {/* What is in the product, and it is the same list on both
+                cards, which is the point of printing it once. */}
+            <h3 className="price-sr" id="price-included-h">
+              {c.price.included.title}
+            </h3>
+            <ul className="price-incl" aria-labelledby="price-included-h">
+              {c.price.included.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+
             <h3 className="price-sr" id="price-when-h">
               {c.price.whenTitle}
             </h3>
@@ -315,7 +386,7 @@ export function Price({
                 <span className="price-total-term">
                   {c.price.total.term}
                   <span className="price-total-sub">
-                    {c.price.total.sub.label} {figure(OFFER.covers)}
+                    {c.price.total.sub.label} {figure(pkg.covers)}
                   </span>
                 </span>
                 <span className="price-total-amt">
@@ -324,8 +395,8 @@ export function Price({
                       the digits inside are keyed, and remounting those is what
                       replays the count. */}
                   <span className="price-total-fig" data-price-strike ref={strikeRef}>
-                    <span className="price-total-num" key={stop}>
-                      {money(tier.price)}
+                    <span className="price-total-num" key={`${stop}-${pkg.id}`}>
+                      {money(pkg.price)}
                     </span>
                     <svg
                       className="price-strike-svg"
@@ -392,7 +463,7 @@ export function Price({
                       <span className="price-fig">
                         {figure(spotsLeft ?? 0)}
                         {c.price.founding.spots.of}
-                        {figure(tier.total ?? 0)}
+                        {figure(OFFER.founding.places)}
                       </span>
                     </dd>
                   </div>
@@ -426,7 +497,7 @@ export function Price({
                   <div className="price-fee">
                     <dt className="price-fee-term">{firmFee.term}</dt>
                     <dd className="price-fee-amt">
-                      <span className="price-fig">{money(tier.price)}</span>
+                      <span className="price-fig">{money(pkg.price)}</span>
                       <span className="price-per">{firmFee.per}</span>
                     </dd>
                     <dd className="price-fee-note">{firmFee.note}</dd>
@@ -481,14 +552,14 @@ export function Price({
                   <div className="price-fee">
                     <dt className="price-fee-term">{c.price.covers.people.label}</dt>
                     <dd className="price-fee-amt">
-                      <span className="price-fig">{figure(OFFER.covers)}</span>
+                      <span className="price-fig">{figure(pkg.covers)}</span>
                     </dd>
                     <dd className="price-fee-note">{c.price.covers.people.note}</dd>
                   </div>
                   <div className="price-fee">
                     <dt className="price-fee-term">{c.price.covers.drafts.label}</dt>
                     <dd className="price-fee-amt">
-                      <span className="price-fig">{figure(OFFER.draftCap)}</span>
+                      <span className="price-fig">{figure(pkg.draftCap)}</span>
                     </dd>
                     <dd className="price-fee-note">{c.price.covers.drafts.note}</dd>
                   </div>

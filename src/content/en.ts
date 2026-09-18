@@ -41,6 +41,11 @@ export const en: Content = {
 
     ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
 
+    payback: {
+      before: 'It pays for itself if the people answering your email cost more than about ',
+      after: ' an hour.',
+    },
+
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {
       draftLabel: 'Draft reply, ready',
@@ -384,29 +389,39 @@ export const en: Content = {
 
   numbers: {
     eyebrow: 'Our own arithmetic',
-    title: 'What it is worth',
+    title: 'What you keep',
+    lede: { before: 'Your mail, your hourly cost. ', mark: 'The page does the sum', after: ', and never asserts a saving.' },
     about: 'about\u00a0',
-
-    headsLabel: 'People who write mail:',
-
-    spendLabel: 'Mail costs you now:',
-    feeLabel: 'This costs:',
-    keepLabel: 'You keep:',
+    inputs: {
+      people: { label: 'People who answer mail' },
+      inbound: { label: 'Emails each of them gets a month' },
+      hourly: { label: 'What an hour of their time costs' },
+      minutes: { label: 'Minutes saved on each draft', note: 'Your estimate. We have not timed this yet.' },
+    },
+    beats: {
+      drafts: { label: 'Drafts a month:' },
+      draftsNote: { before: 'Measured: ', after: '% of inbound mail is the same question again.' },
+      hours: { label: 'Hours handed back:' },
+      worth: { label: 'What those hours cost you today:' },
+      fee: { label: 'This costs:' },
+      keep: { label: 'You keep:' },
+    },
+    units: { hours: '\u00a0h', perMonth: ' a month', perHour: ' an hour' },
     yearLabel: 'Over a year:',
-
-    saving: '430',
-    savingLabel: 'Assumed saved for one person, one month:',
-
-    lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
+    under: 'At these figures it does not pay for itself. We would say so on the call rather than sell it to you.',
     moreLabel: 'Show the arithmetic',
     basis: [
       {
-        term: 'What mail costs you now',
-        def: 'The saving assumed for one person, multiplied by the people who write mail. Move the count and it moves with it.',
+        term: 'The share',
+        def: 'Measured on a live mailbox: the share of inbound mail that gets a draft, because it is the same question asked again. Everything else on the panel is multiplied from it.',
       },
       {
-        term: 'The saving',
-        def: 'Assumed hours saved at a mid level salary, converted from euros. One person, one month.',
+        term: 'The minutes',
+        def: 'Assumed, and never yet timed. Writing a reply from nothing takes about five minutes; reading a prepared draft and sending it takes about one. The control lets you put your own number in.',
+      },
+      {
+        term: 'The hour',
+        def: 'Yours, not ours. What a person who answers mail costs the firm for an hour, with employer costs on top. The control opens on a rough figure for the market this page is read in.',
       },
     ],
     notes: [
@@ -443,7 +458,7 @@ export const en: Content = {
     eyebrow: 'Two weeks, then you decide',
     title: 'What it costs',
 
-    tierNames: { founding: 'founding', early: 'early', standard: 'standard' },
+    cohortName: 'founding',
 
     feesTitle: 'The fees',
     fees: [
@@ -458,10 +473,36 @@ export const en: Content = {
         note: 'A workshop on your team’s own real mail.',
         waived: {
           label: 'Waived',
-          say: { before: 'The setup fee of ', after: ' is waived on this tier.' },
+          say: { before: 'The setup fee of ', after: ' is waived while the founding places are open.' },
         },
       },
     ],
+
+    packages: {
+      title: 'The two packages',
+      lede: 'Same product in both. What changes is how many people it covers and how many drafts the firm shares.',
+      pick: 'Pick by counting your people.',
+      rows: [
+        { id: 'desk', name: 'Desk', note: 'For a firm up to ten people.' },
+        { id: 'firm', name: 'Firm', note: 'For a firm up to twenty. The same fee at eleven people as at twenty.' },
+      ],
+      feeLabel: 'Per month, whole firm',
+      peopleLabel: 'People covered, up to',
+      draftsLabel: 'Drafts a month, pooled',
+      note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
+    },
+
+    included: {
+      title: 'In both packages',
+      items: [
+        'Your website read into a knowledge base, and an interview to fill what it misses.',
+        'Your documents indexed, so a draft can quote the fee, the deadline and the rule.',
+        'A voice profile for each person, so a draft reads like the one who sends it.',
+        'A question back to you when the answer is not on file, rather than a guess.',
+        'Drafts land in Outlook. Nothing sends itself.',
+        'Hosted in the EU.',
+      ],
+    },
 
     covers: {
       title: 'What the fee covers',
@@ -481,10 +522,11 @@ export const en: Content = {
       title: 'A trade, not a discount',
       lede: {
         noProofYet: 'We have no customers to point at yet.',
-        trade: 'These places are a trade: a lower fee for your name on the work.',
+        trade: 'These places are a trade: the setup fee waived, for your name on the work.',
       },
+      reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
       spots: { label: 'Places still open:', of: ' of ' },
-      spotsClosed: 'The places that came with a trade are taken. The fee below is the standard one, and there is nothing to trade for it.',
+      spotsClosed: 'The places that came with a trade are taken. The monthly fee below is the same one they paid; the setup fee is now charged in full.',
       givesTitle: 'What you give',
       gives: [
         'A testimonial for the product site, in your own words.',
@@ -494,10 +536,10 @@ export const en: Content = {
       ],
       getsTitle: 'What you get',
       gets: {
-        fee: { before: 'The ', after: ' monthly fee for the firm, instead of the standard one.' },
+        fee: { before: 'A place in the ', after: ' five, which is as many firms as one person can give real attention to at once.' },
         setup: 'The setup fee waived, in full.',
       },
-      note: 'If you would rather not be named, take the standard fee and nothing else about the product changes.',
+      note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
     },
 
     freeTitle: 'The first two weeks are free',
@@ -541,64 +583,16 @@ export const en: Content = {
       term: 'The whole firm',
       sub: { label: 'People covered, up to:' },
       per: 'per month',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Before you book',
     ask: {
-      before: 'This offer is priced for firms of ten and up. Below that, the plan on ',
+      before: 'This offer is priced for firms of three and up. Below that, the plan on ',
       link: 'doviloop.dev',
       after: ' does the same drafting and costs a great deal less.',
     },
     ctaNote: 'Two weeks free. Say no at the review call and nothing is invoiced.',
-  },
-
-  compare: {
-    eyebrow: 'The sum per head',
-    title: 'What each person costs',
-    lede: 'One price for the whole firm, however many of you there are.',
-
-    headsLabel: 'People who write mail:',
-
-    keepLabel: 'You keep, against paying per seat:',
-    yearLabel: 'Over a year:',
-
-    firmLabel: 'The firm pays:',
-    perHeadLabel: 'Each person:',
-
-    ourLine: 'Your firm',
-    refLine: 'Per seat',
-
-    managedPlan: 'Managed',
-    managedSize: { label: 'Sold by the seat, from a head count of:' },
-
-    teamPlan: 'Team',
-    teamSize: { label: 'People, at most:' },
-    teamOut: {
-      before: ' stops selling at a head count of ',
-      after: '. There is no size on this scale it will quote for.',
-    },
-
-    sourceLabel: 'Where these figures come from',
-
-    rangeNote: {
-      before: 'The scale stops at the head count the fee covers: ',
-      after: '. Past that we will say so and work it out with you.',
-    },
-
-    individualPlan: 'Individual',
-    individualNote: {
-      before:
-        ' is the plan for one person on the product site. It is bought a seat at a time, and each seat keeps its own knowledge base. One seat costs ',
-      after: ' a month.',
-    },
-
-    sourceNote: {
-      before: 'The Managed and Individual rates here are the published prices on ',
-      link: 'doviloop.dev',
-      mid: ', read on ',
-      after: '. We have not adjusted them.',
-    },
   },
 
   form: {

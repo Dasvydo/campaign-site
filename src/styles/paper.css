@@ -304,6 +304,15 @@
   color:var(--ink);
 }
 
+/* The one figure the hero states flatly. Set as a sentence under the deck,
+   in the deck's own measure, with the figure lifted so it reads as a number
+   rather than as a word. */
+.hero-payback{
+  margin:22px 0 0; max-width:34ch;
+  font-size:19px; line-height:1.45; color:var(--ink);
+  font-variant-numeric:tabular-nums lining;
+}
+.hero-payback-fig{ font-weight:500; white-space:nowrap }
 .hero-act{margin-top:48px; display:flex; flex-direction:column; align-items:flex-start}
 
 .hero-btn{
@@ -1735,6 +1744,25 @@
 .numbers-src a:hover{ border-bottom-color:var(--amber-text) }
 .numbers-src a:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; border-radius:2px }
 
+/* --- the four controls --------------------------------------------------
+   Two by two where there is room, one under another where there is not. Each
+   is a label, the figure it currently reads, and the slider under both. */
+.numbers-fields{ display:grid; gap:18px 32px; margin-top:22px }
+@media (min-width:720px){ .numbers-fields{ grid-template-columns:repeat(2,minmax(0,1fr)) } }
+.numbers-field{ min-width:0 }
+.numbers-field-note{ margin:4px 0 0; font-size:13px; line-height:1.45; color:var(--muted) }
+.numbers-panel .numbers-lede{ margin:0 0 6px; font-size:19px; line-height:1.45 }
+.numbers-term-note{
+  display:block; margin-top:3px; font-size:13px; line-height:1.4; color:var(--muted);
+  font-variant-numeric:tabular-nums lining;
+}
+.numbers-keep.is-under{ color:var(--ink) }
+.numbers-basis{ margin:0; padding:0 }
+.numbers-basis-row{ padding:10px 0; border-top:1px solid rgba(37,29,24,.14) }
+.numbers-basis-row:first-child{ border-top:0; padding-top:0 }
+.numbers-basis-term{ margin:0 0 4px; font-size:14px; font-weight:500; color:var(--ink) }
+.numbers-basis-def{ margin:0; font-size:14px; line-height:1.5; color:var(--muted); max-width:60ch }
+
 @media (prefers-reduced-motion:reduce){
   .numbers-bar-fee,.numbers-src a{ transition:none }
 }
@@ -2159,6 +2187,75 @@
 .price-total-row{ align-items:last baseline }
 
 .price-total-num{ display:inline-block }
+
+/* --- the two packages, in the open ----------------------------------------
+   Two cards, and the reader picks by counting their people. The lit one is
+   the package every other figure on the band describes. Same charcoal as the
+   band; the card is an edge and a state, not a second colour. */
+.price-pick{ margin:0 0 14px; font-size:15px; line-height:1.4; color:var(--price-dim) }
+.price-pkgs{ display:grid; gap:14px; margin:0 0 14px }
+@media (min-width:560px){ .price-pkgs{ grid-template-columns:repeat(2,minmax(0,1fr)) } }
+.price-pkg{
+  display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  width:100%; min-width:0; margin:0; padding:20px 20px 18px;
+  text-align:left; font:inherit; color:var(--warmwhite);
+  background:transparent; border:1px solid var(--price-rule-strong); border-radius:3px;
+  cursor:pointer;
+  transition:border-color var(--price-t-micro) var(--price-e-out),
+             background-color var(--price-t-micro) var(--price-e-out),
+             transform var(--price-t-micro) var(--price-e-out);
+}
+.price-pkg:hover{ border-color:var(--amber) }
+.price-pkg:focus-visible{ outline:2px solid var(--price-focus); outline-offset:3px }
+.price-pkg.is-on{
+  border-color:var(--amber);
+  background:rgba(245,155,10,.08);
+  box-shadow:inset 0 0 0 1px var(--amber);
+}
+.price-pkg-name{
+  font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:500;
+  color:var(--price-dim);
+}
+.price-pkg.is-on .price-pkg-name{ color:var(--amber) }
+.price-pkg-fee{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:2px }
+.price-pkg-fig{
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-weight:400; font-size:clamp(32px, 22px + 1.6vw, 42px);
+  line-height:1; letter-spacing:-.012em;
+  font-variant-numeric:tabular-nums lining;
+}
+.price-pkg-per{ font-size:14px; color:var(--price-dim) }
+.price-pkg-line{
+  font-size:15px; line-height:1.4; color:var(--warmwhite);
+  font-variant-numeric:tabular-nums lining;
+}
+.price-pkg-line:first-of-type{ margin-top:10px }
+.price-pkg-note{ margin-top:8px; font-size:14px; line-height:1.5; color:var(--price-dim) }
+.price-pkgs-note{ margin-top:0 }
+
+/* Why the price is what it is, beside it, so it never appears alone. */
+.price-reason{
+  margin:22px 0 0; max-width:52ch;
+  font-size:19px; line-height:1.45; color:var(--warmwhite);
+  font-variant-numeric:tabular-nums lining;
+}
+
+/* What is in both. One list, printed once, because it is the same list. */
+.price-incl{
+  list-style:none; margin:22px 0 32px; padding:0;
+  border-top:1px solid var(--price-rule-strong);
+}
+.price-incl li{
+  position:relative; padding:12px 0 12px 26px;
+  font-size:16px; line-height:1.45; color:var(--warmwhite);
+  border-bottom:1px solid var(--price-rule);
+}
+.price-incl li::before{
+  content:""; position:absolute; left:2px; top:1.05em;
+  width:12px; height:7px;
+  border-left:2px solid var(--amber); border-bottom:2px solid var(--amber);
+  transform:rotate(-45deg) translateY(-2px);
+}
 
 /* The waiver, as a mark. The amount and the sentence are in the terms. */
 .price-waiver{
