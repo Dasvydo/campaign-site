@@ -393,7 +393,6 @@ export const da: Content = {
   numbers: {
     eyebrow: 'Vores eget regnestykke',
     title: 'Hvad I beholder',
-    lede: { before: 'Jeres post, jeres timepris. ', mark: 'Siden regner det ud', after: ' og påstår aldrig en besparelse.' },
     about: 'cirka\u00a0',
     inputs: {
       people: { label: 'Personer, der svarer på mails' },
@@ -402,7 +401,6 @@ export const da: Content = {
       minutes: { label: 'Minutter sparet pr. udkast', note: 'Jeres skøn. Vi har ikke taget tid på det endnu.' },
     },
     beats: {
-      drafts: { label: 'Udkast om måneden:' },
       draftsNote: { before: 'Målt: ', after: ' % af den indgående post er det samme spørgsmål igen.' },
       hours: { label: 'Timer, I får tilbage:' },
       worth: { label: 'Hvad de timer koster jer i dag:' },
@@ -427,10 +425,7 @@ export const da: Content = {
         def: 'Jeres, ikke vores. Hvad en person, der svarer på mails, koster virksomheden i timen, med arbejdsgiveromkostninger oveni. Vi har sat et groft tal ind for det marked, siden læses i.',
       },
     ],
-    notes: [
-      'Endnu aldrig efterprøvet hos en rigtig kunde. Jeres tal afhænger af, hvor meget af jeres post der er gentagelsesarbejde.',
-      'Vi regner det igennem på jeres egne tal på mødet og siger det, hvis det ikke går op.',
-    ],
+    note: 'Vi regner det igennem på jeres egne tal på mødet og siger det, hvis det ikke går op.',
   },
 
   who: {

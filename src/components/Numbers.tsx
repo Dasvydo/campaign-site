@@ -4,7 +4,6 @@ import { OFFER, formatCount, formatMoney } from '../lib/offer';
 import {
   VALUE,
   draftRatePercent,
-  draftsPerMonth,
   formatShare,
   hoursBack,
   hourlyStart,
@@ -109,7 +108,6 @@ export function Numbers({ c }: { c: Content }) {
 
   /* The sum, one helper per row, so the panel cannot do its own division. */
   const pkg = packageFor(heads);
-  const drafts = draftsPerMonth(heads, inbound);
   const hours = hoursBack(heads, inbound, minutes);
   const worth = worthPerMonth(heads, inbound, minutes, hourly);
   const kept = keptPerMonth(heads, inbound, minutes, hourly);
@@ -129,7 +127,7 @@ export function Numbers({ c }: { c: Content }) {
       setStatus(
         kept === null
           ? ''
-          : `${c.numbers.beats.keep.label} ${c.numbers.about}${money(kept)}${c.numbers.units.perMonth}`,
+          : `${c.numbers.beats.keep.label} ${c.numbers.about}${money(Math.round(kept))}${c.numbers.units.perMonth}`,
       );
     }, 400);
     return () => window.clearTimeout(sayTimer.current);
@@ -185,14 +183,6 @@ export function Numbers({ c }: { c: Content }) {
         </header>
 
         <div className="numbers-panel">
-          <p className="numbers-lede">
-            {c.numbers.lede.before}
-            <span className="numbers-hl">
-              <span className="numbers-hl-soak">{c.numbers.lede.mark}</span>
-            </span>
-            {c.numbers.lede.after}
-          </p>
-
           <div className="numbers-fields">
             {control('people', heads, setHeads, people, figure(heads))}
             {control('inbound', inbound, setInbound, VALUE.inbound, figure(inbound))}
@@ -212,21 +202,6 @@ export function Numbers({ c }: { c: Content }) {
               at every count. The fee row is the only one with no hedge on it,
               because the fee is the one number on the panel we know exactly. */}
           <dl className="numbers-beats">
-            <div className="numbers-beat" data-n-drafts>
-              <dt className="numbers-term">
-                {c.numbers.beats.drafts.label}
-                <span className="numbers-term-note">
-                  {c.numbers.beats.draftsNote.before}
-                  <span className="numbers-fig" data-n-rate>
-                    {formatShare(draftRatePercent(), c.htmlLang)}
-                  </span>
-                  {c.numbers.beats.draftsNote.after}
-                </span>
-              </dt>
-              <dd className="numbers-amt">
-                {drafts === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{figure(drafts)}</>}
-              </dd>
-            </div>
             <div className="numbers-beat" data-n-hours>
               <dt className="numbers-term">{c.numbers.beats.hours.label}</dt>
               <dd className="numbers-amt">
@@ -236,7 +211,7 @@ export function Numbers({ c }: { c: Content }) {
             <div className="numbers-beat" data-n-worth>
               <dt className="numbers-term">{c.numbers.beats.worth.label}</dt>
               <dd className="numbers-amt">
-                {worth === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{money(worth)}</>}
+                {worth === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{money(Math.round(worth))}</>}
               </dd>
             </div>
             <div className="numbers-beat" data-n-fee>
@@ -249,11 +224,11 @@ export function Numbers({ c }: { c: Content }) {
             <div className="numbers-beat numbers-beat-keep" data-n-keep>
               <dt className="numbers-term">{c.numbers.beats.keep.label}</dt>
               <dd className={'numbers-keep' + (clears ? '' : ' is-under')}>
-                {kept === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{money(kept)}</>}
+                {kept === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{money(Math.round(kept))}</>}
                 {kept === null ? null : clears ? (
                   <span className="numbers-year" data-n-year>
                     {c.numbers.yearLabel} {c.numbers.about}
-                    {money(kept * 12)}
+                    {money(Math.round(kept) * 12)}
                   </span>
                 ) : (
                   <span className="numbers-year" data-n-under>
@@ -281,9 +256,15 @@ export function Numbers({ c }: { c: Content }) {
             {status}
           </p>
 
-          <p className="numbers-caveat">{c.numbers.notes[0]}</p>
-
           <Disclosure label={c.numbers.moreLabel}>
+            {/* The one measured figure the sum rests on, said once, here. */}
+            <p className="numbers-note numbers-share">
+              {c.numbers.beats.draftsNote.before}
+              <span className="numbers-fig" data-n-rate>
+                {formatShare(draftRatePercent(), c.htmlLang)}
+              </span>
+              {c.numbers.beats.draftsNote.after}
+            </p>
             <dl className="numbers-basis">
               {c.numbers.basis.map((b) => (
                 <div className="numbers-basis-row" key={b.term}>
@@ -292,7 +273,7 @@ export function Numbers({ c }: { c: Content }) {
                 </div>
               ))}
             </dl>
-            <p className="numbers-note">{c.numbers.notes[1]}</p>
+            <p className="numbers-note">{c.numbers.note}</p>
           </Disclosure>
         </div>
       </div>

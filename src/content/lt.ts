@@ -393,7 +393,6 @@ export const lt: Content = {
   numbers: {
     eyebrow: 'Mūsų pačių skaičiavimas',
     title: 'Kiek Jums lieka',
-    lede: { before: 'Jūsų laiškai, Jūsų valandos kaina. ', mark: 'Puslapis suskaičiuoja', after: ' ir niekada neteigia, kiek sutaupysite.' },
     about: 'maždaug\u00a0',
     inputs: {
       people: { label: 'Žmonės, atsakantys į laiškus' },
@@ -402,7 +401,6 @@ export const lt: Content = {
       minutes: { label: 'Minučių, sutaupomų vienam juodraščiui', note: 'Jūsų įvertis. Mes to dar nematavome.' },
     },
     beats: {
-      drafts: { label: 'Juodraščių per mėnesį:' },
       draftsNote: { before: 'Išmatuota: ', after: ' % gaunamų laiškų yra tas pats klausimas iš naujo.' },
       hours: { label: 'Valandų, kurias atgaunate:' },
       worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
@@ -427,10 +425,7 @@ export const lt: Content = {
         def: 'Jūsų, ne mūsų. Kiek įmonei kainuoja į laiškus atsakančio žmogaus darbo valanda, su darbdavio mokesčiais. Valdiklį atidarėme su apytiksliu skaičiumi rinkai, kurioje skaitomas šis puslapis.',
       },
     ],
-    notes: [
-      'Dar nė karto nepatikrinta su tikru klientu. Jūsų skaičius priklauso nuo to, kiek Jūsų laiškų yra pasikartojantis darbas.',
-      'Pokalbio metu suskaičiuosime pagal Jūsų duomenis ir pasakysime, jei nesueina.',
-    ],
+    note: 'Pokalbio metu suskaičiuosime pagal Jūsų duomenis ir pasakysime, jei nesueina.',
   },
 
   who: {

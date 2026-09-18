@@ -390,7 +390,6 @@ export const en: Content = {
   numbers: {
     eyebrow: 'Our own arithmetic',
     title: 'What you keep',
-    lede: { before: 'Your mail, your hourly cost. ', mark: 'The page does the sum', after: ', and never asserts a saving.' },
     about: 'about\u00a0',
     inputs: {
       people: { label: 'People who answer mail' },
@@ -399,7 +398,6 @@ export const en: Content = {
       minutes: { label: 'Minutes saved on each draft', note: 'Your estimate. We have not timed this yet.' },
     },
     beats: {
-      drafts: { label: 'Drafts a month:' },
       draftsNote: { before: 'Measured: ', after: '% of inbound mail is the same question again.' },
       hours: { label: 'Hours handed back:' },
       worth: { label: 'What those hours cost you today:' },
@@ -424,10 +422,7 @@ export const en: Content = {
         def: 'Yours, not ours. What a person who answers mail costs the firm for an hour, with employer costs on top. The control opens on a rough figure for the market this page is read in.',
       },
     ],
-    notes: [
-      'Never yet checked against a real customer. Your number depends on how much of your mail is repeat work.',
-      'We will do the sum on your figures on the call, and say so if it does not clear.',
-    ],
+    note: 'We will do the sum on your figures on the call, and say so if it does not clear.',
   },
 
   who: {

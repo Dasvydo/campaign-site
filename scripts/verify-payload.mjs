@@ -316,7 +316,7 @@ async function main() {
       );
       check(
         p.pointsDriven > 20 && p.badPoints.length === 0,
-        `    all five figures are the model's own arithmetic, at all ${p.pointsDriven} points`,
+        `    all four figures are the model's own arithmetic, at all ${p.pointsDriven} points`,
         p.badPoints.slice(0, 3).join(' | '),
       );
       /* The hedge belongs to the modelled figures and not to the fee. A hedge

@@ -1757,6 +1757,7 @@
   font-variant-numeric:tabular-nums lining;
 }
 .numbers-keep.is-under{ color:var(--ink) }
+.numbers-share{ margin:0 0 12px; font-size:14px; line-height:1.5; color:var(--muted) }
 .numbers-basis{ margin:0; padding:0 }
 .numbers-basis-row{ padding:10px 0; border-top:1px solid rgba(37,29,24,.14) }
 .numbers-basis-row:first-child{ border-top:0; padding-top:0 }

@@ -42,7 +42,6 @@ import type { PackageId } from '../src/lib/offer';
 import {
   VALUE,
   draftRatePercent,
-  draftsPerMonth,
   formatShare,
   heroBreakEvenHourly,
   hoursBack,
@@ -300,11 +299,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       c.demo.desks[0].letter.from, c.demo.desks[0].letter.subject,
       ...c.demo.desks[0].sources.map((x) => x.label),
       c.who.title, ...c.who.groups.map((g) => g.line), c.who.notes.seats.mark,
-      c.numbers.title, c.numbers.lede.mark,
+      c.numbers.title,
       ...Object.values(c.numbers.inputs).map((i) => i.label), c.numbers.inputs.minutes.note,
       ...Object.values(c.numbers.beats).map((b) => ('label' in b ? b.label : '')).filter(Boolean),
       c.numbers.yearLabel, c.numbers.moreLabel, ...c.numbers.basis.map((b) => b.term),
-      ...c.numbers.notes,
+      c.numbers.note,
       c.price.eyebrow, c.price.title, c.price.feesTitle, c.price.freeTitle,
       c.price.freeNote, c.price.termsLabel, c.price.whenTitle,
       /* The fee sheet still has a term and a period per line. What it no longer
@@ -403,7 +402,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       /* The one measured figure on the calculator, as a percentage, from
          value.ts and not from the copy. */
       [
-        'the measured draft share, under the drafts row',
+        'the measured draft share, inside the arithmetic',
         c.numbers.beats.draftsNote.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.beats.draftsNote.after,
       ],
       ...(capped
@@ -513,21 +512,20 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         pointsDriven += 1;
         const pkg = packageFor(h);
         const want = {
-          drafts: draftsPerMonth(h, inb),
           hours: hoursBack(h, inb, min),
           worth: worthPerMonth(h, inb, min, hr),
           fee: pkg?.price ?? null,
           keep: keptPerMonth(h, inb, min, hr),
         };
+        /* Modelled amounts print to the whole unit: a figure hedged with
+           "about" and printed to the cent would be contradicting itself. */
         const wantText = {
-          drafts: want.drafts === null ? '' : c.numbers.about + figure(want.drafts),
           hours: want.hours === null ? '' : c.numbers.about + figure(want.hours) + c.numbers.units.hours,
-          worth: want.worth === null ? '' : c.numbers.about + money(want.worth),
+          worth: want.worth === null ? '' : c.numbers.about + money(Math.round(want.worth)),
           fee: want.fee === null ? '' : money(want.fee),
-          keep: want.keep === null ? '' : c.numbers.about + money(want.keep),
+          keep: want.keep === null ? '' : c.numbers.about + money(Math.round(want.keep)),
         };
         const got = {
-          drafts: readBeat('data-n-drafts'),
           hours: readBeat('data-n-hours'),
           worth: readBeat('data-n-worth'),
           fee: readBeat('data-n-fee'),
@@ -547,7 +545,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         /* The hedge is on the model and not on the fee. */
         const hedged = (sel: string) => Boolean(host.querySelector(`#numbers [${sel}] .numbers-about`));
         unhedged = [
-          ...(['data-n-drafts', 'data-n-hours', 'data-n-worth', 'data-n-keep'].filter((sel) => !hedged(sel))),
+          ...(['data-n-hours', 'data-n-worth', 'data-n-keep'].filter((sel) => !hedged(sel))),
           ...(hedged('data-n-fee') ? ['data-n-fee is hedged'] : []),
         ];
         /* The bar is the fee's share of what the hours cost, capped at all of it. */
@@ -649,7 +647,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
       en.price.packages.pick, en.price.included.title, ...en.price.included.items,
-      en.numbers.lede.mark, en.numbers.beats.keep.label, en.numbers.beats.fee.label,
+      en.numbers.beats.keep.label, en.numbers.beats.fee.label,
       en.numbers.inputs.people.label, en.numbers.inputs.hourly.label, en.numbers.under,
       en.hero.payback.before,
       ...en.demo.desks.map((d) => d.tab),

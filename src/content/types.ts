@@ -295,8 +295,6 @@ export interface Content {
   numbers: {
     eyebrow: string;
     title: string;
-    /** "Your figures, our arithmetic." The mark is highlighted. */
-    lede: { before: string; mark: string; after: string };
     /** "about ", set before every modelled figure, so the hedge is written
         once. Never set before the fee, which is exact. */
     about: string;
@@ -314,14 +312,12 @@ export interface Content {
     };
 
     /** The rows of the sum, read down. Each is a label with its colon, then
-        the figure. `fee` takes the package name after its figure, in brackets
-        the component supplies. */
+        the figure. `fee` takes the package name under its label. */
     beats: {
-      drafts: { label: string };
-      /** Said under the drafts row: "<before><the measured share, as a
-          percentage><after>". The share is read from value.ts, so the one
-          measured figure on the panel arrives from the same place the sum
-          reads it. */
+      /** The measured share, said inside the disclosure rather than as a row
+          of its own: "<before><the share, as a percentage><after>". Read from
+          value.ts, so the one measured figure arrives from the same place the
+          sum reads it. */
       draftsNote: { before: string; after: string };
       hours: { label: string };
       worth: { label: string };
@@ -343,7 +339,8 @@ export interface Content {
        minutes, the hourly cost being theirs. Pinned to a length so a locale
        cannot quietly carry a different number of them. */
     basis: [BasisRow, BasisRow, BasisRow];
-    notes: [string, string];
+    /** Closes the disclosure: the sum is redone on the call. */
+    note: string;
   };
 
   who: {
