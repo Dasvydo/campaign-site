@@ -57,7 +57,7 @@ export const en: Content = {
     },
 
     bar: {
-      text: 'The first two weeks are free.',
+      text: 'Six questions, no card.',
     },
 
     message: {
@@ -454,7 +454,7 @@ export const en: Content = {
   },
 
   price: {
-    eyebrow: 'Two weeks, then you decide',
+    eyebrow: 'One fee for the whole firm',
     title: 'What it costs',
 
     cohortName: 'founding',
@@ -517,13 +517,13 @@ export const en: Content = {
     },
 
     founding: {
-      eyebrow: { before: 'The ', after: ' places' },
       title: 'A trade, not a discount',
       lede: {
         noProofYet: 'We have no customers to point at yet.',
         trade: 'These places are a trade: the setup fee waived, for your name on the work.',
       },
       reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
+      lock: 'Your price does not change while you stay.',
       spots: { label: 'Places still open:', of: ' of ' },
       spotsClosed: 'The places that came with a trade are taken. The monthly fee below is the same one they paid; the setup fee is now charged in full.',
       givesTitle: 'What you give',
@@ -541,8 +541,10 @@ export const en: Content = {
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
     },
 
-    freeTitle: 'The first two weeks are free',
-    freeNote: 'You spend the workshop time, and nothing else.',
+    guarantee: {
+      before: 'Thirty days in, if the usable drafts you have had number fewer than ',
+      after: ', that month is free.',
+    },
     termsLabel: 'Show the terms',
     terms: [
       { t: 'Workshop and setup included.', n: 'Neither is billed afterwards.' },
@@ -578,12 +580,7 @@ export const en: Content = {
         say: { before: 'Say no, and the monthly total is struck out and reads ', after: '.' },
       },
     ],
-    total: {
-      term: 'The whole firm',
-      sub: { label: 'People covered, up to:' },
-      per: 'per month',
-      zero: '0 EUR',
-    },
+    total: { zero: '0 EUR' },
 
     askEyebrow: 'Before you book',
     ask: {
@@ -591,7 +588,7 @@ export const en: Content = {
       link: 'doviloop.dev',
       after: ' does the same drafting and costs a great deal less.',
     },
-    ctaNote: 'Two weeks free. Say no at the review call and nothing is invoiced.',
+    ctaNote: 'Say no at the review call and nothing is invoiced.',
   },
 
   form: {

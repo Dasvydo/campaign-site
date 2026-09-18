@@ -60,7 +60,7 @@ export const da: Content = {
     },
 
     bar: {
-      text: 'De første to uger er gratis.',
+      text: 'Seks spørgsmål, intet kort.',
     },
 
     message: {
@@ -457,7 +457,7 @@ export const da: Content = {
   },
 
   price: {
-    eyebrow: 'To uger, så bestemmer I',
+    eyebrow: 'Én pris for hele firmaet',
     title: 'Hvad det koster',
 
     cohortName: 'allerførste',
@@ -520,13 +520,13 @@ export const da: Content = {
     },
 
     founding: {
-      eyebrow: { before: 'De ', after: ' pladser' },
       title: 'En byttehandel, ikke en rabat',
       lede: {
         noProofYet: 'Vi har endnu ingen kunder at pege på.',
         trade: 'De her pladser er en byttehandel: opsætningsprisen bortfalder, for jeres navn på arbejdet.',
       },
       reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
+      lock: 'Jeres pris ændrer sig ikke, så længe I bliver.',
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
       spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er den samme, de betalte; opsætningsprisen opkræves nu fuldt ud.',
       givesTitle: 'Det, I giver',
@@ -547,8 +547,10 @@ export const da: Content = {
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
     },
 
-    freeTitle: 'De første to uger er gratis',
-    freeNote: 'I bruger tiden på workshoppen, intet andet.',
+    guarantee: {
+      before: 'Er der efter tredive dage kommet færre brugbare udkast tilbage end ',
+      after: ', er den måned gratis.',
+    },
     termsLabel: 'Vis vilkårene',
     terms: [
       { t: 'Workshop og opsætning er med.', n: 'Ingen af delene faktureres bagefter.' },
@@ -584,12 +586,7 @@ export const da: Content = {
         say: { before: 'Siger I nej, bliver månedsprisen streget ud og lyder på ', after: '.' },
       },
     ],
-    total: {
-      term: 'Hele virksomheden',
-      sub: { label: 'Personer dækket, op til:' },
-      per: 'om måneden',
-      zero: '0 EUR',
-    },
+    total: { zero: '0 EUR' },
 
     askEyebrow: 'Inden I booker',
     ask: {
@@ -597,7 +594,7 @@ export const da: Content = {
       link: 'doviloop.dev',
       after: ' det samme arbejde og koster væsentligt mindre.',
     },
-    ctaNote: 'To uger gratis. Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
+    ctaNote: 'Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
   },
 
   form: {

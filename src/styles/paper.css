@@ -2234,6 +2234,44 @@
 .price-pkg-note{ margin-top:8px; font-size:14px; line-height:1.5; color:var(--price-dim) }
 .price-pkgs-note{ margin-top:0 }
 
+/* The pen on the card. The fee wrapper is positioned so the stroke can lie
+   across it; the zero lands beside it on the last stop. */
+.price-pkg-strike{
+  position:relative; display:inline-block;
+  transition:color var(--price-t-in) var(--price-e-out);
+}
+.price-pkg.is-struck .price-pkg-strike{ color:var(--price-dim) }
+.price-pkg.is-struck .price-pkg-strike .price-strike-svg path{ stroke-dashoffset:0; stroke-width:3 }
+.price-pkg-zero{
+  display:inline-block;
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-weight:400; color:var(--warmwhite);
+  font-size:clamp(32px, 22px + 1.6vw, 42px);
+  line-height:1; letter-spacing:-.012em;
+  font-variant-numeric:tabular-nums lining;
+  opacity:0; transform:translateY(4px);
+  transition:opacity var(--price-t-micro) var(--price-e-out), transform var(--price-t-micro) var(--price-e-out);
+}
+.price-pkg-zero.is-in{ opacity:1; transform:none }
+
+
+/* The timeline sits under the cards it acts on. */
+.price-timeline{ margin:28px 0 0; padding-top:24px; border-top:1px solid var(--price-rule-strong) }
+.price-state{
+  margin:14px 0 0; font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--price-dim);
+  transition:color var(--price-t-micro) var(--price-e-out);
+}
+.price-state.is-struck{ color:var(--warmwhite) }
+
+/* The guarantee outlives the trial, so it is the strongest line on the band. */
+.price-guarantee{
+  margin:28px 0 0; max-width:52ch;
+  font-size:19px; line-height:1.45; color:var(--warmwhite);
+  font-variant-numeric:tabular-nums lining;
+}
+.price-lock{ color:var(--price-dim) }
+
 /* Why the price is what it is, beside it, so it never appears alone. */
 .price-reason{
   margin:22px 0 0; max-width:52ch;
@@ -2291,7 +2329,7 @@
 .price-free-t{ color:var(--warmwhite); font-weight:500 }
 .price-free-n{ color:var(--price-dim) }
 
-.price-founding{ margin:32px 0 0 }
+.price-founding{ margin:18px 0 0 }
 .price-founding .price-eyebrow{ margin:0 0 10px }
 .price-fees-tight{ border-top-width:1px }
 .price-fees-tight .price-fee{ padding-block:14px }
@@ -2306,10 +2344,10 @@
 @media (prefers-reduced-motion:no-preference){
   /* Replayed by the key on each, so a change of stop lands rather than
      swapping in place. The figure carries it even where the digits are the
-     same at two stops: what moved is the state, and the total is where the eye
+     same at two stops: what moved is the state, and the fee is where the eye
      already is. */
   .price-total-num,
-  .price-total-state{ animation:price-land var(--price-t-in) var(--price-e-out) both }
+  .price-state{ animation:price-land var(--price-t-in) var(--price-e-out) both }
 }
 @keyframes price-land{
   from{ opacity:0; transform:translateY(.18em) }
@@ -2317,7 +2355,7 @@
 }
 @media (prefers-reduced-motion:reduce){
   .price-total-num,
-  .price-total-state{ animation:none }
+  .price-state{ animation:none }
 }
 
 .price-ask{ align-self:start }

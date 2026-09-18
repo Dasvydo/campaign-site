@@ -60,7 +60,7 @@ export const lt: Content = {
     },
 
     bar: {
-      text: 'Pirmos dvi savaitės nemokamos.',
+      text: 'Šeši klausimai, kortelės neprašome.',
     },
 
     message: {
@@ -457,7 +457,7 @@ export const lt: Content = {
   },
 
   price: {
-    eyebrow: 'Dvi savaitės, tada nusprendžiate',
+    eyebrow: 'Vienas mokestis visai įmonei',
     title: 'Kiek kainuoja',
 
     cohortName: 'steigiamasis',
@@ -520,13 +520,13 @@ export const lt: Content = {
     },
 
     founding: {
-      eyebrow: { before: 'Vietos, kol galioja ', after: ' etapas' },
       title: 'Mainai, o ne nuolaida',
       lede: {
         noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
         trade: 'Šios vietos yra mainai: netaikomas įdiegimo mokestis už Jūsų vardą prie šio darbo.',
       },
       reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
+      lock: 'Jūsų kaina nesikeičia, kol liekate.',
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
       spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau toks pat, kokį mokėjo jie; įdiegimo mokestis dabar taikomas visas.',
       givesTitle: 'Ką duodate Jūs',
@@ -544,8 +544,10 @@ export const lt: Content = {
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
     },
 
-    freeTitle: 'Pirmos dvi savaitės nemokamos',
-    freeNote: 'Skiriate laiko užsiėmimui, daugiau nieko.',
+    guarantee: {
+      before: 'Jei per pirmas trisdešimt dienų tinkamų juodraščių gavote mažiau nei ',
+      after: ', tas mėnuo nemokamas.',
+    },
     termsLabel: 'Parodyti sąlygas',
     terms: [
       { t: 'Užsiėmimas ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
@@ -583,12 +585,7 @@ export const lt: Content = {
         say: { before: 'Pasakykite ne, ir mėnesio suma perbraukiama bei rodo ', after: '.' },
       },
     ],
-    total: {
-      term: 'Visa įmonė',
-      sub: { label: 'Aprėpiama žmonių, ne daugiau kaip:' },
-      per: 'per mėnesį',
-      zero: '0 EUR',
-    },
+    total: { zero: '0 EUR' },
 
     askEyebrow: 'Prieš užsakydami',
     ask: {
@@ -596,7 +593,7 @@ export const lt: Content = {
       link: 'doviloop.dev',
       after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
     },
-    ctaNote: 'Dvi savaitės nemokamai. Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
+    ctaNote: 'Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
   },
 
   form: {

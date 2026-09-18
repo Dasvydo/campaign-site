@@ -161,7 +161,6 @@ export function Price({
   const stopRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const sayTimer = useRef<number>(0);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const strikeRef = useRef<HTMLSpanElement | null>(null);
 
   const struck = stop === c.price.stops.length - 1;
 
@@ -184,18 +183,19 @@ export function Price({
   /* The pen that strikes the total out is drawn by dashoffset, so it needs its
      own measured length. */
   useEffect(() => {
-    const path = strikeRef.current?.querySelector('path');
-    if (!path) return;
-    try {
-      const len = path.getTotalLength();
-      strikeRef.current!.style.setProperty('--price-len', String(len));
-      strikeRef.current!.style.setProperty(
-        '--price-dur',
-        Math.max(240, Math.min(620, len * 2.1)) + 'ms',
-      );
-    } catch {
-      /* leave the CSS fallbacks in place */
-    }
+    const sec = sectionRef.current;
+    if (!sec) return;
+    sec.querySelectorAll<HTMLElement>('.price-pkg-strike').forEach((wrap) => {
+      const path = wrap.querySelector('path');
+      if (!path) return;
+      try {
+        const len = path.getTotalLength();
+        wrap.style.setProperty('--price-len', String(len));
+        wrap.style.setProperty('--price-dur', Math.max(240, Math.min(620, len * 2.1)) + 'ms');
+      } catch {
+        /* leave the CSS fallbacks in place */
+      }
+    });
   }, []);
 
   /* The band settles in when it arrives, and on a safety timer if no frame
@@ -267,13 +267,12 @@ export function Price({
         <div className="price-sheet">
           <div className="price-block price-panel">
             {/* The two packages, in the open, and the reader picks by
-                counting their own people. The card they pick is the package
-                the total under the timeline and the coverage in the terms
-                describe, so the band never shows one package's fee beside
-                another's ceiling. Both cards print the same three figures,
-                every one read from the offer: a card is matched to its
-                package by id, and a row naming a package that does not exist
-                renders nothing rather than a blank fee. */}
+                counting their own people. The lit card is the package the
+                timeline strikes out and the coverage in the terms describes,
+                so the band never shows one package's fee beside another's
+                ceiling. Every figure on a card is read from the offer: a card
+                is matched to its package by id, and a row naming a package
+                that does not exist renders nothing rather than a blank fee. */}
             <h3 className="price-sr" id="price-packages-h">
               {c.price.packages.title}
             </h3>
@@ -285,10 +284,11 @@ export function Price({
                   : null;
                 if (!p) return null;
                 const on = p.id === pkg.id;
+                const struckHere = on && struck;
                 return (
                   <button
                     type="button"
-                    className={'price-pkg' + (on ? ' is-on' : '')}
+                    className={'price-pkg' + (on ? ' is-on' : '') + (struckHere ? ' is-struck' : '')}
                     aria-pressed={on}
                     data-price-pkg={p.id}
                     key={p.id}
@@ -296,7 +296,37 @@ export function Price({
                   >
                     <span className="price-pkg-name">{row.name}</span>
                     <span className="price-pkg-fee">
-                      <span className="price-pkg-fig">{money(p.price)}</span>
+                      {/* The pen strikes the fee out on the card itself, on
+                          the last stop of the timeline. The digits are keyed
+                          on the stop so the count replays when it changes;
+                          the wrapper is not, so the measured pen length
+                          survives. Only the lit card carries the strike, so
+                          the marker below names exactly one fee. */}
+                      <span
+                        className="price-pkg-strike"
+                        data-price-strike={on ? '' : undefined}
+                      >
+                        <span className="price-pkg-fig price-total-num" key={on ? stop : 'off'}>
+                          {money(p.price)}
+                        </span>
+                        <svg
+                          className="price-strike-svg"
+                          viewBox="0 0 120 14"
+                          preserveAspectRatio="none"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="M2 9 C 26 4, 52 11, 76 6 S 106 4, 118 8" />
+                        </svg>
+                      </span>
+                      {/* Rendered only while struck, not merely hidden: a
+                          hidden span is still text to a screen reader's
+                          reading of the card and to find-in-page. */}
+                      {struckHere ? (
+                        <span className="price-pkg-zero is-in" data-price-zero>
+                          {c.price.total.zero}
+                        </span>
+                      ) : null}
                       <span className="price-pkg-per">{firmFee.per}</span>
                     </span>
                     <span className="price-pkg-line">
@@ -312,127 +342,59 @@ export function Price({
             </div>
             <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
 
-            {/* The price never appears without its reason, and the reason
-                never appears without what it asks for. The four things a
-                founding firm gives are in the open, under the sentence that
-                says the price is low because of them: a reader who took that
-                sentence at face value would otherwise be agreeing to something
-                they had to click to read. */}
-            {capped ? (
-              <div className="price-trade" data-price-trade>
-                <p className="price-reason" data-price-reason>
-                  {c.price.founding.reason.before}
-                  {figure(OFFER.founding.places)}
-                  {c.price.founding.reason.after}
-                </p>
-                <h3 className="price-sr" id="price-gives-open-h">
-                  {c.price.founding.givesTitle}
-                </h3>
-                <ul className="price-gives" aria-labelledby="price-gives-open-h">
-                  {c.price.founding.gives.map((g) => (
-                    <li key={g}>{g}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {/* What is in the product, and it is the same list on both
-                cards, which is the point of printing it once. */}
-            <h3 className="price-sr" id="price-included-h">
-              {c.price.included.title}
-            </h3>
-            <ul className="price-incl" aria-labelledby="price-included-h">
-              {c.price.included.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-
-            <h3 className="price-sr" id="price-when-h">
-              {c.price.whenTitle}
-            </h3>
-
-            <ol className="price-stops" aria-labelledby="price-when-h">
-              {c.price.stops.map((s, i) => (
-                <li
-                  className={'price-stop-item' + (i === stop ? ' is-on' : '')}
-                  data-price-reveal
-                  style={{ ['--i' as string]: i }}
-                  key={s.day}
-                >
-                  <button
-                    className="price-stop"
-                    type="button"
-                    data-price-stop
-                    aria-current={i === stop ? 'step' : undefined}
-                    ref={(el) => {
-                      stopRefs.current[i] = el;
-                    }}
-                    onClick={() => select(i, false)}
-                    /* Left and right are a convenience. There is no composite
-                       role here to announce an arrow key convention, so nothing
-                       is reachable by arrows alone and all three stops are
-                       ordinary tab stops. The vertical keys are left to the
-                       page, so scrolling still works while a stop has focus. */
-                    onKeyDown={(e) => {
-                      const n = c.price.stops.length;
-                      let next = -1;
-                      if (e.key === 'ArrowRight') next = (i + 1) % n;
-                      else if (e.key === 'ArrowLeft') next = (i + n - 1) % n;
-                      if (next < 0) return;
-                      e.preventDefault();
-                      select(next, true);
-                    }}
+            {/* The timeline, directly under the cards it acts on. Three
+                stops; the last strikes the lit card's fee out and puts nothing
+                in its place, which is the risk reversal made visible rather
+                than asserted. The live region says what changed, because a
+                struck out figure is a picture. */}
+            <div className="price-timeline">
+              <h3 className="price-sr" id="price-when-h">
+                {c.price.whenTitle}
+              </h3>
+              <ol className="price-stops" aria-labelledby="price-when-h">
+                {c.price.stops.map((s, i) => (
+                  <li
+                    className={'price-stop-item' + (i === stop ? ' is-on' : '')}
+                    data-price-reveal
+                    style={{ ['--i' as string]: i }}
+                    key={s.day}
                   >
-                    <span className="price-stop-day">{s.day}</span>
-                    <span className="price-stop-note">{s.note}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-
-            <div className={'price-total' + (struck ? ' is-struck' : '')} data-price-total>
+                    <button
+                      className="price-stop"
+                      type="button"
+                      data-price-stop
+                      aria-current={i === stop ? 'step' : undefined}
+                      ref={(el) => {
+                        stopRefs.current[i] = el;
+                      }}
+                      onClick={() => select(i, false)}
+                      /* Left and right are a convenience. There is no composite
+                         role here to announce an arrow key convention, so nothing
+                         is reachable by arrows alone and all three stops are
+                         ordinary tab stops. The vertical keys are left to the
+                         page, so scrolling still works while a stop has focus. */
+                      onKeyDown={(e) => {
+                        const n = c.price.stops.length;
+                        let next = -1;
+                        if (e.key === 'ArrowRight') next = (i + 1) % n;
+                        else if (e.key === 'ArrowLeft') next = (i + n - 1) % n;
+                        if (next < 0) return;
+                        e.preventDefault();
+                        select(next, true);
+                      }}
+                    >
+                      <span className="price-stop-day">{s.day}</span>
+                      <span className="price-stop-note">{s.note}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
               {/* Keyed so it remounts and replays. Between the first two
-                  stops this line is the only thing on the total that changes,
-                  so if it arrives silently the stop reads as a dead control. */}
-              <p className="price-total-state" data-price-state key={stop}>
+                  stops this line is the only thing that changes, so if it
+                  arrived silently the stop would read as a dead control. */}
+              <p className={'price-state' + (struck ? ' is-struck' : '')} data-price-state key={stop}>
                 {c.price.stops[stop].state}
               </p>
-              <div className="price-total-row">
-                <span className="price-total-term">
-                  {c.price.total.term}
-                  <span className="price-total-sub">
-                    {c.price.total.sub.label} {figure(pkg.covers)}
-                  </span>
-                </span>
-                <span className="price-total-amt">
-                  {/* The ref stays on the outer span, which never remounts, so
-                      the measured pen length survives a change of stop. Only
-                      the digits inside are keyed, and remounting those is what
-                      replays the count. */}
-                  <span className="price-total-fig" data-price-strike ref={strikeRef}>
-                    <span className="price-total-num" key={`${stop}-${pkg.id}`}>
-                      {money(pkg.price)}
-                    </span>
-                    <svg
-                      className="price-strike-svg"
-                      viewBox="0 0 120 14"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path d="M2 9 C 26 4, 52 11, 76 6 S 106 4, 118 8" />
-                    </svg>
-                  </span>
-                  <span
-                    className={'price-total-zero' + (struck ? ' is-in' : '')}
-                    data-price-zero
-                    hidden={!struck}
-                  >
-                    {c.price.total.zero}
-                  </span>
-                  <span className="price-per">{c.price.total.per}</span>
-                </span>
-              </div>
               <p className="price-sr" role="status" aria-live="polite" data-price-status>
                 {status}
               </p>
@@ -448,47 +410,71 @@ export function Price({
               </p>
             ) : null}
 
-            <p className="price-free" data-price-reveal style={{ ['--i' as string]: 1 }}>
-              <strong className="price-free-t">{c.price.freeTitle}</strong>{' '}
-              <span className="price-free-n">{c.price.freeNote}</span>
-            </p>
-
-            {/* The counter that makes the trade a fact rather than a countdown.
-                It stays in the open: it is one short line, and it is the only
-                thing on the band that changes as places go. What the trade
-                costs and returns is the reading, and the reading folds. */}
+            {/* The trade, in the open, in the order a reader needs it: why
+                the price is low, that it stays there, what it asks for, and
+                how many places are left. The counter sits here rather than
+                further down because it is the same five the reason names. */}
             {capped ? (
-              <div
-                className="price-founding"
-                data-price-reveal
-                style={{ ['--i' as string]: 2 }}
-              >
-                <p className="price-eyebrow">
-                  {c.price.founding.eyebrow.before}
-                  {tierName}
-                  {c.price.founding.eyebrow.after}
+              <div className="price-trade" data-price-trade>
+                <p className="price-reason" data-price-reason>
+                  {c.price.founding.reason.before}
+                  {figure(OFFER.founding.places)}
+                  {c.price.founding.reason.after}{' '}
+                  <span className="price-lock" data-price-lock>
+                    {c.price.founding.lock}
+                  </span>
                 </p>
-                <h3 className="price-sr" id="price-founding-h">
-                  {c.price.founding.title}
+                <h3 className="price-sr" id="price-gives-open-h">
+                  {c.price.founding.givesTitle}
                 </h3>
-                <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
-                  <div className="price-fee">
-                    <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
-                    <dd className="price-fee-amt">
-                      <span className="price-fig">
-                        {figure(spotsLeft ?? 0)}
-                        {c.price.founding.spots.of}
-                        {figure(OFFER.founding.places)}
-                      </span>
-                    </dd>
-                  </div>
-                </dl>
+                <ul className="price-gives" aria-labelledby="price-gives-open-h">
+                  {c.price.founding.gives.map((g) => (
+                    <li key={g}>{g}</li>
+                  ))}
+                </ul>
+                <div className="price-founding" data-price-reveal style={{ ['--i' as string]: 1 }}>
+                  <h3 className="price-sr" id="price-founding-h">
+                    {c.price.founding.title}
+                  </h3>
+                  <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
+                    <div className="price-fee">
+                      <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
+                      <dd className="price-fee-amt">
+                        <span className="price-fig">
+                          {figure(spotsLeft ?? 0)}
+                          {c.price.founding.spots.of}
+                          {figure(OFFER.founding.places)}
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
               </div>
             ) : (
-              <p className="price-fee-note" data-price-reveal style={{ ['--i' as string]: 2 }}>
+              <p className="price-fee-note" data-price-reveal style={{ ['--i' as string]: 1 }}>
                 {c.price.founding.spotsClosed}
               </p>
             )}
+
+            {/* The guarantee. It outlives the trial, which is why it is here
+                and not in the terms: the count is the offer's own, and the
+                sentence is the one that says what happens if it is not met. */}
+            <p className="price-guarantee" data-price-guarantee>
+              {c.price.guarantee.before}
+              {figure(OFFER.guaranteeDrafts)}
+              {c.price.guarantee.after}
+            </p>
+
+            {/* What is in the product, and it is the same list on both
+                cards, which is the point of printing it once. */}
+            <h3 className="price-sr" id="price-included-h">
+              {c.price.included.title}
+            </h3>
+            <ul className="price-incl" aria-labelledby="price-included-h">
+              {c.price.included.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
 
             <div className="price-more" data-price-reveal style={{ ['--i' as string]: 3 }}>
               <Disclosure label={c.price.termsLabel}>
@@ -501,10 +487,10 @@ export function Price({
                   ))}
                 </ol>
 
-                {/* The fee sheet. The firm's own line repeats the total above
-                    it on purpose: read on its own, inside the terms, it is the
-                    line that says the fee is one fee and does not move with
-                    head count. */}
+                {/* The fee sheet. The firm's own line repeats the lit card on
+                    purpose: read on its own, inside the terms, it is the line
+                    that says the fee is one fee and does not move with head
+                    count. */}
                 <h4 className="price-sr" id="price-fees-h">
                   {c.price.feesTitle}
                 </h4>
@@ -530,11 +516,6 @@ export function Price({
                           <span className="price-fig price-fig-off" aria-hidden="true">
                             {money(OFFER.setupFee)}
                           </span>
-                          {/* The period stays with the amount it belongs to,
-                              and the waiver follows as its own mark. Read in
-                              the other order it ran together as "Waived once",
-                              which says the waiver happens once rather than
-                              that the fee does. */}
                           <span className="price-per" aria-hidden="true">
                             {setupFee.per}
                           </span>
@@ -604,6 +585,9 @@ export function Price({
                         {tierName}
                         {c.price.founding.gets.fee.after}
                       </span>
+                    </li>
+                    <li>
+                      <span className="price-term-t">{c.price.founding.lock}</span>
                     </li>
                     {setupWaived ? (
                       <li>

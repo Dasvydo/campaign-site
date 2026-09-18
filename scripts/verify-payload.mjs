@@ -275,14 +275,14 @@ async function main() {
       );
       check(
         p.totalAtRest === p.wantTotalAtRest,
-        `    and the total under the timeline reads that package's fee`,
+        `    and the timeline's strike sits on that card's fee`,
         `"${p.totalAtRest}" against "${p.wantTotalAtRest}"`,
       );
       /* Pressing a card is what makes it a control rather than a picture:
          the total and the coverage under it have to follow. */
       check(
         p.cardDrives.length === 0,
-        `    pressing a card moves the total and the coverage to that package`,
+        `    pressing a card moves the strike to that card's fee`,
         p.cardDrives.join(' | '),
       );
     }

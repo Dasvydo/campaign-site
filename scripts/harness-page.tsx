@@ -305,8 +305,8 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ...Object.values(c.numbers.beats).map((b) => ('label' in b ? b.label : '')).filter(Boolean),
       c.numbers.yearLabel, c.numbers.moreLabel, ...c.numbers.basis.map((b) => b.term),
       c.numbers.note,
-      c.price.eyebrow, c.price.title, c.price.feesTitle, c.price.freeTitle,
-      c.price.freeNote, c.price.termsLabel, c.price.whenTitle,
+      c.price.eyebrow, c.price.title, c.price.feesTitle,
+      c.price.termsLabel, c.price.whenTitle,
       /* The fee sheet still has a term and a period per line. What it no longer
          has is a figure: that comes from the offer, and is asserted assembled. */
       ...c.price.fees.map((f) => f.term),
@@ -318,7 +318,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ...c.price.stops.map((x) => x.day), ...c.price.stops.map((x) => x.note),
       /* Only the selected stop's state line is on the page at rest. */
       c.price.stops[0].state,
-      c.price.total.term, c.price.total.per,
       c.price.askEyebrow, c.price.ctaNote,
       /* The founding block on a capped tier, or the one line that replaces the
          whole trade once the capped tiers are spent. Never both. */
@@ -329,6 +328,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
                claim about this business, gated on the offer, and it is asserted in
                both of its states by harness-claim rather than assumed here. */
             c.price.founding.lede.trade, c.price.founding.spots.label,
+            c.price.founding.lock,
             c.price.founding.givesTitle, ...c.price.founding.gives,
             c.price.founding.getsTitle, c.price.founding.note,
             ...(setupWaived ? [c.price.founding.gets.setup] : []),
@@ -365,9 +365,13 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],
       ['people covered by the fee', c.price.covers.people.label + figure(tier.covers)],
       ['the pooled draft cap', c.price.covers.drafts.label + figure(tier.draftCap)],
+      /* The guarantee, with the count the offer holds itself to. It is the
+         one line on the band that outlives the trial, and a sentence reading
+         "fewer than , that month is free" would ship in three languages
+         without a single check noticing. */
       [
-        'the monthly total under the timeline',
-        c.price.total.term + c.price.total.sub.label + ' ' + figure(tier.covers) + money(tier.price),
+        'the guarantee, with the drafts it promises',
+        c.price.guarantee.before + figure(OFFER.guaranteeDrafts) + c.price.guarantee.after,
       ],
       /* The plan with no row. Everything else in this section is arithmetic
          the table or a claim would give away if it went missing, and this is
@@ -414,10 +418,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ],
       ...(capped
         ? ([
-            [
-              'the founding eyebrow, naming the tier on show',
-              c.price.founding.eyebrow.before + tierName + c.price.founding.eyebrow.after,
-            ],
             [
               'the spots counter',
               c.price.founding.spots.label + figure(spotsLeft ?? 0) +
@@ -595,10 +595,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       const p = OFFER.order.includes(id) ? packageById(id) : null;
       const want = p ? money(p.price) : '';
       if (totalText() !== want) cardDrives.push(`${id}: total reads "${totalText()}", offer says "${want}"`);
-      const coverLine = c.price.total.sub.label + ' ' + figure(p?.covers ?? NaN);
-      if (!(host.querySelector('#price')?.textContent ?? '').includes(coverLine)) {
-        cardDrives.push(`${id}: coverage under the total does not read "${coverLine}"`);
-      }
     }
     for (const b of cards) if (b.dataset.pricePkg === tier.id) await act(async () => b.click());
 

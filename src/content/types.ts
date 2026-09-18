@@ -423,8 +423,6 @@ export interface Content {
         places. On the uncapped tier there is no trade left to offer, and
         `spotsClosed` is the one line that stands in for the whole block. */
     founding: {
-      /** "<before><the active tier's name><after>". */
-      eyebrow: { before: string; after: string };
       title: string;
       /** Two sentences, because only one of them is always true.
 
@@ -443,6 +441,10 @@ export interface Content {
           reachable count, the one in `OFFER.founding.places`, is the one
           each translation has to be right for. */
       reason: { before: string; after: string };
+      /** The price is held while the firm stays. Printed beside the reason,
+          because it is the other half of the same promise: low, and not
+          going up on you. */
+      lock: string;
       /** A label, then the count, then the total: "Places still open: 3 of 5".
           The numeral ends its clause and nothing after it agrees with it, so
           the line is right at one place left as well as at five. One is the
@@ -465,8 +467,13 @@ export interface Content {
       note: string;
     };
 
-    freeTitle: string;
-    freeNote: string;
+    /** The guarantee, with the count read from the offer.
+        "<before><the drafts we hold ourselves to><after>": fewer usable
+        drafts than that in the first thirty days and the month is free. The
+        count ends its clause; the noun it counts comes before it, so the one
+        reachable count, `OFFER.guaranteeDrafts`, is the one each translation
+        has to be right for. */
+    guarantee: { before: string; after: string };
     termsLabel: string;
     terms: [PriceTerm, PriceTerm, PriceTerm, PriceTerm];
 
@@ -474,11 +481,9 @@ export interface Content {
     /** Three stops on the timeline. The last one is the one that strikes the
         monthly total out and replaces it with nothing. */
     stops: [PriceStop, PriceStop, PriceStop];
-    /** `sub` is a label with the covered head count after it, the same shape
-        the coverage list uses. There is no `figure`: the monthly total is the
-        offer's, read at render time. `zero` is what replaces it when the last
-        stop strikes it out. */
-    total: { term: string; sub: { label: string }; per: string; zero: string };
+    /** What replaces the fee on the lit card when the last stop strikes it
+        out. The fee itself is the offer's, read at render time. */
+    total: { zero: string };
 
     askEyebrow: string;
     ask: { before: string; link: string; after: string };
