@@ -33,10 +33,13 @@ export const env = {
    *
    *  It is a variable rather than a constant because it has to change on the
    *  day teams.doviloop.dev starts serving this page, and on that day a code
-   *  edit plus a rebuild is a worse instrument than a value in Vercel: Meta
-   *  scrapes og:url to build the ad's link preview, so an ad pointing at one
-   *  origin while the page names another is a visible mismatch in the ad
-   *  itself. See ad-engine/docs/FUNNEL-HANDOFF.md, Blocker 1. */
+   *  edit plus a rebuild is a worse instrument than a value in Vercel.
+   *
+   *  It is NOT, as an earlier version of this comment claimed, something Meta
+   *  reads. index.html has no Open Graph tags; these are all written by the
+   *  effect in LocalePage, and Meta's crawler does not run JavaScript. A paid
+   *  ad takes its preview from the ad object. This is for search engines.
+   *  See ad-engine/docs/FUNNEL-HANDOFF.md, Blocker 1. */
   siteOrigin:
     raw(import.meta.env.VITE_SITE_ORIGIN) || 'https://campaign-site-azure.vercel.app',
 } as const;
