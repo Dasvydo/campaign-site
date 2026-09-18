@@ -6,6 +6,14 @@ It is kept there, not here, because the ads side is the side that has to comply
 with it — destination URLs and UTM strings are written into `ad-engine`'s
 creative specs. One copy, so the two cannot drift.
 
+That rule was tested immediately. On 2026-09-16 two sessions, unaware of each
+other, wrote a full handoff at the same path on two branches — the exact failure a
+single canonical copy exists to prevent. The other branch
+(`claude/confident-ritchie-ggzjjm`, since retired) reduced its copy to a pointer;
+this is the surviving one. Recorded rather than quietly tidied away, because
+"we solved this by having one copy" is worth less than "we solved it after it
+happened to us".
+
 ## What this repo owes that contract
 
 Three things in this codebase are load-bearing for the funnel. Change any of them
