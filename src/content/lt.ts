@@ -460,7 +460,7 @@ export const lt: Content = {
     eyebrow: 'Vienas mokestis visai įmonei',
     title: 'Kiek kainuoja',
 
-    cohortName: 'steigiamasis',
+    cohortName: 'steigiamųjų',
 
     feesTitle: 'Kainos',
     fees: [
@@ -475,7 +475,7 @@ export const lt: Content = {
         note: 'Vienas pokalbis, su tikrais Jūsų įmonės laiškais. Mes perskaitome Jūsų svetainę ir dokumentus; Jūs pasakote, ko Jūsų klausiama.',
         waived: {
           label: 'Netaikomas',
-          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ' netaikomas, kol yra laisvų vietų.' },
+          say: { before: 'Įdiegimo mokestis, kuris yra ', after: ', netaikomas, kol yra laisvų vietų.' },
         },
       },
     ],
@@ -550,7 +550,7 @@ export const lt: Content = {
     },
     termsLabel: 'Parodyti sąlygas',
     terms: [
-      { t: 'Užsiėmimas ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
+      { t: 'Įdiegimo pokalbis ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
       { t: 'Kortelės neprašome ir nieko nenuskaitome.', n: 'Mokėjimo duomenų prireiks vėliau, kai pasakysite taip.' },
       { t: 'Pasakius ne, nemokate nieko.', n: 'Jokia sąskaita neišrašoma ir nėra ko atšaukti.' },
       { t: 'Mokestis mokamas kas mėnesį.', n: 'Nereikia pasirašyti metams ir nereikia išlaikyti žmonių skaičiaus.' },
@@ -560,11 +560,10 @@ export const lt: Content = {
     stops: [
       {
         day: '0 diena',
-        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko Jūsų klausiama. Tada prasideda juodraščiai.',
+        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko Jūsų klausiama. Tada pradeda rastis juodraščiai.',
         state: 'Kol kas jokios sąskaitos',
         say: {
-          before:
-            '0 diena. Vyksta užsiėmimas ir pradeda grįžti juodraščiai. Jokia sąskaita neišrašoma. Mėnesio suma rodo ',
+          before: '0 diena. Vienas įdiegimo pokalbis, tada pradeda rastis juodraščiai. Jokia sąskaita neišrašoma. Mėnesinis mokestis rodo ',
           after: '.',
         },
       },
@@ -582,7 +581,7 @@ export const lt: Content = {
         day: 'Pasakykite ne',
         note: 'Bet kada iki to pokalbio.',
         state: 'Jokios sąskaitos išvis',
-        say: { before: '0 diena. Vienas įdiegimo pokalbis, tada prasideda juodraščiai. Jokia sąskaita neišrašoma. Mėnesinis mokestis rodo ', after: '.' },
+        say: { before: 'Pasakykite ne, ir mėnesio suma perbraukiama bei rodo ', after: '.' },
       },
     ],
     total: { zero: '0 EUR' },

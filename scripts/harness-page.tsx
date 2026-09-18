@@ -651,7 +651,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       en.numbers.title, en.who.title, en.price.title, en.form.title, en.form.submit,
       en.price.feesTitle, en.price.covers.title, en.price.whenTitle,
       en.price.packages.pick, en.price.included.title, ...en.price.included.items,
-      en.numbers.beats.keep.label, en.numbers.beats.fee.label,
+      en.numbers.beats.keep.label, en.numbers.beats.fee.before,
       en.numbers.inputs.people.label, en.numbers.inputs.hourly.label, en.numbers.under,
       en.hero.payback.before,
       ...en.demo.desks.map((d) => d.tab),

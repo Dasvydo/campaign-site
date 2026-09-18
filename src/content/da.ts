@@ -540,7 +540,7 @@ export const da: Content = {
       gets: {
         fee: {
           before: 'En plads blandt de ',
-          after: ' fem, hvilket er så mange virksomheder, én person kan give rigtig opmærksomhed ad gangen.',
+          after: ' fem, hvilket er så mange virksomheder, som én person kan give rigtig opmærksomhed ad gangen.',
         },
         setup: 'Opsætningsprisen bortfalder helt.',
       },
@@ -553,7 +553,7 @@ export const da: Content = {
     },
     termsLabel: 'Vis vilkårene',
     terms: [
-      { t: 'Workshop og opsætning er med.', n: 'Ingen af delene faktureres bagefter.' },
+      { t: 'Opsætningsmødet og opsætningen er med.', n: 'Ingen af delene faktureres bagefter.' },
       { t: 'Intet kort, og ingen betaling.', n: 'Betalingsoplysninger kommer senere, efter I har sagt ja.' },
       { t: 'Siger I nej, betaler I intet.', n: 'Der faktureres ikke noget, og der er ikke noget at opsige.' },
       { t: 'Prisen er måned til måned.', n: 'Ingen binding på et år, og intet fast antal medarbejdere at leve op til.' },

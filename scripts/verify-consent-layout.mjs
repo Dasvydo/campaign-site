@@ -3,18 +3,19 @@
  *
  * jsdom has no layout, so scripts/verify-consent.mjs can prove the gate holds
  * but cannot see that the notice covers the one button the page is asking
- * people to press. This can. Three viewports by three locales, with the notice
+ * people to press. This can. Four viewports by three locales, with the notice
  * up and again after it is answered.
  *
  * What it asserts, and why each one is here rather than eyeballed:
  *
  *   - no horizontal overflow, before and after. A fixed, full-width element is
  *     the classic way to add a scrollbar to a page that did not have one.
- *   - from 1024px up, where the hero is two columns, the slip must not touch
- *     the hero's call to action. Below that the hero is one column and its
- *     button runs across the foot, so no readable notice can clear it; there
- *     the sheet is held under a third of the screen and the page must reserve
- *     its height instead.
+ *   - at every viewport the slip must not touch the hero's call to action.
+ *     Until 2026-09-18 this was only asserted from 1024px up, on the belief
+ *     that a phone's sheet would always sit on the button; what sat on the
+ *     button was a payback line and a 197px sheet. The button now comes
+ *     first and the sheet is tighter, and the assertion runs at 360, 390,
+ *     768 and 1280 wide so a first screen with no reachable action fails.
  *   - on a phone the standing price bar stands down while the notice is up and
  *     comes back afterwards, because two fixed bars must never stack.
  *

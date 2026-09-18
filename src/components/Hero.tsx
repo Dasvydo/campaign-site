@@ -283,13 +283,23 @@ export function Hero({
               on the hook for sending it. */}
           <p className="hero-deck">{c.hero.deck}</p>
 
+          <div className="hero-act">
+            <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
+              {c.nav.cta}
+            </a>
+            <p className="hero-note">{c.hero.ctaNote}</p>
+          </div>
+
           {/* The one value figure the page states flatly. It is the fee
               divided by the hours handed back at a stated volume, so it is
               arithmetic on our own price rather than a claim about anyone's
               staff: the reader knows what their people cost and does the
               comparison themselves. Read from src/lib/value.ts, never typed,
               and hedged in the copy because the volume it assumes is a
-              choice. */}
+              choice. It sits under the button in the DOM and on every width,
+              so what a screen reader hears is what a sighted reader sees: on
+              a phone the button has to clear the cookie sheet, and a visual
+              reorder alone would have put the two audiences out of step. */}
           {payback !== null ? (
             <p className="hero-payback" data-hero-payback>
               {c.hero.payback.before}
@@ -299,13 +309,6 @@ export function Hero({
               {c.hero.payback.after}
             </p>
           ) : null}
-
-          <div className="hero-act">
-            <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
-              {c.nav.cta}
-            </a>
-            <p className="hero-note">{c.hero.ctaNote}</p>
-          </div>
         </div>
 
         <div className="hero-count" aria-hidden="true">

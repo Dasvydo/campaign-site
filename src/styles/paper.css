@@ -643,32 +643,24 @@
   .hero-tab{padding:12px 14px; font-size:13px}
 }
 
-@media (max-width:399px){
-  .hero-numeral{font-size:88px}
-  .hero-tally{display:none}
-}
 
 /* ------------------------------------------------------------
    THE PHONE HERO, composed rather than reflowed.
 
    A phone gives the hero about 844px and room for one picture.
-   The ghost "40" and the pile of forty letters are the same
-   idea twice, and the numeral is the weaker half: it is
-   decoration, its tally lost its place beside it below 400px,
-   and the word "Forty" is already in the deck two lines under
-   it. Worse, stacking it above the copy put it directly over
-   the folio, so the screen opened on "40" and then "01", two
-   numbers in a column meaning nothing to each other.
-
-   So on a phone the numeral goes and the tally stays: eight
-   groups of five, in the same amber pen that draws every other
-   mark on the page, one band 26px tall instead of a block 160px
-   tall. The 134px that buys is what carries the dealt example
-   card, the concrete thing and the hook into the worked
-   example, up onto the first screen.
+   The ghost "40" at desktop size and the pile of forty letters
+   are the same idea twice, so on a phone the numeral shrinks to
+   a small count beside the tally: eight groups of five, in the
+   same amber pen that draws every other mark on the page, one
+   band about 34px tall instead of a block 160px tall. The tally
+   without the count meant nothing, which is why the count stayed.
+   Below 375px even that row goes (see the narrow-phone rules at
+   the end of this file): the pixels are what keep the button
+   clear of the cookie sheet. The height saved is what carries the
+   dealt example card, the concrete thing and the hook into the
+   worked example, up onto the first screen.
    ------------------------------------------------------------ */
 @media (max-width:719px){
-  .hero-numeral{display:none}
   .hero-tally{
     display:block;
     width:min(268px,74%);
@@ -3538,17 +3530,13 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   .price-stop{ flex:1 1 auto }
 }
 
-/* 1. The button before the payback line wherever the hero is one column, so
-      the first screen has an action that clears the cookie sheet. A tablet is
-      one column too, and its sheet sat on the button just as a phone's did.
-      Flex only reorders; every child keeps its own margin. */
+/* 1. The button sits before the payback line in the markup on every width
+      (see Hero.tsx), so no reorder is needed here; only the rhythm changes
+      where the hero is one column, which keeps the button clear of the
+      cookie sheet on a phone and a tablet. */
 @media (max-width:1023px){
-  .hero-copy{ display:flex; flex-direction:column; align-items:flex-start }
-  .hero-folio{ order:0 }
-  #hero-title{ order:1 }
-  .hero-deck{ order:2 }
-  .hero-act{ order:3; margin-top:26px }
-  .hero-payback{ order:4; margin-top:22px; font-size:17px }
+  .hero-act{ margin-top:26px }
+  .hero-payback{ margin-top:22px; font-size:17px }
 }
 
 @media (max-width:719px){
@@ -3577,6 +3565,7 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   .demo-sw::before{ left:14px; top:8px; bottom:8px }
 
   /* 5. The answer pinned to the top of the panel while it is on screen. */
+  .numbers-range{ scroll-margin-top:64px }
   .numbers-pin{
     display:flex; justify-content:space-between; align-items:baseline; gap:12px;
     position:sticky; top:0; z-index:3;
@@ -3588,9 +3577,9 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
 
   /* 6. One line per stop instead of a card each. */
   .price-stops{ gap:10px }
-  .price-stop{ display:flex; gap:10px; align-items:baseline; padding:10px 12px }
+  .price-stop{ display:flex; gap:10px; align-items:baseline; padding:8px 12px }
   .price-stop-day{ flex:none; padding-bottom:2px }
-  .price-stop-note{ margin-top:0; font-size:15px }
+  .price-stop-note{ margin-top:0; font-size:14px; line-height:1.4 }
   .price-stop-item{ padding-left:24px }
   .price-stop-item::after{ top:12px }
   .price-stop-item::before{ top:28px; bottom:-12px }

@@ -547,7 +547,7 @@ export const en: Content = {
     },
     termsLabel: 'Show the terms',
     terms: [
-      { t: 'Workshop and setup included.', n: 'Neither is billed afterwards.' },
+      { t: 'The setup call and the setup are included.', n: 'Neither is billed afterwards.' },
       { t: 'No card, and nothing taken.', n: 'Payment details come later, after you have said yes.' },
       { t: 'Say no and you pay nothing.', n: 'Nothing is invoiced, and there is nothing to cancel.' },
       { t: 'The fee is month to month.', n: 'No year to sign, and no head count to keep up.' },
