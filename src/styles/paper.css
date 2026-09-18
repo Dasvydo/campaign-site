@@ -2241,6 +2241,18 @@
   font-variant-numeric:tabular-nums lining;
 }
 
+/* The trade, in the open: the reason, then the four things it asks for. */
+.price-trade{ margin:22px 0 0 }
+.price-gives{ list-style:none; margin:12px 0 0; padding:0 }
+.price-gives li{
+  position:relative; padding:6px 0 6px 18px;
+  font-size:15px; line-height:1.45; color:var(--price-dim);
+}
+.price-gives li::before{
+  content:""; position:absolute; left:2px; top:.95em; width:6px; height:6px;
+  border-radius:50%; background:var(--amber);
+}
+
 /* What is in both. One list, printed once, because it is the same list. */
 .price-incl{
   list-style:none; margin:22px 0 32px; padding:0;

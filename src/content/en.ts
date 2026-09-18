@@ -98,6 +98,10 @@ export const en: Content = {
     reLabel: 'Re',
     close: 'You read it. You send it. Nobody spent nine minutes writing it out.',
     closeBasis: 'Nine minutes is our assumption for writing one from scratch, not a measurement.',
+    share: {
+      before: 'It drafts the ones it can answer from the file and leaves the rest alone. On a live mailbox that was about one email in ',
+      after: '.',
+    },
     say: {
       allOff: 'Nothing left on. The draft is four generic lines.',
       restore: 'All five back on. The draft is whole again.',
@@ -465,7 +469,7 @@ export const en: Content = {
       {
         term: 'Setup',
         per: 'once',
-        note: 'A workshop on your team’s own real mail.',
+        note: 'One call, on your firm’s own real mail. We read your site and your documents; you tell us what you get asked.',
         waived: {
           label: 'Waived',
           say: { before: 'The setup fee of ', after: ' is waived while the founding places are open.' },
@@ -478,8 +482,8 @@ export const en: Content = {
       lede: 'Same product in both. What changes is how many people it covers and how many drafts the firm shares.',
       pick: 'Pick by counting your people.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'For a firm up to ten people.' },
-        { id: 'firm', name: 'Firm', note: 'For a firm up to twenty. The same fee at eleven people as at twenty.' },
+        { id: 'desk', name: 'Desk', note: 'For a firm of ten people.' },
+        { id: 'firm', name: 'Firm', note: 'For a firm of eleven to twenty. The same fee at eleven people as at twenty.' },
       ],
       feeLabel: 'Per month, whole firm',
       peopleLabel: 'People covered, up to',
@@ -490,7 +494,7 @@ export const en: Content = {
     included: {
       title: 'In both packages',
       items: [
-        'Your website read into a knowledge base, and an interview to fill what it misses.',
+        'Your website read into a knowledge base, and one call with whoever knows what your firm gets asked, to fill what it misses.',
         'Your documents indexed, so a draft can quote the fee, the deadline and the rule.',
         'A voice profile for each person, so a draft reads like the one who sends it.',
         'A question back to you when the answer is not on file, rather than a guess.',
@@ -551,7 +555,7 @@ export const en: Content = {
     stops: [
       {
         day: 'Day 0',
-        note: 'The workshop runs. The drafts start coming back.',
+        note: 'One setup call, with the person who knows what your firm gets asked. Then the drafts start coming back.',
         state: 'Nothing invoiced yet',
         say: {
           before: 'Day 0. The workshop runs and the drafts start coming back. Nothing is invoiced. The monthly total reads ',
@@ -583,7 +587,7 @@ export const en: Content = {
 
     askEyebrow: 'Before you book',
     ask: {
-      before: 'This offer is priced for firms of three and up. Below that, the plan on ',
+      before: 'This offer is priced for firms of ten and up. Below that, the plan on ',
       link: 'doviloop.dev',
       after: ' does the same drafting and costs a great deal less.',
     },

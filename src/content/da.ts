@@ -101,6 +101,10 @@ export const da: Content = {
     reLabel: 'Vedr',
     close: 'Du læser det. Du sender det. Ingen brugte ni minutter på at skrive det.',
     closeBasis: 'De ni minutter er vores antagelse om at skrive et fra bunden, ikke en måling.',
+    share: {
+      before: 'Den skriver udkast til dem, den kan svare på ud fra sagen, og lader resten være. På en rigtig postkasse var det cirka én mail ud af ',
+      after: '.',
+    },
     say: {
       allOff: 'Intet er slået til. Udkastet er fire intetsigende linjer.',
       restore: 'Alle fem er slået til igen. Udkastet er helt.',
@@ -468,7 +472,7 @@ export const da: Content = {
       {
         term: 'Opsætning',
         per: 'én gang',
-        note: 'En workshop på jeres egen rigtige post.',
+        note: 'Ét møde, på jeres egen rigtige post. Vi læser jeres hjemmeside og dokumenter; I fortæller, hvad I bliver spurgt om.',
         waived: {
           label: 'Bortfalder',
           say: { before: 'Opsætningsprisen på ', after: ' bortfalder, så længe der er ledige pladser.' },
@@ -481,8 +485,8 @@ export const da: Content = {
       lede: 'Samme produkt i begge. Det, der ændrer sig, er hvor mange mennesker det dækker, og hvor mange udkast firmaet deles om.',
       pick: 'Vælg ved at tælle jeres folk.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'Til et firma op til ti personer.' },
-        { id: 'firm', name: 'Firm', note: 'Til et firma op til tyve. Samme pris ved elleve personer som ved tyve.' },
+        { id: 'desk', name: 'Desk', note: 'Til et firma på ti personer.' },
+        { id: 'firm', name: 'Firm', note: 'Til et firma på elleve til tyve. Samme pris ved elleve personer som ved tyve.' },
       ],
       feeLabel: 'Pr. måned, hele firmaet',
       peopleLabel: 'Personer dækket, op til',
@@ -493,7 +497,7 @@ export const da: Content = {
     included: {
       title: 'I begge pakker',
       items: [
-        'Jeres hjemmeside læst ind i en vidensbase, og en samtale, der udfylder det, den mangler.',
+        'Jeres hjemmeside læst ind i en vidensbase, og ét møde med den, der ved, hvad jeres firma bliver spurgt om, for at udfylde det, den mangler.',
         'Jeres dokumenter indekseret, så et udkast kan citere gebyret, fristen og reglen.',
         'En stemmeprofil for hver person, så et udkast lyder som den, der sender det.',
         'Et spørgsmål tilbage til jer, når svaret ikke ligger på sagen, i stedet for et gæt.',
@@ -557,7 +561,7 @@ export const da: Content = {
     stops: [
       {
         day: 'Dag 0',
-        note: 'Workshoppen køres. Udkastene begynder at komme tilbage.',
+        note: 'Ét opsætningsmøde med den, der ved, hvad jeres firma bliver spurgt om. Så begynder udkastene at komme tilbage.',
         state: 'Intet faktureret endnu',
         say: {
           before: 'Dag 0. Workshoppen køres, og udkastene begynder at komme tilbage. Der faktureres ikke noget. Månedsprisen lyder på ',
@@ -589,7 +593,7 @@ export const da: Content = {
 
     askEyebrow: 'Inden I booker',
     ask: {
-      before: 'Tilbuddet er sat til virksomheder på tre personer og opefter. Under det gør planen på ',
+      before: 'Tilbuddet er sat til virksomheder på ti personer og opefter. Under det gør planen på ',
       link: 'doviloop.dev',
       after: ' det samme arbejde og koster væsentligt mindre.',
     },

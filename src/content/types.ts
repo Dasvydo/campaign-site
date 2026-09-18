@@ -265,6 +265,11 @@ export interface Content {
     reLabel: string;
     close: string;
     closeBasis: string;
+    /** What it does not draft, said where the one draft is shown, so nobody
+        starts a pilot expecting every email to come back with one.
+        "<before><one in how many, as a count><after>". The count is derived
+        from the measured share in src/lib/value.ts and ends its clause. */
+    share: { before: string; after: string };
 
     /** The live region's fixed lines. Everything else it says comes from the
         desk, because it names that desk's own facts. */

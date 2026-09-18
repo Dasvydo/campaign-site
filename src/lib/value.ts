@@ -98,11 +98,14 @@ export const VALUE: Value = deepFreeze({
  * What a control may offer
  * ---------------------------------------------------------------------- */
 
-/** The head counts the calculator may be asked about: one person up to the
-    largest firm any package covers. Above that there is no package and so no
-    fee to subtract, and the control must not offer it. */
+/** The head counts the calculator may be asked about: the smallest firm the
+    offer sells to, which is the smallest package's coverage, up to the largest
+    any package covers. Below the floor the page sends a reader to the product
+    site, so a control that started lower would be pricing a firm this offer
+    turns away; above the ceiling there is no package and so no fee. */
 export function peopleRange(offer: Offer = OFFER): Range {
-  return { min: 1, max: maxCovers(offer), step: 1, start: offer.packages[offer.order[0]].covers };
+  const smallest = offer.packages[offer.order[0]].covers;
+  return { min: smallest, max: maxCovers(offer), step: 1, start: smallest };
 }
 
 /** Where the hourly control opens for a page read in this language. Unknown
@@ -255,6 +258,13 @@ export function heroBreakEvenHourly(value: Value = VALUE, offer: Offer = OFFER):
     it. Rounded to one decimal, which is how it was read. */
 export function draftRatePercent(value: Value = VALUE): number {
   return Math.round(value.draftRate.value * 1000) / 10;
+}
+
+/** The measured share the other way up: one email in how many gets a draft.
+    A count, rounded, for the sentence that says what the product leaves
+    alone. */
+export function oneEmailIn(value: Value = VALUE): number {
+  return Math.round(1 / value.draftRate.value);
 }
 
 /** A share as a percentage figure, in the language it is read in: one

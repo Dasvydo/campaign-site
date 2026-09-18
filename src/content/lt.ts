@@ -101,6 +101,10 @@ export const lt: Content = {
     reLabel: 'Dėl',
     close: 'Jūs perskaitote. Jūs išsiunčiate. Niekas nepraleido devynių minučių jį rašydamas.',
     closeBasis: 'Devynios minutės yra mūsų prielaida, kiek trunka parašyti vieną nuo nulio, o ne matavimas.',
+    share: {
+      before: 'Juodraščius rašo tiems laiškams, į kuriuos gali atsakyti iš bylų, o kitų neliečia. Tikroje pašto dėžutėje tai buvo maždaug vienas laiškas iš ',
+      after: '.',
+    },
     say: {
       allOff: 'Nieko neliko įjungta. Juodraštis yra keturios bendro pobūdžio eilutės.',
       restore: 'Visi penki vėl įjungti. Juodraštis vėl pilnas.',
@@ -468,7 +472,7 @@ export const lt: Content = {
       {
         term: 'Įdiegimas',
         per: 'vieną kartą',
-        note: 'Praktinis užsiėmimas su tikrais Jūsų komandos laiškais.',
+        note: 'Vienas pokalbis, su tikrais Jūsų įmonės laiškais. Mes perskaitome Jūsų svetainę ir dokumentus; Jūs pasakote, ko Jūsų klausiama.',
         waived: {
           label: 'Netaikomas',
           say: { before: 'Įdiegimo mokestis, kuris yra ', after: ' netaikomas, kol yra laisvų vietų.' },
@@ -481,8 +485,8 @@ export const lt: Content = {
       lede: 'Abiejuose tas pats produktas. Skiriasi tik tai, kiek žmonių apima ir kiek juodraščių dalijasi visa įmonė.',
       pick: 'Rinkitės suskaičiavę savo žmones.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'Įmonei iki dešimties žmonių.' },
-        { id: 'firm', name: 'Firm', note: 'Įmonei iki dvidešimties. Tokia pati kaina prie vienuolikos žmonių kaip ir prie dvidešimties.' },
+        { id: 'desk', name: 'Desk', note: 'Dešimties žmonių įmonei.' },
+        { id: 'firm', name: 'Firm', note: 'Įmonei nuo vienuolikos iki dvidešimties žmonių. Tokia pati kaina prie vienuolikos kaip ir prie dvidešimties.' },
       ],
       feeLabel: 'Per mėnesį, visai įmonei',
       peopleLabel: 'Apimami žmonės, iki',
@@ -493,7 +497,7 @@ export const lt: Content = {
     included: {
       title: 'Abiejuose paketuose',
       items: [
-        'Jūsų svetainė perkelta į žinių bazę, o pokalbis užpildo tai, ko joje trūksta.',
+        'Jūsų svetainė perkelta į žinių bazę, o vienas pokalbis su tuo, kas žino, ko klausiama Jūsų įmonės, užpildo tai, ko joje trūksta.',
         'Jūsų dokumentai suindeksuoti, kad juodraštis galėtų cituoti mokestį, terminą ir taisyklę.',
         'Kiekvieno žmogaus balso profilis, kad juodraštis skambėtų kaip tas, kuris jį siunčia.',
         'Klausimas Jums, kai atsakymo nėra bylose, o ne spėjimas.',
@@ -554,7 +558,7 @@ export const lt: Content = {
     stops: [
       {
         day: '0 diena',
-        note: 'Vyksta užsiėmimas. Pradeda grįžti juodraščiai.',
+        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko klausiama Jūsų įmonės. Tada pradeda grįžti juodraščiai.',
         state: 'Kol kas jokios sąskaitos',
         say: {
           before:
@@ -588,7 +592,7 @@ export const lt: Content = {
 
     askEyebrow: 'Prieš užsakydami',
     ask: {
-      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo trijų žmonių. Mažesnėms komandoms planas svetainėje ',
+      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
       link: 'doviloop.dev',
       after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
     },

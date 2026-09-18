@@ -312,13 +312,28 @@ export function Price({
             </div>
             <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
 
-            {/* The price never appears without its reason. */}
+            {/* The price never appears without its reason, and the reason
+                never appears without what it asks for. The four things a
+                founding firm gives are in the open, under the sentence that
+                says the price is low because of them: a reader who took that
+                sentence at face value would otherwise be agreeing to something
+                they had to click to read. */}
             {capped ? (
-              <p className="price-reason" data-price-reason>
-                {c.price.founding.reason.before}
-                {figure(OFFER.founding.places)}
-                {c.price.founding.reason.after}
-              </p>
+              <div className="price-trade" data-price-trade>
+                <p className="price-reason" data-price-reason>
+                  {c.price.founding.reason.before}
+                  {figure(OFFER.founding.places)}
+                  {c.price.founding.reason.after}
+                </p>
+                <h3 className="price-sr" id="price-gives-open-h">
+                  {c.price.founding.givesTitle}
+                </h3>
+                <ul className="price-gives" aria-labelledby="price-gives-open-h">
+                  {c.price.founding.gives.map((g) => (
+                    <li key={g}>{g}</li>
+                  ))}
+                </ul>
+              </div>
             ) : null}
 
             {/* What is in the product, and it is the same list on both
@@ -578,17 +593,6 @@ export function Price({
                     {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
                     {c.price.founding.lede.trade}
                   </p>
-
-                  <h4 className="price-sr" id="price-gives-h">
-                    {c.price.founding.givesTitle}
-                  </h4>
-                  <ol className="price-terms" aria-labelledby="price-gives-h">
-                    {c.price.founding.gives.map((g) => (
-                      <li key={g}>
-                        <span className="price-term-t">{g}</span>
-                      </li>
-                    ))}
-                  </ol>
 
                   <h4 className="price-sr" id="price-gets-h">
                     {c.price.founding.getsTitle}

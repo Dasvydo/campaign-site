@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { formatCount } from '../lib/offer';
+import { oneEmailIn } from '../lib/value';
 import type { Content } from '../content/types';
 import type { DemoClause, DemoSource, DemoVariant } from '../content/types';
 
@@ -577,6 +579,16 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
 
         <p className="demo-close">{c.demo.close}</p>
         <p className="demo-close-basis">{c.demo.closeBasis}</p>
+        {/* What it leaves alone. The demo shows one draft and the hero
+            promises forty, and neither says that most mail gets no draft at
+            all; a reader who did not know that would start a pilot expecting
+            one for every email. The count is the measured share the other
+            way up, from value.ts. */}
+        <p className="demo-close-basis" data-demo-share>
+          {c.demo.share.before}
+          {formatCount(oneEmailIn(), c.htmlLang)}
+          {c.demo.share.after}
+        </p>
 
         <p className="demo-sr" aria-live="polite" aria-atomic="false">
           {say}

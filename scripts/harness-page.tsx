@@ -47,6 +47,7 @@ import {
   hoursBack,
   hourlyStart,
   keptPerMonth,
+  oneEmailIn,
   packageFor,
   peopleRange,
   worthPerMonth,
@@ -392,6 +393,12 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         c.price.packages.peopleLabel + ' ' + figure(p.covers) +
           c.price.packages.draftsLabel + ' ' + figure(p.draftCap),
       ]),
+      /* What the product leaves alone, with the measured share the other way
+         up. */
+      [
+        'the demo saying what it does not draft, with the one in how many',
+        c.demo.share.before + figure(oneEmailIn()) + c.demo.share.after,
+      ],
       /* The reason beside the price, with the cohort's size in it. */
       ...(capped
         ? ([[
