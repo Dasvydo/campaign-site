@@ -42,8 +42,15 @@
  * could ever use. The draft cap is therefore pooled across the firm, and the
  * coverage is a ceiling on people rather than a price per person. Both are
  * commitments the offer can actually keep, and both are set so that a customer
- * sitting exactly at the cap is still served at a positive margin. The working
- * is in flow-savvy-automations/docs/economics/OFFER.md, section 6.
+ * sitting exactly at the cap is still served at a positive margin.
+ *
+ * Both caps allow five hundred drafts a person a month. They allowed four
+ * hundred until 2026-09-18, which was not a decision anybody took: it fell out
+ * of picking round numbers, and it meant a customer at the usage the founder
+ * actually expects would have been over the cap in their first month, every
+ * month. The cap is a commitment, so it is the figure the cost to serve should
+ * be read at, not the usage somebody hopes for. The working is in
+ * flow-savvy-automations/docs/economics/OFFER.md, section 6.
  *
  * Why the founding cohort is not a price.
  *
@@ -171,8 +178,8 @@ export const OFFER: Offer = deepFreeze({
   currency: 'USD',
   order: ['desk', 'firm'],
   packages: {
-    desk: { id: 'desk', price: 149, covers: 10, draftCap: 4000 },
-    firm: { id: 'firm', price: 199, covers: 20, draftCap: 8000 },
+    desk: { id: 'desk', price: 149, covers: 10, draftCap: 5000 },
+    firm: { id: 'firm', price: 199, covers: 20, draftCap: 10000 },
   },
   founding: { places: 5, started: 0, held: 0 },
   setupFee: 500,

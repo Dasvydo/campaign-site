@@ -80,8 +80,8 @@ const SPEC = {
   guaranteeDrafts: 150,
   founding: { places: 5, started: 0, held: 0 },
   packages: {
-    desk: { price: 149, covers: 10, draftCap: 4000 },
-    firm: { price: 199, covers: 20, draftCap: 8000 },
+    desk: { price: 149, covers: 10, draftCap: 5000 },
+    firm: { price: 199, covers: 20, draftCap: 10000 },
   },
   compare: { individual: 29, team: 59, teamMax: 9, managed: 89, managedMin: 10 },
 };
