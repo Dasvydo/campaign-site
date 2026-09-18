@@ -41,7 +41,10 @@ import {
   setupDue,
   formatCount,
   formatMoney,
+  individualSeatRate,
   managedFloorMonthly,
+  managedSeatRate,
+  teamSeatRate,
   teamCeilingMonthly,
 } from '../src/lib/offer';
 
@@ -366,7 +369,7 @@ const smallestSoldTo = (): number => {
          three languages without a single check noticing. */
       [
         'the Individual note, with the seat rate it publishes',
-        c.compare.individualNote.before + money(OFFER.compare.individual) +
+        c.compare.individualNote.before + money(individualSeatRate()) +
           c.compare.individualNote.after,
       ],
       [
@@ -505,8 +508,8 @@ const smallestSoldTo = (): number => {
       (td) => td.textContent ?? '',
     );
     const wantRefCells = [
-      cell(OFFER.compare.team), cell(teamCeilingMonthly()),
-      cell(OFFER.compare.managed), cell(managedFloorMonthly()),
+      cell(teamSeatRate()), cell(teamCeilingMonthly()),
+      cell(managedSeatRate()), cell(managedFloorMonthly()),
     ];
     const wantRefRowCount = numCols > 0 ? wantRefCells.length / numCols : 0;
     const badRefCells =
@@ -544,7 +547,7 @@ const smallestSoldTo = (): number => {
        wear right now would mean a row that paired them the other way round
        walked straight past a check written to stop exactly that pairing. */
     const bothShapes = (value: number): string[] => [cell(value), money(value)];
-    const individualRates = new Set(bothShapes(OFFER.compare.individual));
+    const individualRates = new Set(bothShapes(individualSeatRate()));
     const individualNamedInTable = Array.from(host.querySelectorAll('#compare .cmp-table tr'))
       .filter((tr) => rowText(tr).includes(c.compare.individualPlan))
       .map(rowText);

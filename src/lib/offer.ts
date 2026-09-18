@@ -68,7 +68,7 @@ export type PackageId = 'desk' | 'firm';
 
 export interface PackageConfig {
   readonly id: PackageId;
-  /** Flat USD per month for the whole firm, at any covered headcount. */
+  /** Flat EUR per month for the whole firm, at any covered headcount. */
   readonly price: number;
   /** Largest firm this package is sold to, in mailboxes. */
   readonly covers: number;
@@ -109,6 +109,15 @@ export interface FoundingCohort {
  * pricing page. See OFFER.md, blocker 4.
  */
 export interface CompareRates {
+  /** The currency the rates below are PUBLISHED in, which is not ours.
+
+      doviloop.dev prices in dollars and this offer prices in euro, so every
+      rate here is converted through `OFFER.fx` before it meets one of our own
+      figures. The raw numbers stay as published: converting them at rest would
+      make `source` and `readAt` describe numbers nobody ever published, and the
+      next person to check the comparison against the live pricing page would
+      find two figures that disagree for a reason the file does not explain. */
+  readonly currency: 'USD';
   /** Individual plan, USD per seat per month. */
   readonly individual: number;
   /** Team plan, USD per seat per month. */
@@ -127,13 +136,29 @@ export interface CompareRates {
   readonly readAt: string;
 }
 
+/**
+ * The rate somebody else's dollars are read at.
+ *
+ * One rate, one date, in one place, for the same reason a price is: a
+ * comparison converted at a rate nobody wrote down is a comparison nobody can
+ * check. It moves when a reviewer decides the comparison has gone stale, which
+ * is what `readAt` is for.
+ */
+export interface FxRate {
+  /** US dollars per one euro. */
+  readonly usdPerEur: number;
+  /** ISO-8601 date the rate was read. */
+  readonly readAt: string;
+}
+
 export interface Offer {
-  readonly currency: 'USD';
+  /** What WE charge in. Every figure this module returns is in this currency. */
+  readonly currency: 'EUR';
   /** Package order, smallest firm first. Also the order the page prints them in. */
   readonly order: readonly PackageId[];
   readonly packages: Readonly<Record<PackageId, PackageConfig>>;
   readonly founding: FoundingCohort;
-  /** One off setup fee in USD, waived while founding places remain. */
+  /** One off setup fee in EUR, waived while founding places remain. */
   readonly setupFee: number;
   /**
    * Drafts promised in the first thirty days, below which the month is free.
@@ -144,6 +169,7 @@ export interface Offer {
    */
   readonly guaranteeDrafts: number;
   readonly compare: CompareRates;
+  readonly fx: FxRate;
 }
 
 /**
@@ -175,7 +201,7 @@ function deepFreeze<T>(value: T): T {
  * edit, by name, if the counts oversell the cohort.
  */
 export const OFFER: Offer = deepFreeze({
-  currency: 'USD',
+  currency: 'EUR',
   order: ['desk', 'firm'],
   packages: {
     desk: { id: 'desk', price: 149, covers: 10, draftCap: 5000 },
@@ -201,6 +227,7 @@ export const OFFER: Offer = deepFreeze({
      rate this file carries appears exactly once, and the build guard enforces
      it. They are all three lines below. */
   compare: {
+    currency: 'USD',
     individual: 29,
     team: 59,
     teamMax: 9,
@@ -209,6 +236,10 @@ export const OFFER: Offer = deepFreeze({
     source: 'doviloop.dev pricing bundle',
     readAt: '2026-09-16',
   },
+  /* Read on the date below. Everything doviloop.dev publishes is in dollars and
+     everything here is in euro, so this is the one number that lets the two be
+     compared at all. */
+  fx: { usdPerEur: 1.148, readAt: '2026-09-17' },
 } as Offer);
 
 /* -------------------------------------------------------------------------
@@ -362,6 +393,39 @@ export function perPerson(
 }
 
 /**
+ * One published dollar rate, in the currency we charge in, to the cent.
+ *
+ * Every comparison on the page runs through here, so a rival rate can never
+ * meet one of our own figures without being converted first. That was the
+ * failure this function exists to make impossible: our price moved to euro on
+ * 2026-09-18 while doviloop.dev went on publishing dollars, and a subtraction
+ * between the two would have read as a saving while being a currency error.
+ *
+ * Rounded to cents at the SEAT rate, never at the total. A page that printed a
+ * seat rate and a firm total which did not multiply out would be a page a
+ * reader can catch in an arithmetic mistake, and the few cents that costs are
+ * worth less than that.
+ */
+export function inOurCurrency(published: number, offer: Offer = OFFER): number {
+  return Math.round((published / offer.fx.usdPerEur) * 100) / 100;
+}
+
+/** The published Individual seat rate, per seat per month, in our currency. */
+export function individualSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.individual, offer);
+}
+
+/** The published Team seat rate, per seat per month, in our currency. */
+export function teamSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.team, offer);
+}
+
+/** The published Managed seat rate, per seat per month, in our currency. */
+export function managedSeatRate(offer: Offer = OFFER): number {
+  return inOurCurrency(offer.compare.managed, offer);
+}
+
+/**
  * What the same firm would pay on the published Team rate, or null when the
  * firm is too large for Team to sell to it at all. Null is the honest answer
  * there: above the Team seat ceiling there is no Team price to compare with.
@@ -370,25 +434,25 @@ export function teamMonthly(headcount: number, offer: Offer = OFFER): number | n
   // Whole people only, for the same reason `coversHeadcount` insists on it.
   if (!Number.isInteger(headcount) || headcount <= 0) return null;
   if (headcount > offer.compare.teamMax) return null;
-  return headcount * offer.compare.team;
+  return headcount * teamSeatRate(offer);
 }
 
 /** What the same firm would pay buying Individual seats, at any size. */
 export function individualMonthly(headcount: number, offer: Offer = OFFER): number | null {
   if (!Number.isInteger(headcount) || headcount <= 0) return null;
-  return headcount * offer.compare.individual;
+  return headcount * individualSeatRate(offer);
 }
 
 /** What the same firm would pay on the published Managed rate, at any size it sells to. */
 export function managedMonthly(headcount: number, offer: Offer = OFFER): number | null {
   if (!Number.isInteger(headcount) || headcount <= 0) return null;
   if (headcount < offer.compare.managedMin) return null;
-  return headcount * offer.compare.managed;
+  return headcount * managedSeatRate(offer);
 }
 
 /** What the largest firm Team will sell to pays every month. A fixed ceiling. */
 export function teamCeilingMonthly(offer: Offer = OFFER): number {
-  return offer.compare.teamMax * offer.compare.team;
+  return offer.compare.teamMax * teamSeatRate(offer);
 }
 
 /**
@@ -399,7 +463,7 @@ export function teamCeilingMonthly(offer: Offer = OFFER): number {
  * where somebody else's per seat pricing meets the sizes sold here.
  */
 export function managedFloorMonthly(offer: Offer = OFFER): number {
-  return offer.compare.managedMin * offer.compare.managed;
+  return offer.compare.managedMin * managedSeatRate(offer);
 }
 
 /**
@@ -414,7 +478,7 @@ export function belowTeamRate(
 ): boolean {
   const each = perPerson(headcount, pkg);
   if (each === null) return false;
-  return each < offer.compare.team;
+  return each < teamSeatRate(offer);
 }
 
 /** The same question against the Individual seat rate, which is the harder bar. */
@@ -425,7 +489,7 @@ export function belowIndividualRate(
 ): boolean {
   const each = perPerson(headcount, pkg);
   if (each === null) return false;
-  return each < offer.compare.individual;
+  return each < individualSeatRate(offer);
 }
 
 /**
@@ -603,7 +667,7 @@ export function modelledMultiple(
   return Math.round((savingPerPersonPerMonth * headcount) / pkg.price);
 }
 
-export function usd(value: number): string {
+export function amount(value: number): string {
   const cents = toCents(value);
   return Number.isInteger(cents) ? String(cents) : cents.toFixed(2);
 }
@@ -843,6 +907,11 @@ export function validateOffer(offer: Offer = OFFER): string[] {
   }
 
   count('setupFee', offer.setupFee);
+  if (typeof offer.fx.usdPerEur !== 'number' || !(offer.fx.usdPerEur > 0)) {
+    problems.push(
+      `fx.usdPerEur must be a positive number, found ${String(offer.fx.usdPerEur)}`,
+    );
+  }
   for (const [label, value] of [
     ['compare.individual', offer.compare.individual],
     ['compare.team', offer.compare.team],

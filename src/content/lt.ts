@@ -391,7 +391,7 @@ export const lt: Content = {
     about: 'maždaug\u00a0',
     rows: [
       { key: 'multiple', unit: 'x', label: 'sutaupyto laiko, palyginti su tuo, kiek moka įmonė' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sutaupoma per mėnesį kiekvienam žmogui' },
+      { key: 'saving', amount: '152', unit: '\u00a0EUR', label: 'sutaupoma per mėnesį kiekvienam žmogui' },
     ],
     lede: { before: 'Tai modelis, ', mark: 'o ne matavimas', after: '.' },
     moreLabel: 'Parodyti skaičiavimą',
@@ -402,7 +402,7 @@ export const lt: Content = {
       },
       {
         term: 'Sutaupymas',
-        def: 'Numanomos sutaupytos valandos esant vidutinio lygio atlyginimui, perskaičiuota iš eurų. Vienas žmogus, vienas mėnuo.',
+        def: 'Išmatuota: 15,2% gaunamų laiškų yra tas pats klausimas iš naujo. Prielaida: keturios minutės, sutaupomos kiekvienam, dar niekada neišmatuotos. Įvertinta 30 EUR už valandą, Danijos jaunesniojo specialisto kaina su mokesčiais. Vienas žmogus, gaunantis 500 laiškų per mėnesį, vienas mėnuo.',
       },
     ],
     notes: [
@@ -552,7 +552,7 @@ export const lt: Content = {
       term: 'Visa įmonė',
       sub: { label: 'Aprėpiama žmonių, ne daugiau kaip:' },
       per: 'per mėnesį',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Prieš užsakydami',

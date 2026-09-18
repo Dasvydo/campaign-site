@@ -75,7 +75,8 @@ const HEADCOUNTS = [10, 15, 20];
  * as the record that the change was intended rather than a slip.
  */
 const SPEC = {
-  currency: 'USD',
+  currency: 'EUR',
+  fx: { usdPerEur: 1.148 },
   setupFee: 500,
   guaranteeDrafts: 150,
   founding: { places: 5, started: 0, held: 0 },
@@ -83,7 +84,9 @@ const SPEC = {
     desk: { price: 149, covers: 10, draftCap: 5000 },
     firm: { price: 199, covers: 20, draftCap: 10000 },
   },
-  compare: { individual: 29, team: 59, teamMax: 9, managed: 89, managedMin: 10 },
+  /* Published by doviloop.dev IN DOLLARS. Every expectation below that meets
+     one of our own euro figures is converted through SPEC.fx by hand. */
+  compare: { currency: 'USD', individual: 29, team: 59, teamMax: 9, managed: 89, managedMin: 10 },
 };
 
 /**
@@ -108,13 +111,18 @@ const PER_HEAD = {
 /** The smallest firm at which each claim starts to hold. Null means never. */
 const BREAK_EVEN = {
   desk: { team: 3, individual: 6 },
-  firm: { team: 4, individual: 7 },
+  firm: { team: 4, individual: 8 },
 };
 
-/** Nine seats at 59 USD. What the largest firm Team will sell to pays. */
-const TEAM_CEILING_MONTHLY = 531;
-/** Ten seats at 89 USD. What the smallest firm Managed will sell to pays. */
-const MANAGED_FLOOR_MONTHLY = 890;
+/* The published dollar rates, converted by hand at 1.148 and rounded to cents
+   at the SEAT rate, which is the order the module converts in. 29/1.148 =
+   25.26, 59/1.148 = 51.39, 89/1.148 = 77.53. Written out rather than computed
+   so a change to the rate has to be agreed here too. */
+const SEAT_EUR = { individual: 25.26, team: 51.39, managed: 77.53 };
+/** Nine seats at 51.39 EUR. What the largest firm Team will sell to pays. */
+const TEAM_CEILING_MONTHLY = 462.51;
+/** Ten seats at 77.53 EUR. What the smallest firm Managed will sell to pays. */
+const MANAGED_FLOOR_MONTHLY = 775.30;
 
 let failures = 0;
 const check = (ok, label, detail = '') => {
@@ -140,11 +148,12 @@ async function loadOffer() {
 const offer = await loadOffer();
 const {
   OFFER, headlinePackage, packageForHeadcount, remainingFoundingPlaces, foundingOpen,
+  inOurCurrency, individualSeatRate, teamSeatRate, managedSeatRate,
   perPerson, comparison, belowTeamRate, belowIndividualRate, belowTeamCeiling,
   belowManagedFloor, teamCeilingMonthly, managedFloorMonthly, breakEvenHeadcount,
   setupDue, firstMonthTotal, coversHeadcount, maxCovers, validateOffer, assertOfferValid,
   pilotsStarted, noCustomersYet,
-  usd,
+  amount: usd,
 } = offer;
 
 /** A mutable plain copy, since OFFER itself is frozen on purpose. */
@@ -165,7 +174,7 @@ console.log(`  read from ${OFFER.compare.source} on ${OFFER.compare.readAt}: ` +
 
 /* 1. the configuration against the pinned specification ------------------- */
 console.log('The configuration against the offer we agreed to sell');
-check(OFFER.currency === SPEC.currency, 'currency is the agreed USD',
+check(OFFER.currency === SPEC.currency, 'currency is the agreed EUR',
   `config says ${String(OFFER.currency)}`);
 check(OFFER.order.length === Object.keys(SPEC.packages).length,
   `the offer sells the agreed ${Object.keys(SPEC.packages).length} packages`,
@@ -193,14 +202,16 @@ for (const [field, want, got] of [
   ['compare.teamMax', SPEC.compare.teamMax, OFFER.compare.teamMax],
   ['compare.managed', SPEC.compare.managed, OFFER.compare.managed],
   ['compare.managedMin', SPEC.compare.managedMin, OFFER.compare.managedMin],
+  ['compare.currency', SPEC.compare.currency, OFFER.compare.currency],
+  ['fx.usdPerEur', SPEC.fx.usdPerEur, OFFER.fx.usdPerEur],
 ]) {
   check(got === want, `${field} is the agreed ${want}`, `config says ${String(got)}`);
 }
 check(teamCeilingMonthly() === TEAM_CEILING_MONTHLY,
-  `a full Team firm pays the hand computed ${TEAM_CEILING_MONTHLY} USD a month`,
+  `a full Team firm pays the hand computed ${TEAM_CEILING_MONTHLY} EUR a month`,
   `module says ${money(teamCeilingMonthly())}`);
 check(managedFloorMonthly() === MANAGED_FLOOR_MONTHLY,
-  `the smallest Managed firm pays the hand computed ${MANAGED_FLOOR_MONTHLY} USD a month`,
+  `the smallest Managed firm pays the hand computed ${MANAGED_FLOOR_MONTHLY} EUR a month`,
   `module says ${money(managedFloorMonthly())}`);
 
 /* 2. the shipped configuration -------------------------------------------- */
@@ -255,7 +266,7 @@ for (const id of OFFER.order) {
     `${id} coverage and pooled draft cap are firm level facts`,
     `${pkg.covers} people, ${pkg.draftCap} drafts per month pooled`);
 }
-check(OFFER.currency === 'USD', 'prices are USD everywhere');
+check(OFFER.currency === 'EUR', 'prices are EUR everywhere');
 
 /* 2b. which package a firm of a given size is quoted ---------------------- */
 /* The ladder is the reader's own headcount now, so the mapping from a firm size
@@ -274,6 +285,32 @@ for (const n of [0, -3, 7.5, Number.NaN]) {
   check(packageForHeadcount(n) === null,
     `and a headcount of ${String(n)} is quoted nothing`);
 }
+
+/* 2c. the currency boundary ----------------------------------------------- */
+/* We charge in euro and doviloop.dev publishes in dollars. Every comparison on
+   the page crosses that boundary, and a subtraction that forgot to would read
+   as a saving while being a currency error. So the crossing is checked against
+   hand-converted rates rather than trusted. */
+console.log('\nThe currency boundary, where their dollars meet our euro');
+check(OFFER.currency !== OFFER.compare.currency,
+  'we charge in a different currency from the one the rivals publish in, which is why the conversion exists',
+  `ours ${OFFER.currency}, theirs ${OFFER.compare.currency}`);
+for (const [label, got, want] of [
+  ['Individual', individualSeatRate(), SEAT_EUR.individual],
+  ['Team', teamSeatRate(), SEAT_EUR.team],
+  ['Managed', managedSeatRate(), SEAT_EUR.managed],
+]) {
+  check(got === want, `the ${label} seat rate converts to the hand computed ${want}`,
+    `module says ${money(got)}`);
+}
+check(inOurCurrency(OFFER.fx.usdPerEur) === 1,
+  'one euro of dollars converts back to one euro');
+/* Seats times the converted seat rate, not the converted total. The two differ
+   by a few cents and only one of them lets a reader multiply the page's own
+   figures and get its own answer. */
+check(teamCeilingMonthly() === OFFER.compare.teamMax * SEAT_EUR.team,
+  'a firm total is seats times the converted seat rate, so the page multiplies out',
+  `${money(teamCeilingMonthly())} = ${OFFER.compare.teamMax} x ${money(SEAT_EUR.team)}`);
 
 /* 3. the source itself ---------------------------------------------------- */
 console.log('\nThe module as a source of truth');
@@ -365,8 +402,8 @@ for (const id of OFFER.order) {
     }
     const covered = n > 0 && n <= SPEC.packages[id].covers;
     const want = {
-      belowTeamRate: covered && each !== null && each < SPEC.compare.team,
-      belowIndividualRate: covered && each !== null && each < SPEC.compare.individual,
+      belowTeamRate: covered && each !== null && each < SEAT_EUR.team,
+      belowIndividualRate: covered && each !== null && each < SEAT_EUR.individual,
       belowTeamCeiling: SPEC.packages[id].price < TEAM_CEILING_MONTHLY,
       belowManagedFloor: SPEC.packages[id].price < MANAGED_FLOOR_MONTHLY,
     };
@@ -420,7 +457,7 @@ for (const id of OFFER.order) {
   for (const against of ['team', 'individual']) {
     const want = BREAK_EVEN[id]?.[against] ?? null;
     const got = breakEvenHeadcount(against, pkg);
-    const rate = against === 'team' ? SPEC.compare.team : SPEC.compare.individual;
+    const rate = against === 'team' ? SEAT_EUR.team : SEAT_EUR.individual;
     check(got === want,
       `${id} goes below the ${against} rate at ` +
       `${want === null ? 'no covered size, by hand' : `${want} people, by hand`}`,

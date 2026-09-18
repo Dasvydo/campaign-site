@@ -85,7 +85,7 @@ export interface NumberRow {
   /** The figure itself, without the hedge and without the unit. Present only
       on the `saving` row; the others are filled from the offer. */
   amount?: string;
-  /** What follows the figure: "x", " USD". Leading space where one is wanted.
+  /** What follows the figure: "x", " EUR". Leading space where one is wanted.
       Neither unit still standing here inflects in any of the three languages,
       which is what makes a bare unit beside a numeral safe on this line. The
       one that did was the day count beside the payback, and it went with the

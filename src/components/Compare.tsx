@@ -3,6 +3,9 @@ import type { Comparison } from '../lib/offer';
 import {
   OFFER,
   headlinePackage,
+  individualSeatRate,
+  managedSeatRate,
+  teamSeatRate,
   belowManagedFloor,
   belowTeamCeiling,
   comparison,
@@ -221,7 +224,7 @@ export function Compare({ c }: { c: Content }) {
                 {/* The firm cell here is a real total for a real firm: the seat
                     rate at the seat ceiling, which is the largest bill Team can
                     produce and the figure the lead claim is argued against. */}
-                <td className="cmp-num">{cell(OFFER.compare.team)}</td>
+                <td className="cmp-num">{cell(teamSeatRate())}</td>
                 <td className="cmp-num">{cell(teamCeilingMonthly())}</td>
               </tr>
 
@@ -236,7 +239,7 @@ export function Compare({ c }: { c: Content }) {
                     {t.managedSize.label} {figure(OFFER.compare.managedMin)}
                   </span>
                 </th>
-                <td className="cmp-num">{cell(OFFER.compare.managed)}</td>
+                <td className="cmp-num">{cell(managedSeatRate())}</td>
                 <td className="cmp-num">{cell(managedFloorMonthly())}</td>
               </tr>
             </tbody>
@@ -300,7 +303,7 @@ export function Compare({ c }: { c: Content }) {
         <p className="cmp-src">
           <b className="cmp-plan-name">{t.individualPlan}</b>
           {t.individualNote.before}
-          <b className="cmp-fig">{money(OFFER.compare.individual)}</b>
+          <b className="cmp-fig">{money(individualSeatRate())}</b>
           {t.individualNote.after}
         </p>
 

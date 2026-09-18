@@ -388,7 +388,7 @@ export const en: Content = {
     about: 'about\u00a0',
     rows: [
       { key: 'multiple', unit: 'x', label: 'time saved, against what the firm pays' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'saved per month, for each person' },
+      { key: 'saving', amount: '152', unit: '\u00a0EUR', label: 'saved per month, for each person' },
     ],
     lede: { before: 'These are a model, ', mark: 'not a measurement', after: '.' },
     moreLabel: 'Show the arithmetic',
@@ -399,7 +399,7 @@ export const en: Content = {
       },
       {
         term: 'The saving',
-        def: 'Assumed hours saved at a mid level salary, converted from euros. One person, one month.',
+        def: 'Measured: 15.2% of inbound mail is the same question again. Assumed: four minutes saved on each, never yet timed. Valued at 30 EUR an hour, a Danish junior loaded. One person receiving 500 emails a month, one month.',
       },
     ],
     notes: [
@@ -547,7 +547,7 @@ export const en: Content = {
       term: 'The whole firm',
       sub: { label: 'People covered, up to:' },
       per: 'per month',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Before you book',

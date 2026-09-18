@@ -391,7 +391,7 @@ export const da: Content = {
     about: 'cirka\u00a0',
     rows: [
       { key: 'multiple', unit: 'x', label: 'sparet tid, holdt op mod det, virksomheden betaler' },
-      { key: 'saving', amount: '430', unit: '\u00a0USD', label: 'sparet om måneden, for hver person' },
+      { key: 'saving', amount: '152', unit: '\u00a0EUR', label: 'sparet om måneden, for hver person' },
     ],
     lede: { before: 'Det er en model, ', mark: 'ikke en måling', after: '.' },
     moreLabel: 'Vis regnestykket',
@@ -402,7 +402,7 @@ export const da: Content = {
       },
       {
         term: 'Besparelsen',
-        def: 'Antagne sparede timer ved en mellemløn, omregnet fra euro. Én person, én måned.',
+        def: 'Målt: 15,2% af indgående post er det samme spørgsmål igen. Antaget: fire minutter sparet på hver, aldrig endnu taget tid på. Værdisat til 30 EUR i timen, en dansk junior med omkostninger. Én person med 500 mails om måneden, én måned.',
       },
     ],
     notes: [
@@ -553,7 +553,7 @@ export const da: Content = {
       term: 'Hele virksomheden',
       sub: { label: 'Personer dækket, op til:' },
       per: 'om måneden',
-      zero: '0 USD',
+      zero: '0 EUR',
     },
 
     askEyebrow: 'Inden I booker',
