@@ -173,7 +173,7 @@ export function Numbers({ c }: { c: Content }) {
     <section id="numbers" aria-labelledby="numbers-h" ref={secRef}>
       <div className="numbers-wrap">
         <p className="numbers-folio" aria-hidden="true">
-          04
+          05
         </p>
         <header className="numbers-head">
           <p className="numbers-eyebrow">{c.numbers.eyebrow}</p>
@@ -183,6 +183,17 @@ export function Numbers({ c }: { c: Content }) {
         </header>
 
         <div className="numbers-panel">
+          {/* On a phone the answer sits a screen and a half below the first
+              control, so a reader dragging a slider cannot see the number
+              move. This strip pins the answer to the top of the panel while
+              the panel is on screen. It is a duplicate of the row below, so
+              it is hidden from assistive tech; the row is the real one. */}
+          <div className="numbers-pin" aria-hidden="true">
+            <span className="numbers-pin-label">{c.numbers.beats.keep.label}</span>
+            <span className="numbers-pin-fig">
+              {kept === null ? '' : c.numbers.about + money(Math.round(kept))}
+            </span>
+          </div>
           <div className="numbers-fields">
             {control('people', heads, setHeads, people, figure(heads))}
             {control('inbound', inbound, setInbound, VALUE.inbound, figure(inbound))}
@@ -216,8 +227,9 @@ export function Numbers({ c }: { c: Content }) {
             </div>
             <div className="numbers-beat" data-n-fee>
               <dt className="numbers-term">
-                {c.numbers.beats.fee.label}
-                {pkg ? <span className="numbers-term-note">{pkgName}</span> : null}
+                {c.numbers.beats.fee.before}
+                {pkgName}
+                {c.numbers.beats.fee.after}
               </dt>
               <dd className="numbers-amt">{pkg === null ? '' : money(pkg.price)}</dd>
             </div>

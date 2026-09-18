@@ -71,7 +71,7 @@ const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google 
 const isShared = (v) =>
   typeof v !== 'string' ||
   SHARED.test(v.trim()) ||
-  /^[\d\s.,%+\-/()]*$/.test(v) ||        // pure numbers, 2-3 h, ranges
+  /^[\d\s.,:%+\-/()]*$/.test(v) ||       // pure numbers, punctuation, 2-3 h, ranges
   /^\d{1,2}:\d{2}$/.test(v.trim()) ||    // a clock reading: 08:40
   /^[\d\s.,]+ ?(USD|EUR|DKK|kr\.?|€|\$)$/.test(v.trim()) ||   // 89 USD
   /^[a-z0-9_]+$/.test(v) ||              // option values: owner_partner, 10-24

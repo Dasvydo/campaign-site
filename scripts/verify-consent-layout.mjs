@@ -44,7 +44,7 @@ if (!BASE) {
   console.error('usage: node scripts/verify-consent-layout.mjs <base-url>');
   process.exit(2);
 }
-const VIEWPORTS = [[360, 800, 'phone'], [768, 1024, 'tablet'], [1280, 800, 'laptop']];
+const VIEWPORTS = [[360, 800, 'phone'], [390, 844, 'phone'], [768, 1024, 'tablet'], [1280, 800, 'laptop']];
 const LOCALES = [['/', 'en'], ['/da', 'da'], ['/lt', 'lt']];
 
 const OVERFLOW = () => {
@@ -99,16 +99,14 @@ for (const [w, h, vpName] of VIEWPORTS) {
 
     /* The notice must not cover the hero's call to action: that button is what
        the page is for, and a banner on top of it is a banner that costs money. */
-    /* Only asserted above phone width. A phone gets a sheet across the foot,
-       and at 360x800 the hero's button sits inside that band no matter how
-       tight the sheet is: there is no height at which a readable notice clears
-       it. The same is true of a tablet, where the hero is still one column.
-       Asserted from 1024 up, where the hero goes two-column and the notice
-       sits over artwork. Below that what is checked instead is that the sheet
-       stays small and the page reserves its height, so the button is one
-       scroll away rather than lost. */
+    /* Asserted at every width since 2026-09-18. It used to be skipped below
+       1024 on the reasoning that a phone's sheet would always sit on the
+       button; what actually sat on the button was the payback line and a
+       197px sheet. The phone hero now puts the button above that line and
+       the sheet is set tighter, so a first screen with no reachable action is
+       a regression this catches rather than a state it excuses. */
     const cta = page.locator('#hero a.hero-btn, #hero button.hero-btn').first();
-    if (w >= 1024 && (await cta.count())) {
+    if (await cta.count()) {
       const a = await cta.boundingBox();
       const b = await slip.boundingBox();
       /* boundingBox() returns {x,y,width,height} and no .right, so the edges

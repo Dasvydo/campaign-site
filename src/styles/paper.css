@@ -1618,13 +1618,14 @@
    object on this page, rather than a card per figure: the three figures are
    one subtraction and belong inside one edge. */
 .numbers-panel{
+  --np:clamp(20px,3vw,34px);
   background:var(--card);
   border-radius:3px;
   box-shadow:
     1px 2px 2px -1px rgba(37,29,24,.18),
     2px 6px 12px -4px rgba(37,29,24,.16),
     inset 1px 1px 0 var(--edge);
-  padding:clamp(20px,3vw,34px);
+  padding:var(--np);
   font-variant-numeric:tabular-nums lining;
 }
 
@@ -3505,4 +3506,135 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
 .price-per-mark{
   display:inline-block; margin-top:6px;
   color:var(--amber); letter-spacing:.1em; text-transform:uppercase;
+}
+
+
+/* ==========================================================================
+   THE PHONE, READ AS A BUYER (2026-09-18)
+   Measured on a 390x844 screen with the cookie sheet up: the hero's button
+   sat under the sheet, the price was seven screens down, the demo's five
+   source cards stacked to three screens, the calculator's answer was a
+   screen and a half below its first slider, and the masthead nav was the
+   only in-page navigation at 12.5px. Each rule below answers one of those.
+   ========================================================================== */
+
+/* What the product leaves alone, said under the draft in body colour rather
+   than as a footnote at the foot of the section. */
+.demo-share{ margin:14px 0 0; max-width:52ch; font-size:16px; line-height:1.5; color:var(--ink) }
+
+/* The answer, pinned. Hidden above phone width, where the whole panel is on
+   screen at once. */
+.numbers-pin{ display:none }
+.numbers-pin-label{ font-size:14px; color:var(--muted) }
+.numbers-pin-fig{
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-size:24px; line-height:1; color:var(--amber-text);
+  font-variant-numeric:tabular-nums lining; white-space:nowrap;
+}
+
+/* Three cards the same height, whatever each says. */
+@media (min-width:720px){
+  .price-stop-item{ display:flex; flex-direction:column }
+  .price-stop{ flex:1 1 auto }
+}
+
+/* 1. The button before the payback line wherever the hero is one column, so
+      the first screen has an action that clears the cookie sheet. A tablet is
+      one column too, and its sheet sat on the button just as a phone's did.
+      Flex only reorders; every child keeps its own margin. */
+@media (max-width:1023px){
+  .hero-copy{ display:flex; flex-direction:column; align-items:flex-start }
+  .hero-folio{ order:0 }
+  #hero-title{ order:1 }
+  .hero-deck{ order:2 }
+  .hero-act{ order:3; margin-top:26px }
+  .hero-payback{ order:4; margin-top:22px; font-size:17px }
+}
+
+@media (max-width:719px){
+  /* 11. The tally without its count meant nothing; the count returns, small,
+         beside it. The rhythm above the headline tightens by a few pixels
+         each, which is what keeps the button clear of the sheet at 390. */
+  .hero-grid{ padding-block:12px 24px }
+  .hero-folio{ margin-bottom:10px }
+  .hero-count{ display:flex; align-items:center; gap:12px; margin:0 0 12px }
+  .hero-numeral{ display:block; font-size:34px; line-height:1; color:var(--muted); letter-spacing:-.02em }
+  .hero-tally{ width:min(220px,62%); margin:0 }
+
+  /* 8. The only in-page navigation on a phone, at a size a thumb can read,
+        and language codes wide enough to hit. */
+  .hero-nav a{ font-size:14px; letter-spacing:.1em }
+  .hero-locale a{ min-width:44px; justify-content:center }
+
+  /* 2. The five source cards as a compact grid rather than a column: same
+        five switches, a third of the height. The count under each label and
+        the hand-laid rotation go; the tick, the trace and the clip stay. */
+  .demo-switches{ flex-direction:row; flex-wrap:wrap; gap:8px; padding:0 }
+  .demo-sw{ flex:1 1 calc(50% - 4px); min-width:0; padding:10px 34px 10px 34px; font-size:15px; line-height:1.3; --r:0deg; --ml:0 }
+  .demo-sw:nth-child(5){ flex-basis:100% }
+  .demo-sw-count{ display:none }
+  .demo-sw-tick{ top:9px; left:8px }
+  .demo-sw::before{ left:14px; top:8px; bottom:8px }
+
+  /* 5. The answer pinned to the top of the panel while it is on screen. */
+  .numbers-pin{
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+    position:sticky; top:0; z-index:3;
+    margin:calc(-1 * var(--np)) calc(-1 * var(--np)) 16px;
+    padding:10px var(--np);
+    background:var(--card); border-bottom:1px solid rgba(37,29,24,.14);
+    border-radius:3px 3px 0 0;
+  }
+
+  /* 6. One line per stop instead of a card each. */
+  .price-stops{ gap:10px }
+  .price-stop{ display:flex; gap:10px; align-items:baseline; padding:10px 12px }
+  .price-stop-day{ flex:none; padding-bottom:2px }
+  .price-stop-note{ margin-top:0; font-size:15px }
+  .price-stop-item{ padding-left:24px }
+  .price-stop-item::after{ top:12px }
+  .price-stop-item::before{ top:28px; bottom:-12px }
+
+  /* 1. The cookie sheet, set to ask its question and get out of the way:
+        one line of body, one row of buttons. */
+  .hero-deck{ margin-top:18px }
+  .hero-act{ margin-top:22px }
+  .consent-slip{ padding:10px var(--consent-gutter) calc(10px + env(safe-area-inset-bottom,0px)) }
+  .consent-h{ font-size:16px; margin-bottom:3px }
+  .consent-body{ font-size:13.5px; line-height:1.45; margin-bottom:0 }
+  .consent-meta{ margin-top:0 }
+  .consent-sum,.consent-priv{ min-height:36px }
+  .consent-acts{ margin-top:6px }
+  .consent-btn{ min-height:42px; padding:9px 14px }
+}
+
+/* Lithuanian sets longer words than the other two languages, and on a phone
+   its headline ran a line longer than theirs, which put the button under the
+   cookie sheet at 375 and 390 wide. A size down for that language only. */
+@media (max-width:719px){
+  html:lang(lt) #hero-title{ font-size:clamp(38px, 11.2vw, 46px) }
+}
+
+/* Narrow phones. The Danish nav labels wrapped to a second row below 400px,
+   which alone put the button under the sheet; a point smaller and a little
+   less tracking keeps all three languages on one row. The sheet loses a few
+   pixels of its own. */
+@media (max-width:399px){
+  .hero-nav{ gap:0 16px }
+  .hero-nav a{ font-size:13px; letter-spacing:.06em }
+  .consent-h{ font-size:15px }
+  .consent-body{ font-size:13px }
+  .consent-btn{ min-height:40px }
+}
+
+/* The smallest phones. At 360x800 the count row and the dateline were the
+   pixels between the button and the cookie sheet, and the page already gave
+   the count up at this width before it came back beside the tally. Measured,
+   not guessed: the consent layout gate holds the button clear of the sheet
+   here in all three languages. */
+@media (max-width:374px){
+  .hero-count{ display:none }
+  .hero-dateline{ display:none }
+  #hero-title{ font-size:42px }
+  .hero-deck{ font-size:16px; line-height:1.4 }
 }

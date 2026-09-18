@@ -538,6 +538,18 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
               </svg>
             </article>
 
+            {/* What it leaves alone, said where the one draft is shown. The
+                hero opens on forty emails and this column shows one draft,
+                and nothing else on the page says that most mail gets no draft
+                at all; a reader who did not know that would start a pilot
+                expecting one for every email. The count is the measured
+                share the other way up, from value.ts. */}
+            <p className="demo-share" data-demo-share>
+              {c.demo.share.before}
+              {formatCount(oneEmailIn(), c.htmlLang)}
+              {c.demo.share.after}
+            </p>
+
             <div className="demo-gate">
               <p className="demo-gate-note">{c.demo.gateNote}</p>
 
@@ -579,16 +591,6 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
 
         <p className="demo-close">{c.demo.close}</p>
         <p className="demo-close-basis">{c.demo.closeBasis}</p>
-        {/* What it leaves alone. The demo shows one draft and the hero
-            promises forty, and neither says that most mail gets no draft at
-            all; a reader who did not know that would start a pilot expecting
-            one for every email. The count is the measured share the other
-            way up, from value.ts. */}
-        <p className="demo-close-basis" data-demo-share>
-          {c.demo.share.before}
-          {formatCount(oneEmailIn(), c.htmlLang)}
-          {c.demo.share.after}
-        </p>
 
         <p className="demo-sr" aria-live="polite" aria-atomic="false">
           {say}

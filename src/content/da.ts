@@ -36,7 +36,7 @@ export const da: Content = {
 
     title: {
       before: 'Fyrre mails ind. ',
-      mark: 'Fyrre svar i udkast',
+      mark: 'Gengangerne i udkast',
       mid: '. Klokken ',
       after: '.',
     },
@@ -395,7 +395,7 @@ export const da: Content = {
   },
 
   numbers: {
-    eyebrow: 'Vores eget regnestykke',
+    eyebrow: 'Jeres eget regnestykke',
     title: 'Hvad I beholder',
     about: 'cirka\u00a0',
     inputs: {
@@ -408,7 +408,7 @@ export const da: Content = {
       draftsNote: { before: 'Målt: ', after: ' % af den indgående post er det samme spørgsmål igen.' },
       hours: { label: 'Timer, I får tilbage:' },
       worth: { label: 'Hvad de timer koster jer i dag:' },
-      fee: { label: 'Det her koster:' },
+      fee: { before: 'Det her koster (', after: '):' },
       keep: { label: 'I beholder:' },
     },
     units: { hours: '\u00a0t', perMonth: ' om måneden', perHour: ' i timen' },
@@ -563,10 +563,10 @@ export const da: Content = {
     stops: [
       {
         day: 'Dag 0',
-        note: 'Ét opsætningsmøde med den, der ved, hvad jeres firma bliver spurgt om. Så begynder udkastene at komme tilbage.',
+        note: 'Ét opsætningsmøde med den, der ved, hvad I bliver spurgt om. Så begynder udkastene.',
         state: 'Intet faktureret endnu',
         say: {
-          before: 'Dag 0. Workshoppen køres, og udkastene begynder at komme tilbage. Der faktureres ikke noget. Månedsprisen lyder på ',
+          before: 'Dag 0. Ét opsætningsmøde, så begynder udkastene. Der faktureres ikke noget. Månedsprisen lyder på ',
           after: '.',
         },
       },
@@ -588,12 +588,6 @@ export const da: Content = {
     ],
     total: { zero: '0 EUR' },
 
-    askEyebrow: 'Inden I booker',
-    ask: {
-      before: 'Tilbuddet er sat til virksomheder på ti personer og opefter. Under det gør planen på ',
-      link: 'doviloop.dev',
-      after: ' det samme arbejde og koster væsentligt mindre.',
-    },
     ctaNote: 'Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
   },
 
@@ -683,7 +677,7 @@ export const da: Content = {
 
   consent: {
     title: 'Cookies på denne side',
-    body: 'To ting her gemmer noget på din enhed: besøgstælling og annoncering. Ingen af dem kører, før du accepterer.',
+    body: 'Besøgstælling og annoncering. Ingen af dem kører, før du accepterer.',
     accept: 'Accepter',
     decline: 'Afvis',
     detailsLabel: 'Hvad hver ting gør',

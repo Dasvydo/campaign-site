@@ -326,7 +326,10 @@ export interface Content {
       draftsNote: { before: string; after: string };
       hours: { label: string };
       worth: { label: string };
-      fee: { label: string };
+      /** "<before><the package name><after>": "This costs (Desk):". The
+          name is the one the price band prints for the package the head
+          count lands on, so the two sections call it the same thing. */
+      fee: { before: string; after: string };
       keep: { label: string };
     };
     /** Units the figures wear. Neither inflects in any of the three
@@ -485,8 +488,6 @@ export interface Content {
         out. The fee itself is the offer's, read at render time. */
     total: { zero: string };
 
-    askEyebrow: string;
-    ask: { before: string; link: string; after: string };
     /** Sits under the button at the foot of the band. The button is nav.cta. */
     ctaNote: string;
   };

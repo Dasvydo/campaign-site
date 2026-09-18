@@ -61,7 +61,7 @@ import {
    seat plans is gone too, since 2026-09-18: it argued from somebody else's
    rates, and the calculator argues from the reader's own. The order below is
    the document order the page is asserted to have, not just a set of ids. */
-const SECTION_IDS = ['hero', 'demo', 'who', 'numbers', 'price', 'qualifier'];
+const SECTION_IDS = ['hero', 'demo', 'who', 'price', 'numbers', 'qualifier'];
 
 /* The numbers and the framing the old per seat model put on the page. 890 USD
    a month for ten seats, 89 USD a seat, and a minimum written as a count of
@@ -318,7 +318,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ...c.price.stops.map((x) => x.day), ...c.price.stops.map((x) => x.note),
       /* Only the selected stop's state line is on the page at rest. */
       c.price.stops[0].state,
-      c.price.askEyebrow, c.price.ctaNote,
+      c.price.ctaNote,
       /* The founding block on a capped tier, or the one line that replaces the
          whole trade once the capped tiers are spent. Never both. */
       ...(capped
@@ -544,10 +544,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
           }
         }
         /* The fee row names the package the head count lands on. */
-        const feeNote = host.querySelector('#numbers [data-n-fee] .numbers-term-note')?.textContent ?? '';
+        const feeTerm = (host.querySelector('#numbers [data-n-fee] .numbers-term')?.textContent ?? '').trim();
         const wantName = pkg ? (c.price.packages.rows.find((r) => r.id === pkg.id)?.name ?? '') : '';
-        if (feeNote.trim() !== wantName) {
-          badPoints.push(`${h}p fee names "${feeNote}", the offer puts them on ${wantName || 'no package'}`);
+        const wantTerm = c.numbers.beats.fee.before + wantName + c.numbers.beats.fee.after;
+        if (feeTerm !== wantTerm) {
+          badPoints.push(`${h}p fee row reads "${feeTerm}", the offer puts them on "${wantTerm}"`);
         }
         /* The hedge is on the model and not on the fee. */
         const hedged = (sel: string) => Boolean(host.querySelector(`#numbers [${sel}] .numbers-about`));

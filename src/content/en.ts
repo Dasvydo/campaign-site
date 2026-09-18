@@ -33,7 +33,7 @@ export const en: Content = {
 
     title: {
       before: 'Forty emails in. ',
-      mark: 'Forty replies drafted',
+      mark: 'The repeat ones drafted',
       mid: '. By ',
       after: '.',
     },
@@ -392,7 +392,7 @@ export const en: Content = {
   },
 
   numbers: {
-    eyebrow: 'Our own arithmetic',
+    eyebrow: 'Your own arithmetic',
     title: 'What you keep',
     about: 'about\u00a0',
     inputs: {
@@ -405,7 +405,7 @@ export const en: Content = {
       draftsNote: { before: 'Measured: ', after: '% of inbound mail is the same question again.' },
       hours: { label: 'Hours handed back:' },
       worth: { label: 'What those hours cost you today:' },
-      fee: { label: 'This costs:' },
+      fee: { before: 'This costs (', after: '):' },
       keep: { label: 'You keep:' },
     },
     units: { hours: '\u00a0h', perMonth: ' a month', perHour: ' an hour' },
@@ -557,10 +557,10 @@ export const en: Content = {
     stops: [
       {
         day: 'Day 0',
-        note: 'One setup call, with the person who knows what your firm gets asked. Then the drafts start coming back.',
+        note: 'One setup call with whoever knows what you get asked. Then drafts start.',
         state: 'Nothing invoiced yet',
         say: {
-          before: 'Day 0. The workshop runs and the drafts start coming back. Nothing is invoiced. The monthly total reads ',
+          before: 'Day 0. One setup call, then the drafts start. Nothing is invoiced. The monthly fee reads ',
           after: '.',
         },
       },
@@ -582,12 +582,6 @@ export const en: Content = {
     ],
     total: { zero: '0 EUR' },
 
-    askEyebrow: 'Before you book',
-    ask: {
-      before: 'This offer is priced for firms of ten and up. Below that, the plan on ',
-      link: 'doviloop.dev',
-      after: ' does the same drafting and costs a great deal less.',
-    },
     ctaNote: 'Say no at the review call and nothing is invoiced.',
   },
 
@@ -677,7 +671,7 @@ export const en: Content = {
 
   consent: {
     title: 'Cookies on this page',
-    body: 'Two things here store something on your device: visit counting, and advertising. Neither runs until you accept.',
+    body: 'Visit counting and advertising. Neither runs until you accept.',
     accept: 'Accept',
     decline: 'Decline',
     detailsLabel: 'What each one does',

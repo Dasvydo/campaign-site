@@ -237,7 +237,7 @@ export function Price({
     <section id="price" className="price" aria-labelledby="price-h" ref={sectionRef}>
       <div className="price-wrap" ref={ref}>
         <p className="price-folio" aria-hidden="true">
-          05
+          04
         </p>
         <div className="price-rule" aria-hidden="true" />
 
@@ -605,14 +605,6 @@ export function Price({
 
         <div className="price-ask">
           <div className="price-ask-inner">
-            <p className="price-ask-eyebrow">{c.price.askEyebrow}</p>
-            <p className="price-ask-lead">
-              {c.price.ask.before}
-              <a href="https://doviloop.dev" rel="noopener">
-                {c.price.ask.link}
-              </a>
-              {c.price.ask.after}
-            </p>
             <a className="price-cta" href="#fit" onClick={onCta}>
               {c.nav.cta}
             </a>

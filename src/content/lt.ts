@@ -35,8 +35,8 @@ export const lt: Content = {
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
 
     title: {
-      before: 'Keturiasdešimt laiškų. ',
-      mark: 'Keturiasdešimt atsakymų juodraščių',
+      before: '40 laiškų. ',
+      mark: 'Pasikartojantys su juodraščiais',
       mid: '. ',
       after: ' val.',
     },
@@ -395,7 +395,7 @@ export const lt: Content = {
   },
 
   numbers: {
-    eyebrow: 'Mūsų pačių skaičiavimas',
+    eyebrow: 'Jūsų pačių skaičiavimas',
     title: 'Kiek Jums lieka',
     about: 'maždaug\u00a0',
     inputs: {
@@ -408,7 +408,7 @@ export const lt: Content = {
       draftsNote: { before: 'Išmatuota: ', after: ' % gaunamų laiškų yra tas pats klausimas iš naujo.' },
       hours: { label: 'Valandų, kurias atgaunate:' },
       worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
-      fee: { label: 'Tai kainuoja:' },
+      fee: { before: 'Tai kainuoja (', after: '):' },
       keep: { label: 'Jums lieka:' },
     },
     units: { hours: '\u00a0val.', perMonth: ' per mėnesį', perHour: ' už valandą' },
@@ -560,7 +560,7 @@ export const lt: Content = {
     stops: [
       {
         day: '0 diena',
-        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko klausiama Jūsų įmonės. Tada pradeda grįžti juodraščiai.',
+        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko Jūsų klausiama. Tada prasideda juodraščiai.',
         state: 'Kol kas jokios sąskaitos',
         say: {
           before:
@@ -582,17 +582,11 @@ export const lt: Content = {
         day: 'Pasakykite ne',
         note: 'Bet kada iki to pokalbio.',
         state: 'Jokios sąskaitos išvis',
-        say: { before: 'Pasakykite ne, ir mėnesio suma perbraukiama bei rodo ', after: '.' },
+        say: { before: '0 diena. Vienas įdiegimo pokalbis, tada prasideda juodraščiai. Jokia sąskaita neišrašoma. Mėnesinis mokestis rodo ', after: '.' },
       },
     ],
     total: { zero: '0 EUR' },
 
-    askEyebrow: 'Prieš užsakydami',
-    ask: {
-      before: 'Šio pasiūlymo kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
-      link: 'doviloop.dev',
-      after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
-    },
     ctaNote: 'Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
   },
 
@@ -682,7 +676,7 @@ export const lt: Content = {
 
   consent: {
     title: 'Slapukai šiame puslapyje',
-    body: 'Du dalykai čia įrašo kai ką į Jūsų įrenginį: apsilankymų skaičiavimas ir reklama. Nė vienas neveikia, kol nesutinkate.',
+    body: 'Apsilankymų skaičiavimas ir reklama. Nė vienas neveikia, kol nesutinkate.',
     accept: 'Sutinku',
     decline: 'Nesutinku',
     detailsLabel: 'Ką daro kiekvienas',

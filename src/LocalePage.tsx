@@ -112,7 +112,6 @@ export function LocalePage({ locale }: { locale: Locale }) {
 
         <WhoFor c={c} />
 
-        <Numbers c={c} />
 
         <Price
           c={c}
@@ -131,6 +130,11 @@ export function LocalePage({ locale }: { locale: Locale }) {
           onCta={() => track('booking_click', { placement: 'price' })}
         />
 
+
+        {/* After the price, not before it. A cold click scrolls for the price;
+            the calculator is the justification and reads better once the fee
+            it subtracts has been seen. */}
+        <Numbers c={c} />
 
         <Qualifier
           c={c}
