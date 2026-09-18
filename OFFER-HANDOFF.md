@@ -4,6 +4,9 @@ Written 18 September 2026 by the pricing session. This is the canonical source f
 campaign page may say about money. If this file and a conversation disagree, this file is older
 and the conversation wins - but then this file gets updated in the same change.
 
+**Status: decisions closed 18 September 2026.** The four questions in §6 were open when this file
+was written and are now answered; §6 records the answers. Sections 1 to 5 are settled.
+
 **Companion documents.** `flow-savvy-automations/docs/economics/PRICING-ONE-PAGER.md` (the three
 tables on one page), `OFFER.md` in the same folder (the full costing and the ad copy), and
 `src/lib/offer.ts` in this repo (the only place a price may be written down).
@@ -23,14 +26,14 @@ on 17 September 2026. Four decisions are still open, in §6.
 
 | | Value | Where it lives |
 |---|---|---|
-| Desk price | $149 / month, whole firm | `OFFER.packages.desk.price` |
+| Desk price | **€149** / month, whole firm | `OFFER.packages.desk.price` |
 | Desk coverage | 10 mailboxes | `OFFER.packages.desk.covers` |
 | Desk pooled drafts | 5,000 / month | `OFFER.packages.desk.draftCap` |
-| Firm price | $199 / month, whole firm | `OFFER.packages.firm.price` |
+| Firm price | **€199** / month, whole firm | `OFFER.packages.firm.price` |
 | Firm coverage | 20 mailboxes | `OFFER.packages.firm.covers` |
 | Firm pooled drafts | 10,000 / month | `OFFER.packages.firm.draftCap` |
-| Set-up fee | $500, waived while the cohort is open | `OFFER.setupFee`, `setupDue()` |
-| Founding places | 5 today. **The founder wants 10** - see §6.1 | `OFFER.founding.places` |
+| Set-up fee | €500, waived while the cohort is open | `OFFER.setupFee`, `setupDue()` |
+| Founding places | **5** - decided, see §6.1 | `OFFER.founding.places` |
 | Guarantee | 150 usable drafts in 30 days or the month is free | `OFFER.guaranteeDrafts` |
 | Above 20 people | Custom quote. `packageForHeadcount()` returns null | `packageForHeadcount()` |
 
@@ -220,50 +223,77 @@ with a conservative default, labelled as their estimate.
 
 ---
 
-## 6. Still open - four decisions
+## 6. Decided, 18 September 2026
 
-### 6.1 Ten founding places, or five?
+### 6.1 Five founding places, not ten - DECIDED
 
-The founder wants ten. **Ten Desk customers is 100 mailboxes against a 52-mailbox ceiling.** Three
-honest options:
+Five, which is what the polling ceiling actually holds. The page says five, the counter is driven by
+`remainingFoundingPlaces()`, and no queue or staggering has to be explained.
 
-- **Stagger the onboarding.** Ten places sold, two firms onboarded a month, and the page says so.
-  Cheapest, and the scarcity story is better because the pacing is real. **Recommended.**
-- **Raise the polling ceiling first.** Batching or parallelising the Graph calls. Unscoped.
-- **Stay at five.** Same trade, smaller cohort.
+**One discipline this leaves with you, not with the page.** Five *places* is not five *firms' worth
+of mailboxes*: five Firm customers would be 100 mailboxes against a 52-mailbox ceiling. A cohort
+that skews Desk fits comfortably; three Firm customers alone puts you at 60 and over. You control
+who you accept, so this is a sales rule rather than a page problem - but it is a real one, and
+nothing in the code will stop you.
 
-Nothing about ten places goes on the page until this is answered.
+### 6.2 Both packages on the page - DECIDED
 
-### 6.2 The standard price after the cohort
+Desk and Firm side by side, as the code already ships. Accepted with the trade-off understood: €50
+more buys a reader double everything, so Firm reads as the obvious choice, and Firm nets €4.09 a
+mailbox against Desk's €7.88. See §6.5.
 
-Proposed $249 Desk / $349 Firm. Not decided. Without a number the scarcity is theatre.
+### 6.3 Euro, not dollars - DECIDED AND SHIPPED
 
-### 6.3 Price in euro rather than dollars
+`OFFER.currency` is `EUR` and the prices are €149 and €199. Worth about +14.8% against the dollar
+prices, with no FX exposure.
 
-`offer.ts` prices in USD, so $149 banks as €129.79. Costs, tax and the bank are all euro; customers
-are in the eurozone or pegged to it. Repricing to €149 / €199 is **+€19.21 and +€25.66 a customer a
-month** for the same sticker number, and removes FX exposure. Touches `offer.ts`, the pinned table in
-`verify-offer.mjs`, and the money formatter in all three locales.
+**This had a trap in it, and it is now closed.** doviloop.dev publishes in dollars and we charge in
+euro, so every comparison on the page crosses a currency boundary. Subtracting a published dollar
+rate from a euro price would have read as a saving while being a currency error. So:
 
-### 6.4 Firm is mispriced against Desk
+- `OFFER.compare.currency` records that the rival rates are published in USD.
+- `OFFER.fx` carries one rate (1.148) with the date it was read.
+- Every rival figure crosses through `inOurCurrency()`. Nothing reads `compare.team` or
+  `compare.managed` raw any more - use `teamSeatRate()`, `individualSeatRate()`, `managedSeatRate()`.
+- Conversion happens at the SEAT rate, never the total, so a reader can multiply the page's own
+  figures and get the page's own answer: 9 x €51.39 is the €462.51 printed beside it.
 
-**Desk nets €7.88 a mailbox. Firm nets €4.09.** The binding constraint is mailboxes, so every
-20-seat firm costs two 10-seat firms' worth of capacity and pays less. The best book inside the
-ceiling is five Desk customers; Firm never appears in an optimal book. And the price table steers
-buyers the wrong way: €50 more buys them double everything.
+The converted rates, hand-checked in the verifier: **Individual €25.26 · Team €51.39 · Managed
+€77.53 · full Team firm €462.51 · Managed floor €775.30.** Firm's Individual break even moved from
+7 people to 8, because the bar it clears is now €25.26 rather than 29.
 
-Fixes: Firm to about $299 (restores parity, loses the per-seat argument), Desk down to about 6
-people, or raise the ceiling. None chosen.
+### 6.4 Calculator plus the break-even line - DECIDED
 
-### 6.5 The measurement worth an hour
+Both. The hero carries the one figure the page may state flatly, because it is arithmetic on our own
+price and the visitor's own volume rather than a claim about our performance:
+
+> It pays for itself if the people answering your email cost more than about €5 an hour.
+
+Further down, a calculator the visitor drives with their own email volume and their own hourly cost.
+The page computes; it never asserts. **The four-minutes figure is an input they can change, with a
+conservative default and a label saying it is their estimate** - see §7.
+
+### 6.5 Still genuinely open
+
+**Firm is mispriced against Desk.** €4.09 net a mailbox against €7.88, on a business whose binding
+constraint is mailboxes. Both packages ship anyway; the fix (Firm to about €299, Desk down to about
+6 people, or raise the ceiling) is deferred, not resolved.
+
+**The standard price after the cohort.** €249 / €349 proposed, not decided. The page cannot say
+"after the five it goes up" without a number, so either decide it or drop that sentence.
 
 **Four minutes saved per draft has never been timed.** It multiplies every figure in §3. At two
-minutes, Denmark at 500 emails falls from 10.2× to 5.1× and Lithuania stops working almost
-everywhere. Time it on one real mailbox for a week before any of §3 reaches a public page.
+minutes Denmark at 500 emails falls from 10.2x to 5.1x and Lithuania stops working almost
+everywhere. One week, one real mailbox.
 
----
+## 7. What still has no home in code
 
-## 7. The best way to keep this from drifting
+One figure was quietly wrong until 18 September: the modelled saving read 430 a person a month, from
+a superseded model. At the current one it is **€152**, which is the same 10.2x the Denmark table
+gives, and the basis note in all three locales now says which half is measured and which half has
+never been timed. It was wrong for exactly the reason below.
+
+
 
 Prices already have one home and a build gate. **The buyer-side model does not, and that is the gap
 this handoff exposes.** The 15.2% draft rate, the 4 minutes, the €30 and €10 hourly figures and the
