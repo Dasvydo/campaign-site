@@ -9,3 +9,8 @@ dist-verify
 *.log
 .vercel
 *.tsbuildinfo
+
+# Scratch git worktrees the agent harness creates for isolated runs. They are
+# temporary checkouts of this same repo and are removed when the run ends.
+# Project settings under .claude/ are still tracked; only these are not.
+.claude/worktrees/
