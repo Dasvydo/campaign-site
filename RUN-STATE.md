@@ -1,7 +1,8 @@
 # Run state: flat-fee pricing and the landing page pass (campaign-site)
 
 Started: 2026-09-16
-Last updated: 2026-09-16 (waves 1-5 verified; wave 6 landed and self-checked only; 2 blocked)
+Last updated: 2026-09-19 (waves 1-5 verified; wave 6 verified by a second session, T22 superseded;
+              wave 7 landed and self-checked; 2 blocked, both on the founder)
 Status: executing
 Domain profile: software, with a `content` lens — every task shipped copy in en/da/lt
 
@@ -24,6 +25,22 @@ What is reconstructed, and from what:
   session, and checked by the suites plus deliberate mutation. **No independent
   agent saw any of it.** They are `landed`, never `verified`, and that gap is the
   single most useful thing this file records.
+
+- **Wave 6 verification (2026-09-19)** was done by a later session that did not
+  write any of T16-T22, against the code as it stands now rather than as it stood
+  when they landed. That satisfies "someone other than the author", and it is worth
+  being precise about what it does not satisfy: it is one reader, not an agent per
+  task, and it checked the deliverables that still exist.
+- **Wave 7 (T25-T30)** is the landing page grilling pass. Not orchestrated, done in
+  one session, checked by the suites plus a deliberate mutation of the offer. No
+  independent agent has seen it. `landed`, never `verified`.
+
+**Twenty commits between wave 6 and wave 7 were never scoped.** `1b20ca7` (this
+file) through `78fc8dd` carry the two-package offer, the euro switch, the merged
+layout and the calculator, and none of them has a task ID, a verdict or a verifier.
+They are not in the bar below and the bar is therefore a floor, not a measurement:
+the denominator counts the work that was scoped, not the work that was done. That
+is the same failure this file opens with, repeated after it was written down.
 
 Verified here means what the bar means: someone other than the author checked it.
 Passing suites is evidence, not a verifier.
@@ -79,30 +96,46 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T13 | Danish onto the reworked comparison | 5 | verified | 1 | **PASS** | | `src/content/da.ts` |
 | T14 | Lithuanian onto the reworked comparison | 5 | verified | 1 | **PASS** | | `src/content/lt.ts` |
 | T15 | Catch the comparison coming back | 5 | verified | 1 | **PASS** — caught a mutation that reinstated the losing row under another name | negative checks | `scripts/harness-page.tsx` |
-| T16 | Wire the formatters, add the same-email line | 6 | landed | 1 | suites + 3 mutations; no independent pass | `19,50` on da/lt | `src/components/{Price,Compare,Numbers}.tsx` |
-| T17 | Hero: lead with the outcome, put the draft in the hero | 6 | landed | 1 | suites + 2 mutations; no independent pass | new H1, proof card | `src/components/Hero.tsx`, `src/content/*.ts` |
-| T18 | Ask the six questions across two screens | 6 | landed | 1 | suites + 3 mutations; no independent pass | two-step form, `form_step` | `src/components/Qualifier.tsx`, `src/lib/analytics.ts` |
-| T19 | Cut the payback row | 6 | landed | 1 | suites + tuple guard; no independent pass | two-figure ledger | `src/components/Numbers.tsx`, `src/lib/offer.ts` |
-| T20 | Stop the founding lede claiming we have no customers | 6 | landed | 1 | suites + 3 mutations + a second-state harness; no independent pass | `noCustomersYet()` | `src/lib/offer.ts`, `scripts/harness-claim.tsx` |
-| T21 | Stop calling Individual the other plan on the product site | 6 | landed | 1 | suites; no independent pass | corrected note | `src/content/*.ts` |
-| T22 | Put Managed in the table, name plans as the source names them | 6 | landed | 1 | suites + 2 mutations; no independent pass | five-row comparison | `src/lib/offer.ts`, `src/components/Compare.tsx` |
+| T16 | Wire the formatters, add the same-email line | 6 | verified | 1 | **PASS** — second session read the same figure in three locales: `4,750` / `4.750` / `4 750` | locale-correct separators | `src/components/{Price,Numbers}.tsx` |
+| T17 | Hero: lead with the outcome, put the draft in the hero | 6 | verified | 1 | **PASS** — H1 leads with the outcome and the draft card renders, in all three | new H1, proof card | `src/components/Hero.tsx`, `src/content/*.ts` |
+| T18 | Ask the six questions across two screens | 6 | verified | 1 | **PASS** — two named screens and three radio groups on the first, in all three | two-step form, `form_step` | `src/components/Qualifier.tsx`, `src/lib/analytics.ts` |
+| T19 | Cut the payback row | 6 | verified | 1 | **PASS** — the ledger reads hours, worth, fee, kept. No payback row survives, in all three | two-figure ledger | `src/components/Numbers.tsx`, `src/lib/offer.ts` |
+| T20 | Stop the founding lede claiming we have no customers | 6 | verified | 1 | **PASS** — second session started a pilot in the offer and watched the claim leave the page, then reverted | `noCustomersYet()` | `src/lib/offer.ts`, `scripts/harness-claim.tsx` |
+| T21 | Stop calling Individual the other plan on the product site | 6 | verified | 1 | **PASS** — the note names doviloop.dev and no plan; read in en and lt, da by file | corrected note | `src/content/*.ts` |
+| T22 | Put Managed in the table, name plans as the source names them | 6 | landed | 1 | **SUPERSEDED, not outstanding** — it landed at `8db3734` and was removed at `ac8cb83`, so it is counted done rather than left in STILL TO DO where it would read as work somebody owes. `Compare.tsx` is gone and `OFFER.compare` and its six rate helpers now reach no component: the published rates are still configured and still guarded, and nothing renders them | five-row comparison, since removed | `src/lib/offer.ts` |
 | T23 | Drop the phone field to get under six | 6 | blocked | 0 | | | `src/components/Qualifier.tsx` |
 | T24 | Prefill the booking email | 6 | blocked | 0 | | | `src/components/Qualifier.tsx` |
+| T25 | Derive the minutes from one place instead of two | 7 | landed | 1 | suites + a new assembled assertion; no independent pass | `minutesFromScratch`, a guard that refuses a pair that does not subtract | `src/lib/value.ts`, `src/components/Demo.tsx`, `src/content/*.ts` |
+| T26 | Hold the founding counter back until a place has gone | 7 | landed | 1 | suites + started a pilot and watched it appear, then reverted; no independent pass | `anyPlaceTaken` | `src/components/Price.tsx`, `scripts/harness-page.tsx` |
+| T27 | Say what happens above the largest package | 7 | landed | 1 | suites; no independent pass | `packages.over` in three locales | `src/content/*.ts`, `src/components/Price.tsx` |
+| T28 | Give the hero the hours instead of the break even cost | 7 | landed | 1 | suites + the assembled hero assertion follows the new figure; no independent pass | `heroHoursBack` | `src/lib/value.ts`, `src/components/Hero.tsx`, `src/content/*.ts` |
+| T29 | One order for the audiences, in both places they appear | 7 | landed | 1 | read back in three locales; no independent pass | who matches the demo tabs | `src/content/*.ts` |
+| T30 | Make the invitation to switch a source off visible | 7 | landed | 1 | layout gate; no independent pass | inked instruction with a rule | `src/styles/paper.css` |
 
 ## Blocked
 
 | ID | What stands in the way | Whose |
 |----|------------------------|-------|
-| T23 | `phone` is required non-empty by the shared contract in `00-START-HERE.md`. The validator rejects an empty string, so sending a blank drops every lead. Needs the spec changed, then Batch F on the n8n validator and Batch B on the ledger. | founder, then B and F |
-| T24 | The Google booking shortlink strips query parameters. Needs a test of whether the long form accepts an email parameter. | founder, 5 minutes |
+| T23 | `phone` is required non-empty by the shared contract in `00-START-HERE.md`. The validator rejects an empty string, so sending a blank drops every lead. Needs the spec changed, then Batch F on the n8n validator and Batch B on the ledger. **Re-checked 2026-09-19 and still true**: `src/lib/contract.ts` still carries `phone` and still forbids being extended without the document changing first, and `Qualifier.tsx:158` still rejects an empty one. Both the contract and the n8n workflow are out of scope for this run, so this cannot be unblocked from inside campaign-site. | founder, then B and F |
+| T24 | The Google booking shortlink strips query parameters. Needs a test of whether the long form accepts an email parameter. **Re-checked 2026-09-19 and still true**, and there is a second reason it cannot be done here: `VITE_BOOKING_URL` is empty in `.env.example`, so this repo does not hold the booking page to test against. The `sameEmail` line shipped in T16 is the standing workaround and is on the confirmation screen now. | founder, 5 minutes |
 
 ## To test it live
 
-The page is live. `campaign/a-site` was fast-forwarded to `8db3734` and Vercel
-rebuilt it; the deployed bundle was read back and carries `390`/`490`/`590` and no
-`890`, with zero cookies set before consent. Chromium against the live URL shows no
-console errors and no failed requests, and `verify:consent-layout` passes at three
-viewports in three locales.
+**The paragraph that used to sit here described a page that no longer exists.** It
+recorded a deployed bundle carrying `390`/`490`/`590`, which was the rising tier
+ladder. That ladder was replaced by the two-package offer at `9814dea` and the
+currency moved to euro at `09a86a9`, both of them after this file was written and
+neither of them scoped. Anyone reading the old paragraph would have checked the
+live page against three prices that are not on it.
+
+What holds as of 2026-09-19, on `claude/campaign-build-status-9j9194` at `0912c1c`,
+measured locally rather than against the deployment: `npm run verify` is green at
+383 checks, the served-build consent layout gate is green at 90 across four
+viewports and three locales, and `/`, `/da` and `/lt` all return 200. The offer is
+two packages at 149 and 199 EUR.
+
+**Not checked: the deployment.** Nothing in this session read the live URL, so
+whether Vercel is serving this commit is unknown from here.
 
 What is NOT testable live: nobody can pay. Stripe is in test mode on the product
 site and every pricing CTA there routes to a call. That is fine for a campaign that
