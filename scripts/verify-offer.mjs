@@ -262,6 +262,13 @@ check(valueProblems.length === 0, 'validateValue finds no problem',
    claim that these numbers are right forever; it is a demand that anyone who
    changes them goes and reads the two locale files. The comments at
    src/content/lt.ts:47 and src/content/types.ts name the endings involved. */
+/* The head count in that same hero sentence. It is the largest package's
+   coverage, and it is rendered from the offer rather than spelled out in the
+   copy, but Danish and Lithuanian still agree a noun with it ("20 ansatte",
+   "dirba 20 zmoniu"). Pinned for the same reason as the hours below. */
+check(headlinePackage().covers === 20,
+  'the hero head count is still the count the da and lt endings were written for',
+  `covers is ${headlinePackage().covers}; if this moved, re-read the payback endings in lt.ts and da.ts`);
 check(value.heroHoursBack() === 41,
   'the hero hours are still the count the da and lt endings were written for',
   `heroHoursBack() is ${value.heroHoursBack()}; if this moved, re-read the endings in lt.ts and da.ts`);

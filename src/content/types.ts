@@ -218,10 +218,23 @@ export interface Content {
         src/lib/value.ts.
 
         The figure is hedged with "about" in the copy, because it moves with
-        the volume and the minutes. Only one count is reachable, the one
-        heroHoursBack returns, so each translation has to be right for that
-        count and no other. */
-    payback: { before: string; after: string };
+        the volume and the minutes.
+
+        TWO SLOTS, NOT ONE, and the first is why. The head count was spelled
+        out in words in all three locale files, "a firm of twenty", with
+        nothing tying it to the coverage the hours were computed on. An
+        independent verifier moved that coverage to 25 and got a page reading
+        "a firm of twenty gets back about 51 hours a month": half derived, half
+        typed, and the typed half quietly contradicting the package the derived
+        half came from. Both figures are read from the offer and the model now,
+        the head count first and the hours second.
+
+        Both are pinned in scripts/verify-offer.mjs, which is what makes the
+        inflection safe: Danish and Lithuanian agree a noun with each of them,
+        so each translation is written for one pair of counts and the build
+        refuses a change that would move either without the endings being read
+        again. */
+    payback: { before: string; mid: string; after: string };
 
     /** The pile of letters, and the one dealt off the top of it.
 

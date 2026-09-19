@@ -45,7 +45,8 @@ export const da: Content = {
     ctaNote: 'Få et ja eller nej. De første to uger er gratis. Intet kort, og ingen betaling.',
 
     payback: {
-      before: 'Et firma med tyve ansatte får cirka ',
+      before: 'Et firma med ',
+      mid: ' ansatte får cirka ',
       after: ' timer tilbage om måneden.',
     },
 

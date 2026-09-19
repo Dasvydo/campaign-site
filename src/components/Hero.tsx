@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
-import { formatCount } from '../lib/offer';
+import { formatCount, headlinePackage } from '../lib/offer';
 import { heroHoursBack } from '../lib/value';
 
 /**
@@ -68,6 +68,11 @@ export function Hero({
 }) {
   const heroRef = useRef<HTMLElement | null>(null);
   const payback = heroHoursBack();
+  /* The head count the hours were computed on, read from the same package the
+     model used rather than spelled out in the copy. It was a word in three
+     locale files, decoupled, and a verifier moved the coverage to watch the
+     sentence contradict itself. */
+  const paybackCovers = headlinePackage().covers;
   const tallyRef = useRef<SVGSVGElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
 
@@ -303,6 +308,10 @@ export function Hero({
           {payback !== null ? (
             <p className="hero-payback" data-hero-payback>
               {c.hero.payback.before}
+              <span className="hero-payback-fig">
+                {formatCount(paybackCovers, c.htmlLang)}
+              </span>
+              {c.hero.payback.mid}
               <span className="hero-payback-fig">{formatCount(payback, c.htmlLang)}</span>
               {c.hero.payback.after}
             </p>

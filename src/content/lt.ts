@@ -44,12 +44,19 @@ export const lt: Content = {
 
     ctaNote: 'Taip arba ne. Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
-    /* The unit agrees with the count heroHoursBack returns, which is 41: in
-       Lithuanian 21, 31 and 41 take the singular, so this reads "41 valandą"
-       and not "41 valandų". If the offer or the assumed minutes move, the
-       count moves with them and this ending has to be read again. */
+    /* Two counts, two endings, and Lithuanian inflects around both.
+
+       The head count is the largest package's coverage, 20, which takes the
+       genitive plural: "dirba 20 zmoniu". The hours are what heroHoursBack
+       returns, 41, and 21, 31 and 41 take the SINGULAR, so it reads
+       "41 valanda" in the accusative and not "41 valandu".
+
+       Both counts are pinned in scripts/verify-offer.mjs. Moving either fails
+       the build, which is the only reason these endings are safe: they are
+       right for this pair and nothing else. */
     payback: {
-      before: 'Dvidešimties žmonių įmonė per mėnesį susigrąžina maždaug ',
+      before: 'Įmonė, kurioje dirba ',
+      mid: ' žmonių, per mėnesį susigrąžina maždaug ',
       after: ' valandą.',
     },
 

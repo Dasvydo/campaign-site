@@ -412,7 +412,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          a condition that could not fail. */
       [
         'the hero line, with the hours handed back',
-        c.hero.payback.before + figure(heroHoursBack() ?? NaN) + c.hero.payback.after,
+        c.hero.payback.before +
+          figure(headlinePackage().covers) +
+          c.hero.payback.mid +
+          figure(heroHoursBack() ?? NaN) +
+          c.hero.payback.after,
       ],
       /* Each package card: its name and then its fee, the way the card lays
          them out. Two cards, both read from the offer by id. */

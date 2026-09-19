@@ -42,7 +42,8 @@ export const en: Content = {
     ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
 
     payback: {
-      before: 'A firm of twenty gets back about ',
+      before: 'A firm of ',
+      mid: ' gets back about ',
       after: ' hours a month.',
     },
 
