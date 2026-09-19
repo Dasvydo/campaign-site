@@ -563,6 +563,10 @@ export const da: Content = {
         setup: 'Opsætningsprisen bortfalder helt.',
       },
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
+      signature: {
+        name: 'Dovydas Vinickis',
+        line: 'Jeg har bygget det her, og jeg holder selv opstartsmøderne.',
+      },
     },
 
     guarantee: {

@@ -623,6 +623,21 @@ export function Price({
                   </ol>
 
                   <p className="price-fee-note">{c.price.founding.note}</p>
+
+                  {/* The one person the capacity claim above is about. The
+                      trade says a place is worth having because one person can
+                      only give real attention to five firms at once, and until
+                      now that person appeared nowhere on the page. Signed, in
+                      the first person, because a signature is the one place
+                      somebody should speak as themselves rather than as "we". */}
+                  <p className="price-signature">
+                    <span className="price-signature-name">
+                      {c.price.founding.signature.name}
+                    </span>
+                    <span className="price-signature-line">
+                      {c.price.founding.signature.line}
+                    </span>
+                  </p>
                 </Disclosure>
               ) : null}
             </div>

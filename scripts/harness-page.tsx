@@ -342,6 +342,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             ...(anyPlaceTaken ? [c.price.founding.spots.label] : []),
             c.price.founding.lock,
             c.price.founding.givesTitle, ...c.price.founding.gives,
+            c.price.founding.signature.name, c.price.founding.signature.line,
             c.price.founding.getsTitle, c.price.founding.note,
             ...(setupWaived ? [c.price.founding.gets.setup] : []),
           ]

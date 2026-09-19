@@ -560,6 +560,10 @@ export const en: Content = {
         setup: 'The setup fee waived, in full.',
       },
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
+      signature: {
+        name: 'Dovydas Vinickis',
+        line: 'I built this, and I run the setup calls myself.',
+      },
     },
 
     guarantee: {

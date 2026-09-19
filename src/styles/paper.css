@@ -3705,3 +3705,30 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   #hero-title{ font-size:42px }
   .hero-deck{ font-size:16px; line-height:1.4 }
 }
+
+/* The founder's signature, under the founding trade.
+
+   Set as a signed note rather than a bio: the name in the display face, the
+   sentence under it in the body face at reading size. It is the only first
+   person on a page written in "we", which is the point of it. */
+.price-signature{
+  margin:22px 0 0;
+  padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.14);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.price-signature-name{
+  font-family:var(--display,'Playfair Display',serif);
+  font-size:19px;
+  line-height:1.25;
+  color:var(--paper,#F7F1EA);
+}
+.price-signature-line{
+  font-size:15px;
+  line-height:1.55;
+  color:var(--muted-on-dark,#B8ABA1);
+  max-width:46ch;
+  text-wrap:pretty;
+}

@@ -527,6 +527,23 @@ export interface Content {
         setup: string;
       };
       note: string;
+
+      /** Who the one person is.
+
+          The trade above rests on a claim about capacity: a place in the
+          founding five, "which is as many firms as one person can give real
+          attention to at once". That sentence shipped for weeks without the
+          person in it being named anywhere on the page, which left a reader
+          in Denmark or Lithuania with an Estonian registry code and nobody to
+          attach the promise to.
+
+          `name` is a person's name and is identical in all three locales,
+          which scripts/audit-locales.mjs is told about explicitly: a name is
+          not translated, and a Danish rendering of one would be wrong rather
+          than better. `line` is his own sentence, in the first person, which
+          is a deliberate break from the page's "we" because a signature is
+          the one place a person should speak as themselves. */
+      signature: { name: string; line: string };
     };
 
     /** The guarantee, with the count read from the offer.

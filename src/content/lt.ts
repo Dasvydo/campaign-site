@@ -564,6 +564,10 @@ export const lt: Content = {
         setup: 'Visas įdiegimo mokestis netaikomas.',
       },
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
+      signature: {
+        name: 'Dovydas Vinickis',
+        line: 'Šitą sukūriau aš ir paleidimo pokalbius vedu pats.',
+      },
     },
 
     guarantee: {
