@@ -42,8 +42,8 @@ export const en: Content = {
     ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
 
     payback: {
-      before: 'It pays for itself if the people answering your email cost more than about ',
-      after: ' an hour.',
+      before: 'A firm of twenty gets back about ',
+      after: ' hours a month.',
     },
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
@@ -96,8 +96,14 @@ export const en: Content = {
     payoff: 'Nothing left this office until you pressed send. There is no other way out.',
     editNote: 'You changed it before it went out. That is what the first week looks like.',
     reLabel: 'Re',
-    close: 'You read it. You send it. Nobody spent nine minutes writing it out.',
-    closeBasis: 'Nine minutes is our assumption for writing one from scratch, not a measurement.',
+    close: {
+      before: 'You read it. You send it. Nobody sat down and spent ',
+      after: ' minutes writing it out.',
+    },
+    closeBasis: {
+      before: 'Our assumption for writing one from nothing is ',
+      after: ' minutes. We have not timed it.',
+    },
     share: {
       before: 'It drafts the ones it can answer from the file and leaves the rest alone. On a live mailbox that was about one email in ',
       after: '.',
@@ -432,10 +438,13 @@ export const en: Content = {
   who: {
     eyebrow: 'Filed under',
     title: 'Who this is for',
+    /* Ordered to match the demo's desk tabs, which open on Property because
+       the hero's letter is the property one. The two sections used to run in
+       different orders one scroll apart. */
     groups: [
+      { tab: 'Property managers', line: 'Tenant mail, deposits and maintenance. All year.' },
       { tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
       { tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
-      { tab: 'Property managers', line: 'Tenant mail, deposits and maintenance. All year.' },
     ],
     notes: {
       seats: {
@@ -489,6 +498,7 @@ export const en: Content = {
       peopleLabel: 'People covered, up to',
       draftsLabel: 'Drafts a month, pooled',
       note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
+      over: 'More people than that? There is no package on this page for you, and we would rather say so here than on the call. Ask anyway and we will price it properly.',
     },
 
     included: {

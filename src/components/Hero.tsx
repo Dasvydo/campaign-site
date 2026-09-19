@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
-import { OFFER, formatMoney } from '../lib/offer';
-import { heroBreakEvenHourly } from '../lib/value';
+import { formatCount } from '../lib/offer';
+import { heroHoursBack } from '../lib/value';
 
 /**
  * The hero: masthead, the argument, and the pile of forty letters.
@@ -67,7 +67,7 @@ export function Hero({
   onCta: () => void;
 }) {
   const heroRef = useRef<HTMLElement | null>(null);
-  const payback = heroBreakEvenHourly();
+  const payback = heroHoursBack();
   const tallyRef = useRef<SVGSVGElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
 
@@ -303,9 +303,7 @@ export function Hero({
           {payback !== null ? (
             <p className="hero-payback" data-hero-payback>
               {c.hero.payback.before}
-              <span className="hero-payback-fig">
-                {formatMoney(payback, c.htmlLang)} {OFFER.currency}
-              </span>
+              <span className="hero-payback-fig">{formatCount(payback, c.htmlLang)}</span>
               {c.hero.payback.after}
             </p>
           ) : null}

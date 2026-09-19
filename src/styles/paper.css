@@ -1168,6 +1168,24 @@
 .demo-beat-note{
   margin:-8px 0 16px;font-size:14px;line-height:1.5;color:var(--muted);max-width:46ch;
 }
+/* The one instruction on the page that changes what a reader understands.
+
+   The five switches under it are real controls with a hover lift and a press,
+   but at rest they read as a list of things the office knows, and the line
+   inviting anyone to touch them was set as a 14px grey caption like every
+   other note on the page. So the interaction that carries the whole argument,
+   that the draft is built from the firm's own files and visibly loses a clause
+   when one is taken away, went undiscovered by anyone who did not happen to
+   click. Inked, sized up, and given the amber rule the page uses everywhere
+   else to mean "this one does something". */
+.demo-beat--b .demo-beat-note{
+  margin:-4px 0 18px;
+  padding-left:13px;
+  border-left:2px solid var(--amber-text);
+  font-size:15.5px;
+  color:var(--ink);
+  max-width:40ch;
+}
 
 .demo-paper{
   position:relative;

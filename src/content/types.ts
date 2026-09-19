@@ -184,14 +184,24 @@ export interface Content {
     ctaNote: string;
 
     /** The one value figure the page states flatly, and the reason it may.
-        "<before><the break even hourly cost><after>": the fee divided by the
-        hours handed back, on the largest package at its own coverage and at
-        the low end of the illustrative volume. It is arithmetic on our own
-        price and a stated volume, not a claim about what anyone's staff cost;
-        the reader supplies that and does the comparison. The figure comes
-        from src/lib/value.ts and is hedged with "about" in the copy, because
-        it moves with the volume and the minutes, and the sentence should
-        sound like it knows that. */
+        "<before><the hours handed back a month><after>": the drafts a firm of
+        that size would get, at the assumed minutes, on the largest package at
+        its own coverage and at the low end of the illustrative volume. It is
+        arithmetic on a stated volume and a stated assumption, not a claim
+        about anyone's staff or their cost.
+
+        It used to carry the break even hourly cost instead, and the sentence
+        read "it pays for itself if the people answering your email cost more
+        than about 5 EUR an hour". True, and useless: that is below the legal
+        minimum everywhere this page is sold, so the condition never fails and
+        the line reads as rhetoric rather than as the sum it is. The hours are
+        the same sum stopped one step earlier. See heroHoursBack in
+        src/lib/value.ts.
+
+        The figure is hedged with "about" in the copy, because it moves with
+        the volume and the minutes. Only one count is reachable, the one
+        heroHoursBack returns, so each translation has to be right for that
+        count and no other. */
     payback: { before: string; after: string };
 
     /** The pile of letters, and the one dealt off the top of it.
@@ -263,8 +273,19 @@ export interface Content {
     payoff: string;
     editNote: string;
     reLabel: string;
-    close: string;
-    closeBasis: string;
+    /** The worked example's closing line, split around the minutes nobody
+        spent: "<before><the minutes to write one from nothing><after>".
+
+        The figure used to be typed into this sentence as "nine", while the
+        calculator's own basis said five and src/lib/value.ts computed every
+        figure on the page from five. Two assumptions for one quantity, about
+        two thousand pixels apart, on a page whose whole argument is that its
+        numbers are checkable. It reads from value.ts now, and the figure ends
+        its clause so no language has to agree a noun with it. */
+    close: { before: string; after: string };
+    /** Says the figure in `close` is an assumption, not a measurement, and
+        carries it again: "<before><the same minutes><after>". */
+    closeBasis: { before: string; after: string };
     /** What it does not draft, said where the one draft is shown, so nobody
         starts a pilot expecting every email to come back with one.
         "<before><one in how many, as a count><after>". The count is derived
@@ -399,6 +420,18 @@ export interface Content {
       peopleLabel: string;
       draftsLabel: string;
       note: string;
+      /** What a firm larger than the biggest package reads.
+
+          The fit check routes anyone above nine people to a booking link, but
+          the packages stop at the largest one's coverage, so a firm of forty
+          could pass the check, book a call, and never have seen a price that
+          applies to them. The calculator cannot model them either: its people
+          control stops at the same ceiling. Saying so beside the packages is
+          cheaper than letting them work it out on the call, and a firm that
+          large is a call worth taking rather than one to turn away. Carries no
+          figure: the ceiling it refers to is the one printed on the card
+          beside it. */
+      over: string;
     };
 
     /** What is in the product, and the same in both packages. No figures:

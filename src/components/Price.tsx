@@ -127,6 +127,11 @@ export function Price({
      The price does not move when it fills; the setup fee stops being waived. */
   const capped = foundingOpen();
   const spotsLeft = remainingFoundingPlaces();
+  /* Has the cohort started to fill? Derived from the offer rather than
+     declared, the same way everything else about the cohort is. False on a
+     cohort nobody has taken a place in, which is the one state where the
+     counter argues against us rather than for us. */
+  const anyPlaceTaken = spotsLeft < OFFER.founding.places;
   /* The cohort's own name, so the block reads correctly in each language. */
   const tierName = c.price.cohortName;
   /* Both halves have to agree: the cohort has to still be giving the fee away,
@@ -341,6 +346,13 @@ export function Price({
               })}
             </div>
             <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
+            {/* For the firm that is bigger than both cards. The fit check
+                books anyone above nine people, so a firm of forty reaches the
+                call having seen two prices that do not apply to them and a
+                calculator whose head count control stops below their size.
+                Said here, where they are looking, rather than left for the
+                call. */}
+            <p className="price-fee-note price-pkgs-over">{c.price.packages.over}</p>
 
             {/* The timeline, directly under the cards it acts on. Three
                 stops; the last strikes the lit card's fee out and puts nothing
@@ -432,22 +444,36 @@ export function Price({
                     <li key={g}>{g}</li>
                   ))}
                 </ul>
+                {/* The counter earns its place only once it is moving.
+
+                    It used to render from the first visitor, which meant the
+                    largest number in the band read "5 of 5" beside a sentence
+                    admitting there are no customers yet. A scarcity counter
+                    generates urgency while it drains and doubt while it is
+                    full, and this one sat full, in display serif, directly
+                    under the reason it exists. Nothing here is hidden: the
+                    cohort's size is still printed in the reason above, which
+                    is the number the offer is actually making. What is
+                    withheld is the fact that none of them has gone, and that
+                    is ours to withhold until it stops being true. */}
                 <div className="price-founding" data-price-reveal style={{ ['--i' as string]: 1 }}>
                   <h3 className="price-sr" id="price-founding-h">
                     {c.price.founding.title}
                   </h3>
-                  <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
-                    <div className="price-fee">
-                      <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
-                      <dd className="price-fee-amt">
-                        <span className="price-fig">
-                          {figure(spotsLeft ?? 0)}
-                          {c.price.founding.spots.of}
-                          {figure(OFFER.founding.places)}
-                        </span>
-                      </dd>
-                    </div>
-                  </dl>
+                  {anyPlaceTaken ? (
+                    <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
+                      <div className="price-fee">
+                        <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
+                        <dd className="price-fee-amt">
+                          <span className="price-fig">
+                            {figure(spotsLeft ?? 0)}
+                            {c.price.founding.spots.of}
+                            {figure(OFFER.founding.places)}
+                          </span>
+                        </dd>
+                      </div>
+                    </dl>
+                  ) : null}
                 </div>
               </div>
             ) : (

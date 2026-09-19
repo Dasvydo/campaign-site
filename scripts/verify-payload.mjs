@@ -254,11 +254,20 @@ async function main() {
       }
       /* The counter is the thing that makes the founding places a fact rather
          than a countdown, so it has to be on the page wherever the tier still
-         has places to count, and gone where it does not. */
+         has places to count AND at least one of them has gone. A counter
+         reading its own maximum is not scarcity: beside a page that already
+         admits it has no customers yet, "5 of 5" says in the largest type in
+         the band that nobody has bought, which is an argument against the
+         offer it sits in. The cohort's size is still printed in the reason
+         above it either way, so nothing about the offer is withheld; what is
+         withheld is that none of the places has moved, until that stops being
+         true. */
       check(
-        p.hasSpotsCounter === p.tierIsCapped,
+        p.hasSpotsCounter === (p.tierIsCapped && p.anyPlaceTaken),
         `    the founding block counts its places on the ${p.tierOnShow} tier`,
-        p.tierIsCapped ? 'capped tier, counter expected' : 'uncapped tier, counter must be gone',
+        `capped ${p.tierIsCapped}, any place taken ${p.anyPlaceTaken}, counter ${
+          p.hasSpotsCounter ? 'shown' : 'gone'
+        }`,
       );
       /* The two packages, in the open. One card per package the offer sells,
          the one the offer leads with lit at rest, and the total under the

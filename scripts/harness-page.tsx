@@ -43,7 +43,7 @@ import {
   VALUE,
   draftRatePercent,
   formatShare,
-  heroBreakEvenHourly,
+  heroHoursBack,
   hoursBack,
   hourlyStart,
   keptPerMonth,
@@ -164,6 +164,9 @@ const drivePoints = (): Array<[number, number, number, number]> => {
   const tier = headlinePackage();
   const capped = foundingOpen();
   const spotsLeft = remainingFoundingPlaces();
+  /* Has the cohort begun to fill? The counter is withheld until it has, so
+     that a full cohort does not advertise that nobody has taken a place. */
+  const anyPlaceTaken = spotsLeft < OFFER.founding.places;
   const setupWaived = setupDue() === 0;
 
   for (const locale of ['en', 'da', 'lt'] as Locale[]) {
@@ -293,7 +296,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
     const mustAppear = [
       c.hero.title.mark, c.hero.deck, c.nav.cta, c.hero.dateline,
       c.hero.deal.subject,
-      c.demo.title, c.demo.lede, c.demo.pickLead, c.demo.close,
+      c.demo.title, c.demo.lede, c.demo.pickLead,
+      /* The close carries the minutes from value.ts now, so its two halves
+         are what reach the DOM; the assembled sentence is asserted below. */
+      c.demo.close.before, c.demo.close.after,
       ...c.demo.desks.map((d) => d.tab),
       /* only the first desk's paper is on the page at rest; the other two are
          one click away and are covered by the browser run instead. */
@@ -327,7 +333,9 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             /* The half of the lede that is true at any count. The other half is a
                claim about this business, gated on the offer, and it is asserted in
                both of its states by harness-claim rather than assumed here. */
-            c.price.founding.lede.trade, c.price.founding.spots.label,
+            c.price.founding.lede.trade,
+            /* The counter's own label goes only where the counter goes. */
+            ...(anyPlaceTaken ? [c.price.founding.spots.label] : []),
             c.price.founding.lock,
             c.price.founding.givesTitle, ...c.price.founding.gives,
             c.price.founding.getsTitle, c.price.founding.note,
@@ -379,12 +387,16 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          into a sentence. Nothing else on the page would move if it arrived
          blank, so a sentence reading "One seat costs  a month" would ship in
          three languages without a single check noticing. */
-      /* The hero's one flat figure. Arithmetic on the fee and a stated
-         volume, read from value.ts; a hero that lost it would still read as
-         a sentence, which is why the words alone prove nothing. */
+      /* The hero's one flat figure. Arithmetic on a stated volume and a
+         stated assumption, read from value.ts; a hero that lost it would
+         still read as a sentence, which is why the words alone prove
+         nothing. It carried the break even hourly cost until 2026-09-19,
+         when it became the hours themselves: the division produced a figure
+         below every legal wage in these markets, so the sentence it made was
+         a condition that could not fail. */
       [
-        'the hero line, with the break even hourly cost',
-        c.hero.payback.before + money(heroBreakEvenHourly() ?? NaN) + c.hero.payback.after,
+        'the hero line, with the hours handed back',
+        c.hero.payback.before + figure(heroHoursBack() ?? NaN) + c.hero.payback.after,
       ],
       /* Each package card: its name and then its fee, the way the card lays
          them out. Two cards, both read from the offer by id. */
@@ -404,25 +416,41 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         c.demo.share.before + figure(oneEmailIn()) + c.demo.share.after,
       ],
       /* The reason beside the price, with the cohort's size in it. */
-      ...(capped
+      ...(capped && anyPlaceTaken
         ? ([[
             'the reason the price is low, with the number of places',
             c.price.founding.reason.before + figure(OFFER.founding.places) + c.price.founding.reason.after,
           ]] as Array<[string, string]>)
         : []),
+      /* The worked example's close, with the minutes it says nobody spent.
+         The figure was typed into the sentence as a word until 2026-09-19,
+         and it disagreed with the assumption every other figure on the page
+         was computed from: the demo said nine minutes, value.ts said five.
+         Asserted assembled so the two cannot drift apart again in silence. */
+      [
+        'the worked example, with the minutes nobody spent',
+        c.demo.close.before + figure(VALUE.minutesFromScratch.value) + c.demo.close.after,
+      ],
       /* The one measured figure on the calculator, as a percentage, from
          value.ts and not from the copy. */
       [
         'the measured draft share, inside the arithmetic',
         c.numbers.beats.draftsNote.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.beats.draftsNote.after,
       ],
-      ...(capped
+      /* The counter only exists once the cohort has begun to fill. Gated
+         separately from the line below it, which is true of any capped tier
+         whether or not a place has gone. */
+      ...(capped && anyPlaceTaken
         ? ([
             [
               'the spots counter',
               c.price.founding.spots.label + figure(spotsLeft ?? 0) +
                 c.price.founding.spots.of + figure(OFFER.founding.places),
             ],
+          ] as Array<[string, string]>)
+        : []),
+      ...(capped
+        ? ([
             [
               'what the trade gives back, naming the tier on show',
               c.price.founding.gets.fee.before + tierName + c.price.founding.gets.fee.after,
@@ -711,9 +739,12 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       fitNavLinks: host.querySelectorAll('.hero-nav a[href="#fit"]').length,
       fitCtaInContent: c.nav.cta,
       /* The founding trade, and the counter that makes it a fact rather than a
-         countdown. Rendered only where the tier has places to count. */
+         countdown. Rendered where the tier still has places to count AND at
+         least one has gone: a counter reading its own maximum says only that
+         nobody has bought, which is an argument against the offer it sits in. */
       tierOnShow: tier.id,
       tierIsCapped: capped,
+      anyPlaceTaken,
       hasSpotsCounter: Boolean(
         host.querySelector('#price dl[aria-labelledby="price-founding-h"] .price-fig'),
       ),

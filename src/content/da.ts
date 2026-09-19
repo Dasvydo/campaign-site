@@ -45,8 +45,8 @@ export const da: Content = {
     ctaNote: 'Få et ja eller nej. De første to uger er gratis. Intet kort, og ingen betaling.',
 
     payback: {
-      before: 'Det tjener sig selv hjem, hvis de folk, der svarer på jeres mails, koster mere end cirka ',
-      after: ' i timen.',
+      before: 'Et firma med tyve ansatte får cirka ',
+      after: ' timer tilbage om måneden.',
     },
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
@@ -99,8 +99,14 @@ export const da: Content = {
     payoff: 'Intet forlod kontoret, før du trykkede send. Der er ingen anden vej ud.',
     editNote: 'Du rettede det, før det blev sendt. Sådan ser den første uge ud.',
     reLabel: 'Vedr',
-    close: 'Du læser det. Du sender det. Ingen brugte ni minutter på at skrive det.',
-    closeBasis: 'De ni minutter er vores antagelse om at skrive et fra bunden, ikke en måling.',
+    close: {
+      before: 'Du læser det. Du sender det. Ingen satte sig ned og brugte ',
+      after: ' minutter på at skrive det.',
+    },
+    closeBasis: {
+      before: 'Vores antagelse om at skrive et fra bunden er ',
+      after: ' minutter. Vi har ikke taget tid på det.',
+    },
     share: {
       before: 'Den skriver udkast til dem, den kan svare på ud fra sagen, og lader resten være. På en rigtig postkasse var det cirka én mail ud af ',
       after: '.',
@@ -436,9 +442,9 @@ export const da: Content = {
     eyebrow: 'Arkiveret under',
     title: 'Hvem det er til',
     groups: [
+      { tab: 'Ejendomsadministratorer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
       { tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
       { tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
-      { tab: 'Ejendomsadministratorer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
     ],
     notes: {
       seats: {
@@ -492,6 +498,7 @@ export const da: Content = {
       peopleLabel: 'Personer dækket, op til',
       draftsLabel: 'Udkast om måneden, fælles',
       note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
+      over: 'Flere end det? Så er der ingen pakke til jer på denne side, og det siger vi hellere her end på mødet. Spørg alligevel, så sætter vi en ordentlig pris.',
     },
 
     included: {

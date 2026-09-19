@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { formatCount } from '../lib/offer';
-import { oneEmailIn } from '../lib/value';
+import { VALUE, oneEmailIn } from '../lib/value';
 import type { Content } from '../content/types';
 import type { DemoClause, DemoSource, DemoVariant } from '../content/types';
 
@@ -589,8 +589,19 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
           </div>
         </div>
 
-        <p className="demo-close">{c.demo.close}</p>
-        <p className="demo-close-basis">{c.demo.closeBasis}</p>
+        {/* The minutes are the model's, not this file's. They used to be the
+            word "nine" typed into the sentence while every computed figure on
+            the page came off five. */}
+        <p className="demo-close">
+          {c.demo.close.before}
+          {formatCount(VALUE.minutesFromScratch.value, c.htmlLang)}
+          {c.demo.close.after}
+        </p>
+        <p className="demo-close-basis">
+          {c.demo.closeBasis.before}
+          {formatCount(VALUE.minutesFromScratch.value, c.htmlLang)}
+          {c.demo.closeBasis.after}
+        </p>
 
         <p className="demo-sr" aria-live="polite" aria-atomic="false">
           {say}

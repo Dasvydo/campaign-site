@@ -44,9 +44,13 @@ export const lt: Content = {
 
     ctaNote: 'Taip arba ne. Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
 
+    /* The unit agrees with the count heroHoursBack returns, which is 41: in
+       Lithuanian 21, 31 and 41 take the singular, so this reads "41 valandą"
+       and not "41 valandų". If the offer or the assumed minutes move, the
+       count moves with them and this ending has to be read again. */
     payback: {
-      before: 'Tai atsiperka, jei žmonės, atsakantys į Jūsų laiškus, kainuoja daugiau nei maždaug ',
-      after: ' už valandą.',
+      before: 'Dvidešimties žmonių įmonė per mėnesį susigrąžina maždaug ',
+      after: ' valandą.',
     },
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
@@ -99,8 +103,14 @@ export const lt: Content = {
     payoff: 'Iš šio biuro niekas neišėjo, kol nepaspaudėte siųsti. Kito kelio laukan nėra.',
     editNote: 'Jūs jį pakeitėte prieš išsiunčiant. Būtent taip atrodo pirma savaitė.',
     reLabel: 'Dėl',
-    close: 'Jūs perskaitote. Jūs išsiunčiate. Niekas nepraleido devynių minučių jį rašydamas.',
-    closeBasis: 'Devynios minutės yra mūsų prielaida, kiek trunka parašyti vieną nuo nulio, o ne matavimas.',
+    close: {
+      before: 'Jūs perskaitote. Jūs išsiunčiate. Niekas nepraleido ',
+      after: ' minučių jį rašydamas.',
+    },
+    closeBasis: {
+      before: 'Mūsų prielaida, kiek trunka parašyti vieną nuo nulio, yra ',
+      after: ' minutės. Laiko nematavome.',
+    },
     share: {
       before: 'Juodraščius rašo tiems laiškams, į kuriuos gali atsakyti iš bylų, o kitų neliečia. Tikroje pašto dėžutėje tai buvo maždaug vienas laiškas iš ',
       after: '.',
@@ -436,9 +446,9 @@ export const lt: Content = {
     eyebrow: 'Registruota',
     title: 'Kam tai skirta',
     groups: [
+      { tab: 'Nekilnojamojo turto administratoriams', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
       { tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
       { tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
-      { tab: 'Nekilnojamojo turto administratoriams', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
     ],
     notes: {
       seats: {
@@ -492,6 +502,7 @@ export const lt: Content = {
       peopleLabel: 'Apimami žmonės, iki',
       draftsLabel: 'Juodraščiai per mėnesį, bendri',
       note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
+      over: 'Daugiau žmonių? Tada šiame puslapyje Jums tinkamo paketo nėra, ir verčiau tai pasakome čia, o ne pokalbio metu. Vis tiek parašykite, ir kainą pasiūlysime atskirai.',
     },
 
     included: {

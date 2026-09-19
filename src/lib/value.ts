@@ -52,8 +52,19 @@ export interface Value {
   /** The share of inbound mail that gets a draft. Read off a live mailbox:
       230 inbound messages produced 35 drafts. */
   readonly draftRate: Constant;
+  /** Minutes to write one reply from nothing. The larger half of the pair
+      below, and the only one the page ever prints on its own: the worked
+      example's close says what nobody spent. Never timed. */
+  readonly minutesFromScratch: Constant;
+  /** Minutes to read a prepared draft and send it. The smaller half. */
+  readonly minutesToSend: Constant;
   /** Minutes a person saves on one draft, against writing it from nothing.
-      Five to write it, one to read and send a prepared one. Never timed. */
+      Derived from the two above rather than declared, because it used to be
+      declared and the worked example quietly disagreed with it: the demo said
+      a reply took nine minutes to write while the calculator's own basis said
+      five, and nothing could tell. `validateValue` now refuses the pair that
+      does not subtract, so the two halves and the saving cannot drift apart
+      again. Never timed. */
   readonly minutesPerDraft: Constant;
   /** Inbound emails each person receives a month. An illustrative range, not
       a measurement; the visitor supplies their own. */
@@ -86,7 +97,9 @@ function deepFreeze<T>(obj: T): T {
 
 export const VALUE: Value = deepFreeze({
   draftRate: { value: 0.152, basis: 'measured', readAt: '2026-09-17' },
-  minutesPerDraft: { value: 4, basis: 'assumed' },
+  minutesFromScratch: { value: 5, basis: 'assumed' },
+  minutesToSend: { value: 1, basis: 'assumed' },
+  minutesPerDraft: { value: 5 - 1, basis: 'assumed' },
   inbound: { min: 50, max: 1000, step: 50, start: 300 },
   hourly: { min: 5, max: 100, step: 5 },
   hourlyStart: { en: 30, da: 30, lt: 10 },
@@ -254,6 +267,34 @@ export function heroBreakEvenHourly(value: Value = VALUE, offer: Offer = OFFER):
   return raw === null ? null : Math.round(raw);
 }
 
+/**
+ * The hours a month the hero promises back, to the nearest whole hour.
+ *
+ * Computed on exactly the basis the break even figure above uses: the largest
+ * package at its own coverage, the low end of the illustrative inbound range,
+ * the assumed minutes. It replaced that break even figure in the hero on
+ * 2026-09-19. The arithmetic was sound but the sentence it produced was not
+ * doing its job: the fee divided by the hours comes out below every legal wage
+ * in the markets this page is sold in, so "it pays for itself if your people
+ * cost more than that" is a condition that is always true, and a reader who
+ * notices reads it as rhetoric rather than as the arithmetic it is.
+ *
+ * The hours are the same sum stopped one step earlier, before the division
+ * that made it sound like a claim about cheap labour. They are hedged with
+ * "about" in the copy, because they move with the volume and the minutes.
+ */
+export function heroHoursBack(value: Value = VALUE, offer: Offer = OFFER): number | null {
+  const pkg = headlinePackage(offer);
+  const raw = hoursBack(
+    pkg.covers,
+    value.heroInbound,
+    value.minutesPerDraft.value,
+    value,
+    offer,
+  );
+  return raw === null ? null : Math.round(raw);
+}
+
 /** The measured draft rate as a percentage, for the one place the page prints
     it. Rounded to one decimal, which is how it was read. */
 export function draftRatePercent(value: Value = VALUE): number {
@@ -291,6 +332,14 @@ export function validateValue(value: Value = VALUE, offer: Offer = OFFER): strin
   if (!within(value.minutesPerDraft.value, value.minutes)) {
     out.push('the minutes control must be able to open on the assumed minutes');
   }
+  if (!(value.minutesFromScratch.value > value.minutesToSend.value)) {
+    out.push('writing one from nothing must take longer than reading a prepared one');
+  }
+  if (value.minutesFromScratch.value - value.minutesToSend.value !== value.minutesPerDraft.value) {
+    out.push(
+      'the saving must be the difference between writing one from nothing and sending a prepared one',
+    );
+  }
   if (!within(value.inbound.start, value.inbound)) {
     out.push('the inbound control must open inside its own range');
   }
@@ -305,5 +354,7 @@ export function validateValue(value: Value = VALUE, offer: Offer = OFFER): strin
     if (!(r.min < r.max) || !(r.step > 0)) out.push('every range needs min < max and a positive step');
   }
   if (heroBreakEvenHourly(value, offer) === null) out.push('the hero figure does not compute');
+  if (heroHoursBack(value, offer) === null) out.push('the hero hours do not compute');
+  if ((heroHoursBack(value, offer) ?? 0) <= 0) out.push('the hero hours must be worth saying');
   return out;
 }
