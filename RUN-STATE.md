@@ -1,8 +1,9 @@
 # Run state: flat-fee pricing and the landing page pass (campaign-site)
 
 Started: 2026-09-16
-Last updated: 2026-09-19 (waves 1-5 verified; wave 6 verified by a second session, T22 superseded;
-              wave 7 landed and self-checked; 2 blocked, both on the founder)
+Last updated: 2026-09-19, later (waves 1-5 verified; wave 6 verified by a second session, T22
+              superseded, T23 unblocked and landed; wave 7 landed and self-checked at eight
+              tasks; 1 blocked; deployed to production)
 Status: executing
 Domain profile: software, with a `content` lens — every task shipped copy in en/da/lt
 
@@ -103,7 +104,7 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T20 | Stop the founding lede claiming we have no customers | 6 | verified | 1 | **PASS** — second session started a pilot in the offer and watched the claim leave the page, then reverted | `noCustomersYet()` | `src/lib/offer.ts`, `scripts/harness-claim.tsx` |
 | T21 | Stop calling Individual the other plan on the product site | 6 | verified | 1 | **PASS** — the note names doviloop.dev and no plan; read in en and lt, da by file | corrected note | `src/content/*.ts` |
 | T22 | Put Managed in the table, name plans as the source names them | 6 | landed | 1 | **SUPERSEDED, not outstanding** — it landed at `8db3734` and was removed at `ac8cb83`, so it is counted done rather than left in STILL TO DO where it would read as work somebody owes. `Compare.tsx` is gone and `OFFER.compare` and its six rate helpers now reach no component: the published rates are still configured and still guarded, and nothing renders them | five-row comparison, since removed | `src/lib/offer.ts` |
-| T23 | Drop the phone field to get under six | 6 | blocked | 0 | | | `src/components/Qualifier.tsx` |
+| T23 | Drop the phone field to get under six | 6 | landed | 1 | **UNBLOCKED 2026-09-19** by the founder: spec changed, n8n validator updated to accept an empty string. The field is gone and the fit check asks five. The key is still on the wire, empty, because the contract still declares it. The repo's own mock still encoded the old rule and rejected every submission, which is what caught it; it now checks the key and its type and not its emptiness. **Not verified against the real n8n**, only against that mock | five questions | `src/components/Qualifier.tsx`, `scripts/mock-webhook.mjs` |
 | T24 | Prefill the booking email | 6 | blocked | 0 | | | `src/components/Qualifier.tsx` |
 | T25 | Derive the minutes from one place instead of two | 7 | landed | 1 | suites + a new assembled assertion; no independent pass | `minutesFromScratch`, a guard that refuses a pair that does not subtract | `src/lib/value.ts`, `src/components/Demo.tsx`, `src/content/*.ts` |
 | T26 | Hold the founding counter back until a place has gone | 7 | landed | 1 | suites + started a pilot and watched it appear, then reverted; no independent pass | `anyPlaceTaken` | `src/components/Price.tsx`, `scripts/harness-page.tsx` |
@@ -111,13 +112,20 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T28 | Give the hero the hours instead of the break even cost | 7 | landed | 1 | suites + the assembled hero assertion follows the new figure; no independent pass | `heroHoursBack` | `src/lib/value.ts`, `src/components/Hero.tsx`, `src/content/*.ts` |
 | T29 | One order for the audiences, in both places they appear | 7 | landed | 1 | read back in three locales; no independent pass | who matches the demo tabs | `src/content/*.ts` |
 | T30 | Make the invitation to switch a source off visible | 7 | landed | 1 | layout gate; no independent pass | inked instruction with a rule | `src/styles/paper.css` |
+| T31 | Answer what happens when a draft would be wrong | 7 | landed | 1 | suites + every line asserted in the page harness; no independent pass. **Incomplete by design**: two of the strongest lines, what a confidently wrong draft has looked like and where liability sits, need the founder and are not invented | accuracy block in `who` | `src/content/*.ts`, `src/components/WhoFor.tsx` |
+| T32 | Put the one person the founding trade is about on the page | 7 | landed | 1 | suites + read back from the DOM in three locales; no independent pass | signed line under the trade | `src/content/*.ts`, `src/components/Price.tsx`, `scripts/audit-locales.mjs` |
 
 ## Blocked
 
 | ID | What stands in the way | Whose |
 |----|------------------------|-------|
-| T23 | `phone` is required non-empty by the shared contract in `00-START-HERE.md`. The validator rejects an empty string, so sending a blank drops every lead. Needs the spec changed, then Batch F on the n8n validator and Batch B on the ledger. **Re-checked 2026-09-19 and still true**: `src/lib/contract.ts` still carries `phone` and still forbids being extended without the document changing first, and `Qualifier.tsx:158` still rejects an empty one. Both the contract and the n8n workflow are out of scope for this run, so this cannot be unblocked from inside campaign-site. | founder, then B and F |
 | T24 | The Google booking shortlink strips query parameters. Needs a test of whether the long form accepts an email parameter. **Re-checked 2026-09-19 and still true**, and there is a second reason it cannot be done here: `VITE_BOOKING_URL` is empty in `.env.example`, so this repo does not hold the booking page to test against. The `sameEmail` line shipped in T16 is the standing workaround and is on the confirmation screen now. | founder, 5 minutes |
+
+## Cleared
+
+| ID | What it was waiting on | Cleared by |
+|----|------------------------|-----------|
+| T23 | The spec and the n8n validator requiring a non-empty phone | The founder, 2026-09-19. **One thing is still unproven**: nothing in this repo has submitted a lead to the real n8n since. One real submission end to end would settle it, and until somebody does, a validator that was not actually updated would drop every lead in silence. |
 
 ## To test it live
 
