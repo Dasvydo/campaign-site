@@ -306,6 +306,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       c.demo.desks[0].letter.from, c.demo.desks[0].letter.subject,
       ...c.demo.desks[0].sources.map((x) => x.label),
       c.who.title, ...c.who.groups.map((g) => g.line), c.who.notes.seats.mark,
+      /* The accuracy block. Asserted line by line because it is the answer to
+         the objection that decides a regulated sale, and a block that quietly
+         stopped rendering would look like nothing at all. */
+      c.who.accuracy.title, ...c.who.accuracy.items, c.who.accuracy.unmeasured,
       c.numbers.title,
       ...Object.values(c.numbers.inputs).map((i) => i.label), c.numbers.inputs.minutes.note,
       ...Object.values(c.numbers.beats).map((b) => ('label' in b ? b.label : '')).filter(Boolean),
@@ -346,7 +350,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       c.price.packages.pick, c.price.packages.lede,
       ...c.price.packages.rows.map((r) => r.name), ...c.price.packages.rows.map((r) => r.note),
       c.price.included.title, ...c.price.included.items,
-      c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel,
+      c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel,
       c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel, c.form.submit,
       c.footer.tagline, c.footer.privacyLink, c.footer.officeLabel,
     ];
@@ -753,7 +757,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          aria-label would not count here on purpose. Measured on both screens
          by the walk above. */
       labelledControls: stepOneLabelled && stepTwoLabelled,
-      /* Six questions: three chosen from radio groups, then three written. */
+      /* Five questions: three chosen from radio groups, then two written.
+         It was six until 2026-09-19, when the phone field went (T23): the
+         spec was changed and the n8n validator updated to accept an empty
+         string, so the page stopped asking for a number it does not need. */
       questionCount: stepOneQuestions + stepTwoQuestions,
       stepsShown,
       stepTurned,
@@ -766,8 +773,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         stepOneAsks.join('|') ===
         [c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel].join('|'),
       stepTwoIsTheDetails:
-        stepTwoAsks.join('|') ===
-        [c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel].join('|'),
+        stepTwoAsks.join('|') === [c.form.companyLabel, c.form.emailLabel].join('|'),
       blankKeys,
       missing,
       unassembled,

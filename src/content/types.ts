@@ -152,7 +152,7 @@ export interface Content {
         hero button, the standing bar on phones and the button under the price.
         It used to be four keys, and they had drifted into four different
         promises, one of which said a call was being booked when what happens
-        is six questions. The page harness holds every #fit control to one
+        is the fit check. The page harness holds every #fit control to one
         label, so a literal typed back into a component fails the build rather
         than quietly making it five. Changing the wording here changes it
         everywhere, which is what lets ad copy be written against it. */
@@ -376,6 +376,32 @@ export interface Content {
     eyebrow: string;
     title: string;
     groups: [AudienceCopy, AudienceCopy, AudienceCopy];
+
+    /** What happens when a draft would be wrong.
+
+        The objection this answers is the one a regulated trade asks first, and
+        until 2026-09-19 the page did not answer it anywhere. What it answered
+        was a different question: "nothing sends itself" is about automation,
+        not about correctness, and an accountant is not afraid the software will
+        send without them. They are afraid it will be confidently wrong and
+        somebody will send it.
+
+        NOTHING HERE IS A NEW CLAIM. Every line is something the page already
+        said somewhere else, moved to where the question is actually asked: the
+        share that gets a draft at all, the question back instead of a guess,
+        the absence of any automatic send, and documents indexed so a figure can
+        be checked against the file it came from. If a line here ever needs
+        evidence the product cannot produce, it does not belong on the page.
+
+        `unmeasured` is the one thing that is not a claim: how often a draft
+        needs correcting has not been measured, and the page says so rather than
+        implying a number it does not have. It is the same move the calculator
+        makes about the minutes. */
+    accuracy: {
+      title: string;
+      items: readonly string[];
+      unmeasured: string;
+    };
     notes: {
       /** Both notes carry a hand-drawn underline under `mark`. */
       seats: { before: string; mark: string; mid: string; link: string; after: string };
@@ -539,8 +565,6 @@ export interface Content {
     emailPlaceholder: string;
     emailHint: string;
     emailFreeWarning: string;
-    phoneLabel: string;
-    phonePlaceholder: string;
     teamSizeLabel: string;
     teamSizeOptions: SelectOption[];
     emailClientLabel: string;
@@ -565,7 +589,6 @@ export interface Content {
     submitting: string;
     required: string;
     invalidEmail: string;
-    invalidPhone: string;
     privacyNote: string;
   };
 

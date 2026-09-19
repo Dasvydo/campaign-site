@@ -57,7 +57,7 @@ export const en: Content = {
     },
 
     bar: {
-      text: 'Six questions, no card.',
+      text: 'Five questions, no card.',
     },
 
     message: {
@@ -446,6 +446,17 @@ export const en: Content = {
       { tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
       { tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
     ],
+
+    accuracy: {
+      title: 'What happens when it does not know',
+      items: [
+        'It only drafts the ones it can answer from your files. The rest it leaves alone.',
+        'When the answer is not on file, it asks you. It does not fill the gap with something that reads well.',
+        'There is no automatic send anywhere in this product. A person reads every draft and sends it themselves.',
+        'A draft quotes the fee, the deadline or the rule out of your own documents, so anything it says can be checked against the file it came from.',
+      ],
+      unmeasured: 'We have not measured how often a draft still needs correcting. When we have, the figure goes on this page.',
+    },
     notes: {
       seats: {
         before: 'One fee covers ',
@@ -597,7 +608,7 @@ export const en: Content = {
 
   form: {
     eyebrow: 'What do I do now',
-    title: 'Six questions. Under a minute.',
+    title: 'Five questions. Under a minute.',
     lead: 'This is how we work out whether a call is worth your time. If it is not, this page will say so instead of booking you in.',
     formNo: 'Fit check',
     optional: 'Optional',
@@ -608,8 +619,6 @@ export const en: Content = {
     emailHint: 'Only used to send the call details and the pilot agreement.',
     emailFreeWarning:
       'That looks like a personal address. It will still work, but a work address helps us find your firm before we speak.',
-    phoneLabel: 'Phone',
-    phonePlaceholder: 'Including country code',
     teamSizeLabel: 'How many people handle email daily?',
     teamSizeOptions: [
       { value: '1-9', label: '1 to 9 people' },
@@ -639,7 +648,6 @@ export const en: Content = {
     submitting: 'One moment',
     required: 'This one is needed.',
     invalidEmail: 'That address does not look complete.',
-    invalidPhone: 'Please add a number we can reach you on.',
     privacyNote:
       'We use these answers to prepare for the call and for nothing else. No list, no resale.',
   },

@@ -917,6 +917,66 @@
   text-wrap:pretty;
 }
 
+/* The accuracy block. Set as a second sheet on the same desk rather than as a
+   new section: the reader is already asking whether this is for them, and
+   "what happens when it is wrong" is the same question one step further in.
+   Two columns on a wide screen so four short lines do not read as a long list,
+   one column on a phone. */
+.who-accuracy{
+  grid-column:1/-1;
+  margin-top:48px;
+  padding-top:24px;
+  border-top:1px dashed var(--taupe,#DDCFC6);
+}
+.who-accuracy-h{
+  margin:0 0 18px;
+  font-family:var(--display,'Playfair Display',serif);
+  font-weight:400;
+  font-size:clamp(1.35rem,2.3vw,1.7rem);
+  line-height:1.2;
+  color:var(--ink,#251D18);
+  text-wrap:balance;
+}
+.who-accuracy-list{
+  margin:0;
+  padding:0;
+  list-style:none;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:14px 32px;
+}
+@media (min-width:900px){
+  .who-accuracy-list{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+}
+.who-accuracy-list li{
+  position:relative;
+  margin:0;
+  padding-left:20px;
+  font-size:16.5px;
+  line-height:1.55;
+  max-width:46ch;
+  color:var(--ink,#251D18);
+  text-wrap:pretty;
+}
+.who-accuracy-list li::before{
+  content:"";
+  position:absolute;
+  left:2px;
+  top:.62em;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--amber-text,#B4740E);
+}
+.who-accuracy-note{
+  margin:20px 0 0;
+  font-size:15px;
+  line-height:1.6;
+  max-width:52ch;
+  color:var(--muted,#6E6259);
+  text-wrap:pretty;
+}
+
 .who-notes{
   grid-column:1/-1;
   margin-top:48px;

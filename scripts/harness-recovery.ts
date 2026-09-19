@@ -14,7 +14,9 @@ const payload: QualifierPayload = {
   utm: { source: 'linkedin', medium: 'dm', campaign: 'dk_week1', content: 'partner_v2' },
   company_name: 'Vesterled Ejendomsadministration',
   work_email: 'lars@vesterled.dk',
-  phone: '+45 32 14 88 90',
+  /* Empty since T23: the page stopped asking, the contract still carries
+     the key, and the validator accepts it blank. */
+  phone: '',
   team_size: '25-49',
   email_client: 'outlook',
   role: 'owner_partner',

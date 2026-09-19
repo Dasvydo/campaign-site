@@ -81,6 +81,22 @@ export function WhoFor({ c }: { c: Content }) {
           ))}
         </ul>
 
+        {/* The objection a regulated trade asks first, answered where they
+            are already asking whether this is for them. Every line is a claim
+            the page makes elsewhere; the last one is the figure we do not
+            have, said out loud rather than skipped. */}
+        <div className="who-accuracy">
+          <h3 className="who-accuracy-h" id="who-accuracy-h">
+            {c.who.accuracy.title}
+          </h3>
+          <ul className="who-accuracy-list" aria-labelledby="who-accuracy-h">
+            {c.who.accuracy.items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p className="who-accuracy-note">{c.who.accuracy.unmeasured}</p>
+        </div>
+
         <div className="who-notes">
           <p className="who-note who-note-a">
             {n.seats.before}

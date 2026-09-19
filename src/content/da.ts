@@ -60,7 +60,7 @@ export const da: Content = {
     },
 
     bar: {
-      text: 'Seks spørgsmål, intet kort.',
+      text: 'Fem spørgsmål, intet kort.',
     },
 
     message: {
@@ -446,6 +446,17 @@ export const da: Content = {
       { tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
       { tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
     ],
+
+    accuracy: {
+      title: 'Hvad der sker, når den ikke ved det',
+      items: [
+        'Den skriver kun udkast til dem, den kan svare på ud fra jeres sager. Resten lader den være.',
+        'Når svaret ikke står i sagen, spørger den jer. Den fylder ikke hullet ud med noget, der bare lyder rigtigt.',
+        'Der er ingen automatisk afsendelse nogen steder i produktet. Et menneske læser hvert udkast og sender det selv.',
+        'Et udkast citerer honoraret, fristen eller reglen fra jeres egne dokumenter, så alt hvad det skriver, kan slås efter i den sag, det kom fra.',
+      ],
+      unmeasured: 'Vi har ikke målt, hvor ofte et udkast stadig skal rettes. Når vi har, kommer tallet på denne side.',
+    },
     notes: {
       seats: {
         before: 'Én pris dækker ',
@@ -600,7 +611,7 @@ export const da: Content = {
 
   form: {
     eyebrow: 'Hvad gør jeg nu',
-    title: 'Seks spørgsmål. Under et minut.',
+    title: 'Fem spørgsmål. Under et minut.',
     lead: 'Sådan finder vi ud af, om et møde er din tid værd. Er det ikke det, siger den her side det i stedet for at booke dig.',
     formNo: 'Pasformstjek',
     optional: 'Valgfrit',
@@ -611,8 +622,6 @@ export const da: Content = {
     emailHint: 'Bruges kun til at sende mødedetaljer og pilotaftalen.',
     emailFreeWarning:
       'Det ligner en privat adresse. Den virker fint, men en arbejdsmail hjælper os med at finde jeres virksomhed, inden vi taler sammen.',
-    phoneLabel: 'Telefon',
-    phonePlaceholder: 'Med landekode',
     teamSizeLabel: 'Hvor mange sidder med mails hver dag?',
     teamSizeOptions: [
       { value: '1-9', label: '1 til 9 personer' },
@@ -642,7 +651,6 @@ export const da: Content = {
     submitting: 'Et øjeblik',
     required: 'Den her skal udfyldes.',
     invalidEmail: 'Den adresse ser ikke komplet ud.',
-    invalidPhone: 'Skriv et nummer, vi kan få fat i dig på.',
     privacyNote:
       'Vi bruger svarene til at forberede mødet og ikke til andet. Ingen liste, intet videresalg.',
   },

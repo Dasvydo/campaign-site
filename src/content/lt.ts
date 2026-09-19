@@ -64,7 +64,7 @@ export const lt: Content = {
     },
 
     bar: {
-      text: 'Šeši klausimai, kortelės neprašome.',
+      text: 'Penki klausimai, kortelės neprašome.',
     },
 
     message: {
@@ -450,6 +450,17 @@ export const lt: Content = {
       { tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
       { tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
     ],
+
+    accuracy: {
+      title: 'Kas nutinka, kai ji nežino',
+      items: [
+        'Juodraščius rašo tik tiems laiškams, į kuriuos gali atsakyti iš Jūsų bylų. Kitų neliečia.',
+        'Kai atsakymo byloje nėra, ji Jūsų paklausia. Spragos neužpildo tuo, kas tiesiog gražiai skamba.',
+        'Šiame produkte niekur nėra automatinio išsiuntimo. Kiekvieną juodraštį perskaito žmogus ir išsiunčia pats.',
+        'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, todėl viską, ką jis rašo, galima pasitikrinti byloje, iš kurios tai paimta.',
+      ],
+      unmeasured: 'Nematavome, kaip dažnai juodraštį vis dar reikia taisyti. Kai išmatuosime, skaičius atsiras šiame puslapyje.',
+    },
     notes: {
       seats: {
         before: 'Vienas mokestis apima ',
@@ -602,7 +613,7 @@ export const lt: Content = {
 
   form: {
     eyebrow: 'Ką man daryti dabar',
-    title: 'Šeši klausimai. Mažiau nei minutė.',
+    title: 'Penki klausimai. Mažiau nei minutė.',
     lead: 'Taip išsiaiškiname, ar pokalbis vertas Jūsų laiko. Jei ne, šis puslapis taip ir pasakys, užuot Jus užregistravęs.',
     formNo: 'Tinkamumo patikra',
     optional: 'Neprivaloma',
@@ -613,8 +624,6 @@ export const lt: Content = {
     emailHint: 'Naudojame tik pokalbio detalėms ir bandomojo laikotarpio sutarčiai išsiųsti.',
     emailFreeWarning:
       'Atrodo, kad tai asmeninis adresas. Jis tiks, bet darbo adresas padeda mums rasti Jūsų įmonę prieš pokalbį.',
-    phoneLabel: 'Telefonas',
-    phonePlaceholder: 'Su šalies kodu',
     teamSizeLabel: 'Kiek žmonių kasdien tvarko laiškus?',
     teamSizeOptions: [
       { value: '1-9', label: 'nuo 1 iki 9 žmonių' },
@@ -644,7 +653,6 @@ export const lt: Content = {
     submitting: 'Palaukite akimirką',
     required: 'Šį lauką reikia užpildyti.',
     invalidEmail: 'Šis adresas atrodo neužbaigtas.',
-    invalidPhone: 'Nurodykite numerį, kuriuo galėtume su Jumis susisiekti.',
     privacyNote:
       'Šiuos atsakymus naudojame tik pasiruošti pokalbiui. Jokių sąrašų, jokio perpardavimo.',
   },

@@ -189,7 +189,7 @@ async function main() {
         `    the hero quotes the draft the worked example shows, word for word`,
       );
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
-      check(p.questionCount === 6, `    the qualifier asks exactly 6 questions`, String(p.questionCount));
+      check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of
          a walk, so it needs the walk to have actually gone somewhere: without
          these three it would be satisfied by counting one screen twice. */

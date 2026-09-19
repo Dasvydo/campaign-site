@@ -54,8 +54,16 @@ export function validate(body) {
     }
   }
 
+  /* `phone` is still required to be present and still required to be a string:
+     the contract carries the key and Batch F reads it. What changed on
+     2026-09-19 is that it may now be empty, because the page stopped asking
+     for it (T23) and the spec and the n8n validator were changed to match.
+     It stays in this loop for its type and out of the emptiness check, so a
+     missing or non-string phone is still caught. */
   for (const key of ['company_name', 'work_email', 'phone']) {
     if (key in body && typeof body[key] !== 'string') problems.push(`${key} is not a string`);
+  }
+  for (const key of ['company_name', 'work_email']) {
     if (key in body && body[key].trim() === '') problems.push(`${key} is empty`);
   }
 

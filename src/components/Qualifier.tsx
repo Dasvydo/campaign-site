@@ -41,7 +41,7 @@ import { Mark } from './Hero';
    ever complain about a field the reader can see. */
 const STEP_FIELDS: Record<1 | 2, readonly FieldName[]> = {
   1: ['team_size', 'email_client', 'role'],
-  2: ['company_name', 'work_email', 'phone'],
+  2: ['company_name', 'work_email'],
 };
 
 /* Free providers get a soft warning, never a block. Someone at a ten person
@@ -57,12 +57,11 @@ const FREE_EMAIL_DOMAINS = new Set([
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-type FieldName = 'company_name' | 'work_email' | 'phone' | 'team_size' | 'email_client' | 'role';
+type FieldName = 'company_name' | 'work_email' | 'team_size' | 'email_client' | 'role';
 
 interface FormState {
   company_name: string;
   work_email: string;
-  phone: string;
   team_size: '' | TeamSize;
   email_client: '' | EmailClient;
   role: '' | Role;
@@ -71,7 +70,6 @@ interface FormState {
 const EMPTY: FormState = {
   company_name: '',
   work_email: '',
-  phone: '',
   team_size: '',
   email_client: '',
   role: '',
@@ -154,9 +152,6 @@ export function Qualifier({
     else if (!EMAIL_RE.test(v.work_email.trim())) e.work_email = c.form.invalidEmail;
     // Deliberately loose: international formats vary and a wrong reject here
     // costs a real lead. Anything with six or more digits gets through.
-    const digits = v.phone.replace(/\D/g, '');
-    if (!v.phone.trim()) e.phone = c.form.required;
-    else if (digits.length < 6) e.phone = c.form.invalidPhone;
     if (!v.team_size) e.team_size = c.form.required;
     if (!v.email_client) e.email_client = c.form.required;
     if (!v.role) e.role = c.form.required;
@@ -240,7 +235,12 @@ export function Qualifier({
       },
       company_name: values.company_name.trim(),
       work_email: values.work_email.trim(),
-      phone: values.phone.trim(),
+      /* The contract still declares `phone`, so the key is still sent. It is
+         sent empty because the page no longer asks: the spec was changed and
+         the n8n validator updated to accept an empty string (T23, 2026-09-19).
+         Dropping the key entirely would break the contract; asking for a
+         number the page does not need would be the sixth question. */
+      phone: '',
       team_size: values.team_size as TeamSize,
       email_client: values.email_client as EmailClient,
       role: values.role as Role,
@@ -430,21 +430,6 @@ export function Qualifier({
                       ) : null}
                     </div>
 
-                    {/* The prototype marked this one Optional. The live form
-                        requires it, and a label that says optional beside a field
-                        which blocks submission is simply untrue, so the marker is
-                        not carried across. c.form.optional stays in the contract
-                        for whenever a field genuinely is. */}
-                    <TextField
-                      n="06"
-                      id="phone"
-                      label={c.form.phoneLabel}
-                      error={errors.phone}
-                      value={values.phone}
-                      onChange={(v) => set('phone', v)}
-                      onFocus={touch}
-                      inputProps={{ type: 'tel', inputMode: 'tel', autoComplete: 'tel' }}
-                    />
                   </>
                 )}
 

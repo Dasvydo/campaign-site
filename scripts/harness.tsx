@@ -152,7 +152,6 @@ async function runOne(s: Scenario) {
   await act(async () => {
     setValue(q<HTMLInputElement>('#f-company_name'), 'Vesterled Ejendomsadministration');
     setValue(q<HTMLInputElement>('#f-work_email'), s.email);
-    setValue(q<HTMLInputElement>('#f-phone'), '+45 32 14 88 90');
   });
 
   const freeEmailWarningShown = Boolean(host.querySelector('#w-work_email'));
