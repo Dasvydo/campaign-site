@@ -64,7 +64,8 @@ export interface DemoClause {
 /** One desk. Every sender, figure and date on all three is invented, which the
     slug under the heading says out loud. None of them is a customer. */
 export interface DemoDesk {
-  id: string;
+  /** Paired with the audience folder of the same id. See AudienceCopy.id. */
+  id: AudienceId;
   tab: string;
   /** Named in the live region when the desk changes. */
   deskName: string;
@@ -80,7 +81,25 @@ export interface BasisRow {
   def: string;
 }
 
+/** The three trades this page is sold to.
+
+    A union rather than a bare string so the two lists that enumerate them,
+    the demo's desks and the audience folders, cannot name different things.
+    A typo is a build failure and an id that exists on one list and not the
+    other is too. */
+export type AudienceId = 'property' | 'accounting' | 'insurance';
+
 export interface AudienceCopy {
+  /** Which desk this folder is the audience for.
+
+      It exists so the order can be CHECKED rather than eyeballed. The two
+      lists ran in different orders one scroll apart until 2026-09-19, and the
+      fix was real but unprotected: an independent verifier swapped two folders
+      in one locale and the entire suite stayed green, because nothing paired
+      the lists and they shared no key to pair them on. They share this one
+      now, and scripts/harness-page.tsx holds the two orders equal in every
+      locale. */
+  id: AudienceId;
   /** The index tab on the folder. */
   tab: string;
   /** The single line on the sheet below it. */

@@ -240,6 +240,15 @@ async function main() {
         `    every figure reaches the line that left a slot for it`,
         p.unassembled.join(' | '),
       );
+      /* The worked example and the audience folders name the same three trades,
+         and a reader meets them one scroll apart. They ran in different orders
+         until 2026-09-19, which is the sort of thing nobody notices and
+         everybody feels. */
+      check(
+        p.audienceOrder === p.deskOrder,
+        `    the audience folders run in the worked example's order`,
+        `folders ${p.audienceOrder}; desks ${p.deskOrder}`,
+      );
       check(
         p.stopCount === 3 && p.stopCount === p.stopsInContent,
         `    the timeline offers three stops`,

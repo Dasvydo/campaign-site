@@ -442,9 +442,9 @@ export const en: Content = {
        the hero's letter is the property one. The two sections used to run in
        different orders one scroll apart. */
     groups: [
-      { tab: 'Property managers', line: 'Tenant mail, deposits and maintenance. All year.' },
-      { tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
-      { tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
+      { id: 'property', tab: 'Property managers', line: 'Tenant mail, deposits and maintenance. All year.' },
+      { id: 'accounting', tab: 'Accounting firms', line: 'Fee queries and missing documents, every filing deadline.' },
+      { id: 'insurance', tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
     ],
 
     accuracy: {

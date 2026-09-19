@@ -446,9 +446,9 @@ export const lt: Content = {
     eyebrow: 'Registruota',
     title: 'Kam tai skirta',
     groups: [
-      { tab: 'Nekilnojamojo turto administratoriams', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
-      { tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
-      { tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
+      { id: 'property', tab: 'Nekilnojamojo turto administratoriams', line: 'Gyventojų laiškai, užstatai ir priežiūra. Ištisus metus.' },
+      { id: 'accounting', tab: 'Apskaitos įmonėms', line: 'Klausimai dėl mokesčių ir trūkstamų dokumentų, prieš kiekvieną terminą.' },
+      { id: 'insurance', tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
     ],
 
     accuracy: {

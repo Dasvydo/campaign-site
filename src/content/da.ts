@@ -442,9 +442,9 @@ export const da: Content = {
     eyebrow: 'Arkiveret under',
     title: 'Hvem det er til',
     groups: [
-      { tab: 'Ejendomsadministratorer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
-      { tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
-      { tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
+      { id: 'property', tab: 'Ejendomsadministratorer', line: 'Beboerpost, depositum og vedligehold. Hele året.' },
+      { id: 'accounting', tab: 'Revisionsfirmaer', line: 'Spørgsmål om honorarer og manglende bilag, hver eneste frist.' },
+      { id: 'insurance', tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
     ],
 
     accuracy: {

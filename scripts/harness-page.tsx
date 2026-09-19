@@ -758,6 +758,17 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          countdown. Rendered where the tier still has places to count AND at
          least one has gone: a counter reading its own maximum says only that
          nobody has bought, which is an argument against the offer it sits in. */
+      /* The audiences, in the two places the page enumerates them.
+
+         Read off the CONTENT rather than the DOM, because the DOM order is
+         the content order (both components map in array order, and no CSS
+         reorders either list), and because reading it here catches a locale
+         whose folders drifted even if that locale's markup is fine. Paired on
+         the id the two lists now share; before they shared one, a verifier
+         swapped two folders in a single locale and the whole suite stayed
+         green. */
+      audienceOrder: c.who.groups.map((g) => g.id).join(','),
+      deskOrder: c.demo.desks.map((d) => d.id).join(','),
       tierOnShow: tier.id,
       tierIsCapped: capped,
       anyPlaceTaken,
