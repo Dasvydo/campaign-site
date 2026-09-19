@@ -34,6 +34,40 @@ import type { DemoClause, DemoSource, DemoVariant } from '../content/types';
 
 type VariantName = 'on' | 'tone' | 'off';
 const KEYS: DemoSource[] = ['rules', 'deadline', 'file', 'deductions', 'tone'];
+/* THE ONE THING THE SECTION DEMONSTRATES, PERFORMED ONCE.
+
+   The five switches are real controls and toggling one visibly takes a clause
+   out of the draft. That is the whole argument of this page: it is the
+   difference between claiming the product reads your files and showing it.
+
+   An independent reviewer put the problem plainly. At rest the slips read as
+   evidence, not controls: tilted paper, a drawn tick, a count. A tick is the
+   one glyph that says "confirmed, do not touch". Making the invitation above
+   them darker and larger helped the person who reads the column top to bottom
+   and did nothing for the scanner, whose eye goes heading, cards, draft. So
+   most visitors never saw the proof.
+
+   Rather than describe the interaction better, the page performs it: one
+   source goes off and comes back, once, shortly after the strip settles. The
+   reader witnesses the draft lose two figures and get them back without being
+   asked to do anything.
+
+   `deductions` is the source it uses because its clause carries two amounts in
+   the middle of the letter, so what leaves and returns is unmistakable. All
+   three desks carry the same five keys by design, so this works on whichever
+   desk is open.
+
+   IT STANDS DOWN COMPLETELY for `prefers-reduced-motion`, and at the first
+   sign of a real person: a pointer, a key or focus anywhere in the section.
+   It runs once per page load, never on a desk change, and it never speaks
+   into the live region, because announcing a change nobody made is noise. The
+   whole sequence is under two seconds, well inside WCAG 2.2.2's five. */
+const AUTO_KEY: DemoSource = 'deductions';
+/* After the slips finish arriving (five at 74ms plus the tick draw) and a beat
+   to read the whole draft first. */
+const AUTO_OFF_AT = 1100;
+const AUTO_ON_AT = 2500;
+
 const ALL_ON: Record<DemoSource, boolean> = {
   rules: true,
   deadline: true,
@@ -165,6 +199,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
 
   const toggle = (key: DemoSource) => {
     if (editing) return;
+    standDown(key);
     const next = { ...on, [key]: !on[key] };
     setOn(next);
     applySwitch(key, next);
@@ -190,6 +225,85 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     setSay(c.demo.desks[i].deskName + c.demo.say.desk);
     if (focusTab) window.setTimeout(() => tabRefs.current[i]?.focus(), 0);
   };
+
+  /* The performed demonstration. See AUTO_KEY at the top of this file.
+
+     `autoStep` is reassigned on every render on purpose: a timer scheduled now
+     fires more than a second later, and it has to act on the state as it is
+     then rather than as it was when it was scheduled. It never calls setSay,
+     because a live region is for changes the reader made. */
+  const autoTimers = useRef<number[]>([]);
+  const autoRan = useRef(false);
+  const autoTookItOff = useRef(false);
+  const userActed = useRef(false);
+  const editingRef = useRef(false);
+  editingRef.current = editing;
+
+  const autoStep = useRef<(want: boolean) => void>(() => {});
+  autoStep.current = (want: boolean) => {
+    const next = { ...on, [AUTO_KEY]: want };
+    setOn(next);
+    applySwitch(AUTO_KEY, next);
+  };
+
+  /* Any sign of a real person stops it. Touching the demonstrated switch also
+     hands that source over, so the restoring step leaves it where the reader
+     put it rather than overruling them. */
+  const standDown = useCallback((key?: DemoSource) => {
+    userActed.current = true;
+    if (key === AUTO_KEY) autoTookItOff.current = false;
+    autoTimers.current.forEach((t) => window.clearTimeout(t));
+    autoTimers.current = [];
+  }, []);
+
+  useEffect(() => {
+    if (!hasJs || autoRan.current || reduced()) return;
+    const section = rootRef.current;
+    const group = section?.querySelector('.demo-switches');
+    if (!section || !group || typeof IntersectionObserver === 'undefined') return;
+
+    const stop = () => standDown();
+    section.addEventListener('pointerdown', stop);
+    section.addEventListener('keydown', stop);
+    section.addEventListener('focusin', stop);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.disconnect();
+          if (userActed.current || autoRan.current) return;
+          autoRan.current = true;
+          autoTimers.current.push(
+            window.setTimeout(() => {
+              if (userActed.current || editingRef.current) return;
+              autoTookItOff.current = true;
+              autoStep.current(false);
+            }, AUTO_OFF_AT),
+            /* The restoring step is deliberately NOT gated on userActed: if
+               somebody arrives mid-sequence we still owe them a whole draft,
+               and leaving a clause struck out that they never removed is worse
+               than one more animation. It is gated on having taken it off, and
+               on the reader not having claimed that switch themselves. */
+            window.setTimeout(() => {
+              if (!autoTookItOff.current || editingRef.current) return;
+              autoStep.current(true);
+            }, AUTO_ON_AT),
+          );
+        }
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(group);
+
+    return () => {
+      io.disconnect();
+      section.removeEventListener('pointerdown', stop);
+      section.removeEventListener('keydown', stop);
+      section.removeEventListener('focusin', stop);
+      autoTimers.current.forEach((t) => window.clearTimeout(t));
+    };
+  }, [hasJs, standDown]);
 
   /* The switches ship inert, so a page whose script never ran does not offer
      five controls that announce as switches and do nothing. */
