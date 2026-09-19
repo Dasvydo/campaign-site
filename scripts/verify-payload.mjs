@@ -32,7 +32,21 @@ import { build } from 'esbuild';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const PORT = 8799;
+/* The mock's port.
+
+   It was the bare literal 8799. That is fine for one run at a time and wrong
+   the moment two are in flight: four independent verifiers running this suite
+   in parallel worktrees all bound, or failed to bind, the same port, and their
+   POSTs landed in whichever mock currently owned it. The symptom was a suite
+   that failed on an UNMODIFIED tree with "mock received 4 payloads (got 0)",
+   then "(got 6)", then "(got 8)" — a green run and a red run from identical
+   source, which is worse than a broken check because it teaches people to
+   re-run until it passes.
+
+   Derived from the process id so concurrent runs cannot collide, and
+   overridable with MOCK_PORT for anyone who needs a fixed one. The range
+   avoids the ephemeral ports the OS hands out. */
+const PORT = Number(process.env.MOCK_PORT) || 20000 + (process.pid % 20000);
 const ENDPOINT = `http://127.0.0.1:${PORT}/api/lead`;
 const work = mkdtempSync(join(tmpdir(), 'dl-verify-'));
 const LOG = join(work, 'received.ndjson');
@@ -433,6 +447,16 @@ async function main() {
         /* The half that never goes false. A gate that took the whole lede with
            it would leave the founding block opening on a heading. */
         check(r.tradeShown, `    ${where} the trade is explained either way`, r.lede);
+        /* The counter's other direction. `wantGate` is true exactly when no
+           pilot has started, and the counter is withheld exactly then, so the
+           counter must be present precisely when the claim is not. A gate stuck
+           off fails here even though it passes every check that only ever sees
+           the shipped offer. */
+        check(
+          r.counterShown === !wantGate,
+          `    ${where} the counter ${wantGate ? 'stays away until a place goes' : 'comes back once a pilot starts'}`,
+          `started ${r.started}, counter ${r.counterShown ? 'shown' : 'gone'}`,
+        );
         check(
           r.lede === r.wantLede,
           `    ${where} and the lede is exactly those sentences, with nothing left over`,

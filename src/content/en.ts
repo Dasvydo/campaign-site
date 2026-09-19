@@ -453,7 +453,7 @@ export const en: Content = {
         'It only drafts the ones it can answer from your files. The rest it leaves alone.',
         'When the answer is not on file, it asks you. It does not fill the gap with something that reads well.',
         'There is no automatic send anywhere in this product. A person reads every draft and sends it themselves.',
-        'A draft quotes the fee, the deadline or the rule out of your own documents, so anything it says can be checked against the file it came from.',
+        'A draft quotes the fee, the deadline or the rule out of your own documents, in your own wording.',
       ],
       unmeasured: 'We have not measured how often a draft still needs correcting. When we have, the figure goes on this page.',
     },

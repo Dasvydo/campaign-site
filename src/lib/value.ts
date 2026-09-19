@@ -62,9 +62,10 @@ export interface Value {
       Derived from the two above rather than declared, because it used to be
       declared and the worked example quietly disagreed with it: the demo said
       a reply took nine minutes to write while the calculator's own basis said
-      five, and nothing could tell. `validateValue` now refuses the pair that
-      does not subtract, so the two halves and the saving cannot drift apart
-      again. Never timed. */
+      five, and nothing could tell. It is now subtracted from the two constants
+      above rather than declared beside them, so the three cannot disagree at
+      all, and `validateValue` refuses a pair that does not subtract as a second
+      line. Never timed. */
   readonly minutesPerDraft: Constant;
   /** Inbound emails each person receives a month. An illustrative range, not
       a measurement; the visitor supplies their own. */
@@ -95,11 +96,29 @@ function deepFreeze<T>(obj: T): T {
   return obj;
 }
 
+/* The two halves of the minutes, named so the saving can be SUBTRACTED from
+   them rather than typed beside them.
+
+   This was `minutesPerDraft: { value: 5 - 1 }` for one commit, which reads as
+   a derivation and is not one: `5 - 1` is a literal that happens to agree with
+   the two constants above it, and nothing tied them together. An independent
+   verifier moved `minutesFromScratch` to 9 and got a page that said writing
+   one from nothing takes 9 minutes, reading a prepared one takes 1, and the
+   saving is 4, because the calculator opens its control on `minutesPerDraft`.
+   That is the same contradiction the whole change existed to kill, in the same
+   shape, and the build accepted it.
+
+   Referencing the constants makes the drift unrepresentable rather than
+   merely checked: move either one and the saving moves with it. The guard in
+   `validateValue` stays as a second line, but it is no longer the only one. */
+const MINUTES_FROM_SCRATCH = 5;
+const MINUTES_TO_SEND = 1;
+
 export const VALUE: Value = deepFreeze({
   draftRate: { value: 0.152, basis: 'measured', readAt: '2026-09-17' },
-  minutesFromScratch: { value: 5, basis: 'assumed' },
-  minutesToSend: { value: 1, basis: 'assumed' },
-  minutesPerDraft: { value: 5 - 1, basis: 'assumed' },
+  minutesFromScratch: { value: MINUTES_FROM_SCRATCH, basis: 'assumed' },
+  minutesToSend: { value: MINUTES_TO_SEND, basis: 'assumed' },
+  minutesPerDraft: { value: MINUTES_FROM_SCRATCH - MINUTES_TO_SEND, basis: 'assumed' },
   inbound: { min: 50, max: 1000, step: 50, start: 300 },
   hourly: { min: 5, max: 100, step: 5 },
   hourlyStart: { en: 30, da: 30, lt: 10 },
@@ -334,6 +353,15 @@ export function validateValue(value: Value = VALUE, offer: Offer = OFFER): strin
   }
   if (!(value.minutesFromScratch.value > value.minutesToSend.value)) {
     out.push('writing one from nothing must take longer than reading a prepared one');
+  }
+  /* Both halves need bounds of their own. Until an independent verifier looked,
+     neither had any: `minutesToSend` was not even required to be positive, and
+     `minutesFromScratch` could be set to anything that still subtracted. It is
+     printed in three languages, so an unbounded value is a grammar bug waiting
+     in the two that inflect around a count. */
+  if (!(value.minutesToSend.value > 0)) out.push('minutesToSend must be positive');
+  if (!within(value.minutesFromScratch.value, value.minutes)) {
+    out.push('the minutes control must be able to reach the figure the worked example prints');
   }
   if (value.minutesFromScratch.value - value.minutesToSend.value !== value.minutesPerDraft.value) {
     out.push(

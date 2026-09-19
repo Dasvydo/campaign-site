@@ -46,20 +46,36 @@ globalThis.__RUN_CLAIM__ = async () => {
 
     const c = content[locale];
     const text = host.textContent ?? '';
-    /* The founding block's own lede, found through the heading that names it
-       rather than by position, because `price-subnote` is a class this section
-       uses more than once. */
-    const block = host.querySelector('#price-founding-h')?.closest('.price-block') ?? null;
+    /* The founding block's own lede, found by its own hook.
+
+       It was found by walking up from `#price-founding-h`, the counter's
+       screen-reader heading. That worked only while the counter always
+       rendered; once the counter was withheld on a cohort nobody has joined,
+       the anchor vanished and this harness read every lede as empty. An
+       element's anchor should not depend on a sibling that can legitimately
+       disappear. */
+    const lede = host.querySelector('[data-price-lede]');
 
     results.push({
       locale,
       started: pilotsStarted(),
       gate: noCustomersYet(),
       claimShown: text.includes(c.price.founding.lede.noProofYet),
+      /* Does the counter come back once a pilot has started?
+
+         Nothing asserted this. The page harness only ever renders the shipped
+         offer, where the counter is correctly absent, so a gate wired to
+         `false` was indistinguishable from a working one: an independent
+         verifier replaced the condition with a literal `false` and the whole
+         suite stayed green. This harness is the only one that builds a second
+         state, so the negative direction is checked here. */
+      counterShown: Boolean(
+        host.querySelector('dl[aria-labelledby="price-founding-h"] .price-fig'),
+      ),
       tradeShown: text.includes(c.price.founding.lede.trade),
       /* The whole rendered sentence, so a gate that fires correctly but leaves
          a stray fragment behind still fails. */
-      lede: (block?.querySelector('.price-subnote')?.textContent ?? '').trim(),
+      lede: (lede?.textContent ?? '').trim(),
       wantLede: (
         noCustomersYet()
           ? c.price.founding.lede.noProofYet + ' ' + c.price.founding.lede.trade

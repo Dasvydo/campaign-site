@@ -453,7 +453,7 @@ export const da: Content = {
         'Den skriver kun udkast til dem, den kan svare på ud fra jeres sager. Resten lader den være.',
         'Når svaret ikke står i sagen, spørger den jer. Den fylder ikke hullet ud med noget, der bare lyder rigtigt.',
         'Der er ingen automatisk afsendelse nogen steder i produktet. Et menneske læser hvert udkast og sender det selv.',
-        'Et udkast citerer honoraret, fristen eller reglen fra jeres egne dokumenter, så alt hvad det skriver, kan slås efter i den sag, det kom fra.',
+        'Et udkast citerer gebyret, fristen eller reglen fra jeres egne dokumenter, i jeres egne ord.',
       ],
       unmeasured: 'Vi har ikke målt, hvor ofte et udkast stadig skal rettes. Når vi har, kommer tallet på denne side.',
     },
@@ -509,7 +509,7 @@ export const da: Content = {
       peopleLabel: 'Personer dækket, op til',
       draftsLabel: 'Udkast om måneden, fælles',
       note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
-      over: 'Flere end det? Så er der ingen pakke til jer på denne side, og det siger vi hellere her end på mødet. Spørg alligevel, så sætter vi en ordentlig pris.',
+      over: 'Flere end det? Så er der ingen pakke til jer på denne side, og det siger vi hellere her end på mødet. Spørg alligevel, så finder vi en pris, der passer til jer.',
     },
 
     included: {
@@ -565,7 +565,7 @@ export const da: Content = {
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
       signature: {
         name: 'Dovydas Vinickis',
-        line: 'Jeg har bygget det her, og jeg holder selv opstartsmøderne.',
+        line: 'Jeg har bygget det her, og jeg holder selv opsætningsmøderne.',
       },
     },
 

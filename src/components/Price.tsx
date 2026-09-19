@@ -8,6 +8,7 @@ import {
   formatMoney,
   headlinePackage,
   noCustomersYet,
+  pilotsStarted,
   remainingFoundingPlaces,
   setupDue,
 } from '../lib/offer';
@@ -127,11 +128,17 @@ export function Price({
      The price does not move when it fills; the setup fee stops being waived. */
   const capped = foundingOpen();
   const spotsLeft = remainingFoundingPlaces();
-  /* Has the cohort started to fill? Derived from the offer rather than
-     declared, the same way everything else about the cohort is. False on a
-     cohort nobody has taken a place in, which is the one state where the
-     counter argues against us rather than for us. */
-  const anyPlaceTaken = spotsLeft < OFFER.founding.places;
+  /* Has the cohort started to fill? Counted in STARTED PILOTS, never in holds,
+     which is the same rule `noCustomersYet()` uses and for the same reason: a
+     held place is a booked call, and a booked call is not a customer.
+
+     It was `spotsLeft < places` for one commit, which counts holds. An
+     independent verifier found the state that breaks: one hold and no started
+     pilot rendered "Places still open: 4 of 5" inches under "We have no
+     customers to point at yet." The counter implied a firm had signed while
+     the sentence above said none had, which is a weaker form of exactly the
+     adjacency the gate was added to remove. The two derivations now agree. */
+  const anyPlaceTaken = pilotsStarted() > 0;
   /* The cohort's own name, so the block reads correctly in each language. */
   const tierName = c.price.cohortName;
   /* Both halves have to agree: the cohort has to still be giving the fee away,
@@ -456,11 +463,11 @@ export function Price({
                     is the number the offer is actually making. What is
                     withheld is the fact that none of them has gone, and that
                     is ours to withhold until it stops being true. */}
-                <div className="price-founding" data-price-reveal style={{ ['--i' as string]: 1 }}>
-                  <h3 className="price-sr" id="price-founding-h">
-                    {c.price.founding.title}
-                  </h3>
-                  {anyPlaceTaken ? (
+                {anyPlaceTaken ? (
+                  <div className="price-founding" data-price-reveal style={{ ['--i' as string]: 1 }}>
+                    <h3 className="price-sr" id="price-founding-h">
+                      {c.price.founding.title}
+                    </h3>
                     <dl className="price-fees price-fees-tight" aria-labelledby="price-founding-h">
                       <div className="price-fee">
                         <dt className="price-fee-term">{c.price.founding.spots.label}</dt>
@@ -473,8 +480,26 @@ export function Price({
                         </dd>
                       </div>
                     </dl>
-                  ) : null}
-                </div>
+                  </div>
+                ) : null}
+
+                {/* The one person the trade is about, on the open page.
+
+                    It was inside the "A trade, not a discount" disclosure for
+                    one commit, which is closed at rest. An independent verifier
+                    put it plainly: a name behind a disclosure is still no human
+                    being for every reader who does not click, and on a landing
+                    page that is most of them. It defeated the entire purpose of
+                    adding it. It sits on the band now, under the trade it
+                    explains and under the count of what is left. */}
+                <p className="price-signature">
+                  <span className="price-signature-name">
+                    {c.price.founding.signature.name}
+                  </span>
+                  <span className="price-signature-line">
+                    {c.price.founding.signature.line}
+                  </span>
+                </p>
               </div>
             ) : (
               <p className="price-fee-note" data-price-reveal style={{ ['--i' as string]: 1 }}>
@@ -596,7 +621,12 @@ export function Price({
                       is the only thing that knows which, so the offer decides.
                       What is left standing is the sentence that explains the
                       trade, which is true at any count and reads on its own. */}
-                  <p className="price-subnote">
+                  {/* `data-price-lede` is how scripts/harness-claim.tsx finds this
+                      sentence. It used to find it by walking up from the
+                      counter's screen-reader heading, which broke the moment the
+                      counter stopped rendering: an anchor that depends on an
+                      unrelated element is an anchor that moves. */}
+                  <p className="price-subnote" data-price-lede>
                     {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
                     {c.price.founding.lede.trade}
                   </p>
@@ -624,20 +654,6 @@ export function Price({
 
                   <p className="price-fee-note">{c.price.founding.note}</p>
 
-                  {/* The one person the capacity claim above is about. The
-                      trade says a place is worth having because one person can
-                      only give real attention to five firms at once, and until
-                      now that person appeared nowhere on the page. Signed, in
-                      the first person, because a signature is the one place
-                      somebody should speak as themselves rather than as "we". */}
-                  <p className="price-signature">
-                    <span className="price-signature-name">
-                      {c.price.founding.signature.name}
-                    </span>
-                    <span className="price-signature-line">
-                      {c.price.founding.signature.line}
-                    </span>
-                  </p>
                 </Disclosure>
               ) : null}
             </div>

@@ -145,7 +145,24 @@ async function loadOffer() {
   }
 }
 
+/** The same, for the buyer-side model. Bundled separately because it is a
+    separate source of truth and this script guards both. */
+async function loadValue() {
+  const work = mkdtempSync(join(tmpdir(), 'dl-value-'));
+  try {
+    const outfile = join(work, 'value.mjs');
+    await build({
+      entryPoints: [join(root, 'src/lib/value.ts')],
+      bundle: true, format: 'esm', outfile, logLevel: 'silent',
+    });
+    return await import(pathToFileURL(outfile).href);
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
+}
+
 const offer = await loadOffer();
+const value = await loadValue();
 const {
   OFFER, headlinePackage, packageForHeadcount, remainingFoundingPlaces, foundingOpen,
   inOurCurrency, individualSeatRate, teamSeatRate, managedSeatRate,
@@ -219,6 +236,38 @@ console.log('\nThe shipped configuration');
 const shippedProblems = validateOffer();
 check(shippedProblems.length === 0, 'validateOffer finds no problem',
   shippedProblems.join('; ') || 'clean');
+
+/* THE BUYER SIDE, WHICH THIS SCRIPT DID NOT CHECK AT ALL UNTIL 2026-09-19.
+
+   `validateValue` was written, committed and described in a commit message as
+   the thing that stops the minutes drifting, and it was never called from
+   anywhere. An independent verifier found it: dead code, every invariant in it
+   unenforced, and a mutated model that built clean and rendered three
+   inconsistent minute figures on one page. `validateOffer` was wired in here
+   from the start; its sibling simply never was. It is wired in now. */
+console.log('\nThe buyer-side model');
+const valueProblems = value.validateValue();
+check(valueProblems.length === 0, 'validateValue finds no problem',
+  valueProblems.join('; ') || 'clean');
+
+/* The two figures the Danish and Lithuanian copy had to choose an ending for.
+
+   Both languages inflect around a count, so the translations were written for
+   one specific number each: "41 valandą" takes the singular because Lithuanian
+   41 does, and "5 minutės" the nominative plural because 5 does. Move either
+   figure and those endings are silently wrong on a live page, in a language
+   the person shipping the change probably does not read.
+
+   Pinning them here turns that into a loud failure at build time. It is not a
+   claim that these numbers are right forever; it is a demand that anyone who
+   changes them goes and reads the two locale files. The comments at
+   src/content/lt.ts:47 and src/content/types.ts name the endings involved. */
+check(value.heroHoursBack() === 41,
+  'the hero hours are still the count the da and lt endings were written for',
+  `heroHoursBack() is ${value.heroHoursBack()}; if this moved, re-read the endings in lt.ts and da.ts`);
+check(value.VALUE.minutesFromScratch.value === 5,
+  'the worked example minutes are still the count the da and lt endings were written for',
+  `minutesFromScratch is ${value.VALUE.minutesFromScratch.value}; if this moved, re-read closeBasis in lt.ts and da.ts`);
 
 const lead = headlinePackage();
 check(lead.id === OFFER.order[OFFER.order.length - 1],

@@ -280,8 +280,16 @@ export interface Content {
         calculator's own basis said five and src/lib/value.ts computed every
         figure on the page from five. Two assumptions for one quantity, about
         two thousand pixels apart, on a page whose whole argument is that its
-        numbers are checkable. It reads from value.ts now, and the figure ends
-        its clause so no language has to agree a noun with it. */
+        numbers are checkable. It reads from value.ts now.
+
+        THE FIGURE DOES NOT END ITS CLAUSE, and this comment used to claim it
+        did. An independent verifier caught it: in all three locales the number
+        is followed immediately by "minutes", "minutter" or "minuciu", a noun
+        that has to agree with it. The claim was copied from the `share` slot
+        below, where it is true. The endings written here are correct for the
+        one count that renders, and scripts/verify-offer.mjs pins that count, so
+        moving it fails the build rather than shipping bad grammar in a language
+        the person moving it may not read. */
     close: { before: string; after: string };
     /** Says the figure in `close` is an assumption, not a measurement, and
         carries it again: "<before><the same minutes><after>". */

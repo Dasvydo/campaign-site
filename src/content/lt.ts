@@ -457,7 +457,7 @@ export const lt: Content = {
         'Juodraščius rašo tik tiems laiškams, į kuriuos gali atsakyti iš Jūsų bylų. Kitų neliečia.',
         'Kai atsakymo byloje nėra, ji Jūsų paklausia. Spragos neužpildo tuo, kas tiesiog gražiai skamba.',
         'Šiame produkte niekur nėra automatinio išsiuntimo. Kiekvieną juodraštį perskaito žmogus ir išsiunčia pats.',
-        'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, todėl viską, ką jis rašo, galima pasitikrinti byloje, iš kurios tai paimta.',
+        'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, Jūsų pačių žodžiais.',
       ],
       unmeasured: 'Nematavome, kaip dažnai juodraštį vis dar reikia taisyti. Kai išmatuosime, skaičius atsiras šiame puslapyje.',
     },
@@ -513,7 +513,7 @@ export const lt: Content = {
       peopleLabel: 'Apimami žmonės, iki',
       draftsLabel: 'Juodraščiai per mėnesį, bendri',
       note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
-      over: 'Daugiau žmonių? Tada šiame puslapyje Jums tinkamo paketo nėra, ir verčiau tai pasakome čia, o ne pokalbio metu. Vis tiek parašykite, ir kainą pasiūlysime atskirai.',
+      over: 'O jei žmonių daugiau? Tada šiame puslapyje Jums tinkamo paketo nėra, ir geriau tai pasakome čia, o ne pokalbio metu. Vis tiek parašykite, ir kainą pasiūlysime tokią, kokia Jums tinka.',
     },
 
     included: {
@@ -566,7 +566,7 @@ export const lt: Content = {
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
       signature: {
         name: 'Dovydas Vinickis',
-        line: 'Šitą sukūriau aš ir paleidimo pokalbius vedu pats.',
+        line: 'Šį produktą sukūriau aš ir įdiegimo pokalbius vedu pats.',
       },
     },
 

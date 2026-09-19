@@ -338,6 +338,12 @@ const drivePoints = (): Array<[number, number, number, number]> => {
                claim about this business, gated on the offer, and it is asserted in
                both of its states by harness-claim rather than assumed here. */
             c.price.founding.lede.trade,
+            /* The reason, which carries the cohort's size. Asserted on every
+               capped tier rather than only where the counter renders: with the
+               counter withheld this is the ONLY place the page still states how
+               many places the offer is, and a verifier deleted the figure from
+               it to a green suite. */
+            c.price.founding.reason.before, c.price.founding.reason.after,
             /* The counter's own label goes only where the counter goes. */
             ...(anyPlaceTaken ? [c.price.founding.spots.label] : []),
             c.price.founding.lock,
@@ -349,6 +355,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         : [c.price.founding.spotsClosed]),
       /* The two packages, in the open, and what is in both of them. */
       c.price.packages.pick, c.price.packages.lede,
+      /* The line for a firm bigger than every package. It was asserted by
+         nothing: an independent verifier replaced it with {null} and the whole
+         suite stayed green, so it was one careless edit from vanishing in three
+         languages. */
+      c.price.packages.over,
       ...c.price.packages.rows.map((r) => r.name), ...c.price.packages.rows.map((r) => r.note),
       c.price.included.title, ...c.price.included.items,
       c.form.title, c.form.lead, c.form.companyLabel, c.form.emailLabel,
