@@ -54,7 +54,13 @@ async function openDemo(ctx) {
   const page = await ctx.newPage();
   await ctx.route('**://*.facebook.*/**', (r) => r.abort());
   await ctx.route('**://*.posthog.*/**', (r) => r.abort());
-  await page.goto(BASE, { waitUntil: 'networkidle' });
+  /* `domcontentloaded` plus an explicit wait for the switches, rather than
+     `networkidle`. The section is driven by an observer that fires on scroll,
+     so what matters is that the document and its script are up, not that every
+     font and third party has settled. This also keeps the gate usable against
+     an origin where the network never goes quiet. */
+  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('#demo .demo-sw', { timeout: 15000 });
   await page.getByRole('button', { name: /accept|acceptér|sutinku|priimti/i })
     .first().click().catch(() => {});
   await page.evaluate(() => document.getElementById('demo')?.scrollIntoView({ block: 'center' }));
