@@ -83,10 +83,14 @@ export interface BasisRow {
 
 /** The three trades this page is sold to.
 
-    A union rather than a bare string so the two lists that enumerate them,
-    the demo's desks and the audience folders, cannot name different things.
-    A typo is a build failure and an id that exists on one list and not the
-    other is too. */
+    A union rather than a bare string, so a typo is a build failure. Be precise
+    about what that buys, because this comment used to overclaim: TypeScript
+    does NO cross-list comparison. It refuses an id outside the union and a list
+    of the wrong length, and nothing else. The pairing of the two lists is the
+    page harness's job, and what it asserts is the SEQUENCE of ids, not the
+    meaning: swap the words between two folders while leaving their ids in
+    place and every check still passes. An independent verifier proved that.
+    The id fixes the order; a human still has to read the words. */
 export type AudienceId = 'property' | 'accounting' | 'insurance';
 
 export interface AudienceCopy {

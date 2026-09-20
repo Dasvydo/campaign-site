@@ -56,8 +56,8 @@ export const lt: Content = {
        right for this pair and nothing else. */
     payback: {
       before: 'Įmonė, kurioje dirba ',
-      mid: ' žmonių, per mėnesį susigrąžina maždaug ',
-      after: ' valandą.',
+      mid: '\u00a0žmonių, per mėnesį susigrąžina maždaug ',
+      after: '\u00a0valandą.',
     },
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
@@ -513,8 +513,8 @@ export const lt: Content = {
       lede: 'Abiejuose tas pats produktas. Skiriasi tik tai, kiek žmonių apima ir kiek juodraščių dalijasi visa įmonė.',
       pick: 'Rinkitės suskaičiavę savo žmones.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'Dešimties žmonių įmonei.' },
-        { id: 'firm', name: 'Firm', note: 'Įmonei nuo vienuolikos iki dvidešimties žmonių. Tokia pati kaina prie vienuolikos kaip ir prie dvidešimties.' },
+        { id: 'desk', name: 'Desk', note: 'Mažiausia įmonė, kuriai parduodame.' },
+        { id: 'firm', name: 'Firm', note: 'Viena kaina visam intervalui. Ji nekyla, kai priimate naujų žmonių.' },
       ],
       feeLabel: 'Per mėnesį, visai įmonei',
       peopleLabel: 'Apimami žmonės, iki',
@@ -567,7 +567,7 @@ export const lt: Content = {
       ],
       getsTitle: 'Ką gaunate Jūs',
       gets: {
-        fee: { before: 'Vieta tarp ', after: ' penkių, o tiek įmonių vienas žmogus gali iš tikrųjų aprėpti vienu metu.' },
+        fee: { before: 'Vieta tarp ', after: ' įmonių, o tiek jų vienas žmogus gali iš tikrųjų aprėpti vienu metu.' },
         setup: 'Visas įdiegimo mokestis netaikomas.',
       },
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',

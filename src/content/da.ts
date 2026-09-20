@@ -46,8 +46,8 @@ export const da: Content = {
 
     payback: {
       before: 'Et firma med ',
-      mid: ' ansatte får cirka ',
-      after: ' timer tilbage om måneden.',
+      mid: '\u00a0ansatte får cirka ',
+      after: '\u00a0timer tilbage om måneden.',
     },
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
@@ -503,8 +503,8 @@ export const da: Content = {
       lede: 'Samme produkt i begge. Det, der ændrer sig, er hvor mange mennesker det dækker, og hvor mange udkast firmaet deles om.',
       pick: 'Vælg ved at tælle jeres folk.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'Til et firma på ti personer.' },
-        { id: 'firm', name: 'Firm', note: 'Til et firma på elleve til tyve. Samme pris ved elleve personer som ved tyve.' },
+        { id: 'desk', name: 'Desk', note: 'Det mindste firma, vi sælger til.' },
+        { id: 'firm', name: 'Firm', note: 'Én pris for hele spændet. Den stiger ikke, når I ansætter.' },
       ],
       feeLabel: 'Pr. måned, hele firmaet',
       peopleLabel: 'Personer dækket, op til',
@@ -559,7 +559,7 @@ export const da: Content = {
       gets: {
         fee: {
           before: 'En plads blandt de ',
-          after: ' fem, hvilket er så mange virksomheder, som én person kan give rigtig opmærksomhed ad gangen.',
+          after: ' virksomheder, hvilket er så mange, som én person kan give rigtig opmærksomhed ad gangen.',
         },
         setup: 'Opsætningsprisen bortfalder helt.',
       },

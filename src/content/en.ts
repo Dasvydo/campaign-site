@@ -42,9 +42,9 @@ export const en: Content = {
     ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
 
     payback: {
-      before: 'A firm of ',
+      before: 'A firm of\u00a0',
       mid: ' gets back about ',
-      after: ' hours a month.',
+      after: '\u00a0hours a month.',
     },
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
@@ -503,8 +503,8 @@ export const en: Content = {
       lede: 'Same product in both. What changes is how many people it covers and how many drafts the firm shares.',
       pick: 'Pick by counting your people.',
       rows: [
-        { id: 'desk', name: 'Desk', note: 'For a firm of ten people.' },
-        { id: 'firm', name: 'Firm', note: 'For a firm of eleven to twenty. The same fee at eleven people as at twenty.' },
+        { id: 'desk', name: 'Desk', note: 'The smallest firm we sell to.' },
+        { id: 'firm', name: 'Firm', note: 'One fee across the whole band. It does not rise as you hire.' },
       ],
       feeLabel: 'Per month, whole firm',
       peopleLabel: 'People covered, up to',
@@ -557,7 +557,7 @@ export const en: Content = {
       ],
       getsTitle: 'What you get',
       gets: {
-        fee: { before: 'A place in the ', after: ' five, which is as many firms as one person can give real attention to at once.' },
+        fee: { before: 'A place among the ', after: ' firms, which is as many as one person can give real attention to at once.' },
         setup: 'The setup fee waived, in full.',
       },
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',

@@ -772,6 +772,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          swapped two folders in a single locale and the whole suite stayed
          green. */
       audienceOrder: c.who.groups.map((g) => g.id).join(','),
+      /* Distinctness, because a union type does not give exhaustiveness: the
+         same id twice in both lists compares equal and silently drops a trade
+         from the page. */
+      audienceIdsDistinct: new Set(c.who.groups.map((g) => g.id)).size === 3,
+      deskIdsDistinct: new Set(c.demo.desks.map((d) => d.id)).size === 3,
       deskOrder: c.demo.desks.map((d) => d.id).join(','),
       tierOnShow: tier.id,
       tierIsCapped: capped,

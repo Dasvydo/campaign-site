@@ -96,6 +96,14 @@ const isRegistryFact = (path) => path.startsWith('footer.company.');
    exempt here, never the line. */
 const isPersonalName = (path) => path === 'price.founding.signature.name';
 
+/* The audience ids. Identical in all three files because they are keys, not
+   copy. They already slipped past the untranslated check by accident, being
+   lowercase slugs that the generic option-value rule swallows; a verifier
+   renamed one to `real-estate` and got two false failures per locale. Naming
+   them here makes the exemption a decision rather than a coincidence. */
+const isAudienceId = (path) =>
+  /\.id$/.test(path) && (path.startsWith('who.groups') || path.startsWith('demo.desks'));
+
 async function loadContent() {
   const work = mkdtempSync(join(tmpdir(), 'locale-audit-'));
   try {
@@ -162,7 +170,7 @@ for (const loc of TARGETS) {
   const enByPath = new Map(enLeaves);
   const same = locLeaves
     .filter(([p, v]) => enByPath.get(p) === v && !isShared(v) && !isEndonym(p) &&
-      !isRegistryFact(p) && !isPersonalName(p))
+      !isRegistryFact(p) && !isPersonalName(p) && !isAudienceId(p))
     .map(([p, v]) => `${p}=${JSON.stringify(String(v).slice(0, 40))}`);
   report(same.length === 0, `no en string is left untranslated in ${loc}`,
     same.length ? `${same.length}: ${same.join(', ')}` : 'none');

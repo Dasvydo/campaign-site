@@ -249,6 +249,27 @@ async function main() {
         `    the audience folders run in the worked example's order`,
         `folders ${p.audienceOrder}; desks ${p.deskOrder}`,
       );
+      /* Three holes an independent verifier drove through the check above,
+         each of which left the suite green:
+
+         - the same id used twice in BOTH lists. Equal sequences, so the
+           comparison passed, and a trade vanished off the page.
+         - one locale reordered in both lists at once. Equal within that
+           locale, so it passed, and the English page opened the worked
+           example on a different desk than the Danish and Lithuanian.
+         - `desks[0]` free to be any trade, while the hero's letter is the
+           property one. en.ts states that coupling as the reason the order
+           is what it is, and nothing held it. */
+      check(
+        p.audienceIdsDistinct && p.deskIdsDistinct,
+        `    each trade appears exactly once in both lists`,
+        `folders ${p.audienceOrder}; desks ${p.deskOrder}`,
+      );
+      check(
+        p.audienceOrder === 'property,accounting,insurance',
+        `    and in the order the hero's letter needs, which opens on property`,
+        p.audienceOrder,
+      );
       check(
         p.stopCount === 3 && p.stopCount === p.stopsInContent,
         `    the timeline offers three stops`,
