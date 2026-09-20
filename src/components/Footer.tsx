@@ -1,6 +1,6 @@
 import type { Content } from '../content/types';
 import { FALLBACK_CONTACT_EMAIL } from '../lib/env';
-import { Mark } from './Hero';
+import { MARK_BOWL, MARK_STEM, Mark } from './Hero';
 import { ConsentStatus } from './Consent';
 
 /**
@@ -49,11 +49,8 @@ export function Footer({ c }: { c: Content }) {
               <div className="footer-slipwrap">
                 <div className="footer-slip">
                   <svg viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
-                    <path
-                      fillRule="evenodd"
-                      d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"
-                    />
-                    <path d="M215 250 H372 V630 H550 V762 H215 Z" />
+                    <path d={MARK_BOWL} />
+                    <path d={MARK_STEM} />
                   </svg>
                   <address className="footer-addr">
                     {legalName ? <span className="footer-entity">{legalName}</span> : null}

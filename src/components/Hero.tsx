@@ -381,6 +381,17 @@ export function Hero({
   );
 }
 
+/** The two paths the mark is made of.
+ *
+ * Exported because they were hand-copied into three components, and three
+ * copies of a shape is how a shape drifts: when the mark was corrected against
+ * the founder's own file, the footer's emboss and the draft card's watermark
+ * kept drawing the old wrong one, still on the page, still stamped over his
+ * own letter. One definition now; the copies read it. */
+export const MARK_BOWL =
+  'M420 253 L558 253 A254 254 0 0 1 558 761 L585 761 L585 645 A147 147 0 0 0 598 375 L420 375 Z';
+export const MARK_STEM = 'M217 253 H368 V638 H547 V760 H217 Z';
+
 /** The mark.
  *
  * Rebuilt on 2026-09-20 against the founder's own file, because the one here
@@ -410,9 +421,9 @@ export function Mark({ gradientId }: { gradientId: string }) {
       </defs>
       <path
         fill={'url(#' + gradientId + ')'}
-        d="M420 253 L558 253 A254 254 0 0 1 558 761 L585 761 L585 645 A147 147 0 0 0 598 375 L420 375 Z"
+        d={MARK_BOWL}
       />
-      <path fill="#27697A" d="M217 253 H368 V638 H547 V760 H217 Z" />
+      <path fill="#27697A" d={MARK_STEM} />
     </svg>
   );
 }

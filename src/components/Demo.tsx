@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { formatCount } from '../lib/offer';
 import { VALUE } from '../lib/value';
+import { MARK_BOWL, MARK_STEM } from './Hero';
 import type { Content } from '../content/types';
 import type { DemoClause, DemoSource, DemoVariant } from '../content/types';
 
@@ -734,11 +735,8 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
               </div>
 
               <svg className="demo-emboss" viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
-                <path
-                  fillRule="evenodd"
-                  d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"
-                />
-                <path d="M215 250 H372 V630 H550 V762 H215 Z" />
+                <path d={MARK_BOWL} />
+                <path d={MARK_STEM} />
               </svg>
             </article>
 

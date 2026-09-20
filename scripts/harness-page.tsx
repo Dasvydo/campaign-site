@@ -833,6 +833,14 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       heroCardWants: [c.hero.deal.draftLabel, c.hero.deal.subject, c.hero.deal.preview],
       /* Words are not a signpost. This one has to be pressable and it has to
          go to the product site. */
+      /* Every copy of the mark actually draws something.
+         The three copies were hand-duplicated, so correcting the shape left
+         two of them drawing the old one; and when they were wired to one
+         definition, a broken substitution put a placeholder in it and the
+         mark rendered as nothing at all, to a green suite of 435 checks.
+         A logo that is not on the page is not a small defect. */
+      markPaths: Array.from(host.querySelectorAll('#hero .hero-brand svg path, #demo .demo-emboss path'))
+        .map((n) => (n.getAttribute('d') ?? '').trim()),
       underLinkHref: host.querySelector('#price .price-pkgs-under a')?.getAttribute('href') ?? '',
       underLinkText: (host.querySelector('#price .price-pkgs-under a')?.textContent ?? '').trim(),
       /* The calculator's rows, in the order they are read down. Nothing pinned
