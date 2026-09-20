@@ -72,6 +72,32 @@ const PARTS = [
   ['and an answer to press', '.qualifier-chip'],
 ];
 
+/* Every copy of the mark, and how big it is allowed to be.
+
+   The page draws the mark four times and sizes each one differently: a 30px
+   masthead, a 28px brand on the fit check, a 34px emboss on the registered
+   office, and a watermark on the draft that is meant to be large. Three of the
+   four are sized by a rule that names a class; the hero and the fit check are
+   sized by a rule on their parent. So "does it carry a class" is the wrong
+   question - what matters is that each copy came out the size it was meant to
+   be.
+
+   The footer's emboss lost `footer-emboss` when the mark became one
+   definition, and rendered at its intrinsic size in solid black: three hundred
+   pixels of logo under a registry address, the biggest thing on the page. Its
+   path data was right so the mark check passed, and it was enormous rather
+   than missing so every other check here passed. Nothing on the page was
+   asking how big anything was. This does.
+
+   The bands are wide on purpose. They are not a design spec; they are the
+   difference between a watermark and a billboard. */
+const MARKS = [
+  ['the masthead', '#hero .hero-brand svg', 20, 48],
+  ['the draft watermark', '#demo .demo-emboss', 80, 220],
+  ['the emboss on the registered office', '#footer .footer-slip svg', 20, 60],
+  ['the fit check brand', '.qualifier-mark svg', 20, 48],
+];
+
 const VIEWPORTS = [['desktop', 1440, 900], ['phone', 390, 844]];
 const LOCALES = ['', 'da', 'lt'];
 
@@ -238,6 +264,25 @@ try {
       const bad = Object.entries(seen).filter(([, v]) => !String(v).startsWith('ok'));
       check(bad.length === 0, `  /${loc || 'en'}: every part of the argument occupies a box`,
         bad.length ? bad.map(([k, v]) => `${k}: ${v}`).join(' | ') : `${PARTS.length} parts`);
+
+      const marks = await page.evaluate((specs) => {
+        const out = [];
+        for (const [name, sel, min, max] of specs) {
+          const all = document.querySelectorAll(sel);
+          if (all.length === 0) { out.push(`${name}: not on the page`); continue; }
+          for (const el of all) {
+            el.scrollIntoView({ block: 'center', behavior: 'instant' });
+            const r = el.getBoundingClientRect();
+            const side = Math.max(r.width, r.height);
+            if (side < min || side > max) {
+              out.push(`${name}: ${Math.round(side)}px, wanted ${min} to ${max}`);
+            }
+          }
+        }
+        return out;
+      }, MARKS);
+      check(marks.length === 0, `  /${loc || 'en'}: every copy of the mark is the size it is drawn at`,
+        marks.length ? marks.join(' | ') : `${MARKS.length} copies`);
       await ctx.close();
     }
   }

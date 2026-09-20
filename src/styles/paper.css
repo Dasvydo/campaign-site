@@ -780,8 +780,15 @@
  
    The tabs are real buttons, so everything below is written against a button's
    defaults rather than a heading's. */
+/* A drawer the width of what is in it.
+
+   `grid-column:1/-1` made this the full twelve columns, so at 1440 the open
+   folder was a sheet 1,650 pixels wide holding one sentence of eight words and
+   a great deal of nothing. A wide empty box reads as something that failed to
+   load. The line inside is set at 52ch; the drawer is now sized to hold it. */
 .who-strip{
   grid-column:1/-1;
+  max-width:64ch;
   margin:48px 0 0;
   min-width:0;
 }
@@ -3214,7 +3221,15 @@
   align-items:baseline;
   justify-content:space-between;
 }
-#footer .footer-legal,
+/* A stray comma put the copyright line in the focus ring's selector list, so
+   it sat permanently inside a three pixel outline and read as a focused
+   control nobody could act on. */
+#footer .footer-legal{
+  margin:0;
+  font-size:12.5px;
+  letter-spacing:.01em;
+  color:var(--footer-muted);
+}
 #footer a:focus-visible,
 #footer button:focus-visible{
   outline:3px solid var(--footer-focus);

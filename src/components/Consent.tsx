@@ -12,6 +12,12 @@ import {
 /** Footer dispatches this to reopen the notice. Avoids threading a context
  *  through seven components for one link. */
 export const CONSENT_OPEN_EVENT = 'dl:consent-open';
+/* Fired when a visitor answers, so the footer's cookie row stops saying "not
+   set" the moment they have set it. The open event could not do this job: the
+   notice itself listens to that one and would reopen on every answer. Without
+   it the row was correct only on a reload, which is to say it was wrong for
+   the whole of the visit in which the choice was made. */
+export const CONSENT_SET_EVENT = 'dl:consent-set';
 
 /**
  * The consent notice.
@@ -99,6 +105,7 @@ export function Consent({ c }: { c: Content }) {
     setConsent(choice);
     setOpen(false);
     setTakeFocus(false);
+    window.dispatchEvent(new Event(CONSENT_SET_EVENT));
   }, []);
 
   /* Escape closes only a notice that is being revisited. On first load there is
@@ -198,9 +205,11 @@ export function ConsentStatus({ c }: { c: Content }) {
        answer on a page the visitor has not reloaded. */
     const sync = () => setChoice(consentChoice());
     window.addEventListener(CONSENT_OPEN_EVENT, sync);
+    window.addEventListener(CONSENT_SET_EVENT, sync);
     document.addEventListener('visibilitychange', sync);
     return () => {
       window.removeEventListener(CONSENT_OPEN_EVENT, sync);
+      window.removeEventListener(CONSENT_SET_EVENT, sync);
       document.removeEventListener('visibilitychange', sync);
     };
   });

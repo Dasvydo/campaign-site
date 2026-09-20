@@ -48,7 +48,12 @@ export const en: Content = {
     },
 
     bar: {
-      text: 'Five questions, no card.',
+      /* It said "Five questions", which is the true count of the fields, while
+         the form's own heading says "Three questions. Under a minute." Both
+         were defensible and the page was still telling a reader two different
+         numbers about the same form. The bar stops counting; the heading
+         keeps the count. */
+      text: 'Under a minute, no card.',
     },
 
     message: {

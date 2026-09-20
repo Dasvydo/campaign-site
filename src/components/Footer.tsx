@@ -48,7 +48,23 @@ export function Footer({ c }: { c: Content }) {
               <h3 className="footer-label">{c.footer.officeLabel}</h3>
               <div className="footer-slipwrap">
                 <div className="footer-slip">
-                  <svg viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
+                  {/* `footer-emboss` is what makes this an emboss: 34px, at
+                      just over half opacity, filled with the slip's own paper
+                      and lifted off it by two drop shadows. Without the class
+                      the svg takes its intrinsic size and a solid black fill,
+                      and the registered office - a registry fact at the bottom
+                      of the page - becomes the largest mark on the page. It
+                      was dropped when the four hand-drawn copies of the mark
+                      became one definition, and no check could see it: the
+                      path data was right, so the mark check passed, and the
+                      thing was enormous rather than invisible, so the
+                      visibility gate passed too. */}
+                  <svg
+                    className="footer-emboss"
+                    viewBox="0 0 1024 1024"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
                     <path d={MARK_BOWL} />
                     <path d={MARK_STEM} />
                   </svg>

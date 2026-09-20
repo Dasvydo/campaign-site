@@ -61,7 +61,7 @@ export const lt: Content = {
     },
 
     bar: {
-      text: 'Penki klausimai, kortelės neprašome.',
+      text: 'Trunka mažiau nei minutę, kortelės neprašome.',
     },
 
     message: {

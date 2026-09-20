@@ -51,7 +51,7 @@ export const da: Content = {
     },
 
     bar: {
-      text: 'Fem spørgsmål, intet kort.',
+      text: 'Under et minut, intet kort.',
     },
 
     message: {
