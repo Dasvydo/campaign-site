@@ -161,11 +161,26 @@ live region and never moves focus, both now asserted, so the remaining exposure 
 a virtual cursor parked inside the draft when the clause swaps. Unverified is not
 the same as fine.
 
-**There is no CI.** `.github/` does not exist, so nothing runs any of this
-automatically, and the two browser gates are not even in `npm run verify`. Every
-guard in this repo holds only for as long as somebody remembers to run it. That is
-the single cheapest thing left to change and it is a repository decision, not a
-landing page one.
+**~~There is no CI.~~ Fixed 2026-09-20.** `.github/workflows/verify.yml` runs all
+three on every push and pull request: `npm run verify`, then a build, then the
+consent layout and the performed demonstration against a real Chromium. Proved on
+GitHub's runner, not asserted: run 1 failed and run 2 is green at
+`e636a49`, with all 16 demonstration checks and all 90 layout checks in the log.
+
+Two things had to change for the browser gates to run anywhere but this container.
+`playwright-core` was undeclared, and Chromium was resolved by hard-coded path,
+with the two gates on two different paths in the same container. That is now
+`scripts/chromium.mjs`: a named `CHROMIUM_PATH` wins and a missing one is a stated
+error rather than a quiet fall through to some other browser, then the container
+paths if they really exist, then Playwright's own resolution, which is what CI
+uses. The third branch had never been run by anything and was exercised
+deliberately before shipping.
+
+Run 1's failure is worth keeping: `vite preview` binds to `localhost`, which
+resolves to ::1 first on the runner, so it listened on IPv6 while every request
+went over IPv4. The step guard reported that the server never came up and failed
+the run, instead of letting both gates skip in silence and reporting green. That
+is the failure mode it was written for, caught on its first outing.
 
 ## Blocked
 
