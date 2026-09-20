@@ -445,11 +445,6 @@ export interface Content {
     eyebrow: string;
     title: string;
 
-    /** The founding cohort's own name, dropped into the block that describes
-        the trade. One word rather than a name per tier: the page no longer
-        sells a price ladder, so there is one cohort and one name for it. The
-        block it feeds is replaced by `spotsClosed` once the cohort is full. */
-    cohortName: string;
 
     feesTitle: string;
     /** The monthly fee for the firm, then the one off setup fee. */
@@ -556,16 +551,6 @@ export interface Content {
       spotsClosed: string;
       givesTitle: string;
       gives: [string, string, string, string];
-      getsTitle: string;
-      /** The two halves of what the trade gives back, named rather than
-          indexed, because they are not interchangeable. `fee` holds on any
-          capped tier and names it. `setup` is rendered only where the tier
-          actually waives the setup fee. */
-      gets: {
-        /** "<before><the active tier's name><after>". */
-        fee: { before: string; after: string };
-        setup: string;
-      };
       note: string;
 
       /** Who the one person is.

@@ -139,8 +139,6 @@ export function Price({
      the sentence above said none had, which is a weaker form of exactly the
      adjacency the gate was added to remove. The two derivations now agree. */
   const anyPlaceTaken = pilotsStarted() > 0;
-  /* The cohort's own name, so the block reads correctly in each language. */
-  const tierName = c.price.cohortName;
   /* Both halves have to agree: the cohort has to still be giving the fee away,
      and the copy has to have the words for it. */
   const setupWaived = setupDue() === 0;
@@ -444,6 +442,22 @@ export function Price({
                 further down because it is the same five the reason names. */}
             {capped ? (
               <div className="price-trade" data-price-trade>
+                {/* The admission, on the open band rather than behind a
+                    disclosure nobody opens.
+
+                    It was inside "A trade, not a discount", which is closed at
+                    rest, and a verifier had already made exactly this point
+                    about the founder's signature: a sentence behind a
+                    disclosure is no sentence at all for most readers. The
+                    signature was moved out and this was left, which was an
+                    asymmetry nobody chose.
+
+                    `data-price-lede` is how scripts/harness-claim.tsx finds
+                    it. */}
+                <p className="price-subnote" data-price-lede>
+                  {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
+                  {c.price.founding.lede.trade}
+                </p>
                 <p className="price-reason" data-price-reason>
                   {c.price.founding.reason.before}
                   {figure(OFFER.founding.places)}
@@ -507,6 +521,8 @@ export function Price({
                     page that is most of them. It defeated the entire purpose of
                     adding it. It sits on the band now, under the trade it
                     explains and under the count of what is left. */}
+                <p className="price-fee-note">{c.price.founding.note}</p>
+
                 <p className="price-signature">
                   <span className="price-signature-name">
                     {c.price.founding.signature.name}
@@ -629,48 +645,14 @@ export function Price({
                 <p className="price-fee-note">{c.price.covers.note}</p>
               </Disclosure>
 
-              {capped ? (
-                <Disclosure label={c.price.founding.title}>
-                  {/* The admission comes off the page by itself. It is true
-                      today and false from the first pilot onward, and the offer
-                      is the only thing that knows which, so the offer decides.
-                      What is left standing is the sentence that explains the
-                      trade, which is true at any count and reads on its own. */}
-                  {/* `data-price-lede` is how scripts/harness-claim.tsx finds this
-                      sentence. It used to find it by walking up from the
-                      counter's screen-reader heading, which broke the moment the
-                      counter stopped rendering: an anchor that depends on an
-                      unrelated element is an anchor that moves. */}
-                  <p className="price-subnote" data-price-lede>
-                    {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
-                    {c.price.founding.lede.trade}
-                  </p>
-
-                  <h4 className="price-sr" id="price-gets-h">
-                    {c.price.founding.getsTitle}
-                  </h4>
-                  <ol className="price-terms" aria-labelledby="price-gets-h">
-                    <li>
-                      <span className="price-term-t">
-                        {c.price.founding.gets.fee.before}
-                        {tierName}
-                        {c.price.founding.gets.fee.after}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="price-term-t">{c.price.founding.lock}</span>
-                    </li>
-                    {setupWaived ? (
-                      <li>
-                        <span className="price-term-t">{c.price.founding.gets.setup}</span>
-                      </li>
-                    ) : null}
-                  </ol>
-
-                  <p className="price-fee-note">{c.price.founding.note}</p>
-
-                </Disclosure>
-              ) : null}
+              {/* "A trade, not a discount" used to be a second, collapsed
+                  telling of the block above. Read side by side it repeated the
+                  price lock word for word, the setup waiver that is already a
+                  chip on the band, and the count of firms the reason already
+                  names. The founder read the section and said it was
+                  redundant and too long, and he was right: what was unique in
+                  it, the admission and the opt out, is on the open band now,
+                  and the rest is gone rather than said twice. */}
             </div>
           </div>
         </div>

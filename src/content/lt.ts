@@ -467,7 +467,6 @@ export const lt: Content = {
     eyebrow: 'Vienas mokestis visai įmonei',
     title: 'Kiek kainuoja',
 
-    cohortName: 'steigiamųjų',
 
     feesTitle: 'Kainos',
     fees: [
@@ -532,7 +531,7 @@ export const lt: Content = {
       title: 'Mainai, o ne nuolaida',
       lede: {
         noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
-        trade: 'Šios vietos yra mainai: netaikomas įdiegimo mokestis už Jūsų vardą prie šio darbo.',
+        trade: 'Šios vietos yra mainai, o ne nuolaida.',
       },
       reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
       lock: 'Jūsų kaina nesikeičia, kol liekate.',
@@ -545,11 +544,6 @@ export const lt: Content = {
         'Savo logotipą produkto svetainėje.',
         'Du atsiliepimų pokalbius per pirmus du mėnesius.',
       ],
-      getsTitle: 'Ką gaunate Jūs',
-      gets: {
-        fee: { before: 'Vieta tarp ', after: ' įmonių, o tiek jų vienas žmogus gali iš tikrųjų aprėpti vienu metu.' },
-        setup: 'Visas įdiegimo mokestis netaikomas.',
-      },
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
       signature: {
         name: 'Dovydas Vinickis',

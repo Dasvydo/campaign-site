@@ -457,7 +457,6 @@ export const da: Content = {
     eyebrow: 'Én pris for hele firmaet',
     title: 'Hvad det koster',
 
-    cohortName: 'allerførste',
 
     feesTitle: 'Priserne',
     fees: [
@@ -522,7 +521,7 @@ export const da: Content = {
       title: 'En byttehandel, ikke en rabat',
       lede: {
         noProofYet: 'Vi har endnu ingen kunder at pege på.',
-        trade: 'De her pladser er en byttehandel: opsætningsprisen bortfalder, for jeres navn på arbejdet.',
+        trade: 'De her pladser er en byttehandel, ikke en rabat.',
       },
       reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
       lock: 'Jeres pris ændrer sig ikke, så længe I bliver.',
@@ -535,14 +534,6 @@ export const da: Content = {
         'Jeres logo på produktsiden.',
         'To feedbackmøder i de første to måneder.',
       ],
-      getsTitle: 'Det, I får',
-      gets: {
-        fee: {
-          before: 'En plads blandt de ',
-          after: ' virksomheder, hvilket er så mange, som én person kan give rigtig opmærksomhed ad gangen.',
-        },
-        setup: 'Opsætningsprisen bortfalder helt.',
-      },
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
       signature: {
         name: 'Dovydas Vinickis',

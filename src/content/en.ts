@@ -457,7 +457,6 @@ export const en: Content = {
     eyebrow: 'One fee for the whole firm',
     title: 'What it costs',
 
-    cohortName: 'founding',
 
     feesTitle: 'The fees',
     fees: [
@@ -522,7 +521,7 @@ export const en: Content = {
       title: 'A trade, not a discount',
       lede: {
         noProofYet: 'We have no customers to point at yet.',
-        trade: 'These places are a trade: the setup fee waived, for your name on the work.',
+        trade: 'These places are a trade, not a discount.',
       },
       reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
       lock: 'Your price does not change while you stay.',
@@ -535,11 +534,6 @@ export const en: Content = {
         'Your logo on the product site.',
         'Two feedback calls in the first two months.',
       ],
-      getsTitle: 'What you get',
-      gets: {
-        fee: { before: 'A place among the ', after: ' firms, which is as many as one person can give real attention to at once.' },
-        setup: 'The setup fee waived, in full.',
-      },
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
       signature: {
         name: 'Dovydas Vinickis',

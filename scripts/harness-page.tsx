@@ -260,7 +260,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
     const text = stepOneText + '\n' + stepTwoText;
     const c = content[locale];
     const [firmFee, setupFee] = c.price.fees;
-    const tierName = c.price.cohortName;
 
     /* The three ways the page prints a number, copied from <Price /> and
        <Compare /> so an assembled string is assembled exactly the way the
@@ -338,10 +337,14 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          whole trade once the capped tiers are spent. Never both. */
       ...(capped
         ? [
-            c.price.founding.title,
             /* The half of the lede that is true at any count. The other half is a
                claim about this business, gated on the offer, and it is asserted in
-               both of its states by harness-claim rather than assumed here. */
+               both of its states by harness-claim rather than assumed here.
+
+               `founding.title` is no longer asserted as copy on the page: the
+               disclosure it labelled was a second, collapsed telling of the
+               block above it and is gone. The string survives as the screen
+               reader heading on the places counter. */
             c.price.founding.lede.trade,
             /* The reason, which carries the cohort's size. Asserted on every
                capped tier rather than only where the counter renders: with the
@@ -354,8 +357,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             c.price.founding.lock,
             c.price.founding.givesTitle, ...c.price.founding.gives,
             c.price.founding.signature.name, c.price.founding.signature.line,
-            c.price.founding.getsTitle, c.price.founding.note,
-            ...(setupWaived ? [c.price.founding.gets.setup] : []),
+            c.price.founding.note,
           ]
         : [c.price.founding.spotsClosed]),
       /* The two packages, in the open, and what is in both of them. */
@@ -473,14 +475,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
               'the spots counter',
               c.price.founding.spots.label + figure(spotsLeft ?? 0) +
                 c.price.founding.spots.of + figure(OFFER.founding.places),
-            ],
-          ] as Array<[string, string]>)
-        : []),
-      ...(capped
-        ? ([
-            [
-              'what the trade gives back, naming the tier on show',
-              c.price.founding.gets.fee.before + tierName + c.price.founding.gets.fee.after,
             ],
           ] as Array<[string, string]>)
         : []),
