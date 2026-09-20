@@ -394,13 +394,14 @@ export const en: Content = {
     about: 'about\u00a0',
     inputs: {
       people: { label: 'People who answer mail' },
-      inbound: { label: 'Emails each of them gets a month' },
+      drafts: {
+        label: 'Drafts sent a month',
+        note: { before: 'Only know your inbox? About ', after: '% of the mail a firm takes is the same question again.' },
+      },
       hourly: { label: 'What an hour of their time costs' },
       minutes: { label: 'Minutes saved on each draft', note: 'Your estimate. We have not timed this yet.' },
     },
     beats: {
-      draftsNote: { before: 'Measured: ', after: '% of inbound mail is the same question again.' },
-      drafts: { label: 'Drafts a month:' },
       hours: { label: 'Hours handed back:' },
       worth: { label: 'What those hours cost you today:' },
       fee: { before: 'This costs (', after: '):' },
@@ -413,7 +414,7 @@ export const en: Content = {
     basis: [
       {
         term: 'The share',
-        def: 'Measured on a live mailbox: the share of inbound mail that gets a draft, because it is the same question asked again. Everything else on the panel is multiplied from it.',
+        def: 'Measured on a live mailbox: the share of inbound mail that gets a draft, because it is the same question asked again. The panel does not multiply by it. It is there to turn an inbox you know into a draft count you do not.',
       },
       {
         term: 'The minutes',
@@ -525,7 +526,7 @@ export const en: Content = {
       reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
       lock: 'Your price does not change while you stay.',
       spots: { label: 'Places still open:', of: ' of ' },
-      spotsClosed: 'The places that came with a trade are taken. The monthly fee below is the same one they paid; the setup fee is now charged in full.',
+      spotsClosed: 'The places that came with a trade are taken. The monthly fee below does not change; the setup fee is now charged in full.',
       givesTitle: 'What you give',
       gives: [
         'A testimonial for the product site, in your own words.',

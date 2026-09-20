@@ -358,7 +358,11 @@ export interface Content {
         a number it is handed at render time. */
     inputs: {
       people: { label: string };
-      inbound: { label: string };
+      /** The figure the whole sum now runs from, asked for directly because
+          drafts are what the firm is buying. `note` carries the measured share
+          as a hint for a reader who knows their inbox and not their draft
+          count: "<before><the share, as a percentage><after>". */
+      drafts: { label: string; note: { before: string; after: string } };
       hourly: { label: string };
       /** The one input that is an assumption of ours rather than a fact of
           theirs. `note` says so in words beside the control. */
@@ -368,17 +372,6 @@ export interface Content {
     /** The rows of the sum, read down. Each is a label with its colon, then
         the figure. `fee` takes the package name under its label. */
     beats: {
-      /** The measured share, said inside the disclosure rather than as a row
-          of its own: "<before><the share, as a percentage><after>". Read from
-          value.ts, so the one measured figure arrives from the same place the
-          sum reads it. */
-      draftsNote: { before: string; after: string };
-      /** How many drafts that volume comes to, in the unit the packages are
-          sold in. The calculator used to run from inbound mail straight to
-          hours without ever printing the drafts in between, so a reader could
-          not check their volume against the pooled allowance they were being
-          asked to buy. Derived by draftsPerMonth, never typed. */
-      drafts: { label: string };
       hours: { label: string };
       worth: { label: string };
       /** "<before><the package name><after>": "This costs (Desk):". The
@@ -625,7 +618,7 @@ export interface Content {
     roleLabel: string;
     roleOptions: SelectOption[];
     choosePrompt: string;
-    /** The two screens the six questions are split across.
+    /** The two screens the five questions are split across.
 
         Names rather than a count, and the reason is the same one that took the
         numerals out of the price band: "Step 1 of 2" puts a numeral inside a

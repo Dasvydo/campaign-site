@@ -245,7 +245,82 @@ check(shippedProblems.length === 0, 'validateOffer finds no problem',
    unenforced, and a mutated model that built clean and rendered three
    inconsistent minute figures on one page. `validateOffer` was wired in here
    from the start; its sibling simply never was. It is wired in now. */
+/* Grouping, against strings typed out by hand.
+ *
+ * An independent verifier set `useGrouping: false` in `grouped()` and the whole
+ * suite stayed green while the page printed 5000 and 10000 in every locale.
+ * The page harness builds its expectations with the very formatters it is
+ * checking, so both sides moved together; its comment claimed it caught "a page
+ * that had quietly stopped grouping" and it could not.
+ *
+ * These are the separators each language actually uses, written out here as
+ * literals rather than asked of Intl, so a formatter that stops grouping, or
+ * starts grouping the wrong way, has something to disagree with. Lithuanian
+ * groups with a non-breaking space, which is why it is escaped. */
+console.log('\nHow figures are set, per language');
+const GROUPED = [
+  { locale: 'en', n: 5000, want: '5,000' },
+  { locale: 'da', n: 5000, want: '5.000' },
+  { locale: 'lt', n: 5000, want: '5\u00a0000' },
+  { locale: 'en', n: 10000, want: '10,000' },
+  { locale: 'da', n: 10000, want: '10.000' },
+  { locale: 'lt', n: 10000, want: '10\u00a0000' },
+  /* Under the grouping threshold in every locale, so a formatter that grouped
+     everything would show up here too. */
+  { locale: 'en', n: 450, want: '450' },
+  { locale: 'da', n: 450, want: '450' },
+  { locale: 'lt', n: 450, want: '450' },
+];
+for (const g of GROUPED) {
+  const got = offer.formatCount(g.n, g.locale);
+  check(got === g.want, `  ${g.locale} sets ${g.n} the way ${g.locale} sets it`,
+    `${JSON.stringify(got)} against ${JSON.stringify(g.want)}`);
+}
+
 console.log('\nThe buyer-side model');
+
+/* The calculator's chain, against answers worked out on paper.
+ *
+ * The panel was rebuilt on 2026-09-20 to ask for drafts directly rather than
+ * for inbound mail, and the rebuild shipped with nothing pinning it. The page
+ * harness asks the helpers what to expect, by design, so it agreed with them:
+ * `hoursFromDrafts` was changed to ignore its own argument and return the
+ * hours for a fixed 450 drafts, and the entire suite reported 0 failures on a
+ * page that no longer answered the question the reader was asking.
+ *
+ * These are the same kind of literal as PER_HEAD above: divided out by hand,
+ * away from this code, so the module has to arrive at them rather than agree
+ * with its own multiplication. 450 drafts at 4 minutes is 1,800 minutes, which
+ * is 30 hours; at 30 an hour that is 900; less the Desk fee of 149 the firm
+ * keeps 751. */
+const DRAFT_CHAIN = [
+  /* drafts, minutes, hourly, people, hours, worth, kept */
+  { drafts: 450, minutes: 4, hourly: 30, people: 10, hours: 30, worth: 900, kept: 751 },
+  { drafts: 3000, minutes: 10, hourly: 100, people: 20, hours: 500, worth: 50000, kept: 49801 },
+  { drafts: 50, minutes: 1, hourly: 5, people: 10, hours: 50 / 60, worth: 250 / 60, kept: 250 / 60 - 149 },
+  { drafts: 600, minutes: 5, hourly: 20, people: 20, hours: 50, worth: 1000, kept: 801 },
+];
+const near = (a, b) => a !== null && Math.abs(a - b) < 0.005;
+for (const t of DRAFT_CHAIN) {
+  const h = value.hoursFromDrafts(t.drafts, t.minutes);
+  const w = value.worthFromDrafts(t.drafts, t.minutes, t.hourly);
+  const k = value.keptFromDrafts(t.people, t.drafts, t.minutes, t.hourly);
+  const where = `${t.drafts} drafts, ${t.minutes} min, ${t.hourly}/h, ${t.people} people`;
+  check(near(h, t.hours), `  ${where}: the hours are the ones worked out by hand`,
+    `${h} against ${t.hours}`);
+  check(near(w, t.worth), `  ${where}: and so is what they cost today`, `${w} against ${t.worth}`);
+  check(near(k, t.kept), `  ${where}: and so is what the firm keeps`, `${k} against ${t.kept}`);
+}
+/* The sum must move with the figure the reader supplies, which is the thing
+   the mutation above broke while every check stayed green. */
+check(
+  value.hoursFromDrafts(900, 4) === 2 * value.hoursFromDrafts(450, 4),
+  '  twice the drafts is twice the hours, so the control drives the sum',
+  `${value.hoursFromDrafts(900, 4)} against 2 x ${value.hoursFromDrafts(450, 4)}`);
+/* And refuse what it cannot stand behind, rather than dividing anyway. */
+check(value.hoursFromDrafts(value.VALUE.drafts.max + value.VALUE.drafts.step, 4) === null,
+  '  and refuses a draft count the control cannot offer', 'null past the ceiling');
+
 const valueProblems = value.validateValue();
 check(valueProblems.length === 0, 'validateValue finds no problem',
   valueProblems.join('; ') || 'clean');
@@ -272,9 +347,24 @@ check(headlinePackage().covers === 20,
 check(value.heroHoursBack() === 41,
   'the hero hours are still the count the da and lt endings were written for',
   `heroHoursBack() is ${value.heroHoursBack()}; if this moved, re-read the endings in lt.ts and da.ts`);
+/* A tripwire, and it is worth being exact about what kind.
+ *
+ * This pin shipped claiming a grammatical reason: that Lithuanian's case after
+ * "is" had been written for seven. An independent verifier checked and it is
+ * false. "Is" governs the genitive for every numeral, the count renders as a
+ * digit in all three languages, and no character of any of the three sentences
+ * changes with N. Inventing a convention to justify a guard is the same fault
+ * a verifier found in the T30 comment, and it is worse here because it would
+ * have taught the next person a rule about a language they may not read.
+ *
+ * The real reason to pin it: the sentence says "about one email in N GOT a
+ * draft", which is a claim about a measurement taken on a particular mailbox
+ * on a particular day. If the rate moves, the sentence is still grammatical
+ * and still wrong, and no automated check can see that. This stops the build
+ * and makes a person re-read the copy. */
 check(value.oneEmailIn() === 7,
-  'the accuracy block\'s one in how many is still the count the lt case was written for',
-  `oneEmailIn() is ${value.oneEmailIn()}; Lithuanian writes "vienas laiskas is N" and the genitive plural after "is" was written for 7, so if this moved, re-read the share line in lt.ts and da.ts`);
+  'the accuracy block still prints the count the measured line was written around',
+  `oneEmailIn() is ${value.oneEmailIn()}; the share line in en.ts, da.ts and lt.ts was written for 7, so re-read all three before moving on`);
 check(value.VALUE.minutesFromScratch.value === 5,
   'the worked example minutes are still the count the da and lt endings were written for',
   `minutesFromScratch is ${value.VALUE.minutesFromScratch.value}; if this moved, re-read closeBasis in lt.ts and da.ts`);

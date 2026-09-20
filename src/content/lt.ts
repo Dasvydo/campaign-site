@@ -36,7 +36,7 @@ export const lt: Content = {
     title: {
       before: '40 laiškų. Tie, kuriems atsakymas yra Jūsų bylose, ',
       mark: 'jau juodraščiuose',
-      mid: '. ',
+      mid: '. Iki ',
       after: ' val.',
     },
     /* Two counts, two endings, and Lithuanian inflects around both.
@@ -407,13 +407,14 @@ export const lt: Content = {
     about: 'maždaug\u00a0',
     inputs: {
       people: { label: 'Žmonės, atsakantys į laiškus' },
-      inbound: { label: 'Laiškų, kuriuos kiekvienas gauna per mėnesį' },
+      drafts: {
+        label: 'Išsiųsta juodraščių per mėnesį',
+        note: { before: 'Žinote tik savo pašto dėžutę? Maždaug ', after: ' % laiškų, kuriuos gauna įmonė, yra tas pats klausimas iš naujo.' },
+      },
       hourly: { label: 'Kiek kainuoja jų darbo valanda' },
       minutes: { label: 'Minučių, sutaupomų vienam juodraščiui', note: 'Jūsų įvertis. Mes to dar nematavome.' },
     },
     beats: {
-      draftsNote: { before: 'Išmatuota: ', after: ' % gaunamų laiškų yra tas pats klausimas iš naujo.' },
-      drafts: { label: 'Juodraščių per mėnesį:' },
       hours: { label: 'Valandų, kurias atgaunate:' },
       worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
       fee: { before: 'Tai kainuoja (', after: '):' },
@@ -426,7 +427,7 @@ export const lt: Content = {
     basis: [
       {
         term: 'Dalis',
-        def: 'Išmatuota tikroje pašto dėžutėje: gaunamų laiškų dalis, kuriai parengiamas juodraštis, nes tai tas pats klausimas iš naujo. Visa kita skydelyje padauginta iš jos.',
+        def: 'Išmatuota tikroje pašto dėžutėje: gaunamų laiškų dalis, kuriai parengiamas juodraštis, nes tai tas pats klausimas iš naujo. Skydelis iš jos nedaugina. Ji skirta tam, kad pašto dėžutę, kurią žinote, paverstumėte juodraščių skaičiumi, kurio nežinote.',
       },
       {
         term: 'Minutės',
@@ -535,7 +536,7 @@ export const lt: Content = {
       reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
       lock: 'Jūsų kaina nesikeičia, kol liekate.',
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
-      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau toks pat, kokį mokėjo jie; įdiegimo mokestis dabar taikomas visas.',
+      spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau nesikeičia; įdiegimo mokestis dabar taikomas visas.',
       givesTitle: 'Ką duodate Jūs',
       gives: [
         'Atsiliepimą produkto svetainei, savais žodžiais.',

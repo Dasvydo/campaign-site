@@ -18,7 +18,7 @@ import { Mark } from './Hero';
 /**
  * The qualifier.
  *
- * Six fields mapping one to one onto the shared contract in 00-START-HERE.md,
+ * Five fields mapping onto the shared contract in 00-START-HERE.md,
  * asked across two screens. The three outcomes are rendered client-side from
  * lib/contract.ts `route()`, which is the same rules table Batch F applies
  * server side. The table is written down in exactly one place so the two
@@ -116,7 +116,7 @@ export function Qualifier({
 
   /* The stylesheet keeps the form hidden until this says the script is running.
      In the prototype that guarded a form which could not submit; here it guards
-     a form that would collect six answers and have nowhere to send them. The
+     a form that would collect five answers and have nowhere to send them. The
      whole page is a single page app, so index.html's <noscript> is what a
      visitor without JavaScript actually sees. */
   const [hasJs, setHasJs] = useState(false);
@@ -273,7 +273,7 @@ export function Qualifier({
     `&body=${encodeURIComponent(c.results.tooSmall.nurtureMailBody)}`;
 
   /* The three closed questions are radio chips rather than selects. A select
-     hides its options until you open it, which on a six question form is one
+     hides its options until you open it, which on a five question form is one
      more thing to open; the chips put every answer on the page, and a radio
      group is the right thing semantically either way. The payload is unchanged:
      the same names and the same values reach lib/contract, which WF-C1 parses. */

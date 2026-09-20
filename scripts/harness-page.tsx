@@ -44,13 +44,13 @@ import {
   draftRatePercent,
   formatShare,
   heroHoursBack,
-  hoursBack,
   hourlyStart,
-  keptPerMonth,
+  hoursFromDrafts,
+  keptFromDrafts,
   packageFor,
   oneEmailIn,
   peopleRange,
-  worthPerMonth,
+  worthFromDrafts,
 } from '../src/lib/value';
 
 /* The page after the port and after the flat fee landed: hero, the worked
@@ -144,10 +144,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
   const heads = new Set<number>([pr.min, pr.start, pr.max, ...packages().map((p) => p.covers), ...packages().map((p) => p.covers + 1)]);
   const out: Array<[number, number, number, number]> = [];
   for (const h of [...heads].filter((n) => n >= pr.min && n <= pr.max).sort((a, b) => a - b)) {
-    for (const inb of [VALUE.inbound.min, VALUE.inbound.start, VALUE.inbound.max]) {
+    for (const d of [VALUE.drafts.min, VALUE.drafts.start, VALUE.drafts.max]) {
       for (const hr of [VALUE.hourly.min, VALUE.hourly.max]) {
         for (const min of [VALUE.minutes.min, VALUE.minutesPerDraft.value, VALUE.minutes.max]) {
-          out.push([h, inb, hr, min]);
+          out.push([h, d, hr, min]);
         }
       }
     }
@@ -452,11 +452,12 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         'the worked example, with the minutes nobody spent',
         c.demo.close.before + figure(VALUE.minutesFromScratch.value) + c.demo.close.after,
       ],
-      /* The one measured figure on the calculator, as a percentage, from
-         value.ts and not from the copy. */
+      /* The measured share, which no longer multiplies anything on this panel
+         and is a hint under the control instead. Still assembled from value.ts
+         and not from the copy, so the hint cannot drift from the measurement. */
       [
-        'the measured draft share, inside the arithmetic',
-        c.numbers.beats.draftsNote.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.beats.draftsNote.after,
+        'the measured draft share, as the hint under the drafts control',
+        c.numbers.inputs.drafts.note.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.inputs.drafts.note.after,
       ],
       /* The counter only exists once the cohort has begun to fill. Gated
          separately from the line below it, which is true of any capped tier
@@ -504,7 +505,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       host.querySelector<HTMLInputElement>(`#numbers input[type="range"][name="${name}"]`);
     const ranges = {
       people: rangeOf('people'),
-      inbound: rangeOf('inbound'),
+      drafts: rangeOf('drafts'),
       hourly: rangeOf('hourly'),
       minutes: rangeOf('minutes'),
     };
@@ -514,7 +515,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
     const pr = peopleRange();
     const wantBounds = {
       people: `${pr.min}-${pr.max}/${pr.step}`,
-      inbound: `${VALUE.inbound.min}-${VALUE.inbound.max}/${VALUE.inbound.step}`,
+      drafts: `${VALUE.drafts.min}-${VALUE.drafts.max}/${VALUE.drafts.step}`,
       hourly: `${VALUE.hourly.min}-${VALUE.hourly.max}/${VALUE.hourly.step}`,
       minutes: `${VALUE.minutes.min}-${VALUE.minutes.max}/${VALUE.minutes.step}`,
     };
@@ -525,13 +526,13 @@ const drivePoints = (): Array<[number, number, number, number]> => {
        hourly one is the market's, not a constant. */
     const opensAt = {
       people: Number(ranges.people?.value),
-      inbound: Number(ranges.inbound?.value),
+      drafts: Number(ranges.drafts?.value),
       hourly: Number(ranges.hourly?.value),
       minutes: Number(ranges.minutes?.value),
     };
     const wantOpen = {
       people: pr.start,
-      inbound: VALUE.inbound.start,
+      drafts: VALUE.drafts.start,
       hourly: hourlyStart(c.htmlLang),
       minutes: VALUE.minutesPerDraft.value,
     };
@@ -547,10 +548,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             .join('')
         : ''
       ).trim();
-    const drive = async (h: number, inb: number, hr: number, min: number) => {
+    const drive = async (h: number, d: number, hr: number, min: number) => {
       await act(async () => {
         for (const [el, v] of [
-          [ranges.people, h], [ranges.inbound, inb], [ranges.hourly, hr], [ranges.minutes, min],
+          [ranges.people, h], [ranges.drafts, d], [ranges.hourly, hr], [ranges.minutes, min],
         ] as Array<[HTMLInputElement | null, number]>) {
           if (!el) continue;
           setNativeValue(el, String(v));
@@ -563,15 +564,15 @@ const drivePoints = (): Array<[number, number, number, number]> => {
     let unhedged: string[] = [];
     let barBad: string[] = [];
     if (calcFound) {
-      for (const [h, inb, hr, min] of drivePoints()) {
-        await drive(h, inb, hr, min);
+      for (const [h, d, hr, min] of drivePoints()) {
+        await drive(h, d, hr, min);
         pointsDriven += 1;
         const pkg = packageFor(h);
         const want = {
-          hours: hoursBack(h, inb, min),
-          worth: worthPerMonth(h, inb, min, hr),
+          hours: hoursFromDrafts(d, min),
+          worth: worthFromDrafts(d, min, hr),
           fee: pkg?.price ?? null,
-          keep: keptPerMonth(h, inb, min, hr),
+          keep: keptFromDrafts(h, d, min, hr),
         };
         /* Modelled amounts print to the whole unit: a figure hedged with
            "about" and printed to the cent would be contradicting itself. */
@@ -589,7 +590,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         };
         for (const k of Object.keys(got) as Array<keyof typeof got>) {
           if (got[k] !== wantText[k]) {
-            badPoints.push(`${h}p/${inb}e/${hr}h/${min}m ${k}: "${got[k]}" against "${wantText[k]}"`);
+            badPoints.push(`${h}p/${d}d/${hr}h/${min}m ${k}: "${got[k]}" against "${wantText[k]}"`);
           }
         }
         /* The fee row names the package the head count lands on. */
@@ -617,17 +618,17 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         const same =
           gotBar === wantBar ||
           (gotBar !== '' && wantBar !== '' && Math.abs(parseFloat(gotBar) - parseFloat(wantBar)) < 0.05);
-        if (!same) barBad.push(`${h}p/${inb}e/${hr}h/${min}m bar ${gotBar || 'missing'} against ${wantBar || 'nothing'}`);
+        if (!same) barBad.push(`${h}p/${d}d/${hr}h/${min}m bar ${gotBar || 'missing'} against ${wantBar || 'nothing'}`);
         /* Where the sum comes out under, the page says so instead of a year line. */
         const under = Boolean(host.querySelector('#numbers [data-n-under]'));
         const year = Boolean(host.querySelector('#numbers [data-n-year]'));
         const wantUnder = want.keep !== null && want.keep < 0;
         if (under !== wantUnder || year === wantUnder) {
-          badPoints.push(`${h}p/${inb}e/${hr}h/${min}m under=${under} year=${year}, model says under=${wantUnder}`);
+          badPoints.push(`${h}p/${d}d/${hr}h/${min}m under=${under} year=${year}, model says under=${wantUnder}`);
         }
       }
       /* Put the controls back where a visitor finds them. */
-      await drive(wantOpen.people, wantOpen.inbound, wantOpen.hourly, wantOpen.minutes);
+      await drive(wantOpen.people, wantOpen.drafts, wantOpen.hourly, wantOpen.minutes);
     }
 
     /* The package cards: one per package, the lit one the offer leads with,
@@ -817,6 +818,28 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          that stopped being an excerpt is a defect in the content whether or
          not the section it belongs to happens to be on screen. */
       previewIsExcerpt: c.hero.draft.body.includes(c.hero.deal.preview),
+      /* The draft card itself, read out of the DOM.
+         `previewIsExcerpt` compares one content string to another and never
+         looks at the page, so an independent verifier replaced the entire card
+         with {null} and got a clean build, a green suite and both browser
+         gates green. The hero's argument is that a drafted reply is already
+         waiting; with no card the hero merely asserts it. */
+      heroCardText: (host.querySelector('#hero .hero-deal')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+      heroCardWants: [c.hero.deal.draftLabel, c.hero.deal.subject, c.hero.deal.preview],
+      /* The calculator's rows, in the order they are read down. Nothing pinned
+         the SET of rows once `numbers.beats` became a named record, so a sixth
+         row could be added straight into the component, in untranslated
+         English on two locales, to a green suite. Proved by doing it. */
+      ledgerTerms: Array.from(host.querySelectorAll('#numbers .numbers-beat .numbers-term'))
+        .map((n) => (n.textContent ?? '').replace(/\s+/g, ' ').trim()),
+      /* The fee row carries the package name, which moves with the head count,
+         so it is matched by its two fixed halves rather than whole. */
+      ledgerWants: [
+        c.numbers.beats.hours.label,
+        c.numbers.beats.worth.label,
+        c.numbers.beats.fee.before,
+        c.numbers.beats.keep.label,
+      ],
       /* The calculator, driven across the grid. */
       calcFound,
       badBounds,

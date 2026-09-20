@@ -18,6 +18,7 @@
     "audit:locales": "node scripts/audit-locales.mjs",
     "verify:consent-layout": "node scripts/verify-consent-layout.mjs",
     "verify:demo": "node scripts/verify-demo.mjs",
+    "verify:visible": "node scripts/verify-visible.mjs",
     "verify": "npm run verify:offer && npm run verify:consent && npm run verify:payload && npm run audit:locales"
   },
   "dependencies": {

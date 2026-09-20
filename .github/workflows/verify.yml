@@ -54,7 +54,7 @@ jobs:
       # Server and gates in one step on purpose. A background process started in
       # an earlier step is not something to rely on, and a gate that silently
       # skips because nothing was listening is worse than no gate.
-      - name: The consent layout and the performed demonstration, in a real browser
+      - name: The consent layout, the demonstration and the page itself, in a real browser
         run: |
           set -euo pipefail
           # --host 127.0.0.1 is not decoration. Without it `vite preview` binds
@@ -78,3 +78,7 @@ jobs:
 
           node scripts/verify-consent-layout.mjs http://127.0.0.1:4173
           node scripts/verify-demo.mjs http://127.0.0.1:4173
+          # Added after a verifier hid the whole price band and the calculator
+          # with one line of CSS and got a fully green workflow. Nothing else
+          # here loads a stylesheet over the marketing page.
+          node scripts/verify-visible.mjs http://127.0.0.1:4173

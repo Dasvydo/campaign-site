@@ -4,14 +4,13 @@ import { OFFER, formatCount, formatMoney } from '../lib/offer';
 import {
   VALUE,
   draftRatePercent,
-  draftsPerMonth,
   formatShare,
-  hoursBack,
   hourlyStart,
-  keptPerMonth,
+  hoursFromDrafts,
+  keptFromDrafts,
   packageFor,
   peopleRange,
-  worthPerMonth,
+  worthFromDrafts,
 } from '../lib/value';
 import { Disclosure } from './Disclosure';
 
@@ -103,16 +102,15 @@ export function Numbers({ c }: { c: Content }) {
      number. */
   const people = peopleRange();
   const [heads, setHeads] = useState(people.start);
-  const [inbound, setInbound] = useState(VALUE.inbound.start);
+  const [drafts, setDrafts] = useState(VALUE.drafts.start);
   const [hourly, setHourly] = useState(() => hourlyStart(c.htmlLang));
   const [minutes, setMinutes] = useState(VALUE.minutesPerDraft.value);
 
   /* The sum, one helper per row, so the panel cannot do its own division. */
   const pkg = packageFor(heads);
-  const drafts = draftsPerMonth(heads, inbound);
-  const hours = hoursBack(heads, inbound, minutes);
-  const worth = worthPerMonth(heads, inbound, minutes, hourly);
-  const kept = keptPerMonth(heads, inbound, minutes, hourly);
+  const hours = hoursFromDrafts(drafts, minutes);
+  const worth = worthFromDrafts(drafts, minutes, hourly);
+  const kept = keptFromDrafts(heads, drafts, minutes, hourly);
   const clears = kept !== null && kept >= 0;
   const feeShare = worth === null || worth <= 0 || pkg === null ? null : Math.min(1, pkg.price / worth);
 
@@ -137,12 +135,12 @@ export function Numbers({ c }: { c: Content }) {
   }, [kept]);
 
   const control = (
-    key: 'people' | 'inbound' | 'hourly' | 'minutes',
+    key: 'people' | 'drafts' | 'hourly' | 'minutes',
     value: number,
     set: (n: number) => void,
     range: { min: number; max: number; step: number },
     shown: string,
-    note?: string,
+    note?: React.ReactNode,
   ) => {
     const id = `${uid}-${key}`;
     return (
@@ -198,7 +196,18 @@ export function Numbers({ c }: { c: Content }) {
           </div>
           <div className="numbers-fields">
             {control('people', heads, setHeads, people, figure(heads))}
-            {control('inbound', inbound, setInbound, VALUE.inbound, figure(inbound))}
+            {/* The measured share rides under this control as a hint rather
+                than inside the sum. A reader who knows their inbox and not
+                their draft count needs it exactly here. */}
+            {control('drafts', drafts, setDrafts, VALUE.drafts, figure(drafts), (
+              <>
+                {c.numbers.inputs.drafts.note.before}
+                <span className="numbers-fig" data-n-rate>
+                  {formatShare(draftRatePercent(), c.htmlLang)}
+                </span>
+                {c.numbers.inputs.drafts.note.after}
+              </>
+            ))}
             {control('hourly', hourly, setHourly, VALUE.hourly, money(hourly) + c.numbers.units.perHour)}
             {control(
               'minutes',
@@ -215,18 +224,6 @@ export function Numbers({ c }: { c: Content }) {
               at every count. The fee row is the only one with no hedge on it,
               because the fee is the one number on the panel we know exactly. */}
           <dl className="numbers-beats">
-            {/* The drafts, first, because they are the unit the packages are
-                sold in. The panel used to run from inbound mail straight to
-                hours, so a reader could work out what they saved without ever
-                seeing the number they were being asked to buy, or whether it
-                fitted the pooled allowance two sections down. Derived by
-                draftsPerMonth from the measured share, never typed. */}
-            <div className="numbers-beat" data-n-drafts>
-              <dt className="numbers-term">{c.numbers.beats.drafts.label}</dt>
-              <dd className="numbers-amt">
-                {drafts === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{figure(drafts)}</>}
-              </dd>
-            </div>
             <div className="numbers-beat" data-n-hours>
               <dt className="numbers-term">{c.numbers.beats.hours.label}</dt>
               <dd className="numbers-amt">
@@ -283,14 +280,6 @@ export function Numbers({ c }: { c: Content }) {
           </p>
 
           <Disclosure label={c.numbers.moreLabel}>
-            {/* The one measured figure the sum rests on, said once, here. */}
-            <p className="numbers-note numbers-share">
-              {c.numbers.beats.draftsNote.before}
-              <span className="numbers-fig" data-n-rate>
-                {formatShare(draftRatePercent(), c.htmlLang)}
-              </span>
-              {c.numbers.beats.draftsNote.after}
-            </p>
             <dl className="numbers-basis">
               {c.numbers.basis.map((b) => (
                 <div className="numbers-basis-row" key={b.term}>

@@ -36,7 +36,7 @@ export const da: Content = {
     title: {
       before: 'Fyrre mails ind. Dem jeres sager kan svare på, ',
       mark: 'i udkast',
-      mid: '. Klokken ',
+      mid: '. Inden klokken ',
       after: '.',
     },
     payback: {
@@ -397,13 +397,14 @@ export const da: Content = {
     about: 'cirka\u00a0',
     inputs: {
       people: { label: 'Personer, der svarer på mails' },
-      inbound: { label: 'Mails, hver af dem får om måneden' },
+      drafts: {
+        label: 'Udkast sendt om måneden',
+        note: { before: 'Kender I kun jeres indbakke? Omkring ', after: ' % af den post, et firma får, er det samme spørgsmål igen.' },
+      },
       hourly: { label: 'Hvad en time af deres tid koster' },
       minutes: { label: 'Minutter sparet pr. udkast', note: 'Jeres skøn. Vi har ikke taget tid på det endnu.' },
     },
     beats: {
-      draftsNote: { before: 'Målt: ', after: ' % af den indgående post er det samme spørgsmål igen.' },
-      drafts: { label: 'Udkast om måneden:' },
       hours: { label: 'Timer, I får tilbage:' },
       worth: { label: 'Hvad de timer koster jer i dag:' },
       fee: { before: 'Det her koster (', after: '):' },
@@ -416,7 +417,7 @@ export const da: Content = {
     basis: [
       {
         term: 'Andelen',
-        def: 'Målt på en rigtig postkasse: den andel af den indgående post, der får et udkast, fordi det er det samme spørgsmål igen. Alt andet på panelet er ganget op fra den.',
+        def: 'Målt på en rigtig postkasse: den andel af den indgående post, der får et udkast, fordi det er det samme spørgsmål igen. Panelet ganger ikke med den. Den er der for at gøre en indbakke, I kender, om til et antal udkast, I ikke kender.',
       },
       {
         term: 'Minutterne',
@@ -525,7 +526,7 @@ export const da: Content = {
       reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
       lock: 'Jeres pris ændrer sig ikke, så længe I bliver.',
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
-      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er den samme, de betalte; opsætningsprisen opkræves nu fuldt ud.',
+      spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er uændret; opsætningsprisen opkræves nu fuldt ud.',
       givesTitle: 'Det, I giver',
       gives: [
         'En udtalelse til produktsiden, med jeres egne ord.',

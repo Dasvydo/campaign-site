@@ -202,6 +202,21 @@ async function main() {
         p.previewIsExcerpt,
         `    the hero quotes the draft the worked example shows, word for word`,
       );
+      /* The card, not the string comparison above it. A verifier deleted the
+         whole card and every check in this repository stayed green. */
+      check(
+        p.heroCardWants.every((want) => p.heroCardText.includes(want)),
+        `    the drafted reply is actually on the page, not merely described`,
+        p.heroCardText ? p.heroCardText.slice(0, 56) : 'no card in the hero',
+      );
+      /* The exact rows of the calculator, in order. A row added straight into
+         the component, untranslated, passed everything. */
+      check(
+        p.ledgerTerms.length === p.ledgerWants.length &&
+          p.ledgerTerms.every((t, i) => t.startsWith(p.ledgerWants[i])),
+        `    the calculator reads down exactly the rows the copy names, in order`,
+        p.ledgerTerms.join(' | '),
+      );
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of

@@ -88,21 +88,34 @@ export function WhoFor({ c }: { c: Content }) {
           <h3 className="who-accuracy-h" id="who-accuracy-h">
             {c.who.accuracy.title}
           </h3>
+          {/* The measured figure hangs off the FIRST item, not off the list.
+
+              It sat after the whole list for one commit, and an independent
+              verifier measured what a reader actually sees: the list is a two
+              column grid above 900px flowing 1 3 / 2 4, so the note landed
+              under "There is no automatic send anywhere in this product" at
+              1440 and 1280, and under "A draft quotes the fee" below that. At
+              no width did it sit under the bullet it quantifies. A measurement
+              of how much mail gets a draft, printed under a sentence about
+              sending, reads as a measurement of sends.
+
+              Nesting it inside the item removes the question: it is adjacent
+              to the claim it qualifies at every width, because it is part of
+              it. */}
           <ul className="who-accuracy-list" aria-labelledby="who-accuracy-h">
-            {c.who.accuracy.items.map((item) => (
-              <li key={item}>{item}</li>
+            {c.who.accuracy.items.map((item, i) => (
+              <li key={item}>
+                {item}
+                {i === 0 ? (
+                  <span className="who-accuracy-share">
+                    {c.who.accuracy.share.before}
+                    {formatCount(oneEmailIn(), c.htmlLang)}
+                    {c.who.accuracy.share.after}
+                  </span>
+                ) : null}
+              </li>
             ))}
           </ul>
-          {/* The measured figure, here rather than under the worked example.
-              It used to be a full sized line beside the draft the reader had
-              just watched appear, which put the product's main limitation in
-              the loudest place on the page. It is a limit, so it sits with
-              the other limits, in the same muted type as the one below it. */}
-          <p className="who-accuracy-note">
-            {c.who.accuracy.share.before}
-            {formatCount(oneEmailIn(), c.htmlLang)}
-            {c.who.accuracy.share.after}
-          </p>
           <p className="who-accuracy-note">{c.who.accuracy.unmeasured}</p>
         </div>
 

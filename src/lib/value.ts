@@ -70,6 +70,7 @@ export interface Value {
   /** Inbound emails each person receives a month. An illustrative range, not
       a measurement; the visitor supplies their own. */
   readonly inbound: Range;
+  readonly drafts: Range;
   /** What an hour of a person's time costs the firm, in our currency. The
       visitor's own figure; the control opens on the market the page is read
       in. */
@@ -120,6 +121,14 @@ export const VALUE: Value = deepFreeze({
   minutesToSend: { value: MINUTES_TO_SEND, basis: 'assumed' },
   minutesPerDraft: { value: MINUTES_FROM_SCRATCH - MINUTES_TO_SEND, basis: 'assumed' },
   inbound: { min: 50, max: 1000, step: 50, start: 300 },
+  /* The calculator asks for this one and multiplies nothing into it. Its
+     ceiling is where the old chain topped out: twenty people taking a
+     thousand emails each came to about 3,040 drafts, so a reader who could
+     reach a number before can still reach it. Both packages pool far more
+     than this (5,000 and 10,000), so the allowance cannot bind inside the
+     control, which is deliberate: a slider that runs past what the fee buys
+     would need the page to say what happens then, and it does not. */
+  drafts: { min: 50, max: 3000, step: 50, start: 450 },
   hourly: { min: 5, max: 100, step: 5 },
   hourlyStart: { en: 30, da: 30, lt: 10 },
   minutes: { min: 1, max: 10, step: 1 },
@@ -194,7 +203,61 @@ export function draftsPerMonth(
   return people * inboundPerPerson * value.draftRate.value;
 }
 
-/** Hours a month the firm gets back, at the minutes the visitor allows. */
+/**
+ * The calculator's chain, which begins at drafts.
+ *
+ * It used to begin at inbound mail and multiply by the measured share, which
+ * asked a reader for a figure they could answer and printed a figure they were
+ * buying. The founder's objection was that the thing being sold is drafts, and
+ * he is right that the panel should be denominated in it. So the control asks
+ * for drafts and the share becomes a hint under it for anyone who only knows
+ * their inbox, rather than an invisible multiplier.
+ *
+ * Head count no longer enters this sum at all, and that is not a loss: what a
+ * firm saves depends on how many drafts it sends, not on how many people are
+ * sitting there. The head count still picks the package, and so the fee.
+ */
+export function hoursFromDrafts(
+  drafts: number,
+  minutes: number,
+  value: Value = VALUE,
+): number | null {
+  if (!within(drafts, value.drafts) || !within(minutes, value.minutes)) return null;
+  return (drafts * minutes) / 60;
+}
+
+/** What those hours cost the firm today, from a draft count. */
+export function worthFromDrafts(
+  drafts: number,
+  minutes: number,
+  hourly: number,
+  value: Value = VALUE,
+): number | null {
+  const hours = hoursFromDrafts(drafts, minutes, value);
+  if (hours === null || !within(hourly, value.hourly)) return null;
+  return hours * hourly;
+}
+
+/** What the firm keeps a month, from a draft count and the package its head
+    count puts it on. Negative where the model does not clear. */
+export function keptFromDrafts(
+  people: number,
+  drafts: number,
+  minutes: number,
+  hourly: number,
+  value: Value = VALUE,
+  offer: Offer = OFFER,
+): number | null {
+  const worth = worthFromDrafts(drafts, minutes, hourly, value);
+  const pkg = packageFor(people, offer);
+  if (worth === null || pkg === null) return null;
+  return worth - pkg.price;
+}
+
+/** Hours a month the firm gets back, at the minutes the visitor allows.
+    The inbound path, which the HERO still argues from: it illustrates a firm
+    of a stated size taking a stated volume, where nobody has told us a draft
+    count. */
 export function hoursBack(
   people: number,
   inboundPerPerson: number,
@@ -373,6 +436,17 @@ export function validateValue(value: Value = VALUE, offer: Offer = OFFER): strin
   }
   if (!within(value.heroInbound, value.inbound)) {
     out.push('the hero volume must be one the inbound control can offer');
+  }
+  if (!within(value.drafts.start, value.drafts)) {
+    out.push('the drafts control must open inside its own range');
+  }
+  if (!(value.drafts.min > 0)) out.push('the drafts control must not offer zero drafts');
+  /* The panel would otherwise let a reader ask for more drafts than the fee
+     buys, and the page has nothing to say about what happens then. */
+  for (const id of offer.order) {
+    if (value.drafts.max > offer.packages[id].draftCap) {
+      out.push(`the drafts control can reach past what ${id} pools`);
+    }
   }
   for (const [k, v] of Object.entries(value.hourlyStart)) {
     if (!within(v, value.hourly)) out.push(`hourlyStart.${k} is outside the hourly range`);
