@@ -48,11 +48,19 @@ const PARTS = [
   ['the worked example', '#demo .demo-beats'],
   ['the draft it writes back', '#demo-draft'],
   ['who it is for', '#who .who-accuracy'],
+  ['each thing it promises about accuracy', '#who .who-accuracy-list li'],
   ['the price band', '#price'],
   ['the package cards', '#price [data-price-pkg]'],
+  ['where a firm too small is sent', '#price .price-pkgs-under a'],
   ['the calculator', '#numbers .numbers-beats'],
+  ['the figure it ends on', '#numbers .numbers-keep'],
   ['its controls', '#numbers input[type="range"]'],
+  /* The heading block carries `id="fit"`; the form is a sibling. Checking
+     `#fit` alone passed while the form itself was invisible. */
   ['the fit check', '#fit'],
+  ['the form inside it', '.qualifier-sheet form'],
+  ['its first question', '.qualifier-chips'],
+  ['and an answer to press', '.qualifier-chip'],
 ];
 
 const VIEWPORTS = [['desktop', 1440, 900], ['phone', 390, 844]];
@@ -85,18 +93,72 @@ try {
       const seen = await page.evaluate((parts) => {
         const out = {};
         for (const [label, sel] of parts) {
-          const el = document.querySelector(sel);
-          if (!el) { out[label] = 'not in the document'; continue; }
+          /* Every match, not the first one. A verifier hid the SECOND package
+             card and the second, third and fourth calculator controls and this
+             gate never looked at them, because it asked querySelector. */
+          const all = Array.from(document.querySelectorAll(sel));
+          if (all.length === 0) { out[label] = 'not in the document'; continue; }
+          const problems = [];
+          for (const el of all) {
           /* Scroll it in: something below the fold is still visible to a
              reader, and we are asking whether it renders, not where. */
           el.scrollIntoView({ block: 'center', behavior: 'instant' });
           const r = el.getBoundingClientRect();
           const cs = getComputedStyle(el);
-          if (cs.display === 'none') { out[label] = 'display:none'; continue; }
-          if (cs.visibility === 'hidden') { out[label] = 'visibility:hidden'; continue; }
-          if (Number(cs.opacity) === 0) { out[label] = 'opacity:0'; continue; }
-          if (r.width < 1 || r.height < 1) { out[label] = `${Math.round(r.width)}x${Math.round(r.height)}`; continue; }
-          out[label] = `ok ${Math.round(r.width)}x${Math.round(r.height)}`;
+          if (cs.display === 'none') { problems.push('display:none'); continue; }
+          if (cs.visibility === 'hidden') { problems.push('visibility:hidden'); continue; }
+          /* Not `=== 0`. A verifier put the whole price band at 2% and this
+             gate called it visible. Anything under a tenth is not on screen
+             in any sense a reader would recognise. */
+          if (Number(cs.opacity) < 0.1) { problems.push(`opacity:${cs.opacity}`); continue; }
+          if (r.width < 1 || r.height < 1) { problems.push(`${Math.round(r.width)}x${Math.round(r.height)}`); continue; }
+          /* Type too small to read. A verifier set the calculator's answer to
+             font-size 0 and the box survived, because a nested span carried
+             its own size. */
+          if ((el.textContent || '').trim() && parseFloat(cs.fontSize) < 6) {
+            problems.push(`font-size:${cs.fontSize}`); continue;
+          }
+          /* Off screen sideways. A box of the right size at x = -11838 passed
+             every check this file used to make. */
+          if (r.right < 0 || r.left > window.innerWidth) { problems.push(`at x ${Math.round(r.left)}`); continue; }
+          /* Clipped to nothing while keeping its box. */
+          if (cs.clipPath && cs.clipPath !== 'none' && /inset\(\s*(100%|50%\s+50%)/.test(cs.clipPath)) {
+            problems.push(`clip-path:${cs.clipPath}`); continue;
+          }
+          /* Type the same colour as what is behind it. Walks up for the first
+             painted background, because a transparent element inherits one. */
+          const ink = cs.color;
+          let bgEl = el, bg = 'rgba(0, 0, 0, 0)';
+          while (bgEl && bg === 'rgba(0, 0, 0, 0)') {
+            bg = getComputedStyle(bgEl).backgroundColor;
+            bgEl = bgEl.parentElement;
+          }
+          const rgb = (v) => (v.match(/[\d.]+/g) || []).map(Number);
+          const [ir, ig, ib, ia = 1] = rgb(ink);
+          const [br, bgc, bb] = rgb(bg);
+          if (ia === 0) { problems.push('text is transparent'); continue; }
+          if (br !== undefined && Math.abs(ir - br) + Math.abs(ig - bgc) + Math.abs(ib - bb) < 24) {
+            problems.push(`text ${ink} on ${bg}`); continue;
+          }
+          /* Something painted over it. */
+          const top = document.elementFromPoint(
+            Math.min(window.innerWidth - 2, Math.max(2, r.left + r.width / 2)),
+            Math.min(window.innerHeight - 2, Math.max(2, r.top + r.height / 2)),
+          );
+          /* Not `&& !top.contains(el)`. A verifier laid an opaque sheet over
+             three whole sections with `::after`, and elementFromPoint returns
+             the sheet's ORIGINATING element, which is an ancestor, so
+             excusing ancestors excused exactly the attack. The topmost thing
+             over the middle of a content block should be that block or
+             something inside it. */
+          if (top && top !== el && !el.contains(top)) {
+            problems.push(`covered by ${top.tagName.toLowerCase()}.${(top.className || '').toString().split(' ')[0]}`);
+            continue;
+          }
+          }
+          out[label] = problems.length
+            ? `${problems.length} of ${all.length}: ${problems[0]}`
+            : `ok ${all.length}`;
         }
         return out;
       }, PARTS);

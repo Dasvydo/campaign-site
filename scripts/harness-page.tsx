@@ -24,6 +24,7 @@ import { createRoot } from 'react-dom/client';
 import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { LocalePage } from '../src/LocalePage';
+import { MARK_BOWL, MARK_STEM } from '../src/components/Hero';
 import { content, pathFor } from '../src/content';
 import { TEAM_SIZES, route } from '../src/lib/contract';
 import type { Locale } from '../src/lib/contract';
@@ -827,14 +828,38 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       heroCardWants: [c.hero.deal.draftLabel, c.hero.deal.subject, c.hero.deal.preview],
       /* Words are not a signpost. This one has to be pressable and it has to
          go to the product site. */
-      /* Every copy of the mark actually draws something.
-         The three copies were hand-duplicated, so correcting the shape left
-         two of them drawing the old one; and when they were wired to one
-         definition, a broken substitution put a placeholder in it and the
-         mark rendered as nothing at all, to a green suite of 435 checks.
-         A logo that is not on the page is not a small defect. */
-      markPaths: Array.from(host.querySelectorAll('#hero .hero-brand svg path, #demo .demo-emboss path'))
-        .map((n) => (n.getAttribute('d') ?? '').trim()),
+      /* Every copy of the mark draws the one definition.
+
+         The first version of this asked only that each path start with M, be
+         longer than twenty characters, and that there be two distinct ones. A
+         verifier walked all three of the cases it was written for straight
+         through it: a copy left on the old shape, a placeholder (two
+         29-character specks rendering at half a unit inside a 1024 viewBox, so
+         the hero showed the wordmark alone), and a square with a triangle in
+         it. "Longer than twenty characters" is not a shape.
+
+         It compares against MARK_BOWL and MARK_STEM now, which is the only
+         thing that can catch a valid path that is the wrong valid path, and it
+         looks at every copy rather than the first match of two selectors. The
+         footer was the copy that actually drifted and was not in the old
+         selector; neither was the fit check's, a fourth consumer nobody had
+         counted. */
+      markCopies: (
+        [
+          ['the hero masthead', '#hero .hero-brand svg path'],
+          ['the draft watermark', '#demo .demo-emboss path'],
+          ['the footer emboss', '#footer .footer-slip svg path'],
+          /* Not `#fit .qualifier-mark`: `id="fit"` sits on the heading
+             block and the mark is in a sibling sheet, so that selector found
+             nothing and the check reported a copy missing that was on the
+             page all along. */
+          ['the fit check brand', '.qualifier-mark svg path'],
+        ] as Array<[string, string]>
+      ).map(([name, sel]) => [
+        name,
+        Array.from(host.querySelectorAll(sel)).map((n) => (n.getAttribute('d') ?? '').trim()),
+      ]) as Array<[string, string[]]>,
+      markWants: [MARK_BOWL, MARK_STEM],
       underLinkHref: host.querySelector('#price .price-pkgs-under a')?.getAttribute('href') ?? '',
       underLinkText: (host.querySelector('#price .price-pkgs-under a')?.textContent ?? '').trim(),
       /* The calculator's rows, in the order they are read down. Nothing pinned

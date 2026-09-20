@@ -222,13 +222,22 @@ async function main() {
         `    a firm too small for either card is sent to the product site, by a real link`,
         `${p.underLinkText || 'no link'} -> ${p.underLinkHref || 'nowhere'}`,
       );
-      check(
-        p.markPaths.length >= 4 &&
-          p.markPaths.every((d) => /^M\d/.test(d) && d.length > 20) &&
-          new Set(p.markPaths).size === 2,
-        `    every copy of the mark draws the same two real paths`,
-        `${p.markPaths.length} paths, ${new Set(p.markPaths).size} distinct`,
-      );
+      {
+        const bad = p.markCopies
+          .map(([name, ds]) => {
+            if (ds.length === 0) return `${name}: not on the page`;
+            const wrong = ds.filter((d) => !p.markWants.includes(d));
+            if (wrong.length) return `${name}: ${wrong.length} path(s) not the definition`;
+            if (!p.markWants.every((w) => ds.includes(w))) return `${name}: missing half the mark`;
+            return null;
+          })
+          .filter(Boolean);
+        check(
+          bad.length === 0,
+          `    every copy of the mark draws the one definition, shape for shape`,
+          bad.length ? bad.join(' | ') : `${p.markCopies.length} copies, all matching`,
+        );
+      }
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of

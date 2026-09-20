@@ -150,6 +150,24 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
      A changed key is the cheap, honest fix: it unmounts the subtree the
      browser interfered with and mounts a fresh one from the clauses. */
   const [draftNo, setDraftNo] = useState(0);
+  /* Has the reader typed into this draft?
+ 
+     The key above fixed dealing the next letter and changing desk, which were
+     the two paths that call `reset()`. An independent verifier found the same
+     bug alive on three more: toggling a source after an edit, pressing "Put it
+     all back" after an edit, and, worst of the three, wiping the body with one
+     Backspace, after which the control whose entire job is to put it back
+     could not, while the live region announced that the draft was whole again.
+     Two of the three left the draft EMPTY.
+ 
+     The cause is the same in all of them: `contentEditable` means the browser
+     owns those nodes, and a switch that only recomputes clause state cannot
+     reach them. So a switch or a restore, after an edit, rebuilds the draft
+     from the clauses instead. The reader loses their typing, which is the
+     right trade: the switches only mean anything against a draft the file
+     built, and every one of those paths is the reader asking to see that
+     again. */
+  const hasEdited = useRef(false);
   const [pinned, setPinned] = useState<DemoSource | null>(null);
   const [traced, setTraced] = useState<DemoSource | null>(null);
   const [ringOn, setRingOn] = useState(false);
@@ -187,6 +205,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     setSent(false);
     setEditing(false);
     setSendSay('');
+    hasEdited.current = false;
     setDraftNo((n) => n + 1);
     const next: Record<string, VariantName | null> = {};
     for (const cl of clauses) next[cl.id] = variantFor(cl, ALL_ON);
@@ -244,8 +263,18 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     setStriking(nextStriking);
   };
 
+  /* Any path that re-derives the draft from its clauses has to be able to
+     reach the nodes, and after an edit it cannot. Bumping the identity throws
+     away the browser's copy and mounts a fresh one. */
+  const rebuildIfEdited = () => {
+    if (!hasEdited.current) return;
+    hasEdited.current = false;
+    setDraftNo((n) => n + 1);
+  };
+
   const toggle = (key: DemoSource) => {
     if (editing) return;
+    rebuildIfEdited();
     standDown(key);
     const next = { ...on, [key]: !on[key] };
     setOn(next);
@@ -256,6 +285,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
   };
 
   const restore = () => {
+    rebuildIfEdited();
     setOn({ ...ALL_ON });
     const nextShown: Record<string, VariantName | null> = {};
     for (const cl of clauses) nextShown[cl.id] = variantFor(cl, ALL_ON);
@@ -464,6 +494,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
   };
 
   const beginEdit = () => {
+    hasEdited.current = true;
     setEditing(true);
     setPinned(null);
     setSay(c.demo.say.edit);

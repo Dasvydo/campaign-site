@@ -385,6 +385,72 @@ try {
     await ctx.close();
   }
 
+  /* 4c. the same bug, on the three paths the first fix did not reach -------- */
+  {
+    /* The founder reported this for "next letter". A verifier then found it
+       alive on three more paths, and two of them left the draft EMPTY: a
+       switch toggled after an edit, "Put it all back" after an edit, and one
+       Backspace over the whole body, after which the control whose entire job
+       is to put it back could not, while the live region announced that the
+       draft was whole again.
+
+       One check per path, because the first fix passed a check that tested
+       only the path it fixed. */
+    const paths = [
+      ['a source is switched after an edit', async (page) => {
+        await page.click('#demo .demo-sw[data-src="rules"]');
+      }],
+      ['the reader presses put it all back after an edit', async (page, press) => {
+        for (const k of ['rules', 'deadline', 'file', 'deductions', 'tone']) {
+          await page.click(`#demo .demo-sw[data-src="${k}"]`);
+          await page.waitForTimeout(60);
+        }
+        await press(/put it all back|sæt det hele tilbage|grąžinti/i);
+      }],
+    ];
+    for (const [name, act] of paths) {
+      for (const wipe of [false, true]) {
+        const ctx = await browser.newContext({ viewport: DESKTOP });
+        const page = await openPage(ctx);
+        await showBoth(page);
+        const body = () => page.evaluate(() =>
+          (document.querySelector('#demo-body')?.textContent || '').replace(/\s+/g, ' ').trim());
+        const press = async (re) => {
+          for (const btn of await page.$$('#demo button')) {
+            if (re.test((await btn.textContent()) || '')) { await btn.click(); return true; }
+          }
+          return false;
+        };
+        const atRest = await body();
+        await press(/^(edit|ret|taisyti)/i);
+        await page.waitForTimeout(220);
+        await page.evaluate(() => {
+          const el = document.querySelector('#demo-body');
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        });
+        if (wipe) await page.keyboard.press('Backspace');
+        else await page.keyboard.type('EDITED BY THE VISITOR ');
+        await page.waitForTimeout(180);
+        await press(/^(done|færdig|atlikta)/i);
+        await page.waitForTimeout(280);
+        await act(page, press);
+        await page.waitForTimeout(600);
+        const after = await body();
+        check(
+          after.length > 60 && !after.includes('EDITED BY THE VISITOR'),
+          `the draft comes back when ${name}${wipe ? ', even wiped' : ''}`,
+          after.length > 60 ? 'rebuilt from the clauses' : `left ${after.length} characters`,
+        );
+        await ctx.close();
+      }
+    }
+  }
+
   /* 5. it declines to play where the reader cannot see both halves ---------- */
   {
     const ctx = await browser.newContext({ viewport: PHONE });
