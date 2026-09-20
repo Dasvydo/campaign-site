@@ -128,7 +128,6 @@ export function Footer({ c }: { c: Content }) {
             <span aria-hidden="true">&copy;</span> {new Date().getFullYear()}{' '}
             {legalName || 'DoviLoop'}
           </p>
-          <p className="footer-set">{c.footer.setIn}</p>
         </div>
       </div>
     </footer>

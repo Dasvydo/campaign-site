@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { formatCount } from '../lib/offer';
-import { VALUE, oneEmailIn } from '../lib/value';
+import { VALUE } from '../lib/value';
 import type { Content } from '../content/types';
 import type { DemoClause, DemoSource, DemoVariant } from '../content/types';
 
@@ -531,7 +531,6 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
           <p className="demo-eyebrow">{c.demo.eyebrow}</p>
           <h2 id="demo-h">{c.demo.title}</h2>
           <p className="demo-lede">{c.demo.lede}</p>
-          <p className="demo-slug">{c.demo.slug}</p>
           <p className="demo-nojs">{c.demo.noJs}</p>
         </header>
 
@@ -726,18 +725,6 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
                 <path d="M215 250 H372 V630 H550 V762 H215 Z" />
               </svg>
             </article>
-
-            {/* What it leaves alone, said where the one draft is shown. The
-                hero opens on forty emails and this column shows one draft,
-                and nothing else on the page says that most mail gets no draft
-                at all; a reader who did not know that would start a pilot
-                expecting one for every email. The count is the measured
-                share the other way up, from value.ts. */}
-            <p className="demo-share" data-demo-share>
-              {c.demo.share.before}
-              {formatCount(oneEmailIn(), c.htmlLang)}
-              {c.demo.share.after}
-            </p>
 
             <div className="demo-gate">
               <p className="demo-gate-note">{c.demo.gateNote}</p>

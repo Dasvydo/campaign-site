@@ -47,7 +47,6 @@ import {
   hoursBack,
   hourlyStart,
   keptPerMonth,
-  oneEmailIn,
   packageFor,
   peopleRange,
   worthPerMonth,
@@ -294,7 +293,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
        further down, assembled, because half a sentence proves nothing now that
        the other half comes from the offer. */
     const mustAppear = [
-      c.hero.title.mark, c.hero.deck, c.nav.cta, c.hero.dateline,
+      c.hero.title.mark, c.nav.cta,
       c.hero.deal.subject,
       c.demo.title, c.demo.lede, c.demo.pickLead,
       /* The close carries the minutes from value.ts now, so its two halves
@@ -305,7 +304,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          one click away and are covered by the browser run instead. */
       c.demo.desks[0].letter.from, c.demo.desks[0].letter.subject,
       ...c.demo.desks[0].sources.map((x) => x.label),
-      c.who.title, ...c.who.groups.map((g) => g.line), c.who.notes.seats.mark,
+      c.who.title, ...c.who.groups.map((g) => g.line),
       /* The accuracy block. Asserted line by line because it is the answer to
          the objection that decides a regulated sale, and a block that quietly
          stopped rendering would look like nothing at all. */
@@ -429,12 +428,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         c.price.packages.peopleLabel + ' ' + figure(p.covers) +
           c.price.packages.draftsLabel + ' ' + figure(p.draftCap),
       ]),
-      /* What the product leaves alone, with the measured share the other way
-         up. */
-      [
-        'the demo saying what it does not draft, with the one in how many',
-        c.demo.share.before + figure(oneEmailIn()) + c.demo.share.after,
-      ],
       /* The reason beside the price, with the cohort's size in it. */
       ...(capped && anyPlaceTaken
         ? ([[

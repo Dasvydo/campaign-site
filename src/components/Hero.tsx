@@ -261,7 +261,6 @@ export function Hero({
         </header>
 
         <div className="hero-rule" aria-hidden="true" />
-        <p className="hero-dateline">{c.hero.dateline}</p>
       </div>
 
       <div className="hero-grid" id="hero-content" tabIndex={-1}>
@@ -283,16 +282,10 @@ export function Hero({
             {c.hero.title.after}
           </h1>
 
-          {/* One sentence, and everything in it is an answer to a doubt the
-              headline raises: drafted from what, in whose words, and who is
-              on the hook for sending it. */}
-          <p className="hero-deck">{c.hero.deck}</p>
-
           <div className="hero-act">
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
               {c.nav.cta}
             </a>
-            <p className="hero-note">{c.hero.ctaNote}</p>
           </div>
 
           {/* The one value figure the page states flatly. It is the fee

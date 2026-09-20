@@ -443,7 +443,13 @@ export function Price({
                     {c.price.founding.lock}
                   </span>
                 </p>
-                <h3 className="price-sr" id="price-gives-open-h">
+                {/* Visible, not screen reader only. It was `price-sr`, so a
+                    sighted reader met four bullets with nothing saying what
+                    they were: a list of obligations reading as if it might be
+                    a list of benefits. The one word that resolves it was in
+                    the DOM the whole time, spoken to some readers and hidden
+                    from the rest. */}
+                <h3 className="price-gives-h" id="price-gives-open-h">
                   {c.price.founding.givesTitle}
                 </h3>
                 <ul className="price-gives" aria-labelledby="price-gives-open-h">

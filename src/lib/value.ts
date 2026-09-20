@@ -320,13 +320,6 @@ export function draftRatePercent(value: Value = VALUE): number {
   return Math.round(value.draftRate.value * 1000) / 10;
 }
 
-/** The measured share the other way up: one email in how many gets a draft.
-    A count, rounded, for the sentence that says what the product leaves
-    alone. */
-export function oneEmailIn(value: Value = VALUE): number {
-  return Math.round(1 / value.draftRate.value);
-}
-
 /** A share as a percentage figure, in the language it is read in: one
     decimal at most, which is how the rate was read, and never the two a
     money formatter would give it. */

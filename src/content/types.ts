@@ -189,7 +189,6 @@ export interface Content {
     /** Masthead. The section links are in-page anchors; the hrefs live in the
         component because they are structural, not translatable. */
     skip: string;
-    dateline: string;
     nav: { example: string; price: string; fit: string };
 
     /** The headline is split so the highlighter can fall on the right phrase in
@@ -198,14 +197,6 @@ export interface Content {
         into three translations of the same sentence. The headline carries the
         outcome: what the reader ends up with, and when. */
     title: { before: string; mark: string; mid: string; after: string };
-    /** One sentence, no slots. The deck clarifies the promise the headline
-        makes rather than making one of its own, which is why the figures it
-        used to carry moved up into the headline. */
-    deck: string;
-
-    /** Sits under the hero button. The button's words are nav.cta. */
-    ctaNote: string;
-
     /** The one value figure the page states flatly, and the reason it may.
         "<before><the hours handed back a month><after>": the drafts a firm of
         that size would get, at the assumed minutes, on the largest package at
@@ -284,8 +275,6 @@ export interface Content {
     eyebrow: string;
     title: string;
     lede: string;
-    /** Says out loud that the example is canned and the figures invented. */
-    slug: string;
     noJs: string;
 
     /** The letter's own two labels. The hero's dealt card uses its own. */
@@ -330,11 +319,6 @@ export interface Content {
     /** Says the figure in `close` is an assumption, not a measurement, and
         carries it again: "<before><the same minutes><after>". */
     closeBasis: { before: string; after: string };
-    /** What it does not draft, said where the one draft is shown, so nobody
-        starts a pilot expecting every email to come back with one.
-        "<before><one in how many, as a count><after>". The count is derived
-        from the measured share in src/lib/value.ts and ends its clause. */
-    share: { before: string; after: string };
 
     /** The live region's fixed lines. Everything else it says comes from the
         desk, because it names that desk's own facts. */
@@ -389,6 +373,12 @@ export interface Content {
           value.ts, so the one measured figure arrives from the same place the
           sum reads it. */
       draftsNote: { before: string; after: string };
+      /** How many drafts that volume comes to, in the unit the packages are
+          sold in. The calculator used to run from inbound mail straight to
+          hours without ever printing the drafts in between, so a reader could
+          not check their volume against the pooled allowance they were being
+          asked to buy. Derived by draftsPerMonth, never typed. */
+      drafts: { label: string };
       hours: { label: string };
       worth: { label: string };
       /** "<before><the package name><after>": "This costs (Desk):". The
@@ -445,11 +435,6 @@ export interface Content {
       title: string;
       items: readonly string[];
       unmeasured: string;
-    };
-    notes: {
-      /** Both notes carry a hand-drawn underline under `mark`. */
-      seats: { before: string; mark: string; mid: string; link: string; after: string };
-      setup: { before: string; mark: string; after: string };
     };
   };
 
@@ -712,7 +697,6 @@ export interface Content {
     productLink: string;
     privacyLink: string;
     contactLink: string;
-    setIn: string;
     /** Registry facts. Identical in every locale on purpose: a company number
         and a street address are not translated, and scripts/audit-locales.mjs
         enforces that they stay identical. */

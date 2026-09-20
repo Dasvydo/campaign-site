@@ -4,6 +4,7 @@ import { OFFER, formatCount, formatMoney } from '../lib/offer';
 import {
   VALUE,
   draftRatePercent,
+  draftsPerMonth,
   formatShare,
   hoursBack,
   hourlyStart,
@@ -108,6 +109,7 @@ export function Numbers({ c }: { c: Content }) {
 
   /* The sum, one helper per row, so the panel cannot do its own division. */
   const pkg = packageFor(heads);
+  const drafts = draftsPerMonth(heads, inbound);
   const hours = hoursBack(heads, inbound, minutes);
   const worth = worthPerMonth(heads, inbound, minutes, hourly);
   const kept = keptPerMonth(heads, inbound, minutes, hourly);
@@ -213,6 +215,18 @@ export function Numbers({ c }: { c: Content }) {
               at every count. The fee row is the only one with no hedge on it,
               because the fee is the one number on the panel we know exactly. */}
           <dl className="numbers-beats">
+            {/* The drafts, first, because they are the unit the packages are
+                sold in. The panel used to run from inbound mail straight to
+                hours, so a reader could work out what they saved without ever
+                seeing the number they were being asked to buy, or whether it
+                fitted the pooled allowance two sections down. Derived by
+                draftsPerMonth from the measured share, never typed. */}
+            <div className="numbers-beat" data-n-drafts>
+              <dt className="numbers-term">{c.numbers.beats.drafts.label}</dt>
+              <dd className="numbers-amt">
+                {drafts === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{figure(drafts)}</>}
+              </dd>
+            </div>
             <div className="numbers-beat" data-n-hours>
               <dt className="numbers-term">{c.numbers.beats.hours.label}</dt>
               <dd className="numbers-amt">

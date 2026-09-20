@@ -31,19 +31,14 @@ export const lt: Content = {
     clockOut: '08:41',
 
     skip: 'Pereiti prie turinio',
-    dateline: 'Laiškų juodraščiai komandoms nuo dešimties žmonių.',
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
 
     title: {
-      before: '40 laiškų. ',
-      mark: 'Pasikartojantys su juodraščiais',
+      before: '40 laiškų. Tie, kuriems atsakymas yra Jūsų bylose, ',
+      mark: 'jau juodraščiuose',
       mid: '. ',
       after: ' val.',
     },
-    deck: 'Parašyta iš Jūsų pačių bylų, Jūsų pačių žodžiais. Jūsų žmonės juos perskaito ir išsiunčia.',
-
-    ctaNote: 'Taip arba ne. Pirmos dvi savaitės nemokamos. Kortelės neprašome ir nieko nenuskaitome.',
-
     /* Two counts, two endings, and Lithuanian inflects around both.
 
        The head count is the largest package's coverage, 20, which takes the
@@ -90,7 +85,6 @@ export const lt: Content = {
     eyebrow: 'Išnagrinėtas pavyzdys',
     title: 'Vienas iš keturiasdešimties',
     lede: 'Juodraštis parašytas iš to, ką biuras jau turi byloje.',
-    slug: 'Iš anksto parengta demonstracija. Fiksuotas tekstas, išgalvotas siuntėjas ir sumos, niekas nematuota laiku.',
     noJs: 'Reikia JavaScript. Laiškas, juodraštis ir stabdys sako tą patį bet kuriuo atveju.',
     fromLabel: 'Nuo',
     subjectLabel: 'Tema',
@@ -117,10 +111,6 @@ export const lt: Content = {
     closeBasis: {
       before: 'Mūsų prielaida, kiek trunka parašyti vieną nuo nulio, yra ',
       after: ' minutės. Laiko nematavome.',
-    },
-    share: {
-      before: 'Juodraščius rašo tiems laiškams, į kuriuos gali atsakyti iš bylų, o kitų neliečia. Tikroje pašto dėžutėje tai buvo maždaug vienas laiškas iš ',
-      after: '.',
     },
     say: {
       allOff: 'Nieko neliko įjungta. Juodraštis yra keturios bendro pobūdžio eilutės.',
@@ -423,6 +413,7 @@ export const lt: Content = {
     },
     beats: {
       draftsNote: { before: 'Išmatuota: ', after: ' % gaunamų laiškų yra tas pats klausimas iš naujo.' },
+      drafts: { label: 'Juodraščių per mėnesį:' },
       hours: { label: 'Valandų, kurias atgaunate:' },
       worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
       fee: { before: 'Tai kainuoja (', after: '):' },
@@ -468,20 +459,6 @@ export const lt: Content = {
       ],
       unmeasured: 'Nematavome, kaip dažnai juodraštį vis dar reikia taisyti. Kai išmatuosime, skaičius atsiras šiame puslapyje.',
     },
-    notes: {
-      seats: {
-        before: 'Vienas mokestis apima ',
-        mark: 'visą įmonę',
-        mid: ', o kaina pritaikyta įmonėms nuo dešimties žmonių. Mažesnėms komandoms planas svetainėje ',
-        link: 'doviloop.dev',
-        after: ' atlieka tą patį darbą ir kainuoja gerokai mažiau.',
-      },
-      setup: {
-        before: 'Nereikia programuotojo, nereikia keisti pašto. Jei dirbate su Outlook, ',
-        mark: 'įdiegimas yra mūsų darbas',
-        after: '.',
-      },
-    },
   },
 
   price: {
@@ -510,7 +487,7 @@ export const lt: Content = {
 
     packages: {
       title: 'Du paketai',
-      lede: 'Abiejuose tas pats produktas. Skiriasi tik tai, kiek žmonių apima ir kiek juodraščių dalijasi visa įmonė.',
+      lede: 'Abiejuose tas pats produktas. Skiriasi tik dydis.',
       pick: 'Rinkitės suskaičiavę savo žmones.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Mažiausia įmonė, kuriai parduodame.' },
@@ -520,7 +497,7 @@ export const lt: Content = {
       peopleLabel: 'Apimami žmonės, iki',
       draftsLabel: 'Juodraščiai per mėnesį, bendri',
       note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
-      over: 'O jei žmonių daugiau? Tada šiame puslapyje Jums tinkamo paketo nėra, ir geriau tai pasakome čia, o ne pokalbio metu. Vis tiek parašykite, ir kainą pasiūlysime tokią, kokia Jums tinka.',
+      over: 'Didesnė įmonė? Parašykite, ir apskaičiuosime kainą.',
     },
 
     included: {
@@ -624,7 +601,7 @@ export const lt: Content = {
 
   form: {
     eyebrow: 'Ką man daryti dabar',
-    title: 'Penki klausimai. Mažiau nei minutė.',
+    title: 'Trys klausimai, paskui dar du. Mažiau nei minutė.',
     lead: 'Taip išsiaiškiname, ar pokalbis vertas Jūsų laiko. Jei ne, šis puslapis taip ir pasakys, užuot Jus užregistravęs.',
     formNo: 'Tinkamumo patikra',
     optional: 'Neprivaloma',
@@ -735,7 +712,6 @@ export const lt: Content = {
     productLink: 'Produkto svetainė',
     privacyLink: 'Privatumas',
     contactLink: 'Susisiekite',
-    setIn: 'Rinkta Playfair Display ir DM Sans šriftais',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',

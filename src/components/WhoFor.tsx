@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
-import { Pen } from './Pen';
 
 /**
  * Three folders on a desk, and the two things worth saying beside them.
@@ -52,8 +51,6 @@ export function WhoFor({ c }: { c: Content }) {
     };
   }, []);
 
-  const n = c.who.notes;
-
   return (
     <section id="who" aria-labelledby="who-h" ref={rootRef}>
       <div className="who-wrap">
@@ -97,22 +94,6 @@ export function WhoFor({ c }: { c: Content }) {
           <p className="who-accuracy-note">{c.who.accuracy.unmeasured}</p>
         </div>
 
-        <div className="who-notes">
-          <p className="who-note who-note-a">
-            {n.seats.before}
-            <Pen d="M1 6 C 20 3, 45 8, 62 5 S 90 4, 99 6">{n.seats.mark}</Pen>
-            {n.seats.mid}
-            <a className="who-link" href="https://doviloop.dev" rel="noopener">
-              {n.seats.link}
-            </a>
-            {n.seats.after}
-          </p>
-          <p className="who-note who-note-b">
-            {n.setup.before}
-            <Pen d="M1 6 C 22 4, 44 8, 63 5 S 88 3, 99 6">{n.setup.mark}</Pen>
-            {n.setup.after}
-          </p>
-        </div>
       </div>
     </section>
   );

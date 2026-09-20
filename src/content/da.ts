@@ -31,19 +31,14 @@ export const da: Content = {
     clockOut: '08:41',
 
     skip: 'Spring til indholdet',
-    dateline: 'Mailudkast til teams på ti og opefter.',
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
 
     title: {
-      before: 'Fyrre mails ind. ',
-      mark: 'Gengangerne i udkast',
+      before: 'Fyrre mails ind. Dem jeres sager kan svare på, ',
+      mark: 'i udkast',
       mid: '. Klokken ',
       after: '.',
     },
-    deck: 'Skrevet ud fra jeres egne sager, i jeres egne ord. Jeres folk læser dem igennem og sender.',
-
-    ctaNote: 'Få et ja eller nej. De første to uger er gratis. Intet kort, og ingen betaling.',
-
     payback: {
       before: 'Et firma med ',
       mid: '\u00a0ansatte får cirka ',
@@ -80,7 +75,6 @@ export const da: Content = {
     eyebrow: 'Gennemgået eksempel',
     title: 'En af de fyrre',
     lede: 'Udkastet er skrevet ud fra det, kontoret allerede har på sagen.',
-    slug: 'En optaget demonstration. Fast tekst, opdigtet afsender og opdigtede beløb, intet er taget tid på.',
     noJs: 'Kræver JavaScript. Mailen, udkastet og spærren siger det samme uanset hvad.',
     fromLabel: 'Fra',
     subjectLabel: 'Emne',
@@ -107,10 +101,6 @@ export const da: Content = {
     closeBasis: {
       before: 'Vores antagelse om at skrive et fra bunden er ',
       after: ' minutter. Vi har ikke taget tid på det.',
-    },
-    share: {
-      before: 'Den skriver udkast til dem, den kan svare på ud fra sagen, og lader resten være. På en rigtig postkasse var det cirka én mail ud af ',
-      after: '.',
     },
     say: {
       allOff: 'Intet er slået til. Udkastet er fire intetsigende linjer.',
@@ -413,6 +403,7 @@ export const da: Content = {
     },
     beats: {
       draftsNote: { before: 'Målt: ', after: ' % af den indgående post er det samme spørgsmål igen.' },
+      drafts: { label: 'Udkast om måneden:' },
       hours: { label: 'Timer, I får tilbage:' },
       worth: { label: 'Hvad de timer koster jer i dag:' },
       fee: { before: 'Det her koster (', after: '):' },
@@ -458,20 +449,6 @@ export const da: Content = {
       ],
       unmeasured: 'Vi har ikke målt, hvor ofte et udkast stadig skal rettes. Når vi har, kommer tallet på denne side.',
     },
-    notes: {
-      seats: {
-        before: 'Én pris dækker ',
-        mark: 'hele virksomheden',
-        mid: ', og den er sat til ti personer og opefter. Under det gør planen på ',
-        link: 'doviloop.dev',
-        after: ' det samme arbejde og koster væsentligt mindre.',
-      },
-      setup: {
-        before: 'Ingen udvikler, ingen ny mailadresse. Sidder I i Outlook, ',
-        mark: 'er opsætningen vores opgave',
-        after: '.',
-      },
-    },
   },
 
   price: {
@@ -500,7 +477,7 @@ export const da: Content = {
 
     packages: {
       title: 'De to pakker',
-      lede: 'Samme produkt i begge. Det, der ændrer sig, er hvor mange mennesker det dækker, og hvor mange udkast firmaet deles om.',
+      lede: 'Samme produkt i begge. Kun størrelsen skifter.',
       pick: 'Vælg ved at tælle jeres folk.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Det mindste firma, vi sælger til.' },
@@ -510,7 +487,7 @@ export const da: Content = {
       peopleLabel: 'Personer dækket, op til',
       draftsLabel: 'Udkast om måneden, fælles',
       note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
-      over: 'Flere end det? Så er der ingen pakke til jer på denne side, og det siger vi hellere her end på mødet. Spørg alligevel, så finder vi en pris, der passer til jer.',
+      over: 'Større end det? Spørg, så regner vi en pris ud til jer.',
     },
 
     included: {
@@ -616,7 +593,7 @@ export const da: Content = {
 
   form: {
     eyebrow: 'Hvad gør jeg nu',
-    title: 'Fem spørgsmål. Under et minut.',
+    title: 'Tre spørgsmål, så to. Under et minut.',
     lead: 'Sådan finder vi ud af, om et møde er din tid værd. Er det ikke det, siger den her side det i stedet for at booke dig.',
     formNo: 'Pasformstjek',
     optional: 'Valgfrit',
@@ -727,7 +704,6 @@ export const da: Content = {
     productLink: 'Produktsiden',
     privacyLink: 'Privatliv',
     contactLink: 'Kontakt os',
-    setIn: 'Sat i Playfair Display og DM Sans',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',

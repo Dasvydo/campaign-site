@@ -28,19 +28,14 @@ export const en: Content = {
     clockOut: '08:41',
 
     skip: 'Skip to content',
-    dateline: 'Email drafting for teams of ten and up.',
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
 
     title: {
-      before: 'Forty emails in. ',
-      mark: 'The repeat ones drafted',
+      before: 'Forty emails in. The ones your files can answer, ',
+      mark: 'drafted',
       mid: '. By ',
       after: '.',
     },
-    deck: 'Drafted from your own files, in your own wording. Your people read them and send.',
-
-    ctaNote: 'Get a yes or no. The first two weeks are free. No card, and nothing taken.',
-
     payback: {
       before: 'A firm of\u00a0',
       mid: ' gets back about ',
@@ -77,7 +72,6 @@ export const en: Content = {
     eyebrow: 'Worked example',
     title: 'One of the forty',
     lede: 'The draft is written from what the office already has on file.',
-    slug: 'A canned demonstration. Fixed text, invented sender and figures, nothing timed.',
     noJs: 'Needs JavaScript. The message, draft and gate read the same either way.',
     fromLabel: 'From',
     subjectLabel: 'Subject',
@@ -104,10 +98,6 @@ export const en: Content = {
     closeBasis: {
       before: 'Our assumption for writing one from nothing is ',
       after: ' minutes. We have not timed it.',
-    },
-    share: {
-      before: 'It drafts the ones it can answer from the file and leaves the rest alone. On a live mailbox that was about one email in ',
-      after: '.',
     },
     say: {
       allOff: 'Nothing left on. The draft is four generic lines.',
@@ -410,6 +400,7 @@ export const en: Content = {
     },
     beats: {
       draftsNote: { before: 'Measured: ', after: '% of inbound mail is the same question again.' },
+      drafts: { label: 'Drafts a month:' },
       hours: { label: 'Hours handed back:' },
       worth: { label: 'What those hours cost you today:' },
       fee: { before: 'This costs (', after: '):' },
@@ -458,20 +449,6 @@ export const en: Content = {
       ],
       unmeasured: 'We have not measured how often a draft still needs correcting. When we have, the figure goes on this page.',
     },
-    notes: {
-      seats: {
-        before: 'One fee covers ',
-        mark: 'the whole firm',
-        mid: ', and it is priced for ten people and up. Below that, the plan on ',
-        link: 'doviloop.dev',
-        after: ' does the same drafting and costs a great deal less.',
-      },
-      setup: {
-        before: 'No developer, no change of email. If you are in Outlook, ',
-        mark: 'setup is our job',
-        after: '.',
-      },
-    },
   },
 
   price: {
@@ -500,7 +477,7 @@ export const en: Content = {
 
     packages: {
       title: 'The two packages',
-      lede: 'Same product in both. What changes is how many people it covers and how many drafts the firm shares.',
+      lede: 'Same product in both. Only the size changes.',
       pick: 'Pick by counting your people.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'The smallest firm we sell to.' },
@@ -510,7 +487,7 @@ export const en: Content = {
       peopleLabel: 'People covered, up to',
       draftsLabel: 'Drafts a month, pooled',
       note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
-      over: 'More people than that? There is no package on this page for you, and we would rather say so here than on the call. Ask anyway and we will price it properly.',
+      over: 'Bigger than that? Ask, and we will price it properly.',
     },
 
     included: {
@@ -613,7 +590,7 @@ export const en: Content = {
 
   form: {
     eyebrow: 'What do I do now',
-    title: 'Five questions. Under a minute.',
+    title: 'Three questions, then two. Under a minute.',
     lead: 'This is how we work out whether a call is worth your time. If it is not, this page will say so instead of booking you in.',
     formNo: 'Fit check',
     optional: 'Optional',
@@ -724,7 +701,6 @@ export const en: Content = {
     productLink: 'The product site',
     privacyLink: 'Privacy',
     contactLink: 'Contact us',
-    setIn: 'Set in Playfair Display and DM Sans',
     company: {
       legalName: 'DoviLoop OU',
       registrationNumber: '17355061',
