@@ -1,11 +1,12 @@
 # Run state: flat-fee pricing and the landing page pass (campaign-site)
 
 Started: 2026-09-16
-Last updated: 2026-09-19, end of day (waves 1-5 verified; wave 6 verified, T22 superseded, T23
-              landed; wave 7 verified by four independent agents, which refuted two claims
-              outright and found five things asserted by nothing; wave 8 closes the two
-              findings they recorded rather than fixed, and is not yet independently seen;
-              1 blocked; deployed)
+Last updated: 2026-09-20 (waves 1-5 verified; wave 6 verified, T22 superseded, T23 landed;
+              wave 7 verified by four independent agents, which refuted two claims outright
+              and found five things asserted by nothing; wave 8 partly verified, T34 and T35
+              both came back PARTIAL and both are fixed, T33 still with its verifier, so the
+              wave is NOT yet verified; three findings left to the founder, recorded below;
+              1 blocked; deployed at fcdf808 and read back off the live bundle)
 Status: executing
 Domain profile: software, with a `content` lens — every task shipped copy in en/da/lt
 
@@ -112,13 +113,40 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T26 | Hold the founding counter back until a place has gone | 7 | verified | 2 | **PARTIAL → fixed.** Rendering was genuinely absent, not hidden. But it counted holds, so one booked call printed a counter inches under "no customers yet"; the gate left an orphan screen-reader heading; and a gate wired to `false` passed every check, because nothing rendered the state where it should appear. Counts started pilots now, matching `noCustomersYet()`; both directions asserted | `pilotsStarted() > 0` | `src/components/Price.tsx`, `scripts/harness-claim.tsx`, `scripts/verify-payload.mjs` |
 | T27 | Say what happens above the largest package | 7 | verified | 2 | **PARTIAL → fixed.** Renders, visible, well placed, and the underlying gap is real (a 40-person firm still books and still cannot use the calculator). It was asserted by nothing: replaced with `{null}` to a green suite. Asserted now. Danish said "en ordentlig pris", which reads as "a hefty price" to the firm just told it is too big; rewritten | `packages.over`, checked | `src/content/*.ts`, `scripts/harness-page.tsx` |
 | T28 | Give the hero the hours instead of the break even cost | 7 | verified | 1 | **PARTIAL, the typed half fixed by T35.** The hours are genuinely computed: a verifier recomputed 41 by hand and moved `heroInbound` to watch the page follow. Two things are typed, not derived, and are recorded rather than fixed: "a firm of twenty" is spelled out in three locale files with no link to `covers` (though `verify-offer` pins `covers` at 20), and the da/lt endings are correct for one count each. Those counts are pinned now, so moving them fails the build | `heroHoursBack`, pinned | `src/lib/value.ts`, `scripts/verify-offer.mjs` |
-| T34 | Pair the two lists that name the audiences | 8 | landed | 1 | `AudienceId` carried by both the desks and the folders, and the page harness holds the two orders equal per locale. Both drift modes proved caught: the verifier's exact swap fails the suite, a mistyped id fails the build. No independent pass | enforced alignment | `src/content/types.ts`, `src/content/*.ts`, `scripts/harness-page.tsx`, `scripts/verify-payload.mjs` |
-| T35 | Read the hero's head count from the offer | 8 | landed | 1 | Both figures in the payback sentence now come from the offer and the model, and both are pinned so a move fails the build naming the locale files to re-read. The verifier's exact break, moving `covers` and the two SPEC literals, now fails twice. No independent pass | two derived slots | `src/content/*.ts`, `src/components/Hero.tsx`, `scripts/verify-offer.mjs` |
+| T34 | Pair the two lists that name the audiences | 8 | verified | 2 | **PARTIAL → fixed.** The pairing is real and the two drift modes it was built for are caught. A verifier drove through three holes it left open: the harness compared the two lists as sequences without requiring each trade to appear once, so a list holding the same id twice passed; nothing pinned the order itself, so both lists could be rotated together and stay equal; and `desks[0]` is the trade the hero letter opens on, which nothing asserted. The `AudienceId` comment also claimed TypeScript compares the two lists, which it does not. Distinctness asserted in the page harness, the order pinned to property,accounting,insurance in `verify-payload`, comment corrected | enforced alignment, order pinned | `src/content/types.ts`, `src/content/*.ts`, `scripts/harness-page.tsx`, `scripts/verify-payload.mjs` |
+| T35 | Read the hero's head count from the offer | 8 | verified | 2 | **PARTIAL → fixed.** Both hero figures are genuinely derived and the pins hold. Two defects found. The payback line broke between 320 and 350px with "41" ending one line and its unit opening the next, so the eye read a bare number; non-breaking spaces now bind every figure to its unit in all three locales. And moving `desk.covers` from 10 to 12 cost only two guard edits, after which one card said "People covered, up to 12" and, four lines down, "For a firm of ten people." Those three prose counts are gone rather than derived, on the reasoning that a figure appearing once cannot disagree with itself. **Five head-count sentences elsewhere are still typed and decoupled** and are recorded below rather than fixed | two derived slots, prose counts removed | `src/content/*.ts`, `src/components/Hero.tsx`, `scripts/verify-offer.mjs` |
 | T29 | One order for the audiences, in both places they appear | 7 | verified | 1 | **CONFIRMED, then PROTECTED by T34.** Was: A verifier read both orders out of a real browser in all three locales and could not break them, and found no third enumeration anywhere. But swapping two cards in one locale passes the whole suite: nothing asserts the alignment, and `who.groups[]` has no id to pair with `desks[].id`. The fix is real and can silently drift again | who matches the demo tabs | `src/content/*.ts` |
 | T30 | Make the invitation to switch a source off visible | 7 | verified | 1 | **PARTIAL, and superseded by T33.** The CSS applies and nothing overrides it (13.2:1, up from 4.6:1). But the verifier judged it cosmetic: the slips still read as evidence, not controls, and the change reaches the reader who reads top to bottom, not the scanner. It also caught the CSS comment inventing a convention that does not exist. Kept, because it costs nothing | inked instruction | `src/styles/paper.css` |
 | T31 | Answer what happens when a draft would be wrong | 7 | verified | 2 | **PARTIAL → fixed. A rule was broken.** Three of the four lines traced to pre-existing copy. The fourth ended "so anything it says can be checked against the file it came from", which generalises a claim about three named things to every sentence in a draft and presupposes provenance the page never claims. That is invented proof. Cut back. Danish comma and honoraret/gebyret drift also fixed. Still incomplete by design: the confidently-wrong case and liability need the founder | accuracy block, traceable | `src/content/*.ts`, `src/components/WhoFor.tsx` |
 | T33 | Make the section demonstrate itself | 7 | landed | 1 | a new real-browser gate, `scripts/verify-demo.mjs`, holding it to performing, restoring, staying away under reduced motion and standing down on a click; proved by breaking it. No independent pass | the performed demonstration | `src/components/Demo.tsx`, `scripts/verify-demo.mjs` |
 | T32 | Put the one person the founding trade is about on the page | 7 | verified | 2 | **CONFIRMED on the exemption, REFUTED on placement.** The audit exemption is exactly the name and nothing else, proved by mutation in both directions. But the signature sat inside a disclosure that is closed at rest, so no reader saw the name without clicking, defeating the point of adding it. Moved onto the open band. Lithuanian register and "paleidimo/idiegimo" also fixed | signed line, on the open band | `src/components/Price.tsx`, `src/content/*.ts`, `scripts/audit-locales.mjs` |
+
+## Found and not fixed, because the call is the founder's
+
+These are wave 8 verifier findings that were deliberately left. Each one is a real
+decoupling; none of them is wrong on the page as it stands today.
+
+**Five head-count sentences are still typed, not derived.** `hero.dateline` says
+"teams of ten and up", `who.notes.seats.mid` says "priced for ten people and up",
+`results.tooSmall.title` says "This one starts at ten people", `meta.description`
+says "For teams of 10 or more", and `form.teamSizeOptions` carries the band labels
+whose `'1-9'` value the qualifier gate in `src/lib/contract.ts` reads. Move
+`desk.covers` off 10 and all five go quietly wrong. Three of them cannot be slot
+based without rewriting sentences in three languages around a number that inflects,
+and the fifth sits in a file the brief forbids touching. The cheap half measure
+would be a pin in `verify-offer` naming all five, which turns silent drift into a
+build failure that says where to read. Not done: it is the founder's call whether
+10 is ever moving.
+
+**The hero mixes digits and words for the same kind of quantity.** "A firm of 20"
+renders as a numeral in the payback line while the dateline spells "ten" out. Both
+readings are defensible; the page should pick one. House style question, not a bug.
+
+**Nothing checks rendered order, only content order.** The audience order is now
+pinned in the payload check and the two lists are held equal, but a CSS `order`
+property or a `.reverse()` in a component would still make the visible order differ
+from the content order with the whole suite green. Closing it means reading computed
+style out of a real browser, which is a new gate, not a new check.
 
 ## Blocked
 
@@ -147,8 +175,10 @@ measured locally rather than against the deployment: `npm run verify` is green a
 viewports and three locales, and `/`, `/da` and `/lt` all return 200. The offer is
 two packages at 149 and 199 EUR.
 
-**Not checked: the deployment.** Nothing in this session read the live URL, so
-whether Vercel is serving this commit is unknown from here.
+**The deployment was checked on 2026-09-20.** `campaign/a-site` was pushed to
+`fcdf808` and `teams.doviloop.dev` was polled until the bundle hash changed; the
+served JavaScript at `/assets/index-BpuHdR_G.js` carries the copy this commit
+introduced. That is the bundle read back, not the build log trusted.
 
 What is NOT testable live: nobody can pay. Stripe is in test mode on the product
 site and every pricing CTA there routes to a call. That is fine for a campaign that
