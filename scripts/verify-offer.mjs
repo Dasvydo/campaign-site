@@ -257,6 +257,34 @@ check(shippedProblems.length === 0, 'validateOffer finds no problem',
  * literals rather than asked of Intl, so a formatter that stops grouping, or
  * starts grouping the wrong way, has something to disagree with. Lithuanian
  * groups with a non-breaking space, which is why it is escaped. */
+/* The favicon against the component it is supposed to match.
+ *
+ * They were made identical by hand and nothing held them that way. A verifier
+ * rewrote public/favicon.svg to a rectangle and a square and every check in
+ * this repository stayed green, because the browser gates render the page and
+ * the page does not contain its own favicon. The tab icon is the mark most
+ * people see most often.
+ *
+ * Read as text rather than parsed: the two paths are exported constants in
+ * Hero.tsx and the favicon is a static file, so the only thing worth asking is
+ * whether the file draws those two shapes and nothing else. */
+console.log('\nThe favicon, against the mark the page draws');
+{
+  const hero = readFileSync(join(root, 'src/components/Hero.tsx'), 'utf8');
+  const icon = readFileSync(join(root, 'public/favicon.svg'), 'utf8');
+  const paths = [...hero.matchAll(/export const MARK_(?:BOWL|STEM) =\s*'([^']+)'/g)].map((m) => m[1]);
+  check(paths.length === 2, '  the mark is still two exported paths', `${paths.length} found`);
+  for (const d of paths) {
+    check(icon.includes(d), '  the favicon draws it too', `${d.slice(0, 28)}...`);
+  }
+  const iconPaths = [...icon.matchAll(/ d="([^"]+)"/g)].map((m) => m[1]);
+  check(
+    iconPaths.length === paths.length && iconPaths.every((d) => paths.includes(d)),
+    '  and draws nothing the page does not',
+    `${iconPaths.length} path(s) in the file`,
+  );
+}
+
 console.log('\nHow figures are set, per language');
 const GROUPED = [
   { locale: 'en', n: 5000, want: '5,000' },
@@ -297,12 +325,17 @@ const DRAFT_CHAIN = [
   /* drafts, minutes, hourly, people, hours, worth, kept */
   { drafts: 450, minutes: 4, hourly: 30, people: 10, hours: 30, worth: 900, kept: 751 },
   { drafts: 3000, minutes: 10, hourly: 100, people: 20, hours: 500, worth: 50000, kept: 49801 },
-  { drafts: 50, minutes: 1, hourly: 5, people: 10, hours: 50 / 60, worth: 250 / 60, kept: 250 / 60 - 149 },
+  /* The low end, which is where the panel used to stop multiplying: 50 drafts
+     at a minute is 0.8 of an hour once rounded to what the page prints, and
+     0.8 at 5 an hour is 4 exactly. Whole numbers, on purpose: if these ever
+     need a repeating decimal again, the money has stopped coming from the
+     figure the reader can see. */
+  { drafts: 50, minutes: 1, hourly: 5, people: 10, hours: 0.8, worth: 4, kept: 4 - 149 },
   { drafts: 600, minutes: 5, hourly: 20, people: 20, hours: 50, worth: 1000, kept: 801 },
 ];
 const near = (a, b) => a !== null && Math.abs(a - b) < 0.005;
 for (const t of DRAFT_CHAIN) {
-  const h = value.hoursFromDrafts(t.drafts, t.minutes);
+  const h = value.hoursShown(t.drafts, t.minutes);
   const w = value.worthFromDrafts(t.drafts, t.minutes, t.hourly);
   const k = value.keptFromDrafts(t.people, t.drafts, t.minutes, t.hourly);
   const where = `${t.drafts} drafts, ${t.minutes} min, ${t.hourly}/h, ${t.people} people`;

@@ -4,9 +4,10 @@ import { OFFER, formatCount, formatMoney } from '../lib/offer';
 import {
   VALUE,
   draftRatePercent,
+  formatHours,
   formatShare,
   hourlyStart,
-  hoursFromDrafts,
+  hoursShown,
   keptFromDrafts,
   packageFor,
   peopleRange,
@@ -108,7 +109,7 @@ export function Numbers({ c }: { c: Content }) {
 
   /* The sum, one helper per row, so the panel cannot do its own division. */
   const pkg = packageFor(heads);
-  const hours = hoursFromDrafts(drafts, minutes);
+  const hours = hoursShown(drafts, minutes);
   const worth = worthFromDrafts(drafts, minutes, hourly);
   const kept = keptFromDrafts(heads, drafts, minutes, hourly);
   const clears = kept !== null && kept >= 0;
@@ -116,6 +117,7 @@ export function Numbers({ c }: { c: Content }) {
 
   const money = (v: number): string => `${formatMoney(v, c.htmlLang)} ${OFFER.currency}`;
   const figure = (v: number): string => formatCount(v, c.htmlLang);
+  const hoursText = (n: number) => formatHours(n, c.htmlLang);
   const pkgName = pkg ? (c.price.packages.rows.find((r) => r.id === pkg.id)?.name ?? pkg.id) : '';
 
   /* The live region says the answer, not the slider position. */
@@ -227,7 +229,7 @@ export function Numbers({ c }: { c: Content }) {
             <div className="numbers-beat" data-n-hours>
               <dt className="numbers-term">{c.numbers.beats.hours.label}</dt>
               <dd className="numbers-amt">
-                {hours === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{figure(hours)}{c.numbers.units.hours}</>}
+                {hours === null ? '' : <><span className="numbers-about">{c.numbers.about}</span>{hoursText(hours)}{c.numbers.units.hours}</>}
               </dd>
             </div>
             <div className="numbers-beat" data-n-worth>

@@ -226,6 +226,30 @@ export function hoursFromDrafts(
   return (drafts * minutes) / 60;
 }
 
+/**
+ * The hours as the panel prints them, which is what the money is worked out
+ * from.
+ *
+ * The exact hours and the printed hours were two different numbers, and the
+ * money came from the exact one. At fifty drafts and a minute saved that read
+ * "about 1 h" beside "about 83 EUR", so a reader multiplying the two figures
+ * in front of them got 100 and the panel was wrong by its own arithmetic.
+ *
+ * Rounding here and deriving the money from the result costs a little accuracy
+ * at the bottom of the range and always in the same direction, downwards, so
+ * the panel understates rather than overstates. That is the right way round
+ * for a figure we are asking someone to trust.
+ */
+export function hoursShown(
+  drafts: number,
+  minutes: number,
+  value: Value = VALUE,
+): number | null {
+  const raw = hoursFromDrafts(drafts, minutes, value);
+  if (raw === null) return null;
+  return raw < 10 ? Math.round(raw * 10) / 10 : Math.round(raw);
+}
+
 /** What those hours cost the firm today, from a draft count. */
 export function worthFromDrafts(
   drafts: number,
@@ -233,7 +257,7 @@ export function worthFromDrafts(
   hourly: number,
   value: Value = VALUE,
 ): number | null {
-  const hours = hoursFromDrafts(drafts, minutes, value);
+  const hours = hoursShown(drafts, minutes, value);
   if (hours === null || !within(hourly, value.hourly)) return null;
   return hours * hourly;
 }
@@ -388,6 +412,26 @@ export function draftRatePercent(value: Value = VALUE): number {
     the product leaves alone. */
 export function oneEmailIn(value: Value = VALUE): number {
   return Math.round(1 / value.draftRate.value);
+}
+
+/**
+ * Hours, set so that the reader can multiply them.
+ *
+ * `formatCount` rounds to a whole number, which is right for drafts and wrong
+ * for hours at the bottom of the range. At fifty drafts and a minute saved the
+ * panel printed "about 1 h" beside "about 83 EUR", and a reader doing the
+ * multiplication the panel invites gets 100. The panel's own docstring says
+ * every number on it is one they can check with a pencil; that one was not.
+ *
+ * One decimal below ten, none above, which is where a tenth of an hour stops
+ * being worth printing. `hoursShown` in value.ts rounds to the same precision
+ * and the money is derived from THAT, so the two always multiply out.
+ */
+export function formatHours(value: number, locale?: string | null): string {
+  return new Intl.NumberFormat(locale || 'en', {
+    maximumFractionDigits: Math.abs(value) < 10 ? 1 : 0,
+    useGrouping: true,
+  }).format(value);
 }
 
 /** A share as a percentage figure, in the language it is read in: one

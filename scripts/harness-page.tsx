@@ -43,10 +43,11 @@ import type { PackageId } from '../src/lib/offer';
 import {
   VALUE,
   draftRatePercent,
+  formatHours,
   formatShare,
   heroHoursBack,
   hourlyStart,
-  hoursFromDrafts,
+  hoursShown,
   keptFromDrafts,
   packageFor,
   oneEmailIn,
@@ -569,7 +570,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         pointsDriven += 1;
         const pkg = packageFor(h);
         const want = {
-          hours: hoursFromDrafts(d, min),
+          hours: hoursShown(d, min),
           worth: worthFromDrafts(d, min, hr),
           fee: pkg?.price ?? null,
           keep: keptFromDrafts(h, d, min, hr),
@@ -577,7 +578,9 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         /* Modelled amounts print to the whole unit: a figure hedged with
            "about" and printed to the cent would be contradicting itself. */
         const wantText = {
-          hours: want.hours === null ? '' : c.numbers.about + figure(want.hours) + c.numbers.units.hours,
+          /* formatHours, not figure: the panel prints a tenth of an hour
+             below ten so that the money beside it multiplies out. */
+          hours: want.hours === null ? '' : c.numbers.about + formatHours(want.hours, c.htmlLang) + c.numbers.units.hours,
           worth: want.worth === null ? '' : c.numbers.about + money(Math.round(want.worth)),
           fee: want.fee === null ? '' : money(want.fee),
           keep: want.keep === null ? '' : c.numbers.about + money(Math.round(want.keep)),
