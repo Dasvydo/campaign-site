@@ -48,25 +48,56 @@ const KEYS: DemoSource[] = ['rules', 'deadline', 'file', 'deductions', 'tone'];
    most visitors never saw the proof.
 
    Rather than describe the interaction better, the page performs it: one
-   source goes off and comes back, once, shortly after the strip settles. The
-   reader witnesses the draft lose two figures and get them back without being
-   asked to do anything.
+   source goes off and comes back, once, shortly after the reader has both
+   halves in front of them. The reader witnesses the draft lose three figures
+   and get them back without being asked to do anything.
 
-   `deductions` is the source it uses because its clause carries two amounts in
-   the middle of the letter, so what leaves and returns is unmistakable. All
-   three desks carry the same five keys by design, so this works on whichever
-   desk is open.
+   `deductions` is the source it uses because its clause carries three amounts
+   in the middle of the letter and a dependent tail clause, so what leaves and
+   returns is unmistakable. All three desks carry the same five keys by design,
+   so this works on whichever desk is open.
 
-   IT STANDS DOWN COMPLETELY for `prefers-reduced-motion`, and at the first
-   sign of a real person: a pointer, a key or focus anywhere in the section.
-   It runs once per page load, never on a desk change, and it never speaks
-   into the live region, because announcing a change nobody made is noise. The
-   whole sequence is under two seconds, well inside WCAG 2.2.2's five. */
+   An independent verifier refuted the first build of this on two counts, and
+   both are why the code below reads the way it does.
+
+   One: standing down cleared every pending timer, including the one that puts
+   the clause back. Interrupting between the two steps left the reader a letter
+   missing a clause they never removed, a switch off they never touched, and a
+   Send button under a visibly worse draft. The gesture that broke it was the
+   gesture the movement is designed to provoke. The restoring step is no longer
+   cancellable: it is scheduled from inside the removing step, so nothing can
+   strike a clause out without the step that puts it back already on the clock.
+
+   Two: it fired on the switch strip alone. On a phone or a tablet the draft is
+   130 to 319px below the fold at that moment, so the whole thing played and
+   restored where nobody could see it, and spent its one run doing so. On every
+   desktop width the opposite: the draft was on screen and the slip that drove
+   it was not, which demonstrates that text changes by itself. It now requires
+   the switch AND the clause it drives to be on screen together, and gives the
+   run back rather than spending it if the reader scrolls off mid-wait. Where
+   both cannot share a screen it correctly never runs.
+
+   IT STANDS DOWN COMPLETELY for `prefers-reduced-motion`, rechecked at the
+   moment it would move rather than only at mount, and at the first sign of a
+   real person: a pointer, a key or focus anywhere in the section. It runs once
+   per page load, never on a desk change, and it never speaks into the live
+   region, because announcing a change nobody made is noise. The whole sequence
+   is under two seconds, well inside WCAG 2.2.2's five. */
 const AUTO_KEY: DemoSource = 'deductions';
 /* After the slips finish arriving (five at 74ms plus the tick draw) and a beat
-   to read the whole draft first. */
+   to read the whole draft first. Measured from the moment both halves are on
+   screen together, not from arrival, so this doubles as the dwell the reader
+   has to hold still for: scrolling straight past disarms it instead. */
 const AUTO_OFF_AT = 1100;
-const AUTO_ON_AT = 2500;
+/* Long enough to read the hedged sentence that replaced the figures, short
+   enough not to feel like a loop. Measured at 1400ms in a real browser. */
+const AUTO_BACK_AFTER = 1400;
+/* How much of each half has to be on screen. Both are small elements, so
+   asking for nearly all of them is a fair reading of "the reader can see it".
+   The fixed call to action bar at the bottom of narrow viewports is discounted
+   below, because an element behind it is not on screen in any useful sense. */
+const CAUSE_ON_SCREEN = 0.9;
+const EFFECT_ON_SCREEN = 0.9;
 
 const ALL_ON: Record<DemoSource, boolean> = {
   rules: true,
@@ -232,7 +263,11 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
      fires more than a second later, and it has to act on the state as it is
      then rather than as it was when it was scheduled. It never calls setSay,
      because a live region is for changes the reader made. */
-  const autoTimers = useRef<number[]>([]);
+  /* Held apart deliberately. Standing down may cancel the removing step and
+     must never be able to reach the restoring one. */
+  const offTimer = useRef<number | null>(null);
+  const backTimer = useRef<number | null>(null);
+  const armed = useRef(false);
   const autoRan = useRef(false);
   const autoTookItOff = useRef(false);
   const userActed = useRef(false);
@@ -246,62 +281,102 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     applySwitch(AUTO_KEY, next);
   };
 
-  /* Any sign of a real person stops it. Touching the demonstrated switch also
-     hands that source over, so the restoring step leaves it where the reader
-     put it rather than overruling them. */
+  /* Any sign of a real person stops it before it starts. Touching the
+     demonstrated switch also hands that source over, so the restoring step
+     leaves it where the reader put it rather than overruling them.
+
+     This cancels the removing step only. Cancelling the restoring step here is
+     what left readers a maimed letter: by the time this runs the clause may
+     already be struck out, and the person who interrupted is exactly the
+     person owed a whole draft. It is held off by its own guards instead, which
+     let it skip the write without skipping the obligation. */
   const standDown = useCallback((key?: DemoSource) => {
     userActed.current = true;
     if (key === AUTO_KEY) autoTookItOff.current = false;
-    autoTimers.current.forEach((t) => window.clearTimeout(t));
-    autoTimers.current = [];
+    if (offTimer.current !== null) {
+      window.clearTimeout(offTimer.current);
+      offTimer.current = null;
+    }
   }, []);
 
   useEffect(() => {
     if (!hasJs || autoRan.current || reduced()) return;
     const section = rootRef.current;
-    const group = section?.querySelector('.demo-switches');
-    if (!section || !group || typeof IntersectionObserver === 'undefined') return;
+    /* The switch that drives the change, and the words it drives. Both, or
+       this demonstrates nothing: the switch alone is a tick moving for no
+       reason, the draft alone is text changing by itself. */
+    const cause = section?.querySelector(`.demo-sw[data-src="${AUTO_KEY}"]`);
+    const effect = section?.querySelector(`.demo-clause[data-clause="${AUTO_KEY}"]`);
+    if (!section || !cause || !effect || typeof IntersectionObserver === 'undefined') return;
 
     const stop = () => standDown();
     section.addEventListener('pointerdown', stop);
     section.addEventListener('keydown', stop);
     section.addEventListener('focusin', stop);
 
+    const seen = new Map<Element, number>();
+    const bothOnScreen = () =>
+      (seen.get(cause) ?? 0) >= CAUSE_ON_SCREEN && (seen.get(effect) ?? 0) >= EFFECT_ON_SCREEN;
+
+    const arm = () => {
+      if (armed.current || autoRan.current || userActed.current || reduced()) return;
+      armed.current = true;
+      offTimer.current = window.setTimeout(() => {
+        offTimer.current = null;
+        if (userActed.current || editingRef.current || reduced()) {
+          armed.current = false;
+          return;
+        }
+        /* The run is spent here and nowhere earlier, and the step that puts
+           the clause back goes on the clock in the same breath. */
+        autoRan.current = true;
+        autoTookItOff.current = true;
+        autoStep.current(false);
+        backTimer.current = window.setTimeout(() => {
+          backTimer.current = null;
+          if (!autoTookItOff.current || editingRef.current) return;
+          autoStep.current(true);
+        }, AUTO_BACK_AFTER);
+      }, AUTO_OFF_AT);
+    };
+
+    /* Scrolled off before it moved: give the run back rather than spend it on
+       somebody who is no longer looking. */
+    const disarm = () => {
+      armed.current = false;
+      if (offTimer.current !== null) {
+        window.clearTimeout(offTimer.current);
+        offTimer.current = null;
+      }
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
+        for (const e of entries) seen.set(e.target, e.intersectionRatio);
+        if (autoRan.current) {
           io.disconnect();
-          if (userActed.current || autoRan.current) return;
-          autoRan.current = true;
-          autoTimers.current.push(
-            window.setTimeout(() => {
-              if (userActed.current || editingRef.current) return;
-              autoTookItOff.current = true;
-              autoStep.current(false);
-            }, AUTO_OFF_AT),
-            /* The restoring step is deliberately NOT gated on userActed: if
-               somebody arrives mid-sequence we still owe them a whole draft,
-               and leaving a clause struck out that they never removed is worse
-               than one more animation. It is gated on having taken it off, and
-               on the reader not having claimed that switch themselves. */
-            window.setTimeout(() => {
-              if (!autoTookItOff.current || editingRef.current) return;
-              autoStep.current(true);
-            }, AUTO_ON_AT),
-          );
+          return;
         }
+        if (bothOnScreen()) arm();
+        else disarm();
       },
-      { threshold: 0.4 },
+      {
+        threshold: [0, 0.25, 0.5, 0.75, 0.9, 1],
+        /* Discount the fixed call to action bar that sits over the bottom of
+           narrow viewports. An element behind it is not on screen. */
+        rootMargin: '0px 0px -80px 0px',
+      },
     );
-    io.observe(group);
+    io.observe(cause);
+    io.observe(effect);
 
     return () => {
       io.disconnect();
       section.removeEventListener('pointerdown', stop);
       section.removeEventListener('keydown', stop);
       section.removeEventListener('focusin', stop);
-      autoTimers.current.forEach((t) => window.clearTimeout(t));
+      if (offTimer.current !== null) window.clearTimeout(offTimer.current);
+      if (backTimer.current !== null) window.clearTimeout(backTimer.current);
     };
   }, [hasJs, standDown]);
 

@@ -159,10 +159,10 @@ export const en: Content = {
           {
             key: 'deductions',
             label: 'the deductions already logged',
-            count: '2 figures',
+            count: '3 figures',
             name: 'the deductions already logged',
-            off: 'Deductions log off. Two figures removed from the draft.',
-            on: 'Deductions log on. Two figures are back in the draft.',
+            off: 'Deductions log off. Three figures removed from the draft.',
+            on: 'Deductions log on. Three figures are back in the draft.',
           },
           {
             key: 'tone',

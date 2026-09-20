@@ -172,10 +172,10 @@ export const lt: Content = {
           {
             key: 'deductions',
             label: 'jau užfiksuoti atskaitymai',
-            count: '2 sumos',
+            count: '3 sumos',
             name: 'jau užfiksuoti atskaitymai',
-            off: 'Atskaitymų sąrašas išjungtas. Dvi sumos pašalintos iš juodraščio.',
-            on: 'Atskaitymų sąrašas įjungtas. Dvi sumos vėl juodraštyje.',
+            off: 'Atskaitymų sąrašas išjungtas. Trys sumos pašalintos iš juodraščio.',
+            on: 'Atskaitymų sąrašas įjungtas. Trys sumos vėl juodraštyje.',
           },
           {
             key: 'tone',

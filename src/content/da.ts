@@ -162,10 +162,10 @@ export const da: Content = {
           {
             key: 'deductions',
             label: 'de fradrag, der allerede er noteret',
-            count: '2 beløb',
+            count: '3 beløb',
             name: 'de fradrag, der allerede er noteret',
-            off: 'Fradragslisten er slået fra. To beløb er fjernet fra udkastet.',
-            on: 'Fradragslisten er slået til. To beløb er tilbage i udkastet.',
+            off: 'Fradragslisten er slået fra. Tre beløb er fjernet fra udkastet.',
+            on: 'Fradragslisten er slået til. Tre beløb er tilbage i udkastet.',
           },
           {
             key: 'tone',
