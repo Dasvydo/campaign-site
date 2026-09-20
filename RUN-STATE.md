@@ -5,7 +5,8 @@ Last updated: 2026-09-20 (waves 1-5 verified; wave 6 verified, T22 superseded, T
               wave 7 verified by four independent agents, which refuted two claims outright
               and found five things asserted by nothing; wave 8 verified by three more, which
               returned PARTIAL, PARTIAL and REFUTED, all fixed; three findings left to the
-              founder, recorded below; 1 blocked; deployed and read back off the live bundle)
+              founder, recorded below; T22 closed as superseded; 1 blocked; 32 of the 34
+              live tasks verified; deployed and read back off the live bundle)
 Status: executing
 Domain profile: software, with a `content` lens — every task shipped copy in en/da/lt
 
@@ -82,6 +83,10 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 
 ## Tasks
 
+Statuses: `verified` means somebody other than the author checked it. `landed` means it
+shipped and nobody independent has. `blocked` means it cannot proceed here. `superseded`
+means the thing it built no longer exists, so it is closed and counts in neither bar.
+
 | ID | Title | Wave | Status | Attempts | Verdict | Deliverable | Owns |
 |----|-------|------|--------|----------|---------|-------------|------|
 | T1 | One config for the ladder, with a guard that can fail | 1 | verified | 2 | **PARTIAL → closed** — first guard was circular, verifier mutated four values and it still passed | `src/lib/offer.ts` | `src/lib/offer.ts`, `scripts/verify-offer.mjs` |
@@ -105,7 +110,7 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T19 | Cut the payback row | 6 | verified | 1 | **PASS** — the ledger reads hours, worth, fee, kept. No payback row survives, in all three | two-figure ledger | `src/components/Numbers.tsx`, `src/lib/offer.ts` |
 | T20 | Stop the founding lede claiming we have no customers | 6 | verified | 1 | **PASS** — second session started a pilot in the offer and watched the claim leave the page, then reverted | `noCustomersYet()` | `src/lib/offer.ts`, `scripts/harness-claim.tsx` |
 | T21 | Stop calling Individual the other plan on the product site | 6 | verified | 1 | **PASS** — the note names doviloop.dev and no plan; read in en and lt, da by file | corrected note | `src/content/*.ts` |
-| T22 | Put Managed in the table, name plans as the source names them | 6 | landed | 1 | **SUPERSEDED, not outstanding** — it landed at `8db3734` and was removed at `ac8cb83`, so it is counted done rather than left in STILL TO DO where it would read as work somebody owes. `Compare.tsx` is gone and `OFFER.compare` and its six rate helpers now reach no component: the published rates are still configured and still guarded, and nothing renders them | five-row comparison, since removed | `src/lib/offer.ts` |
+| T22 | Put Managed in the table, name plans as the source names them | 6 | superseded | 1 | **CLOSED, not owed.** It landed at `8db3734` and the table it built was removed at `ac8cb83`, so there is nothing on the page left to verify: it can never go green by being checked, only by a decision, and the founder took that decision on 2026-09-20. `superseded` is a terminal status and sits outside both bars, rather than reading as work somebody still owes. `Compare.tsx` is gone. `OFFER.compare` and its six rate helpers stay: confirmed reachable from no component, but they are the record of what doviloop.dev publishes, the prebuild guard keeps them honest, and they cost nothing at runtime. Deleting them would have meant editing the single source of truth for prices to remove the only written record of the rates this offer is positioned against | five-row comparison, since removed | `src/lib/offer.ts` |
 | T23 | Drop the phone field to get under six | 6 | landed | 1 | **UNBLOCKED 2026-09-19** by the founder: spec changed, n8n validator updated to accept an empty string. The field is gone and the fit check asks five. The key is still on the wire, empty, because the contract still declares it. The repo's own mock still encoded the old rule and rejected every submission, which is what caught it; it now checks the key and its type and not its emptiness. **Not verified against the real n8n**, only against that mock | five questions | `src/components/Qualifier.tsx`, `scripts/mock-webhook.mjs` |
 | T24 | Prefill the booking email | 6 | blocked | 0 | | | `src/components/Qualifier.tsx` |
 | T25 | Derive the minutes from one place instead of two | 7 | verified | 2 | **REFUTED → fixed.** The guard was never called from anywhere: dead code, and `5 - 1` is a literal, not a derivation. A verifier set the constant to 9 and got a page stating three inconsistent minute figures, with a clean build. Now subtracted from named constants, so the drift is unrepresentable, and `validateValue` is wired into the prebuild. All three of the verifier's breaks now fail the build | one source of truth, actually enforced | `src/lib/value.ts`, `scripts/verify-offer.mjs`, `src/components/Demo.tsx` |
@@ -207,3 +212,4 @@ books calls, and it is the next thing that breaks if a lead says yes.
 | Both Managed and this offer stay; align the sites | founder |
 | Cut the payback row rather than soften it | founder |
 | Drop phone vs split the form | founder chose drop; blocked by contract, split shipped instead |
+| Close T22 as superseded and keep the dead compare config | founder, 2026-09-20. The rates are the record of what the product site charges; the guard keeps them true; deleting them would edit the price source of truth to lose that record |
