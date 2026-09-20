@@ -1,0 +1,75 @@
+# Every guard in this repository, run on every push.
+#
+# Until this file existed there was no CI at all. The 402 checks in `npm run
+# verify` and the two browser gates held only for as long as somebody
+# remembered to type the commands, and a run of independent verification had
+# already found three separate things that had silently stopped being true.
+# A guard nobody runs is a comment.
+#
+# The two browser gates are deliberately included even though they are not part
+# of `npm run verify`. They are excluded there because they need a built site
+# and a Chromium, which is a fair thing to keep out of a fast local loop and a
+# poor reason to never run them.
+
+name: verify
+
+on:
+  push:
+  pull_request:
+
+# A superseded push has nothing to tell anybody.
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install exactly what the lockfile says
+        run: npm ci
+
+      # The offer and the value model, the consent gate, the webhook payload,
+      # and the three locale files against each other.
+      - name: npm run verify
+        run: npm run verify
+
+      # `prebuild` runs verify:offer again on the way in, which is the point:
+      # a build that would ship a broken offer must not produce a bundle.
+      - name: Build
+        run: npm run build
+
+      - name: Chromium for the two browser gates
+        run: npx playwright-core install --with-deps chromium
+
+      # Server and gates in one step on purpose. A background process started in
+      # an earlier step is not something to rely on, and a gate that silently
+      # skips because nothing was listening is worse than no gate.
+      - name: The consent layout and the performed demonstration, in a real browser
+        run: |
+          set -euo pipefail
+          npx vite preview --port 4173 --strictPort &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true' EXIT
+
+          up=
+          for _ in $(seq 1 40); do
+            if curl -sf -o /dev/null http://127.0.0.1:4173/; then up=1; break; fi
+            sleep 1
+          done
+          if [ -z "$up" ]; then
+            echo "the preview server never came up, so nothing below was tested"
+            exit 1
+          fi
+
+          node scripts/verify-consent-layout.mjs http://127.0.0.1:4173
+          node scripts/verify-demo.mjs http://127.0.0.1:4173

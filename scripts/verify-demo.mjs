@@ -57,6 +57,7 @@
  *   node scripts/verify-demo.mjs http://127.0.0.1:4318
  */
 import { chromium } from 'playwright-core';
+import { launchOptions } from './chromium.mjs';
 
 const BASE = process.argv[2];
 if (!BASE) {
@@ -81,9 +82,7 @@ const check = (ok, label, detail = '') => {
   if (!ok) failures += 1;
 };
 
-const browser = await chromium.launch({
-  executablePath: process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium',
-});
+const browser = await chromium.launch(launchOptions());
 
 try {
   /** A loaded page with the trackers refused, NOT yet scrolled anywhere. */

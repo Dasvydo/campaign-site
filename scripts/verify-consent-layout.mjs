@@ -35,11 +35,11 @@ let chromium;
 try {
   ({ chromium } = await import('playwright-core'));
 } catch {
-  console.error('needs playwright-core:  npm install --no-save playwright-core');
+  console.error('needs playwright-core:  npm ci');
   process.exit(2);
 }
+const { launchOptions } = await import('./chromium.mjs');
 
-const EXE = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const BASE = process.argv[2];
 if (!BASE) {
   console.error('usage: node scripts/verify-consent-layout.mjs <base-url>');
@@ -75,7 +75,7 @@ const check = (ok, label, detail = '') => {
   if (!ok) fails += 1;
 };
 
-const browser = await chromium.launch({ executablePath: EXE, args: ['--no-sandbox'] });
+const browser = await chromium.launch(launchOptions({ args: ['--no-sandbox'] }));
 
 for (const [w, h, vpName] of VIEWPORTS) {
   console.log(`\n${vpName} ${w}x${h}`);
