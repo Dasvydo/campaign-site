@@ -57,7 +57,12 @@ jobs:
       - name: The consent layout and the performed demonstration, in a real browser
         run: |
           set -euo pipefail
-          npx vite preview --port 4173 --strictPort &
+          # --host 127.0.0.1 is not decoration. Without it `vite preview` binds
+          # to `localhost`, which on this runner resolves to ::1 first, so it
+          # listens on IPv6 only and every IPv4 request below is refused. The
+          # first run of this workflow failed exactly there, having printed a
+          # cheerful "Local: http://localhost:4173/" the whole time.
+          npx vite preview --port 4173 --strictPort --host 127.0.0.1 &
           server=$!
           trap 'kill "$server" 2>/dev/null || true' EXIT
 
