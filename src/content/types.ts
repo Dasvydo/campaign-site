@@ -434,6 +434,13 @@ export interface Content {
     accuracy: {
       title: string;
       items: readonly string[];
+      /** The one measured figure on this block, said quietly and said here
+          rather than beside the draft the reader has just watched appear.
+          It was a full sized line under the worked example, which put a
+          limitation in the loudest place on the page; it belongs with the
+          other limits. "<before><one in how many, as a count><after>", the
+          count derived from the measured share in src/lib/value.ts. */
+      share: { before: string; after: string };
       unmeasured: string;
     };
   };

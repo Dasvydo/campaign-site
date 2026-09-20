@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
+import { formatCount } from '../lib/offer';
+import { oneEmailIn } from '../lib/value';
 
 /**
  * Three folders on a desk, and the two things worth saying beside them.
@@ -91,6 +93,16 @@ export function WhoFor({ c }: { c: Content }) {
               <li key={item}>{item}</li>
             ))}
           </ul>
+          {/* The measured figure, here rather than under the worked example.
+              It used to be a full sized line beside the draft the reader had
+              just watched appear, which put the product's main limitation in
+              the loudest place on the page. It is a limit, so it sits with
+              the other limits, in the same muted type as the one below it. */}
+          <p className="who-accuracy-note">
+            {c.who.accuracy.share.before}
+            {formatCount(oneEmailIn(), c.htmlLang)}
+            {c.who.accuracy.share.after}
+          </p>
           <p className="who-accuracy-note">{c.who.accuracy.unmeasured}</p>
         </div>
 

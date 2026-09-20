@@ -447,6 +447,7 @@ export const en: Content = {
         'There is no automatic send anywhere in this product. A person reads every draft and sends it themselves.',
         'A draft quotes the fee, the deadline or the rule out of your own documents, in your own wording.',
       ],
+      share: { before: 'Measured on a live mailbox: about one email in ', after: ' got a draft.' },
       unmeasured: 'We have not measured how often a draft still needs correcting. When we have, the figure goes on this page.',
     },
   },

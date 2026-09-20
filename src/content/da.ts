@@ -447,6 +447,7 @@ export const da: Content = {
         'Der er ingen automatisk afsendelse nogen steder i produktet. Et menneske læser hvert udkast og sender det selv.',
         'Et udkast citerer gebyret, fristen eller reglen fra jeres egne dokumenter, i jeres egne ord.',
       ],
+      share: { before: 'Målt på en rigtig postkasse: cirka én mail ud af ', after: ' fik et udkast.' },
       unmeasured: 'Vi har ikke målt, hvor ofte et udkast stadig skal rettes. Når vi har, kommer tallet på denne side.',
     },
   },

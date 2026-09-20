@@ -457,6 +457,7 @@ export const lt: Content = {
         'Šiame produkte niekur nėra automatinio išsiuntimo. Kiekvieną juodraštį perskaito žmogus ir išsiunčia pats.',
         'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, Jūsų pačių žodžiais.',
       ],
+      share: { before: 'Išmatuota tikroje pašto dėžutėje: juodraštį gavo maždaug vienas laiškas iš ', after: '.' },
       unmeasured: 'Nematavome, kaip dažnai juodraštį vis dar reikia taisyti. Kai išmatuosime, skaičius atsiras šiame puslapyje.',
     },
   },

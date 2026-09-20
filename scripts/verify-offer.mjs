@@ -272,6 +272,9 @@ check(headlinePackage().covers === 20,
 check(value.heroHoursBack() === 41,
   'the hero hours are still the count the da and lt endings were written for',
   `heroHoursBack() is ${value.heroHoursBack()}; if this moved, re-read the endings in lt.ts and da.ts`);
+check(value.oneEmailIn() === 7,
+  'the accuracy block\'s one in how many is still the count the lt case was written for',
+  `oneEmailIn() is ${value.oneEmailIn()}; Lithuanian writes "vienas laiskas is N" and the genitive plural after "is" was written for 7, so if this moved, re-read the share line in lt.ts and da.ts`);
 check(value.VALUE.minutesFromScratch.value === 5,
   'the worked example minutes are still the count the da and lt endings were written for',
   `minutesFromScratch is ${value.VALUE.minutesFromScratch.value}; if this moved, re-read closeBasis in lt.ts and da.ts`);
