@@ -128,7 +128,12 @@ export const VALUE: Value = deepFreeze({
      than this (5,000 and 10,000), so the allowance cannot bind inside the
      control, which is deliberate: a slider that runs past what the fee buys
      would need the page to say what happens then, and it does not. */
-  drafts: { min: 50, max: 3000, step: 50, start: 450 },
+  /* The control opens on what the reader's own package pools, and reaches
+     the largest allowance the offer sells. `start` is only the value before a
+     head count is known; the panel resets it to `packageFor(people).draftCap`
+     whenever the package changes, so a reader on Desk opens on 5,000 and one
+     on Firm on 10,000. */
+  drafts: { min: 500, max: 10000, step: 100, start: 5000 },
   hourly: { min: 5, max: 100, step: 5 },
   hourlyStart: { en: 30, da: 30, lt: 10 },
   minutes: { min: 1, max: 10, step: 1 },
@@ -485,11 +490,16 @@ export function validateValue(value: Value = VALUE, offer: Offer = OFFER): strin
     out.push('the drafts control must open inside its own range');
   }
   if (!(value.drafts.min > 0)) out.push('the drafts control must not offer zero drafts');
-  /* The panel would otherwise let a reader ask for more drafts than the fee
-     buys, and the page has nothing to say about what happens then. */
+  /* The control is denominated in the allowance now, so its ceiling IS the
+     largest allowance: shorter and it could not show a Firm its own package,
+     longer and it would price drafts nobody is sold. */
+  const biggestPool = Math.max(...offer.order.map((id) => offer.packages[id].draftCap));
+  if (value.drafts.max !== biggestPool) {
+    out.push(`the drafts control should stop at the largest pooled allowance, ${biggestPool}`);
+  }
   for (const id of offer.order) {
-    if (value.drafts.max > offer.packages[id].draftCap) {
-      out.push(`the drafts control can reach past what ${id} pools`);
+    if (offer.packages[id].draftCap < value.drafts.min) {
+      out.push(`${id} pools fewer drafts than the control can offer`);
     }
   }
   for (const [k, v] of Object.entries(value.hourlyStart)) {

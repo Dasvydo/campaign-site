@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Content } from '../content/types';
 import { formatCount } from '../lib/offer';
 import { oneEmailIn } from '../lib/value';
@@ -13,7 +13,9 @@ import { oneEmailIn } from '../lib/value';
  */
 export function WhoFor({ c }: { c: Content }) {
   const rootRef = useRef<HTMLElement | null>(null);
-  const stripRef = useRef<HTMLUListElement | null>(null);
+  const [open, setOpen] = useState(0);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const stripRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -67,18 +69,67 @@ export function WhoFor({ c }: { c: Content }) {
           </h2>
         </header>
 
-        <ul className="who-strip" role="list" ref={stripRef}>
-          {c.who.groups.map((g) => (
-            <li className="who-item" key={g.tab}>
-              <div className="who-lift">
-                <h3 className="who-tab">{g.tab}</h3>
-                <div className="who-sheet">
-                  <p className="who-line">{g.line}</p>
-                </div>
-              </div>
-            </li>
+        {/* A filing cabinet, not three cards side by side.
+ 
+            The founder read this section and said the folders were not earning
+            their space and should do something. They were three static cards
+            showing everything at once, across a very wide row, and the reader
+            had to take in all three to learn they only cared about one.
+ 
+            One folder is open at a time and the tabs pick it, which is the
+            pattern the worked example already uses for the same three trades,
+            two sections up. The closed panels stay in the DOM and are `hidden`,
+            so a reader who searches the page still finds their own trade and
+            the audit still sees all three lines.
+ 
+            Real tabs: roving focus, arrow keys, Home and End, and `aria-selected`
+            on the one that is open. A thing that looks pressable and does not
+            answer the keyboard is worse than a thing that never moved. */}
+        <div className="who-strip" ref={stripRef}>
+          <div className="who-tabs" role="tablist" aria-labelledby="who-h">
+            {c.who.groups.map((g, i) => (
+              <button
+                key={g.tab}
+                type="button"
+                role="tab"
+                id={'who-tab-' + g.id}
+                className={'who-tab' + (i === open ? ' is-open' : '')}
+                aria-selected={i === open}
+                aria-controls={'who-panel-' + g.id}
+                tabIndex={i === open ? 0 : -1}
+                ref={(el) => { tabRefs.current[i] = el; }}
+                onClick={() => setOpen(i)}
+                onKeyDown={(e) => {
+                  const last = c.who.groups.length - 1;
+                  const to =
+                    e.key === 'ArrowRight' ? (i === last ? 0 : i + 1)
+                    : e.key === 'ArrowLeft' ? (i === 0 ? last : i - 1)
+                    : e.key === 'Home' ? 0
+                    : e.key === 'End' ? last
+                    : null;
+                  if (to === null) return;
+                  e.preventDefault();
+                  setOpen(to);
+                  tabRefs.current[to]?.focus();
+                }}
+              >
+                {g.tab}
+              </button>
+            ))}
+          </div>
+          {c.who.groups.map((g, i) => (
+            <div
+              key={g.tab}
+              role="tabpanel"
+              id={'who-panel-' + g.id}
+              aria-labelledby={'who-tab-' + g.id}
+              className="who-sheet"
+              hidden={i !== open}
+            >
+              <p className="who-line">{g.line}</p>
+            </div>
           ))}
-        </ul>
+        </div>
 
         {/* The objection a regulated trade asks first, answered where they
             are already asking whether this is for them. Every line is a claim

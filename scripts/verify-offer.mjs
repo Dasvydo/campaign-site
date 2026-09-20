@@ -322,15 +322,19 @@ console.log('\nThe buyer-side model');
  * is 30 hours; at 30 an hour that is 900; less the Desk fee of 149 the firm
  * keeps 751. */
 const DRAFT_CHAIN = [
-  /* drafts, minutes, hourly, people, hours, worth, kept */
-  { drafts: 450, minutes: 4, hourly: 30, people: 10, hours: 30, worth: 900, kept: 751 },
-  { drafts: 3000, minutes: 10, hourly: 100, people: 20, hours: 500, worth: 50000, kept: 49801 },
-  /* The low end, which is where the panel used to stop multiplying: 50 drafts
-     at a minute is 0.8 of an hour once rounded to what the page prints, and
-     0.8 at 5 an hour is 4 exactly. Whole numbers, on purpose: if these ever
-     need a repeating decimal again, the money has stopped coming from the
-     figure the reader can see. */
-  { drafts: 50, minutes: 1, hourly: 5, people: 10, hours: 0.8, worth: 4, kept: 4 - 149 },
+  /* drafts, minutes, hourly, people, hours, worth, kept.
+     Worked out on paper. The control opens on a package's pooled allowance
+     now, so the first two rows are the two things the page actually sells:
+     Desk's 5,000 drafts and Firm's 10,000. */
+  /* 5,000 x 4 = 20,000 minutes = 333.33 h, which rounds to 333 above ten, and
+     333 x 30 = 9,990, less the Desk fee of 149. */
+  { drafts: 5000, minutes: 4, hourly: 30, people: 10, hours: 333, worth: 9990, kept: 9841 },
+  /* 10,000 x 4 = 40,000 minutes = 666.67 h -> 667, x 30 = 20,010, less 199. */
+  { drafts: 10000, minutes: 4, hourly: 30, people: 20, hours: 667, worth: 20010, kept: 19811 },
+  /* The floor of the control, where the rounding to a tenth matters:
+     500 x 1 = 500 minutes = 8.333 h -> 8.3, and 8.3 x 5 = 41.5. */
+  { drafts: 500, minutes: 1, hourly: 5, people: 10, hours: 8.3, worth: 41.5, kept: 41.5 - 149 },
+  /* And a round one in the middle: 600 x 5 = 3,000 minutes = 50 h, x 20. */
   { drafts: 600, minutes: 5, hourly: 20, people: 20, hours: 50, worth: 1000, kept: 801 },
 ];
 const near = (a, b) => a !== null && Math.abs(a - b) < 0.005;
@@ -347,11 +351,11 @@ for (const t of DRAFT_CHAIN) {
 /* The sum must move with the figure the reader supplies, which is the thing
    the mutation above broke while every check stayed green. */
 check(
-  value.hoursFromDrafts(900, 4) === 2 * value.hoursFromDrafts(450, 4),
+  value.hoursShown(1200, 4) === 2 * value.hoursShown(600, 4),
   '  twice the drafts is twice the hours, so the control drives the sum',
-  `${value.hoursFromDrafts(900, 4)} against 2 x ${value.hoursFromDrafts(450, 4)}`);
+  `${value.hoursShown(1200, 4)} against 2 x ${value.hoursShown(600, 4)}`);
 /* And refuse what it cannot stand behind, rather than dividing anyway. */
-check(value.hoursFromDrafts(value.VALUE.drafts.max + value.VALUE.drafts.step, 4) === null,
+check(value.hoursShown(value.VALUE.drafts.max + value.VALUE.drafts.step, 4) === null,
   '  and refuses a draft count the control cannot offer', 'null past the ceiling');
 
 const valueProblems = value.validateValue();

@@ -300,7 +300,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       c.demo.title, c.demo.lede, c.demo.pickLead,
       /* The close carries the minutes from value.ts now, so its two halves
          are what reach the DOM; the assembled sentence is asserted below. */
-      c.demo.close.before, c.demo.close.after,
+      c.demo.close.before, c.demo.close.mark, c.demo.close.markEnd, c.demo.close.after,
       ...c.demo.desks.map((d) => d.tab),
       /* only the first desk's paper is on the page at rest; the other two are
          one click away and are covered by the browser run instead. */
@@ -398,35 +398,12 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],
       ['people covered by the fee', c.price.covers.people.label + figure(tier.covers)],
       ['the pooled draft cap', c.price.covers.drafts.label + figure(tier.draftCap)],
-      /* The guarantee, with the count the offer holds itself to. It is the
-         one line on the band that outlives the trial, and a sentence reading
-         "fewer than , that month is free" would ship in three languages
-         without a single check noticing. */
-      [
-        'the guarantee, with the drafts it promises',
-        c.price.guarantee.before + figure(OFFER.guaranteeDrafts) + c.price.guarantee.after,
-      ],
       /* The plan with no row. Everything else in this section is arithmetic
          the table or a claim would give away if it went missing, and this is
          the one figure in it with nothing behind it: a published rate dropped
          into a sentence. Nothing else on the page would move if it arrived
          blank, so a sentence reading "One seat costs  a month" would ship in
          three languages without a single check noticing. */
-      /* The hero's one flat figure. Arithmetic on a stated volume and a
-         stated assumption, read from value.ts; a hero that lost it would
-         still read as a sentence, which is why the words alone prove
-         nothing. It carried the break even hourly cost until 2026-09-19,
-         when it became the hours themselves: the division produced a figure
-         below every legal wage in these markets, so the sentence it made was
-         a condition that could not fail. */
-      [
-        'the hero line, with the hours handed back',
-        c.hero.payback.before +
-          figure(headlinePackage().covers) +
-          c.hero.payback.mid +
-          figure(heroHoursBack() ?? NaN) +
-          c.hero.payback.after,
-      ],
       /* Each package card: its name and then its fee, the way the card lays
          them out. Two cards, both read from the offer by id. */
       ...packages().map((p): [string, string] => [
@@ -459,7 +436,8 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          Asserted assembled so the two cannot drift apart again in silence. */
       [
         'the worked example, with the minutes nobody spent',
-        c.demo.close.before + figure(VALUE.minutesFromScratch.value) + c.demo.close.after,
+        c.demo.close.before + c.demo.close.mark + figure(VALUE.minutesFromScratch.value) +
+          c.demo.close.markEnd + c.demo.close.after,
       ],
       /* The measured share, which no longer multiplies anything on this panel
          and is a hint under the control instead. Still assembled from value.ts
@@ -706,7 +684,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       en.price.packages.pick, en.price.included.title, ...en.price.included.items,
       en.numbers.beats.keep.label, en.numbers.beats.fee.before,
       en.numbers.inputs.people.label, en.numbers.inputs.hourly.label, en.numbers.under,
-      en.hero.payback.before,
       ...en.demo.desks.map((d) => d.tab),
       ...en.demo.desks[0].sources.map((x) => x.label),
       ...en.who.groups.map((g) => g.line),

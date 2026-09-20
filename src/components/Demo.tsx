@@ -815,13 +815,12 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
             the page came off five. */}
         <p className="demo-close">
           {c.demo.close.before}
-          {formatCount(VALUE.minutesFromScratch.value, c.htmlLang)}
+          <span className="demo-close-hl">
+            {c.demo.close.mark}
+            {formatCount(VALUE.minutesFromScratch.value, c.htmlLang)}
+            {c.demo.close.markEnd}
+          </span>
           {c.demo.close.after}
-        </p>
-        <p className="demo-close-basis">
-          {c.demo.closeBasis.before}
-          {formatCount(VALUE.minutesFromScratch.value, c.htmlLang)}
-          {c.demo.closeBasis.after}
         </p>
 
         <p className="demo-sr" aria-live="polite" aria-atomic="false">

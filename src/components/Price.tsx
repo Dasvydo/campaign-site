@@ -521,8 +521,6 @@ export function Price({
                     page that is most of them. It defeated the entire purpose of
                     adding it. It sits on the band now, under the trade it
                     explains and under the count of what is left. */}
-                <p className="price-fee-note">{c.price.founding.note}</p>
-
                 <p className="price-signature">
                   <span className="price-signature-name">
                     {c.price.founding.signature.name}
@@ -538,14 +536,6 @@ export function Price({
               </p>
             )}
 
-            {/* The guarantee. It outlives the trial, which is why it is here
-                and not in the terms: the count is the offer's own, and the
-                sentence is the one that says what happens if it is not met. */}
-            <p className="price-guarantee" data-price-guarantee>
-              {c.price.guarantee.before}
-              {figure(OFFER.guaranteeDrafts)}
-              {c.price.guarantee.after}
-            </p>
 
             {/* What is in the product, and it is the same list on both
                 cards, which is the point of printing it once. */}
@@ -568,6 +558,12 @@ export function Price({
                     </li>
                   ))}
                 </ol>
+
+                {/* The one thing about the trade a reader might need and most
+                    will not: how to take the product without being named. It
+                    was on the open band, where it was a fifth block in a
+                    section the founder had already called too long. */}
+                <p className="price-fee-note">{c.price.founding.note}</p>
 
                 {/* The fee sheet. The firm's own line repeats the lit card on
                     purpose: read on its own, inside the terms, it is the line

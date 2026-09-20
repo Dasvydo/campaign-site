@@ -34,8 +34,8 @@ export const lt: Content = {
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
 
     title: {
-      before: '40 laiškų. Tie, kuriems atsakymas yra Jūsų bylose, ',
-      mark: 'jau juodraščiuose',
+      before: '40 laiškų. Tie, į kuriuos atsako Jūsų bylos, ',
+      mark: 'juodraščiuose',
       mid: '. Iki ',
       after: ' val.',
     },
@@ -49,11 +49,6 @@ export const lt: Content = {
        Both counts are pinned in scripts/verify-offer.mjs. Moving either fails
        the build, which is the only reason these endings are safe: they are
        right for this pair and nothing else. */
-    payback: {
-      before: 'Įmonė, kurioje dirba ',
-      mid: '\u00a0žmonių, per mėnesį susigrąžina maždaug ',
-      after: '\u00a0valandą.',
-    },
 
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
@@ -105,12 +100,10 @@ export const lt: Content = {
     editNote: 'Jūs jį pakeitėte prieš išsiunčiant. Būtent taip atrodo pirma savaitė.',
     reLabel: 'Dėl',
     close: {
-      before: 'Jūs perskaitote. Jūs išsiunčiate. Niekas nepraleido ',
-      after: ' minučių jį rašydamas.',
-    },
-    closeBasis: {
-      before: 'Mūsų prielaida, kiek trunka parašyti vieną nuo nulio, yra ',
-      after: ' minutės. Laiko nematavome.',
+      before: 'Jūs perskaitote. Jūs išsiunčiate. ',
+      mark: 'Niekas nepraleido ',
+      markEnd: ' minučių',
+      after: ' jį rašydamas.',
     },
     say: {
       allOff: 'Nieko neliko įjungta. Juodraštis yra keturios bendro pobūdžio eilutės.',
@@ -551,10 +544,6 @@ export const lt: Content = {
       },
     },
 
-    guarantee: {
-      before: 'Jei per pirmas trisdešimt dienų tinkamų juodraščių gavote mažiau nei ',
-      after: ', tas mėnuo nemokamas.',
-    },
     termsLabel: 'Parodyti sąlygas',
     terms: [
       { t: 'Įdiegimo pokalbis ir įdiegimas įskaičiuoti.', n: 'Nei vienas, nei kitas vėliau neapmokestinamas.' },
@@ -598,7 +587,7 @@ export const lt: Content = {
 
   form: {
     eyebrow: 'Ką man daryti dabar',
-    title: 'Trys klausimai, paskui dar du. Mažiau nei minutė.',
+    title: 'Trys klausimai. Mažiau nei minutė.',
     lead: 'Taip išsiaiškiname, ar pokalbis vertas Jūsų laiko. Jei ne, šis puslapis taip ir pasakys, užuot Jus užregistravęs.',
     formNo: 'Tinkamumo patikra',
     optional: 'Neprivaloma',

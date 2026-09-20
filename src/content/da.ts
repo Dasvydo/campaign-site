@@ -34,15 +34,10 @@ export const da: Content = {
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
 
     title: {
-      before: 'Fyrre mails ind. Dem jeres sager kan svare på, ',
+      before: 'Fyrre mails ind. Dem jeres sager svarer på, ',
       mark: 'i udkast',
       mid: '. Inden klokken ',
       after: '.',
-    },
-    payback: {
-      before: 'Et firma med ',
-      mid: '\u00a0ansatte får cirka ',
-      after: '\u00a0timer tilbage om måneden.',
     },
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
@@ -95,12 +90,10 @@ export const da: Content = {
     editNote: 'Du rettede det, før det blev sendt. Sådan ser den første uge ud.',
     reLabel: 'Vedr',
     close: {
-      before: 'Du læser det. Du sender det. Ingen satte sig ned og brugte ',
-      after: ' minutter på at skrive det.',
-    },
-    closeBasis: {
-      before: 'Vores antagelse om at skrive et fra bunden er ',
-      after: ' minutter. Vi har ikke taget tid på det.',
+      before: 'Du læser det. Du sender det. ',
+      mark: 'Ingen satte sig ned og brugte ',
+      markEnd: ' minutter',
+      after: ' på at skrive det.',
     },
     say: {
       allOff: 'Intet er slået til. Udkastet er fire intetsigende linjer.',
@@ -541,10 +534,6 @@ export const da: Content = {
       },
     },
 
-    guarantee: {
-      before: 'Er der efter tredive dage kommet færre brugbare udkast tilbage end ',
-      after: ', er den måned gratis.',
-    },
     termsLabel: 'Vis vilkårene',
     terms: [
       { t: 'Opsætningsmødet og opsætningen er med.', n: 'Ingen af delene faktureres bagefter.' },
@@ -587,7 +576,7 @@ export const da: Content = {
 
   form: {
     eyebrow: 'Hvad gør jeg nu',
-    title: 'Tre spørgsmål, så to. Under et minut.',
+    title: 'Tre spørgsmål. Under et minut.',
     lead: 'Sådan finder vi ud af, om et møde er din tid værd. Er det ikke det, siger den her side det i stedet for at booke dig.',
     formNo: 'Pasformstjek',
     optional: 'Valgfrit',

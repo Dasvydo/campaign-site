@@ -104,6 +104,28 @@ export function Numbers({ c }: { c: Content }) {
   const people = peopleRange();
   const [heads, setHeads] = useState(people.start);
   const [drafts, setDrafts] = useState(VALUE.drafts.start);
+  /* The control opens on the allowance the reader's own package pools, and
+     follows them when their head count moves them to the other package.
+
+     The founder's point: the firm is buying a pooled number of drafts, so the
+     panel should open on the number it is selling them rather than on a guess
+     about their volume. Dragging it afterwards is theirs; this only sets where
+     it starts, and only when the package underneath actually changes. */
+  const pkgId = packageFor(heads)?.id ?? null;
+  const lastPkg = useRef<string | null>(null);
+  useEffect(() => {
+    if (pkgId === null || pkgId === lastPkg.current) return;
+    const was = lastPkg.current;
+    lastPkg.current = pkgId;
+    const pool = packageFor(heads)?.draftCap ?? VALUE.drafts.start;
+    const wasPool = was === null ? null : OFFER.order
+      .map((id) => OFFER.packages[id])
+      .find((q) => q.id === was)?.draftCap ?? null;
+    /* Only move it if the reader has not dragged it away from the last
+       package's allowance. Their own number is theirs. */
+    if (wasPool === null || drafts === wasPool) setDrafts(pool);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pkgId]);
   const [hourly, setHourly] = useState(() => hourlyStart(c.htmlLang));
   const [minutes, setMinutes] = useState(VALUE.minutesPerDraft.value);
 
@@ -290,7 +312,7 @@ export function Numbers({ c }: { c: Content }) {
                 </div>
               ))}
             </dl>
-            <p className="numbers-note">{c.numbers.note}</p>
+            <p className="numbers-note numbers-note-strong">{c.numbers.note}</p>
           </Disclosure>
         </div>
       </div>

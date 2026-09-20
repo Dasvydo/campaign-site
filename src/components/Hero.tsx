@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react';
 import type { Content } from '../content/types';
-import { formatCount, headlinePackage } from '../lib/offer';
-import { heroHoursBack } from '../lib/value';
 
 /**
  * The hero: masthead, the argument, and the pile of forty letters.
@@ -67,12 +65,10 @@ export function Hero({
   onCta: () => void;
 }) {
   const heroRef = useRef<HTMLElement | null>(null);
-  const payback = heroHoursBack();
   /* The head count the hours were computed on, read from the same package the
      model used rather than spelled out in the copy. It was a word in three
      locale files, decoupled, and a verifier moved the coverage to watch the
      sentence contradict itself. */
-  const paybackCovers = headlinePackage().covers;
   const tallyRef = useRef<SVGSVGElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
 
@@ -288,27 +284,6 @@ export function Hero({
             </a>
           </div>
 
-          {/* The one value figure the page states flatly. It is the fee
-              divided by the hours handed back at a stated volume, so it is
-              arithmetic on our own price rather than a claim about anyone's
-              staff: the reader knows what their people cost and does the
-              comparison themselves. Read from src/lib/value.ts, never typed,
-              and hedged in the copy because the volume it assumes is a
-              choice. It sits under the button in the DOM and on every width,
-              so what a screen reader hears is what a sighted reader sees: on
-              a phone the button has to clear the cookie sheet, and a visual
-              reorder alone would have put the two audiences out of step. */}
-          {payback !== null ? (
-            <p className="hero-payback" data-hero-payback>
-              {c.hero.payback.before}
-              <span className="hero-payback-fig">
-                {formatCount(paybackCovers, c.htmlLang)}
-              </span>
-              {c.hero.payback.mid}
-              <span className="hero-payback-fig">{formatCount(payback, c.htmlLang)}</span>
-              {c.hero.payback.after}
-            </p>
-          ) : null}
         </div>
 
         <div className="hero-count" aria-hidden="true">

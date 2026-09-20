@@ -31,15 +31,10 @@ export const en: Content = {
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
 
     title: {
-      before: 'Forty emails in. The ones your files can answer, ',
+      before: 'Forty emails in. The ones your files answer, ',
       mark: 'drafted',
       mid: '. By ',
       after: '.',
-    },
-    payback: {
-      before: 'A firm of\u00a0',
-      mid: ' gets back about ',
-      after: '\u00a0hours a month.',
     },
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
@@ -92,12 +87,10 @@ export const en: Content = {
     editNote: 'You changed it before it went out. That is what the first week looks like.',
     reLabel: 'Re',
     close: {
-      before: 'You read it. You send it. Nobody sat down and spent ',
-      after: ' minutes writing it out.',
-    },
-    closeBasis: {
-      before: 'Our assumption for writing one from nothing is ',
-      after: ' minutes. We have not timed it.',
+      before: 'You read it. You send it. ',
+      mark: 'Nobody sat down and spent ',
+      markEnd: ' minutes',
+      after: ' writing it out.',
     },
     say: {
       allOff: 'Nothing left on. The draft is four generic lines.',
@@ -541,10 +534,6 @@ export const en: Content = {
       },
     },
 
-    guarantee: {
-      before: 'Thirty days in, if the usable drafts you have had number fewer than ',
-      after: ', that month is free.',
-    },
     termsLabel: 'Show the terms',
     terms: [
       { t: 'The setup call and the setup are included.', n: 'Neither is billed afterwards.' },
@@ -587,7 +576,7 @@ export const en: Content = {
 
   form: {
     eyebrow: 'What do I do now',
-    title: 'Three questions, then two. Under a minute.',
+    title: 'Three questions. Under a minute.',
     lead: 'This is how we work out whether a call is worth your time. If it is not, this page will say so instead of booking you in.',
     formNo: 'Fit check',
     optional: 'Optional',

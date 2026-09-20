@@ -32,4 +32,4 @@ export const env = {
 export const PRICING_URL = 'https://doviloop.dev/pricing';
 
 /** Last-resort contact if no booking URL is configured yet. */
-export const FALLBACK_CONTACT_EMAIL = 'hello@doviloop.dev';
+export const FALLBACK_CONTACT_EMAIL = 'dovyvini@doviloop.dev';

@@ -229,7 +229,6 @@ export interface Content {
         so each translation is written for one pair of counts and the build
         refuses a change that would move either without the endings being read
         again. */
-    payback: { before: string; mid: string; after: string };
 
     /** The pile of letters, and the one dealt off the top of it.
 
@@ -315,10 +314,13 @@ export interface Content {
         one count that renders, and scripts/verify-offer.mjs pins that count, so
         moving it fails the build rather than shipping bad grammar in a language
         the person moving it may not read. */
-    close: { before: string; after: string };
+    /** The example's closing line, split so the highlighter can fall on the
+        clause that carries the point and take the figure with it. The minutes
+        sit between `mark` and `markEnd`, inside the highlight, because a
+        number left outside it reads as an afterthought. */
+    close: { before: string; mark: string; markEnd: string; after: string };
     /** Says the figure in `close` is an assumption, not a measurement, and
         carries it again: "<before><the same minutes><after>". */
-    closeBasis: { before: string; after: string };
 
     /** The live region's fixed lines. Everything else it says comes from the
         desk, because it names that desk's own facts. */
@@ -571,13 +573,6 @@ export interface Content {
       signature: { name: string; line: string };
     };
 
-    /** The guarantee, with the count read from the offer.
-        "<before><the drafts we hold ourselves to><after>": fewer usable
-        drafts than that in the first thirty days and the month is free. The
-        count ends its clause; the noun it counts comes before it, so the one
-        reachable count, `OFFER.guaranteeDrafts`, is the one each translation
-        has to be right for. */
-    guarantee: { before: string; after: string };
     termsLabel: string;
     terms: [PriceTerm, PriceTerm, PriceTerm, PriceTerm];
 
