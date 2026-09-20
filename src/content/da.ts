@@ -489,6 +489,7 @@ export const da: Content = {
       peopleLabel: 'Personer dækket, op til',
       draftsLabel: 'Udkast om måneden, fælles',
       note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
+      under: { before: 'Mindre end det? Planen på ', link: 'doviloop.dev', after: ' laver den samme skrivning og koster væsentligt mindre.' },
       over: 'Større end det? Spørg, så regner vi en pris ud til jer.',
     },
 

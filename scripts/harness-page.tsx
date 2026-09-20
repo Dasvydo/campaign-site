@@ -306,6 +306,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       c.demo.desks[0].letter.from, c.demo.desks[0].letter.subject,
       ...c.demo.desks[0].sources.map((x) => x.label),
       c.who.title, ...c.who.groups.map((g) => g.line),
+      /* The signpost for a firm too small for either card. The last one was
+         deleted and nothing noticed, because nothing asserted it; a reader who
+         is not the buyer still has somewhere to go, and this is the only place
+         on the page that says so before the form. */
+      c.price.packages.under.before, c.price.packages.under.after,
       /* The accuracy block. Asserted line by line because it is the answer to
          the objection that decides a regulated sale, and a block that quietly
          stopped rendering would look like nothing at all. */
@@ -826,6 +831,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          waiting; with no card the hero merely asserts it. */
       heroCardText: (host.querySelector('#hero .hero-deal')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
       heroCardWants: [c.hero.deal.draftLabel, c.hero.deal.subject, c.hero.deal.preview],
+      /* Words are not a signpost. This one has to be pressable and it has to
+         go to the product site. */
+      underLinkHref: host.querySelector('#price .price-pkgs-under a')?.getAttribute('href') ?? '',
+      underLinkText: (host.querySelector('#price .price-pkgs-under a')?.textContent ?? '').trim(),
       /* The calculator's rows, in the order they are read down. Nothing pinned
          the SET of rows once `numbers.beats` became a named record, so a sixth
          row could be added straight into the component, in untranslated

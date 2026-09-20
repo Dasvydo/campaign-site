@@ -489,6 +489,7 @@ export const en: Content = {
       peopleLabel: 'People covered, up to',
       draftsLabel: 'Drafts a month, pooled',
       note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
+      under: { before: 'Smaller than that? The plan on ', link: 'doviloop.dev', after: ' does the same drafting and costs a great deal less.' },
       over: 'Bigger than that? Ask, and we will price it properly.',
     },
 

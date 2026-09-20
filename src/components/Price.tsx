@@ -353,6 +353,15 @@ export function Price({
               })}
             </div>
             <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
+            {/* For the firm that is smaller than both cards. The pair reads
+                down: too small, then too big, then what happens either way. */}
+            <p className="price-fee-note price-pkgs-under">
+              {c.price.packages.under.before}
+              <a className="price-link" href="https://doviloop.dev" target="_blank" rel="noopener noreferrer">
+                {c.price.packages.under.link}
+              </a>
+              {c.price.packages.under.after}
+            </p>
             {/* For the firm that is bigger than both cards. The fit check
                 books anyone above nine people, so a firm of forty reaches the
                 call having seen two prices that do not apply to them and a

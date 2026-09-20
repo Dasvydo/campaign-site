@@ -2254,6 +2254,19 @@
 .price-pkg-note{ margin-top:8px; font-size:14px; line-height:1.5; color:var(--price-dim) }
 .price-pkgs-note{ margin-top:0 }
 
+/* The one link on the dark band. It sends a firm too small for either card to
+   the product site, so it has to read as something to press rather than as
+   more grey note. Amber, because that is what the page uses everywhere else to
+   mean "this one does something". */
+.price-link{
+  color:var(--amber); text-decoration:underline;
+  text-underline-offset:3px; text-decoration-thickness:1px;
+}
+.price-link:hover{ text-decoration-thickness:2px }
+.price-link:focus-visible{
+  outline:2px solid var(--amber); outline-offset:3px; border-radius:2px;
+}
+
 /* The pen on the card. The fee wrapper is positioned so the stroke can lie
    across it; the zero lands beside it on the last stop. */
 .price-pkg-strike{

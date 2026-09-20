@@ -486,6 +486,17 @@ export interface Content {
           large is a call worth taking rather than one to turn away. Carries no
           figure: the ceiling it refers to is the one printed on the card
           beside it. */
+      /** For the firm too small for either card, which is the half of this
+          pair nobody was answering.
+
+          A line in the fit section used to point them at doviloop.dev. It was
+          cut on 2026-09-20 as redundant with this section, and it was: it
+          repeated the price. It was also the only place a reader met the fact
+          that there is something cheaper for them, and the routing that says
+          so lives behind the form, on a screen only reached by answering "1 to
+          9 people". A firm that reads the price and leaves never gets there.
+          `link` is the product site's own domain, so it is not translated. */
+      under: { before: string; link: string; after: string };
       over: string;
     };
 

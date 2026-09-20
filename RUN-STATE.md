@@ -135,6 +135,7 @@ means the thing it built no longer exists, so it is closed and counts in neither
 | T41 | Make the favicon the mark | 9 | verified | 2 | **CONFIRMED.** The path data is byte-identical to the `Mark` component read out of the live DOM, gradient stops and all, and `dist/favicon.svg` matches `public/`. Legible at 32px and still reads as the mark at 16 | one mark, everywhere | `public/favicon.svg` |
 | T42 | Move the measured share somewhere quieter, and guard it | 9 | verified | 2 | **PARTIAL → fixed.** Both guards fire exactly as claimed, proved again by an independent verifier. Three findings. **The placement this row described was not the placement on the page**: the accuracy list is a two column grid flowing 1 3 / 2 4, so the note landed under "There is no automatic send anywhere in this product" at 1440 and 1280, where a measurement of how much mail gets a draft reads as a measurement of sends. It is nested inside the first item now, so it is adjacent at every width. **The pin's stated reason was invented**: it claimed Lithuanian's case after "is" was written for seven; "is" takes the genitive for every numeral and the count renders as a digit, so nothing inflects. The comment now says what the pin actually does. Still true and recorded: the line can be rewritten to say something false and no check can see it | the figure, adjacent to its claim | `src/components/WhoFor.tsx`, `src/styles/paper.css`, `scripts/verify-offer.mjs` |
 | T43 | Ask the calculator for drafts, not for inbound mail | 9 | landed | 1 | The founder's call: the thing he sells is drafts, so the panel is denominated in it. The control asks for drafts directly, head count no longer enters the sum at all (it picks the package and so the fee), and the measured share becomes a hint under the control for anyone who knows their inbox and not their draft count. **The rebuild shipped with nothing pinning it and I found that myself**: `hoursFromDrafts` was changed to ignore its own argument and the entire suite reported 0 failures, because the page harness asks the helpers what to expect. Four hand-computed chains now pin it, plus a check that twice the drafts is twice the hours, and that mutation fails ten of them. No independent pass | a panel that asks what it sells | `src/lib/value.ts`, `src/components/Numbers.tsx`, `src/content/*.ts`, `scripts/verify-offer.mjs`, `scripts/harness-page.tsx` |
+| T44 | Send a firm too small for either card somewhere | 9 | landed | 1 | The wave 6 verifier found that T21's signpost to doviloop.dev had gone, first at `c70b27f` and then with the block the founder cut in wave 9, leaving the routing behind the form: a firm that reads the price and leaves never meets it. One sentence under the package cards now, paired with the one for firms too big, with a real amber link to the product site. Asserted three ways and proved by deleting it: both halves must appear on the page in every locale, and the link must be pressable and point at the product site. Removing it fails six checks. No independent pass | the half of the pair nobody was answering | `src/content/*.ts`, `src/components/Price.tsx`, `src/styles/paper.css`, `scripts/harness-page.tsx`, `scripts/verify-payload.mjs` |
 
 ## Found and not fixed, because the call is the founder's
 
@@ -192,13 +193,6 @@ resolves to ::1 first on the runner, so it listened on IPv6 while every request
 went over IPv4. The step guard reported that the server never came up and failed
 the run, instead of letting both gates skip in silence and reporting green. That
 is the failure mode it was written for, caught on its first outing.
-
-**Firms under ten now have no signpost on the main page.** T21's note pointed them
-at the plan on doviloop.dev; the founder had the block deleted as redundant with
-the pricing section, which it was, but the signpost went with it. It survives only
-on the result screen a reader reaches by answering "1 to 9 people". Whether that is
-enough is the founder's call. Restoring one sentence somewhere in the price band
-would cost nothing.
 
 **Dead weight nobody owns.** An independent verifier counted ~46 CSS class
 selectors in `paper.css` that style nothing (whole clusters: `price-total-*`,

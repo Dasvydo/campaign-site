@@ -217,6 +217,11 @@ async function main() {
         `    the calculator reads down exactly the rows the copy names, in order`,
         p.ledgerTerms.join(' | '),
       );
+      check(
+        p.underLinkHref === 'https://doviloop.dev' && p.underLinkText.length > 0,
+        `    a firm too small for either card is sent to the product site, by a real link`,
+        `${p.underLinkText || 'no link'} -> ${p.underLinkHref || 'nowhere'}`,
+      );
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of
