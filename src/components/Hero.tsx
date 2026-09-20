@@ -381,23 +381,38 @@ export function Hero({
   );
 }
 
-/** The mark. Two paths, one gradient; the gradient id has to be unique per
-    instance or the second copy on the page borrows the first one's. */
+/** The mark.
+ *
+ * Rebuilt on 2026-09-20 against the founder's own file, because the one here
+ * was not his logo. It had a solid orange stem, which made a conventional D
+ * standing beside an L. His has no stem at all: the counter opens to the left
+ * and the teal bar of the L reads as the D's spine, which is the whole idea of
+ * the lockup. I had compared my own path data to my own assumption and called
+ * them identical; a pixel diff against the actual file put the disagreement at
+ * 5.5% of the frame, in exactly that shape.
+ *
+ * Every number below was measured off his file rather than eyeballed: the arcs
+ * are the outer bowl at r254 and the counter at r147, the counter's radius
+ * worked out from its sagitta because SVG had been silently rescaling a radius
+ * too small for its chord. The rebuild differs from his by 0.78% of the frame,
+ * which at this size is the antialiasing on the edges.
+ *
+ * The gradient id has to be unique per instance or the second copy on the page
+ * borrows the first one's. */
 export function Mark({ gradientId }: { gradientId: string }) {
   return (
     <svg viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
       <defs>
-        <linearGradient id={gradientId} x1="0.35" y1="0" x2="0.75" y2="1">
-          <stop offset="0" stopColor="#E96C32" />
-          <stop offset="1" stopColor="#F59B0A" />
+        <linearGradient id={gradientId} x1="0.32" y1="0.05" x2="0.72" y2="0.95">
+          <stop offset="0" stopColor="#EA6D31" />
+          <stop offset="1" stopColor="#EFAB4A" />
         </linearGradient>
       </defs>
       <path
         fill={'url(#' + gradientId + ')'}
-        fillRule="evenodd"
-        d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"
+        d="M420 253 L558 253 A254 254 0 0 1 558 761 L585 761 L585 645 A147 147 0 0 0 598 375 L420 375 Z"
       />
-      <path fill="#2A6C7C" d="M215 250 H372 V630 H550 V762 H215 Z" />
+      <path fill="#27697A" d="M217 253 H368 V638 H547 V760 H217 Z" />
     </svg>
   );
 }

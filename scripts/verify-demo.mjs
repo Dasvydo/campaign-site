@@ -332,6 +332,59 @@ try {
     }
   }
 
+  /* 4b. the next letter is a NEW letter ------------------------------------- */
+  {
+    /* The founder found this one by using the page. Edit the draft, send it,
+       deal the next letter, and the reader's own typing was still there on a
+       letter it was never written for. The body is `contentEditable`, so the
+       browser mutates those nodes directly and React never learns; `reset()`
+       then reconciles to an identical tree and changes nothing.
+
+       It matters more than a stale string. The whole argument of this section
+       is that each draft is built from the file. A draft that carries the last
+       one's edits is the page demonstrating the opposite of its own claim. */
+    const ctx = await browser.newContext({ viewport: DESKTOP });
+    const page = await openPage(ctx);
+    await showBoth(page);
+    const body = () => page.evaluate(() =>
+      (document.querySelector('#demo-body')?.textContent || '').replace(/\s+/g, ' ').trim());
+    const atRest = await body();
+
+    const press = async (re) => {
+      for (const btn of await page.$$('#demo button')) {
+        if (re.test((await btn.textContent()) || '')) { await btn.click(); return true; }
+      }
+      return false;
+    };
+    await press(/^(edit|rediger|redaguoti)/i);
+    await page.waitForTimeout(250);
+    await page.evaluate(() => {
+      const el = document.querySelector('#demo-body');
+      el.focus();
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+    });
+    await page.keyboard.type('EDITED BY THE VISITOR');
+    await page.waitForTimeout(200);
+    const edited = await body();
+
+    await press(/^(send|send|siųsti)/i);
+    await page.waitForTimeout(400);
+    const dealt = await press(/next letter|næste brev|kitas laiškas/i);
+    await page.waitForTimeout(600);
+    const after = await body();
+
+    check(edited.includes('EDITED BY THE VISITOR'), 'the reader can edit the draft',
+      edited.slice(0, 40));
+    check(dealt && after === atRest && !after.includes('EDITED BY THE VISITOR'),
+      'and the next letter is a new draft, not the one they edited',
+      after === atRest ? 'back to the written draft' : after.slice(0, 56));
+    await ctx.close();
+  }
+
   /* 5. it declines to play where the reader cannot see both halves ---------- */
   {
     const ctx = await browser.newContext({ viewport: PHONE });

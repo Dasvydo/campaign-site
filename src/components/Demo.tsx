@@ -135,6 +135,20 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
   const [on, setOn] = useState<Record<DemoSource, boolean>>({ ...ALL_ON });
   const [sent, setSent] = useState(false);
   const [editing, setEditing] = useState(false);
+  /* Which draft this is. Bumped on every reset, and used as the `key` of the
+     editable body.
+
+     Without it, editing the draft and then dealing the next letter left the
+     reader's own typing on the new letter. The body is `contentEditable`, so
+     the BROWSER mutates those nodes directly and React never learns about it;
+     `reset()` then sets state that reconciles to an identical tree, React
+     finds nothing to change, and the edited text survives a letter it was
+     never written for. That breaks the one thing this section is arguing,
+     which is that each draft is built from the file rather than kept around.
+
+     A changed key is the cheap, honest fix: it unmounts the subtree the
+     browser interfered with and mounts a fresh one from the clauses. */
+  const [draftNo, setDraftNo] = useState(0);
   const [pinned, setPinned] = useState<DemoSource | null>(null);
   const [traced, setTraced] = useState<DemoSource | null>(null);
   const [ringOn, setRingOn] = useState(false);
@@ -172,6 +186,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     setSent(false);
     setEditing(false);
     setSendSay('');
+    setDraftNo((n) => n + 1);
     const next: Record<string, VariantName | null> = {};
     for (const cl of clauses) next[cl.id] = variantFor(cl, ALL_ON);
     setShown(next);
@@ -692,6 +707,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
               <p className="demo-salut">{renderClause(clauses[0])}</p>
 
               <div
+                key={draftNo}
                 className="demo-body"
                 id="demo-body"
                 ref={bodyRef}

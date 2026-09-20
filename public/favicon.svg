@@ -1,13 +1,13 @@
-<!-- The mark itself, at tab size. It used to be two outlined circles, which
-     was not the logo in the masthead or anywhere else. -->
+<!-- The mark, at tab size. Same paths as the Mark component in
+     src/components/Hero.tsx, measured off the founder's own file. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <rect width="1024" height="1024" rx="224" fill="#FFF0E5"/>
   <defs>
-    <linearGradient id="f" x1="0.35" y1="0" x2="0.75" y2="1">
-      <stop offset="0" stop-color="#E96C32"/>
-      <stop offset="1" stop-color="#F59B0A"/>
+    <linearGradient id="f" x1="0.32" y1="0.05" x2="0.72" y2="0.95">
+      <stop offset="0" stop-color="#EA6D31"/>
+      <stop offset="1" stop-color="#EFAB4A"/>
     </linearGradient>
   </defs>
-  <path fill="url(#f)" fill-rule="evenodd" d="M420 250 H565 a255 255 0 0 1 0 510 H420 Z M545 365 H565 a140 140 0 0 1 0 280 H545 Z"/>
-  <path fill="#2A6C7C" d="M215 250 H372 V630 H550 V762 H215 Z"/>
+  <path fill="url(#f)" d="M420 253 L558 253 A254 254 0 0 1 558 761 L585 761 L585 645 A147 147 0 0 0 598 375 L420 375 Z"/>
+  <path fill="#27697A" d="M217 253 H368 V638 H547 V760 H217 Z"/>
 </svg>
