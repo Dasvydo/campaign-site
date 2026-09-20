@@ -512,20 +512,17 @@ export const en: Content = {
 
     founding: {
       title: 'A trade, not a discount',
-      lede: {
-        noProofYet: 'We have no customers to point at yet.',
-        trade: 'These places are a trade, not a discount.',
-      },
+      noProofYet: 'We have no customers to point at yet.',
       reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
       lock: 'Your price does not change while you stay.',
       spots: { label: 'Places still open:', of: ' of ' },
       spotsClosed: 'The places that came with a trade are taken. The monthly fee below does not change; the setup fee is now charged in full.',
-      givesTitle: 'What you give',
+      givesTitle: 'What you give:',
       gives: [
-        'A testimonial for the product site, in your own words.',
-        'A case study at sixty days, with figures you are happy to show.',
-        'Your logo on the product site.',
-        'Two feedback calls in the first two months.',
+        'a testimonial in your own words',
+        'a case study at sixty days, with figures you choose',
+        'your logo on the product site',
+        'two feedback calls in the first two months',
       ],
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
       signature: {

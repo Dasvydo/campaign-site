@@ -303,6 +303,19 @@ export function Numbers({ c }: { c: Content }) {
             {status}
           </p>
 
+          {/* The one promise the panel makes about itself, on the open band.
+
+              It was the last paragraph inside "show the basis", which is a
+              disclosure and is closed at rest, so the sentence that tells a
+              reader these figures are ours and not theirs was read by almost
+              nobody. The founder asked for it kept, inline and bold, to
+              highlight it; bold inside a closed drawer highlights nothing. It
+              closes the panel now, under the split bar, where the last number
+              the reader looked at is still on screen. */}
+          <p className="numbers-note numbers-note-strong" data-n-promise>
+            {c.numbers.note}
+          </p>
+
           <Disclosure label={c.numbers.moreLabel}>
             <dl className="numbers-basis">
               {c.numbers.basis.map((b) => (
@@ -312,7 +325,6 @@ export function Numbers({ c }: { c: Content }) {
                 </div>
               ))}
             </dl>
-            <p className="numbers-note numbers-note-strong">{c.numbers.note}</p>
           </Disclosure>
         </div>
       </div>

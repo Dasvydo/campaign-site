@@ -512,20 +512,17 @@ export const da: Content = {
 
     founding: {
       title: 'En byttehandel, ikke en rabat',
-      lede: {
-        noProofYet: 'Vi har endnu ingen kunder at pege på.',
-        trade: 'De her pladser er en byttehandel, ikke en rabat.',
-      },
+      noProofYet: 'Vi har endnu ingen kunder at pege på.',
       reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
       lock: 'Jeres pris ændrer sig ikke, så længe I bliver.',
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
       spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er uændret; opsætningsprisen opkræves nu fuldt ud.',
-      givesTitle: 'Det, I giver',
+      givesTitle: 'Det, I giver:',
       gives: [
-        'En udtalelse til produktsiden, med jeres egne ord.',
-        'En case efter tres dage, med tal, I gerne vil vise frem.',
-        'Jeres logo på produktsiden.',
-        'To feedbackmøder i de første to måneder.',
+        'en udtalelse med jeres egne ord',
+        'en case efter tres dage, med tal, I selv vælger',
+        'jeres logo på produktsiden',
+        'to feedbackmøder i de første to måneder',
       ],
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
       signature: {

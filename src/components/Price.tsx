@@ -442,23 +442,32 @@ export function Price({
                 further down because it is the same five the reason names. */}
             {capped ? (
               <div className="price-trade" data-price-trade>
-                {/* The admission, on the open band rather than behind a
-                    disclosure nobody opens.
+                {/* The admission, the reason and the lock, as one paragraph.
 
-                    It was inside "A trade, not a discount", which is closed at
-                    rest, and a verifier had already made exactly this point
-                    about the founder's signature: a sentence behind a
-                    disclosure is no sentence at all for most readers. The
-                    signature was moved out and this was left, which was an
-                    asymmetry nobody chose.
+                    The admission is on the open band rather than behind a
+                    disclosure nobody opens: a verifier had already made
+                    exactly that point about the founder's signature, and a
+                    sentence behind a closed disclosure is no sentence at all
+                    for most readers.
+
+                    It used to be a paragraph of its own, ending "These places
+                    are a trade, not a discount", above a second paragraph
+                    saying the price is low because we need five firms who will
+                    say it works. That is the same sentence twice, once without
+                    the number. The founder called this block redundant three
+                    times; one of the two had to go, and the one carrying no
+                    figure went.
 
                     `data-price-lede` is how scripts/harness-claim.tsx finds
-                    it. */}
-                <p className="price-subnote" data-price-lede>
-                  {noCustomersYet() ? <>{c.price.founding.lede.noProofYet} </> : null}
-                  {c.price.founding.lede.trade}
-                </p>
+                    the admission, and it is absent entirely once a pilot has
+                    started, which is what that harness now asserts. */}
                 <p className="price-reason" data-price-reason>
+                  {noCustomersYet() ? (
+                    <span className="price-subnote" data-price-lede>
+                      {c.price.founding.noProofYet}
+                    </span>
+                  ) : null}
+                  {noCustomersYet() ? ' ' : null}
                   {c.price.founding.reason.before}
                   {figure(OFFER.founding.places)}
                   {c.price.founding.reason.after}{' '}
@@ -466,20 +475,29 @@ export function Price({
                     {c.price.founding.lock}
                   </span>
                 </p>
-                {/* Visible, not screen reader only. It was `price-sr`, so a
-                    sighted reader met four bullets with nothing saying what
-                    they were: a list of obligations reading as if it might be
-                    a list of benefits. The one word that resolves it was in
-                    the DOM the whole time, spoken to some readers and hidden
-                    from the rest. */}
-                <h3 className="price-gives-h" id="price-gives-open-h">
-                  {c.price.founding.givesTitle}
-                </h3>
-                <ul className="price-gives" aria-labelledby="price-gives-open-h">
-                  {c.price.founding.gives.map((g) => (
-                    <li key={g}>{g}</li>
-                  ))}
-                </ul>
+                {/* The four obligations, on one line.
+
+                    The lead-in is visible, not screen reader only. It was
+                    `price-sr`, so a sighted reader met four bullets with
+                    nothing saying what they were: a list of obligations
+                    reading as if it might be a list of benefits.
+
+                    The four used to be four full sentences under a heading of
+                    their own, which is five lines of a block the founder had
+                    already called too much to read. They are noun phrases in
+                    one run now, still four `<li>` so the list is still a list
+                    to a screen reader, and the middot between them is drawn in
+                    CSS so no translation has to supply a conjunction. */}
+                <div className="price-gives-line">
+                  <h3 className="price-gives-h" id="price-gives-open-h">
+                    {c.price.founding.givesTitle}
+                  </h3>{' '}
+                  <ul className="price-gives" aria-labelledby="price-gives-open-h">
+                    {c.price.founding.gives.map((g) => (
+                      <li key={g}>{g}</li>
+                    ))}
+                  </ul>
+                </div>
                 {/* The counter earns its place only once it is moving.
 
                     It used to render from the first visitor, which meant the

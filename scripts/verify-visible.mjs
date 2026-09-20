@@ -52,9 +52,18 @@ const PARTS = [
   ['the price band', '#price'],
   ['the package cards', '#price [data-price-pkg]'],
   ['where a firm too small is sent', '#price .price-pkgs-under a'],
+  /* Each of the four obligations the trade asks for. They were four bulleted
+     sentences and are one wrapped run now, which is exactly the kind of change
+     that can leave an item with no box: an inline `<li>` inside a collapsed
+     parent measures zero and reads as nothing at all. */
+  ['what the trade asks for', '#price .price-gives li'],
   ['the calculator', '#numbers .numbers-beats'],
   ['the figure it ends on', '#numbers .numbers-keep'],
   ['its controls', '#numbers input[type="range"]'],
+  /* The promise the panel makes about its own figures. It spent this long
+     inside a disclosure closed at rest, where nothing on this page could tell
+     the difference between present and invisible. */
+  ['the promise the calculator makes', '#numbers [data-n-promise]'],
   /* The heading block carries `id="fit"`; the form is a sibling. Checking
      `#fit` alone passed while the form itself was invisible. */
   ['the fit check', '#fit'],
@@ -140,21 +149,84 @@ try {
           if (br !== undefined && Math.abs(ir - br) + Math.abs(ig - bgc) + Math.abs(ib - bb) < 24) {
             problems.push(`text ${ink} on ${bg}`); continue;
           }
-          /* Something painted over it. */
-          const top = document.elementFromPoint(
-            Math.min(window.innerWidth - 2, Math.max(2, r.left + r.width / 2)),
-            Math.min(window.innerHeight - 2, Math.max(2, r.top + r.height / 2)),
-          );
-          /* Not `&& !top.contains(el)`. A verifier laid an opaque sheet over
-             three whole sections with `::after`, and elementFromPoint returns
-             the sheet's ORIGINATING element, which is an ancestor, so
-             excusing ancestors excused exactly the attack. The topmost thing
-             over the middle of a content block should be that block or
-             something inside it. */
-          if (top && top !== el && !el.contains(top)) {
-            problems.push(`covered by ${top.tagName.toLowerCase()}.${(top.className || '').toString().split(' ')[0]}`);
+          /* Something painted over it.
+
+             Probed once per line box, not once per element. An inline element
+             that wraps has a bounding rect that is the union of its lines, and
+             the middle of that union is whitespace between two of them: the
+             topmost thing there is the block that holds the lines, so every
+             wrapped inline element read as covered by its own parent. The four
+             obligations in the price band are exactly that shape.
+
+             Every line box must be clear, not just one. "Any rect passes"
+             would excuse a sheet laid over all but the last line of a
+             paragraph, which is a reader who cannot read it. */
+          const rects = Array.from(el.getClientRects()).filter((q) => q.width >= 1 && q.height >= 1);
+          let covered = null;
+          for (const q of (rects.length ? rects : [r])) {
+            const top = document.elementFromPoint(
+              Math.min(window.innerWidth - 2, Math.max(2, q.left + q.width / 2)),
+              Math.min(window.innerHeight - 2, Math.max(2, q.top + q.height / 2)),
+            );
+            /* Not `&& !top.contains(el)`. A verifier laid an opaque sheet over
+               three whole sections with `::after`, and elementFromPoint returns
+               the sheet's ORIGINATING element, which is an ancestor, so
+               excusing ancestors excused exactly the attack. The topmost thing
+               over a line of text should be that line's element or something
+               inside it. */
+            if (top && top !== el && !el.contains(top)) { covered = top; break; }
+          }
+          if (covered) {
+            problems.push(`covered by ${covered.tagName.toLowerCase()}.${(covered.className || '').toString().split(' ')[0]}`);
             continue;
           }
+          /* A sheet elementFromPoint cannot feel.
+
+             Hit testing walks what the mouse would hit, and `pointer-events:
+             none` takes an element out of that walk while leaving it painted.
+             This page already has such a pseudo-element on the price band: a
+             paper-fibre texture at five percent. Repainting it opaque black
+             left every part of that band looking, to the probe above, exactly
+             as it had before - the topmost hit was still the text, and the
+             text was under a solid sheet. The attack that found this was our
+             own, run to prove the probe worked.
+
+             So the paint is read as well as the hit. A pseudo-element counts
+             as a sheet when it is positioned, pinned to all four edges of
+             something the part sits inside, filled with a background colour
+             that is all but opaque, at full opacity and blending normally.
+             Every one of those has to hold: the fibre texture is excluded by
+             its opacity, the footer's compliment slip by having no background
+             colour of its own, and a blend mode other than normal cannot cover
+             what is under it whatever its alpha. */
+          const alpha = (v) => {
+            const n = (v.match(/[\d.]+/g) || []).map(Number);
+            return n.length < 4 ? (n.length ? 1 : 0) : n[3];
+          };
+          let sheet = null;
+          for (let a = el; a && !sheet; a = a.parentElement) {
+            for (const pseudo of ['::before', '::after']) {
+              const ps = getComputedStyle(a, pseudo);
+              if (!ps || ps.content === 'none' || ps.content === 'normal') continue;
+              if (ps.position !== 'absolute' && ps.position !== 'fixed') continue;
+              if (ps.mixBlendMode !== 'normal') continue;
+              if (Number(ps.opacity) < 0.9) continue;
+              if (alpha(ps.backgroundColor) < 0.9) continue;
+              const pinned = ['top', 'right', 'bottom', 'left']
+                .every((side) => parseFloat(ps[side]) === 0);
+              if (!pinned) continue;
+              /* Behind the content is not over it. `auto` on a positioned
+                 pseudo paints above its originating element's background but
+                 below its positioned children, and this page puts its own
+                 content at z-index 2 for exactly that reason. */
+              const z = ps.zIndex === 'auto' ? 0 : Number(ps.zIndex);
+              const own = getComputedStyle(el).zIndex;
+              if (a !== el && z < (own === 'auto' ? 1 : Number(own))) continue;
+              sheet = `${a.tagName.toLowerCase()}.${(a.className || '').toString().split(' ')[0]}${pseudo}`;
+              break;
+            }
+          }
+          if (sheet) { problems.push(`under an opaque ${sheet}`); continue; }
           }
           out[label] = problems.length
             ? `${problems.length} of ${all.length}: ${problems[0]}`

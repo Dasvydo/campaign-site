@@ -60,7 +60,7 @@ globalThis.__RUN_CLAIM__ = async () => {
       locale,
       started: pilotsStarted(),
       gate: noCustomersYet(),
-      claimShown: text.includes(c.price.founding.lede.noProofYet),
+      claimShown: text.includes(c.price.founding.noProofYet),
       /* Does the counter come back once a pilot has started?
 
          Nothing asserted this. The page harness only ever renders the shipped
@@ -72,15 +72,31 @@ globalThis.__RUN_CLAIM__ = async () => {
       counterShown: Boolean(
         host.querySelector('dl[aria-labelledby="price-founding-h"] .price-fig'),
       ),
-      tradeShown: text.includes(c.price.founding.lede.trade),
+      /* The half that never goes false, and its own hook rather than the
+         lede's.
+
+         It used to be the second sentence of the lede, "These places are a
+         trade, not a discount", which was cut for saying what the reason says
+         without the number in it. The guard it stood for is still needed: a
+         gate that took the whole paragraph with it would leave the founding
+         block opening on a list of obligations with no reason above them. The
+         reason is what must survive the gate, so the reason is what is read. */
+      reasonShown: (host.querySelector('[data-price-reason]')?.textContent ?? '')
+        .replace(/\s+/g, ' ')
+        .trim(),
+      /* Carried across because verify-payload.mjs runs outside the bundle and
+         has no content to read. Both sides come from the same file, so this
+         cannot catch a wrong translation - other checks do that. What it can
+         catch, and what it is for, is the paragraph disappearing with the gate:
+         an empty `reasonShown` fails every one of these. */
+      reasonWants: [c.price.founding.reason.before.trim(), c.price.founding.lock],
       /* The whole rendered sentence, so a gate that fires correctly but leaves
-         a stray fragment behind still fails. */
+         a stray fragment behind still fails. The admission is not emptied when
+         the gate closes; the element itself goes, and an element that is still
+         in the DOM holding an empty string fails this. */
+      ledeFound: lede !== null,
       lede: (lede?.textContent ?? '').trim(),
-      wantLede: (
-        noCustomersYet()
-          ? c.price.founding.lede.noProofYet + ' ' + c.price.founding.lede.trade
-          : c.price.founding.lede.trade
-      ).trim(),
+      wantLede: noCustomersYet() ? c.price.founding.noProofYet : '',
     });
 
     await act(async () => {

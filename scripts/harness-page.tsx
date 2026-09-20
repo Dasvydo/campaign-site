@@ -35,6 +35,7 @@ import {
   packageById,
   packages,
   remainingFoundingPlaces,
+  noCustomersYet,
   setupDue,
   formatCount,
   formatMoney,
@@ -169,6 +170,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
   /* Has the cohort begun to fill? The counter is withheld until it has, so
      that a full cohort does not advertise that nobody has taken a place. */
   const anyPlaceTaken = spotsLeft < OFFER.founding.places;
+  /* The admission is printed only while it is true, and harness-claim renders
+     both of its states. Here it is asserted in whichever state the shipped
+     offer is actually in, so the whole-page render is not silently missing a
+     sentence it is showing. */
+  const admits = noCustomersYet();
   const setupWaived = setupDue() === 0;
 
   for (const locale of ['en', 'da', 'lt'] as Locale[]) {
@@ -339,15 +345,21 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          whole trade once the capped tiers are spent. Never both. */
       ...(capped
         ? [
-            /* The half of the lede that is true at any count. The other half is a
-               claim about this business, gated on the offer, and it is asserted in
-               both of its states by harness-claim rather than assumed here.
+            /* The admission, where the offer is still making it. It is gated
+               on this business rather than on the offer's shape, and both of
+               its states are rendered by harness-claim; what is asserted here
+               is only that the shipped state reaches the page.
+
+               It used to sit beside "These places are a trade, not a discount",
+               which was asserted here instead because it was true at any count.
+               That sentence is gone: it said what the reason below says, minus
+               the figure, in a block the founder called redundant three times.
 
                `founding.title` is no longer asserted as copy on the page: the
                disclosure it labelled was a second, collapsed telling of the
                block above it and is gone. The string survives as the screen
                reader heading on the places counter. */
-            c.price.founding.lede.trade,
+            ...(admits ? [c.price.founding.noProofYet] : []),
             /* The reason, which carries the cohort's size. Asserted on every
                capped tier rather than only where the counter renders: with the
                counter withheld this is the ONLY place the page still states how

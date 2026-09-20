@@ -522,20 +522,17 @@ export const lt: Content = {
 
     founding: {
       title: 'Mainai, o ne nuolaida',
-      lede: {
-        noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
-        trade: 'Šios vietos yra mainai, o ne nuolaida.',
-      },
+      noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
       reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
       lock: 'Jūsų kaina nesikeičia, kol liekate.',
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
       spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau nesikeičia; įdiegimo mokestis dabar taikomas visas.',
-      givesTitle: 'Ką duodate Jūs',
+      givesTitle: 'Ką duodate Jūs:',
       gives: [
-        'Atsiliepimą produkto svetainei, savais žodžiais.',
-        'Atvejo aprašymą po šešiasdešimties dienų, su skaičiais, kuriuos sutinkate rodyti.',
-        'Savo logotipą produkto svetainėje.',
-        'Du atsiliepimų pokalbius per pirmus du mėnesius.',
+        'atsiliepimą savais žodžiais',
+        'atvejo aprašymą po šešiasdešimties dienų, su skaičiais, kuriuos pasirenkate',
+        'savo logotipą produkto svetainėje',
+        'du atsiliepimų pokalbius per pirmus du mėnesius',
       ],
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
       signature: {

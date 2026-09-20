@@ -523,15 +523,19 @@ export interface Content {
         `spotsClosed` is the one line that stands in for the whole block. */
     founding: {
       title: string;
-      /** Two sentences, because only one of them is always true.
+      /** The admission, printed only while it is true.
 
-          `noProofYet` is a claim about this business and not about the offer:
-          it holds until the first pilot starts and is false from then on, with
-          nothing at render time able to tell. `offer.noCustomersYet()` decides
-          whether it appears. `trade` explains what the places are and does not
-          depend on how many firms have taken one, so it is always printed and
-          has to read as a whole sentence on its own. */
-      lede: { noProofYet: string; trade: string };
+          It is a claim about this business and not about the offer: it holds
+          until the first pilot starts and is false from then on, with nothing
+          at render time able to tell. `offer.noCustomersYet()` decides whether
+          it appears, and it opens the paragraph that `reason` and `lock`
+          finish rather than standing as a sentence of its own.
+
+          It used to be printed beside a second sentence, "These places are a
+          trade, not a discount", which said in other words what `reason` says
+          with the number in it. The founder read this block three times and
+          called it redundant three times; that sentence was the redundancy. */
+      noProofYet: string;
       /** Why the price is what it is, printed beside it in the open so the
           price never appears without its reason.
           "<before><the number of places in the cohort><after>". The count is
@@ -551,6 +555,20 @@ export interface Content {
           tier advances the moment the last place is spent. */
       spots: { label: string; of: string };
       spotsClosed: string;
+      /** The four obligations, set as one line rather than a heading standing
+          over four sentences.
+
+          `givesTitle` is the lead-in that says what the list is, and it
+          carries its own punctuation, because a colon is not the same mark in
+          every language. The four are noun phrases, separated on screen by a
+          middot drawn in CSS, so no translation has to supply a conjunction
+          and no translation's word order has to survive one. They stay four
+          strings rather than one sentence so each obligation is still a
+          translatable unit on its own.
+
+          The lead-in is not optional. Without it a sighted reader met four
+          bullets with nothing saying what they were, and a list of things you
+          owe reads as a list of things you get. */
       givesTitle: string;
       gives: [string, string, string, string];
       note: string;

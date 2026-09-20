@@ -1804,15 +1804,20 @@
 /* The one line on the panel that says what happens next. It was another grey
    caption among grey captions; inline and inked, because it is the sentence a
    reader should leave the section with. */
-.numbers-note-strong{
-  font-weight:500; color:var(--ink); max-width:none;
-}
 .numbers-note{
   margin:0;
   font-size:17px;
   line-height:1.6;
   color:var(--ink);
   max-width:46ch;
+}
+/* Bold, and it means bold. It was 500 - a medium, indistinguishable from the
+   body around it at this size - and it was inside a disclosure closed at rest,
+   so the weight had nothing to stand out from anyway. */
+.numbers-note-strong{
+  margin:22px 0 0;
+  font-weight:700; color:var(--ink); max-width:none;
+  padding-top:16px; border-top:1px solid var(--taupe);
 }
 
 .numbers-promise{
@@ -2306,21 +2311,29 @@
   font-variant-numeric:tabular-nums lining;
 }
 
-/* The trade, in the open: the reason, then the four things it asks for. */
+/* The trade, in the open: the reason, then the four things it asks for.
+
+   The four were a heading over four bulleted sentences, five lines deep in a
+   block the founder called redundant and too much to read three separate
+   times. They are one wrapped run now, lead-in and all, which is the same four
+   obligations in about a third of the height. The list is still a list in the
+   DOM, so nothing is lost to a screen reader; only the vertical stack is. */
 .price-trade{ margin:22px 0 0 }
+.price-gives-line{ margin:18px 0 0; max-width:60ch }
 .price-gives-h{
-  margin:20px 0 0;
+  display:inline; margin:0;
   font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--price-dim);margin-right:-0.14em;
+  text-transform:uppercase;color:var(--price-dim);
 }
-.price-gives{ list-style:none; margin:10px 0 0; padding:0 }
+.price-gives{ display:inline; list-style:none; margin:0; padding:0 }
 .price-gives li{
-  position:relative; padding:6px 0 6px 18px;
-  font-size:15px; line-height:1.45; color:var(--price-dim);
+  display:inline;
+  font-size:15px; line-height:1.6; color:var(--price-dim);
 }
-.price-gives li::before{
-  content:""; position:absolute; left:2px; top:.95em; width:6px; height:6px;
-  border-radius:50%; background:var(--amber);
+/* The separator is drawn, not typed, so no translation has to hand us a
+   conjunction and no locale's word order has to survive one. */
+.price-gives li + li::before{
+  content:"\00b7"; margin:0 .5em; color:var(--amber); font-weight:700;
 }
 
 /* What is in both. One list, printed once, because it is the same list. */

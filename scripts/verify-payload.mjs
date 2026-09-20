@@ -510,9 +510,25 @@ async function main() {
           `    ${where} the claim is ${wantGate ? 'on' : 'off'} the page`,
           r.lede,
         );
-        /* The half that never goes false. A gate that took the whole lede with
-           it would leave the founding block opening on a heading. */
-        check(r.tradeShown, `    ${where} the trade is explained either way`, r.lede);
+        /* The half that never goes false. A gate that took the whole
+           paragraph with it would leave the founding block opening on a list
+           of obligations with nothing above them saying why the price is low.
+           The reason carries the cohort's size, so it is also the sentence
+           that explains the trade now that the sentence which merely asserted
+           one has been cut. */
+        check(
+          r.reasonWants.length > 0 && r.reasonWants.every((w) => r.reasonShown.includes(w)),
+          `    ${where} the reason and the lock are printed either way`,
+          r.reasonShown,
+        );
+        /* The admission's element goes with the admission. Asserting only the
+           text would pass on a page that kept an empty paragraph where the
+           sentence used to be, which is a gap in a band nobody chose. */
+        check(
+          r.ledeFound === wantGate,
+          `    ${where} the admission's own element is ${wantGate ? 'there' : 'gone'}`,
+          `found ${r.ledeFound}`,
+        );
         /* The counter's other direction. `wantGate` is true exactly when no
            pilot has started, and the counter is withheld exactly then, so the
            counter must be present precisely when the claim is not. A gate stuck
