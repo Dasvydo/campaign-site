@@ -3,10 +3,9 @@
 Started: 2026-09-16
 Last updated: 2026-09-20 (waves 1-5 verified; wave 6 verified, T22 superseded, T23 landed;
               wave 7 verified by four independent agents, which refuted two claims outright
-              and found five things asserted by nothing; wave 8 partly verified, T34 and T35
-              both came back PARTIAL and both are fixed, T33 still with its verifier, so the
-              wave is NOT yet verified; three findings left to the founder, recorded below;
-              1 blocked; deployed at fcdf808 and read back off the live bundle)
+              and found five things asserted by nothing; wave 8 verified by three more, which
+              returned PARTIAL, PARTIAL and REFUTED, all fixed; three findings left to the
+              founder, recorded below; 1 blocked; deployed and read back off the live bundle)
 Status: executing
 Domain profile: software, with a `content` lens — every task shipped copy in en/da/lt
 
@@ -118,7 +117,7 @@ OUT OF SCOPE: auth, DB schema, lib/contract.ts, n8n workflow JSON, any repo
 | T29 | One order for the audiences, in both places they appear | 7 | verified | 1 | **CONFIRMED, then PROTECTED by T34.** Was: A verifier read both orders out of a real browser in all three locales and could not break them, and found no third enumeration anywhere. But swapping two cards in one locale passes the whole suite: nothing asserts the alignment, and `who.groups[]` has no id to pair with `desks[].id`. The fix is real and can silently drift again | who matches the demo tabs | `src/content/*.ts` |
 | T30 | Make the invitation to switch a source off visible | 7 | verified | 1 | **PARTIAL, and superseded by T33.** The CSS applies and nothing overrides it (13.2:1, up from 4.6:1). But the verifier judged it cosmetic: the slips still read as evidence, not controls, and the change reaches the reader who reads top to bottom, not the scanner. It also caught the CSS comment inventing a convention that does not exist. Kept, because it costs nothing | inked instruction | `src/styles/paper.css` |
 | T31 | Answer what happens when a draft would be wrong | 7 | verified | 2 | **PARTIAL → fixed. A rule was broken.** Three of the four lines traced to pre-existing copy. The fourth ended "so anything it says can be checked against the file it came from", which generalises a claim about three named things to every sentence in a draft and presupposes provenance the page never claims. That is invented proof. Cut back. Danish comma and honoraret/gebyret drift also fixed. Still incomplete by design: the confidently-wrong case and liability need the founder | accuracy block, traceable | `src/content/*.ts`, `src/components/WhoFor.tsx` |
-| T33 | Make the section demonstrate itself | 7 | landed | 1 | a new real-browser gate, `scripts/verify-demo.mjs`, holding it to performing, restoring, staying away under reduced motion and standing down on a click; proved by breaking it. No independent pass | the performed demonstration | `src/components/Demo.tsx`, `scripts/verify-demo.mjs` |
+| T33 | Make the section demonstrate itself | 7 | verified | 2 | **REFUTED → fixed.** The mechanism ran, but the central safety claim was false on the likeliest path: standing down cancelled the restoring step, so interrupting between the two steps left a letter missing a clause nobody removed, a switch off nobody touched, and Send under a worse draft than the product makes. The gesture that broke it is the gesture the movement provokes. It also fired on the switch strip alone, so on phone and tablet it played and restored entirely below the fold and spent its one run doing so, and on every desktop width the slip driving the change was 0 to 21% on screen. Restoring is now scheduled from inside the removing step and cannot be cancelled; both halves must be on screen together or it declines to run; the run is given back, not spent, if the reader scrolls off. Reduced motion is rechecked at the moment it would move, not only at mount. The property desk told screen readers "Two figures" for a clause carrying three: corrected in all three locales. **The gate passed identically on the broken build and the fixed one** and is rewritten: its stand-down check clicked a switch, which stands down through the toggle handler and never reaches the section listeners, so deleting the listener mechanism passed, as did firing twice, re-arming on a desk change, and speaking into the live region. Sixteen checks now, each proved by breaking what it watches | the performed demonstration, and a gate that catches its removal | `src/components/Demo.tsx`, `scripts/verify-demo.mjs`, `src/content/*.ts`, `package.json` |
 | T32 | Put the one person the founding trade is about on the page | 7 | verified | 2 | **CONFIRMED on the exemption, REFUTED on placement.** The audit exemption is exactly the name and nothing else, proved by mutation in both directions. But the signature sat inside a disclosure that is closed at rest, so no reader saw the name without clicking, defeating the point of adding it. Moved onto the open band. Lithuanian register and "paleidimo/idiegimo" also fixed | signed line, on the open band | `src/components/Price.tsx`, `src/content/*.ts`, `scripts/audit-locales.mjs` |
 
 ## Found and not fixed, because the call is the founder's
@@ -147,6 +146,21 @@ pinned in the payload check and the two lists are held equal, but a CSS `order`
 property or a `.reverse()` in a component would still make the visible order differ
 from the content order with the whole suite green. Closing it means reading computed
 style out of a real browser, which is a new gate, not a new check.
+
+**Six things about the demonstration nobody has tested.** Its verifier named them
+and could not reach them from here: real screen readers, real touch hardware and
+iOS Safari, back and forward cache restore, React StrictMode's double effect, the
+`/da` and `/lt` sequences in isolation, and browsers without `IntersectionObserver`.
+The reasoning for the screen reader case is that the sequence never writes to the
+live region and never moves focus, both now asserted, so the remaining exposure is
+a virtual cursor parked inside the draft when the clause swaps. Unverified is not
+the same as fine.
+
+**There is no CI.** `.github/` does not exist, so nothing runs any of this
+automatically, and the two browser gates are not even in `npm run verify`. Every
+guard in this repo holds only for as long as somebody remembers to run it. That is
+the single cheapest thing left to change and it is a repository decision, not a
+landing page one.
 
 ## Blocked
 
