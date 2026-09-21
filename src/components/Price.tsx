@@ -426,13 +426,34 @@ export function Price({
               </p>
             </div>
 
-            {/* The waiver, as a mark rather than a row of its own. The amount
-                it is worth and the sentence that says so both live in the terms
-                below; this is only the flag that there is something to read. */}
+            {/* The waiver, and what it is worth.
+
+                It said "Setup — WAIVED" and nothing else. The fee sheet three
+                hundred pixels below already prints the amount struck through,
+                with the sentence that explains it, under a comment saying a
+                fee waived in silence is a fee nobody knows they were spared -
+                but that sheet is inside "Show the terms", which is closed at
+                rest. So on the open band the reader was told that something
+                unnamed had been taken off, which is worth nothing to them.
+
+                The amount is struck here now. It is drawn from the offer, like
+                every other figure on this page, and the sentence that says why
+                it is struck goes to a screen reader, which cannot see a line
+                through a number. */}
             {waived ? (
               <p className="price-waiver" data-price-reveal style={{ ['--i' as string]: 0 }}>
                 <span className="price-waiver-term">{setupFee.term}</span>
-                <span className="price-waiver-mark">{waived.label}</span>
+                <span className="price-fig-off" data-price-waiver-was aria-hidden="true">
+                  {money(OFFER.setupFee)}
+                </span>
+                <span className="price-waiver-mark" aria-hidden="true">
+                  {waived.label}
+                </span>
+                <span className="price-sr">
+                  {waived.say.before}
+                  {money(OFFER.setupFee)}
+                  {waived.say.after}
+                </span>
               </p>
             ) : null}
 

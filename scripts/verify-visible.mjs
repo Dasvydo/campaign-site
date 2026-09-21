@@ -48,6 +48,12 @@ const PARTS = [
   ['the worked example', '#demo .demo-beats'],
   ['the draft it writes back', '#demo-draft'],
   ['who it is for', '#who .who-accuracy'],
+  /* The five things the open folder says that trade's drafts come out of.
+     Scoped to the folder that is open: the other two panels stay in the DOM so
+     a reader searching the page finds their own trade, and a `hidden` panel is
+     display:none, which is the one kind of invisible this gate must not
+     flag. */
+  ['what the open folder is drafted out of', '#who .who-sheet:not([hidden]) .who-source'],
   ['each thing it promises about accuracy', '#who .who-accuracy-list li'],
   ['the price band', '#price'],
   ['the package cards', '#price [data-price-pkg]'],

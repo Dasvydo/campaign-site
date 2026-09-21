@@ -881,6 +881,24 @@
   max-width:52ch;
 }
 
+/* The five things that trade's drafts come out of, on one wrapped run under
+   the line. Same middot device as the price band's obligations, drawn rather
+   than typed for the same reason: no translation has to supply a separator. */
+.who-sources{
+  margin:16px 0 0;
+  padding-top:14px;
+  border-top:1px solid var(--taupe,#DDCFC6);
+  max-width:56ch;
+}
+.who-sources-h{
+  font-size:12.5px; font-weight:500; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted);
+}
+.who-sources-list{ font-size:15px; line-height:1.7; color:var(--ink) }
+.who-source + .who-source::before{
+  content:"\00b7"; margin:0 .5em; color:var(--amber); font-weight:700;
+}
+
 /* The accuracy block. Set as a second sheet on the same desk rather than as a
    new section: the reader is already asking whether this is for them, and
    "what happens when it is wrong" is the same question one step further in.
@@ -2572,7 +2590,7 @@
   text-wrap:balance; max-width:none; color:var(--q-ink);
 }
 @media (min-width:1024px){
-  .qualifier-head{ grid-column:1/span 8; margin-bottom:48px }
+  .qualifier-head{ grid-column:3/span 8; margin-bottom:48px }
 }
 
 .qualifier-sheet{
@@ -2588,7 +2606,16 @@
   box-shadow:var(--q-lift);
   padding:clamp(20px,3.2vw,40px);
 }
-@media (min-width:1024px){ .qualifier-sheet{ grid-column:1/span 8 } }
+/* Centred, not left.
+
+   The head and the sheet were both `1/span 8` of twelve, so the closing
+   section of the page ran 128 to 909 inside a content area running 128 to
+   1312: four hundred pixels of nothing beside the one thing on the page a
+   reader is meant to act on, where every other section fills the width. The
+   sheet is a sheet of paper and keeps its proportions; it sits in the middle
+   of the desk now, and its folio and rule move with it so the section still
+   reads as one block. */
+@media (min-width:1024px){ .qualifier-sheet{ grid-column:3/span 8 } }
 
 @keyframes qualifier-struck{
   0%{ transform:none }

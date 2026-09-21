@@ -852,6 +852,28 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         Array.from(host.querySelectorAll(sel)).map((n) => (n.getAttribute('d') ?? '').trim()),
       ]) as Array<[string, string[]]>,
       markWants: [MARK_BOWL, MARK_STEM],
+      /* Each folder against the desk it claims to be about.
+
+         The folder does not hold its own list: it looks the desk up by the id
+         the two lists share, so the five things named under "Accounting firms"
+         are the worked example's accounting sources and not the property ones.
+         A join that broke would not empty the page - it would quietly print
+         deposit rules to an accountant, in three languages, and every check
+         that only asks whether some text is present would pass.
+
+         The actual comes off the rendered DOM and the wanted comes off the
+         content, so a join wired to `desks[0]` fails two of the three. */
+      whoFolders: c.who.groups.map((g, i) => {
+        const panel = host.querySelectorAll('#who .who-sheet')[i];
+        const desk = c.demo.desks.find((d) => d.id === g.id);
+        return {
+          tab: g.tab,
+          shown: Array.from(panel?.querySelectorAll('.who-source') ?? []).map((n) =>
+            (n.textContent ?? '').trim(),
+          ),
+          want: desk ? desk.sources.map((s) => s.label) : [],
+        };
+      }),
       underLinkHref: host.querySelector('#price .price-pkgs-under a')?.getAttribute('href') ?? '',
       underLinkText: (host.querySelector('#price .price-pkgs-under a')?.textContent ?? '').trim(),
       /* The calculator's rows, in the order they are read down. Nothing pinned

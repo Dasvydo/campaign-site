@@ -127,6 +127,36 @@ export function WhoFor({ c }: { c: Content }) {
               hidden={i !== open}
             >
               <p className="who-line">{g.line}</p>
+              {/* What that trade's drafts are written out of.
+
+                  The folder held one sentence of eight words, which is not an
+                  answer to "is this me". This is: the five things the worked
+                  example switches on and off, named for this trade rather than
+                  for the one the example happens to be showing.
+
+                  Nothing here is new and nothing here is a claim. Every label
+                  is read from `demo.desks`, matched to the folder by the id
+                  the two lists already share, so a reader who opens
+                  "Accounting firms" is told about filing rules and quarter
+                  deadlines rather than deposits, in their own language,
+                  without a word of it having been written twice or invented
+                  about a trade nobody here works in. */}
+              {(() => {
+                const desk = c.demo.desks.find((d) => d.id === g.id);
+                if (!desk) return null;
+                return (
+                  <p className="who-sources">
+                    <span className="who-sources-h">{c.who.sourcesTitle}</span>{' '}
+                    <span className="who-sources-list">
+                      {desk.sources.map((s) => (
+                        <span className="who-source" key={s.key}>
+                          {s.label}
+                        </span>
+                      ))}
+                    </span>
+                  </p>
+                );
+              })()}
             </div>
           ))}
         </div>

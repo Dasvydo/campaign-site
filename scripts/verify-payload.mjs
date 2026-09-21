@@ -238,6 +238,24 @@ async function main() {
           bad.length ? bad.join(' | ') : `${p.markCopies.length} copies, all matching`,
         );
       }
+      {
+        /* Every folder names its own trade's five, in order. */
+        const bad = p.whoFolders
+          .map((f) => {
+            if (f.want.length === 0) return `${f.tab}: no desk answers to its id`;
+            if (f.shown.length !== f.want.length) {
+              return `${f.tab}: ${f.shown.length} named, ${f.want.length} on the desk`;
+            }
+            const off = f.shown.findIndex((v, i) => v !== f.want[i]);
+            return off === -1 ? null : `${f.tab}: "${f.shown[off]}" where "${f.want[off]}" belongs`;
+          })
+          .filter(Boolean);
+        check(
+          bad.length === 0,
+          `    each folder is drafted out of its own trade's files`,
+          bad.length ? bad.join(' | ') : `${p.whoFolders.length} folders, each matching its desk`,
+        );
+      }
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
       check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of

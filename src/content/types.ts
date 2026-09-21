@@ -426,6 +426,16 @@ export interface Content {
         needs correcting has not been measured, and the page says so rather than
         implying a number it does not have. It is the same move the calculator
         makes about the minutes. */
+    /** The lead-in over the five things a trade's drafts are written out of.
+
+        The five themselves are not held here. They are `demo.desks[].sources`,
+        matched to the folder by the id both lists carry, because they are the
+        same five things the worked example switches on and off and a second
+        copy of them would be a second copy to keep true. Only the label that
+        introduces them is this section's own, and it carries its own
+        punctuation because a colon is not the same mark in every language. */
+    sourcesTitle: string;
+
     accuracy: {
       title: string;
       items: readonly string[];

@@ -438,6 +438,8 @@ export const en: Content = {
       { id: 'insurance', tab: 'Insurance brokers', line: 'The answer is usually already in the policy.' },
     ],
 
+      sourcesTitle: 'Drafted out of:',
+
     accuracy: {
       title: 'What happens when it does not know',
       items: [

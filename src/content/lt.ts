@@ -443,6 +443,8 @@ export const lt: Content = {
       { id: 'insurance', tab: 'Draudimo brokeriams', line: 'Atsakymas paprastai jau yra polise.' },
     ],
 
+      sourcesTitle: 'Rašoma remiantis:',
+
     accuracy: {
       title: 'Kas nutinka, kai ji nežino',
       items: [

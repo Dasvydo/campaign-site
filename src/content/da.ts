@@ -433,6 +433,8 @@ export const da: Content = {
       { id: 'insurance', tab: 'Forsikringsmæglere', line: 'Svaret står som regel allerede i policen.' },
     ],
 
+      sourcesTitle: 'Skrevet ud fra:',
+
     accuracy: {
       title: 'Hvad der sker, når den ikke ved det',
       items: [
