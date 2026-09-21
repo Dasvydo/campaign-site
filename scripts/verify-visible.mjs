@@ -292,6 +292,41 @@ try {
       await ctx.close();
     }
   }
+
+  /* Review mode is there when it is asked for, and nowhere near a customer
+     when it is not.
+
+     Both halves matter. A reviewing tool that never loads is a nuisance; one
+     that loads for a visitor is a stranger's debug overlay on a sales page,
+     and the chunk it lives in is ten kilobytes they did not ask to download.
+     The second check watches the network as well as the DOM, because an
+     overlay could be kept off the screen while its code was still shipped. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const page = await ctx.newPage();
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+
+    const asked = [];
+    page.on('request', (r) => {
+      if (/\/review-[A-Za-z0-9_-]*\.js$/.test(r.url())) asked.push(r.url());
+    });
+
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    const bare = await page.locator('#dlrv-root').count();
+    check(bare === 0 && asked.length === 0,
+      '\n  a visitor who did not ask for review mode never meets it',
+      `${bare} overlay(s), ${asked.length} chunk request(s)`);
+
+    await page.goto(`${BASE}/?review`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(400);
+    const armed = await page.locator('#dlrv-root .dlrv-mark').count();
+    check(armed === 1 && asked.length === 1,
+      '  and ?review brings it, code and all',
+      `${armed} button(s), ${asked.length} chunk request(s)`);
+
+    await ctx.close();
+  }
 } finally {
   await browser.close();
 }
