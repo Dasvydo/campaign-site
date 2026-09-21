@@ -579,7 +579,9 @@ export function Price({
                   </span>
                   <span className="price-signature-by">
                     {'\u2014 '}
-                    {c.price.founding.signature.name}
+                    <span className="price-signature-who">
+                      {c.price.founding.signature.name}
+                    </span>
                     {', '}
                     <a
                       className="price-signature-link"

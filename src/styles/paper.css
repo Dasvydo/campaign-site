@@ -3853,6 +3853,10 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   color:var(--price-dim);
   overflow-wrap:anywhere;
 }
+/* The name, in the page's amber, like the label over the obligations. On a
+   line that is otherwise dim it is the one word a reader is meant to catch:
+   who is making the claim above it. */
+.price-signature-who{ color:var(--amber); font-weight:600 }
 .price-signature-link{
   color:var(--price-dim);
   text-decoration:underline;
