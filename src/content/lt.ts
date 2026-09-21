@@ -419,16 +419,16 @@ export const lt: Content = {
     moreLabel: 'Parodyti skaičiavimą',
     basis: [
       {
-        term: 'Dalis',
-        def: 'Išmatuota tikroje pašto dėžutėje: gaunamų laiškų dalis, kuriai parengiamas juodraštis, nes tai tas pats klausimas iš naujo. Skydelis iš jos nedaugina. Ji skirta tam, kad pašto dėžutę, kurią žinote, paverstumėte juodraščių skaičiumi, kurio nežinote.',
+        term: 'Juodraščiai per mėnesį',
+        def: 'Juodraštis parengiamas ne kiekvienam laiškui. Tikroje pašto dėžutėje jį gavo maždaug vienas iš septynių, nes tai buvo klausimas, į kurį failai jau galėjo atsakyti. Jei apytiksliai žinote, kiek pašto gaunate, taip jį paverčiate juodraščių skaičiumi.',
       },
       {
-        term: 'Minutės',
-        def: 'Prielaida, dar niekada neišmatuota. Parašyti atsakymą nuo nulio užtrunka apie penkias minutes; perskaityti parengtą juodraštį ir išsiųsti užtrunka apie vieną. Galite įrašyti savo skaičių.',
+        term: 'Sutaupytos minutės kiekvienam juodraščiui',
+        def: 'Mūsų spėjimas, ne matavimas. Parašyti atsakymą nuo nulio užtrunka apie penkias minutes; perskaityti jau parengtą ir paspausti siųsti - apie vieną. Taigi skirtumas yra keturios. Jei mūsų skaičius netinka, įrašykite savo.',
       },
       {
-        term: 'Valanda',
-        def: 'Jūsų, ne mūsų. Kiek įmonei kainuoja į laiškus atsakančio žmogaus darbo valanda, su darbdavio mokesčiais. Valdiklį atidarėme su apytiksliu skaičiumi rinkai, kurioje skaitomas šis puslapis.',
+        term: 'Kiek kainuoja valanda',
+        def: 'Jūsų, ne mūsų. Kiek įmonei kainuoja vieno Jūsų žmogaus darbo valanda: atlyginimas ir tai, ką mokate be jo. Valdiklis atsidaro su apytiksliu šios rinkos skaičiumi; pastumkite iki to, kiek mokate iš tikrųjų.',
       },
     ],
     note: 'Pokalbio metu suskaičiuosime pagal Jūsų duomenis ir pasakysime, jei nesueina.',
@@ -538,7 +538,6 @@ export const lt: Content = {
       ],
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
       signature: {
-        name: 'Dovydas Vinickis',
         line: 'Šį produktą sukūriau aš ir įdiegimo pokalbius vedu pats.',
       },
     },
@@ -617,6 +616,7 @@ export const lt: Content = {
       { value: 'it_admin', label: 'IT arba administracija' },
       { value: 'other', label: 'Kita' },
     ],
+    otherLabel: 'Parašykite, kurį',
     choosePrompt: 'Pasirinkite',
     steps: ['Apie komandą', 'Kaip su Jumis susisiekti'],
     stepsLabel: 'Patikrinimas dviem žingsniais',
@@ -626,8 +626,7 @@ export const lt: Content = {
     submitting: 'Palaukite akimirką',
     required: 'Šį lauką reikia užpildyti.',
     invalidEmail: 'Šis adresas atrodo neužbaigtas.',
-    privacyNote:
-      'Šiuos atsakymus naudojame tik pasiruošti pokalbiui. Jokių sąrašų, jokio perpardavimo.',
+    privacyNote: 'Naudojama pasiruošti pokalbiui. Jokių sąrašų, jokio perpardavimo.',
   },
 
   results: {

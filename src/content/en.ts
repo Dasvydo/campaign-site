@@ -411,16 +411,16 @@ export const en: Content = {
     moreLabel: 'Show the arithmetic',
     basis: [
       {
-        term: 'The share',
-        def: 'Measured on a live mailbox: the share of inbound mail that gets a draft, because it is the same question asked again. The panel does not multiply by it. It is there to turn an inbox you know into a draft count you do not.',
+        term: 'Drafts a month',
+        def: 'Not every email gets one. On a live mailbox, about one in seven did, because it was a question the files could already answer. If you know roughly how much mail comes in, that is how to turn it into a number of drafts.',
       },
       {
-        term: 'The minutes',
-        def: 'Assumed, and never yet timed. Writing a reply from nothing takes about five minutes; reading a prepared draft and sending it takes about one. The control lets you put your own number in.',
+        term: 'Minutes saved on each draft',
+        def: 'Our guess, not a measurement. Writing a reply from nothing takes about five minutes; reading one that is ready and pressing send takes about one. So four is the gap. Put your own number in if ours is wrong.',
       },
       {
-        term: 'The hour',
-        def: 'Yours, not ours. What a person who answers mail costs the firm for an hour, with employer costs on top. The control opens on a rough figure for the market this page is read in.',
+        term: 'What an hour costs',
+        def: 'Yours, not ours. What one of your people costs the firm for an hour, wages plus what you pay on top of them. The slider opens on a rough figure for this market; move it to what you actually pay.',
       },
     ],
     note: 'We will do the sum on your figures on the call, and say so if it does not clear.',
@@ -533,7 +533,6 @@ export const en: Content = {
       ],
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
       signature: {
-        name: 'Dovydas Vinickis',
         line: 'I built this, and I run the setup calls myself.',
       },
     },
@@ -611,6 +610,7 @@ export const en: Content = {
       { value: 'it_admin', label: 'IT or admin' },
       { value: 'other', label: 'Something else' },
     ],
+    otherLabel: 'Tell us which',
     choosePrompt: 'Choose one',
     steps: ['About the team', 'How to reach you'],
     stepsLabel: 'The fit check, in two steps',
@@ -620,8 +620,7 @@ export const en: Content = {
     submitting: 'One moment',
     required: 'This one is needed.',
     invalidEmail: 'That address does not look complete.',
-    privacyNote:
-      'We use these answers to prepare for the call and for nothing else. No list, no resale.',
+    privacyNote: 'Used to prepare for the call. No list, no resale.',
   },
 
   results: {

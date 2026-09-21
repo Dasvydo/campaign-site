@@ -57,14 +57,27 @@ const FREE_EMAIL_DOMAINS = new Set([
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-type FieldName = 'company_name' | 'work_email' | 'team_size' | 'email_client' | 'role';
+type FieldName =
+  | 'company_name'
+  | 'work_email'
+  | 'team_size'
+  | 'email_client'
+  | 'email_client_other'
+  | 'role'
+  | 'role_other';
 
 interface FormState {
   company_name: string;
   work_email: string;
   team_size: '' | TeamSize;
   email_client: '' | EmailClient;
+  /* What they typed after picking "Something else". Kept even if they change
+     their mind back to Outlook - it is only READ while the answer is 'other',
+     so a reader who wanders through the options and returns does not have to
+     type it again. It is not sent unless it is being read. */
+  email_client_other: string;
   role: '' | Role;
+  role_other: string;
 }
 
 const EMPTY: FormState = {
@@ -72,8 +85,22 @@ const EMPTY: FormState = {
   work_email: '',
   team_size: '',
   email_client: '',
+  email_client_other: '',
   role: '',
+  role_other: '',
 };
+
+/** The one option that opens a box. Both lists use the same value. */
+const OTHER = 'other';
+
+/** Which of the three closed questions offer a box when "other" is picked.
+    Team size does not: "50 or more" is already the open end of that scale. */
+const opensBox = (name: FieldName): name is 'email_client' | 'role' =>
+  name === 'email_client' || name === 'role';
+
+/** The field that holds what they typed, for a question that has one. */
+const otherFieldOf = (name: 'email_client' | 'role'): 'email_client_other' | 'role_other' =>
+  name === 'email_client' ? 'email_client_other' : 'role_other';
 
 export interface QualifierContext {
   locale: Locale;
@@ -244,6 +271,18 @@ export function Qualifier({
       team_size: values.team_size as TeamSize,
       email_client: values.email_client as EmailClient,
       role: values.role as Role,
+      /* Sent only where there is something to send. Spreading a conditional
+         object leaves the key out entirely rather than sending an empty
+         string, so a payload from a reader who picked Outlook is byte for byte
+         the payload the contract described before these two existed. That is
+         what keeps this additive for anything downstream that was written
+         against the old shape. */
+      ...(values.email_client === OTHER && values.email_client_other.trim()
+        ? { email_client_other: values.email_client_other.trim() }
+        : {}),
+      ...(values.role === OTHER && values.role_other.trim()
+        ? { role_other: values.role_other.trim() }
+        : {}),
       submitted_at: new Date().toISOString(),
     };
 
@@ -347,6 +386,12 @@ export function Qualifier({
   groups.map((g, i) => {
                     const errId = 'e-' + g.name;
                     const labelId = 'l-' + g.name;
+                    /* Resolved once, here, rather than narrowed inside the
+                       JSX: a type predicate on `g.name` does not survive being
+                       read twice in one expression, and a local const says the
+                       same thing more plainly anyway. Null for the question
+                       that has no box. */
+                    const otherField = opensBox(g.name) ? otherFieldOf(g.name) : null;
                     return (
                       <div
                         className="qualifier-field qualifier-group"
@@ -386,6 +431,43 @@ export function Qualifier({
                             </label>
                           ))}
                         </div>
+                        {/* "Something else" is not an answer, it is the absence
+                            of one. The box turns it back into an answer.
+
+                            It appears only once that option is chosen, and what
+                            is typed in it rides the payload only while it is
+                            showing, so a reader who tries "Something else",
+                            types a word and then picks Outlook sends a payload
+                            with no trace of the word - and one who wanders back
+                            to "Something else" finds their word still there
+                            rather than having to type it twice.
+
+                            Optional on purpose. It is the last thing between a
+                            reader and the end of a form they are already
+                            filling in, and a lead that arrives saying "other"
+                            is worth more than no lead at all. */}
+                        {otherField && values[g.name] === OTHER ? (
+                          <div className="qualifier-other">
+                            <label
+                              className="qualifier-other-label"
+                              htmlFor={'q-' + g.name + '-other'}
+                            >
+                              {c.form.otherLabel}
+                              <span className="qualifier-optional">{c.form.optional}</span>
+                            </label>
+                            <input
+                              className="qualifier-input"
+                              id={'q-' + g.name + '-other'}
+                              name={g.name + '_other'}
+                              type="text"
+                              autoComplete="off"
+                              maxLength={80}
+                              value={values[otherField]}
+                              onChange={(e) => set(otherField, e.currentTarget.value)}
+                              onFocus={touch}
+                            />
+                          </div>
+                        ) : null}
                       </div>
                     );
                   })

@@ -89,12 +89,6 @@ const isEndonym = (path) => path.startsWith('nav.localeNames.');
    legal disclosure, not a better one. Identical here is correct, not a gap. */
 const isRegistryFact = (path) => path.startsWith('footer.company.');
 
-/* A person's name. Identical in all three files for the same reason the
-   registry block is: you do not translate somebody's name, and a Danish or
-   Lithuanian rendering of one would be a different person. The sentence beside
-   it is his own and is written natively in each language, so only the name is
-   exempt here, never the line. */
-const isPersonalName = (path) => path === 'price.founding.signature.name';
 
 /* The audience ids. Identical in all three files because they are keys, not
    copy. They already slipped past the untranslated check by accident, being
@@ -170,7 +164,7 @@ for (const loc of TARGETS) {
   const enByPath = new Map(enLeaves);
   const same = locLeaves
     .filter(([p, v]) => enByPath.get(p) === v && !isShared(v) && !isEndonym(p) &&
-      !isRegistryFact(p) && !isPersonalName(p) && !isAudienceId(p))
+      !isRegistryFact(p) && !isAudienceId(p))
     .map(([p, v]) => `${p}=${JSON.stringify(String(v).slice(0, 40))}`);
   report(same.length === 0, `no en string is left untranslated in ${loc}`,
     same.length ? `${same.length}: ${same.join(', ')}` : 'none');

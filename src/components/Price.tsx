@@ -560,10 +560,15 @@ export function Price({
                     page that is most of them. It defeated the entire purpose of
                     adding it. It sits on the band now, under the trade it
                     explains and under the count of what is left. */}
+                {/* The line without the name over it.
+
+                    He marked the name and asked for it gone. The sentence
+                    under it is his own, in the first person, and still says a
+                    person built this and runs the calls; it is the only "I" on
+                    a page written in "we", which is what made it worth having.
+                    The name is still on the page: it is what the registered
+                    office and the contact address say. */}
                 <p className="price-signature">
-                  <span className="price-signature-name">
-                    {c.price.founding.signature.name}
-                  </span>
                   <span className="price-signature-line">
                     {c.price.founding.signature.line}
                   </span>
@@ -578,14 +583,24 @@ export function Price({
 
             {/* What is in the product, and it is the same list on both
                 cards, which is the point of printing it once. */}
-            <h3 className="price-sr" id="price-included-h">
-              {c.price.included.title}
-            </h3>
-            <ul className="price-incl" aria-labelledby="price-included-h">
-              {c.price.included.items.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            {/* Six lines of product detail, folded away like the terms.
+
+                They were open on the band, which put six sentences between the
+                trade and the timeline for every reader, including the ones who
+                had already decided. The heading was `price-sr` - spoken to a
+                screen reader and invisible to everyone else - so the list sat
+                there with nothing above it saying what it was. Made the
+                disclosure's own label, it does both jobs: it names the list,
+                and it is the thing you press to read it. */}
+            <div className="price-incl-fold">
+              <Disclosure label={c.price.included.title}>
+                <ul className="price-incl">
+                  {c.price.included.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </Disclosure>
+            </div>
 
             <div className="price-more" data-price-reveal style={{ ['--i' as string]: 3 }}>
               <Disclosure label={c.price.termsLabel}>

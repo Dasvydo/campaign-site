@@ -592,13 +592,13 @@ export interface Content {
           in Denmark or Lithuania with an Estonian registry code and nobody to
           attach the promise to.
 
-          `name` is a person's name and is identical in all three locales,
-          which scripts/audit-locales.mjs is told about explicitly: a name is
-          not translated, and a Danish rendering of one would be wrong rather
-          than better. `line` is his own sentence, in the first person, which
-          is a deliberate break from the page's "we" because a signature is
-          the one place a person should speak as themselves. */
-      signature: { name: string; line: string };
+          It held his name too, until he read the band and asked for the name
+          gone. What is left is his own sentence, in the first person, which is
+          a deliberate break from the page's "we" because a signature is the
+          one place a person should speak as themselves. He is still named on
+          the page: the registered office and the contact address both say so,
+          and both are facts rather than a flourish. */
+      signature: { line: string };
     };
 
     termsLabel: string;
@@ -636,6 +636,11 @@ export interface Content {
     emailClientOptions: SelectOption[];
     roleLabel: string;
     roleOptions: SelectOption[];
+    /** Over the box that opens when "Something else" is chosen, on the email
+        client question and on the role. One string for both, because both ask
+        the same thing of the reader and a second would be a second thing to
+        keep translated for no gain. */
+    otherLabel: string;
     choosePrompt: string;
     /** The two screens the five questions are split across.
 

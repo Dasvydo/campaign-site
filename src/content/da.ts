@@ -409,16 +409,16 @@ export const da: Content = {
     moreLabel: 'Vis regnestykket',
     basis: [
       {
-        term: 'Andelen',
-        def: 'Målt på en rigtig postkasse: den andel af den indgående post, der får et udkast, fordi det er det samme spørgsmål igen. Panelet ganger ikke med den. Den er der for at gøre en indbakke, I kender, om til et antal udkast, I ikke kender.',
+        term: 'Udkast om måneden',
+        def: 'Ikke alle mails får et. På en rigtig postkasse fik omkring én ud af syv det, fordi det var et spørgsmål, filerne allerede kunne svare på. Kender I nogenlunde jeres mængde post, er det sådan, den bliver til et antal udkast.',
       },
       {
-        term: 'Minutterne',
-        def: 'Antaget, og endnu aldrig taget tid på. At skrive et svar fra bunden tager omkring fem minutter; at læse et færdigt udkast og sende det tager omkring ét. I kan sætte jeres eget tal ind.',
+        term: 'Minutter sparet pr. udkast',
+        def: 'Vores gæt, ikke en måling. At skrive et svar fra bunden tager omkring fem minutter; at læse et, der ligger klar, og trykke send tager omkring ét. Så fire er forskellen. Sæt jeres eget tal ind, hvis vores er forkert.',
       },
       {
-        term: 'Timen',
-        def: 'Jeres, ikke vores. Hvad en person, der svarer på mails, koster virksomheden i timen, med arbejdsgiveromkostninger oveni. Vi har sat et groft tal ind for det marked, siden læses i.',
+        term: 'Hvad en time koster',
+        def: 'Jeres, ikke vores. Hvad en af jeres folk koster virksomheden i timen, løn plus det, I betaler oveni. Skyderen åbner på et groft tal for dette marked; flyt den hen til det, I faktisk betaler.',
       },
     ],
     note: 'Vi regner det igennem på jeres egne tal på mødet og siger det, hvis det ikke går op.',
@@ -528,7 +528,6 @@ export const da: Content = {
       ],
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
       signature: {
-        name: 'Dovydas Vinickis',
         line: 'Jeg har bygget det her, og jeg holder selv opsætningsmøderne.',
       },
     },
@@ -606,6 +605,7 @@ export const da: Content = {
       { value: 'it_admin', label: 'IT eller administration' },
       { value: 'other', label: 'Noget andet' },
     ],
+    otherLabel: 'Fortæl os hvilken',
     choosePrompt: 'Vælg en',
     steps: ['Om teamet', 'Sådan får vi fat i jer'],
     stepsLabel: 'Tjekket, i to trin',
@@ -615,8 +615,7 @@ export const da: Content = {
     submitting: 'Et øjeblik',
     required: 'Den her skal udfyldes.',
     invalidEmail: 'Den adresse ser ikke komplet ud.',
-    privacyNote:
-      'Vi bruger svarene til at forberede mødet og ikke til andet. Ingen liste, intet videresalg.',
+    privacyNote: 'Bruges til at forberede mødet. Ingen liste, intet videresalg.',
   },
 
   results: {

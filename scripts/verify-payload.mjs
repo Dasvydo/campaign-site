@@ -262,6 +262,27 @@ async function main() {
          a walk, so it needs the walk to have actually gone somewhere: without
          these three it would be satisfied by counting one screen twice. */
       check(p.stepsShown === 2, `    the form is presented as two steps`, String(p.stepsShown));
+      check(
+        p.otherClosedAtRest === 0 && p.otherOpensOnOther === 1 && p.otherShutsOnAnswer === 0,
+        `    "Something else" opens a box to say what else, and only that option does`,
+        `at rest ${p.otherClosedAtRest}, on other ${p.otherOpensOnOther}, after ${p.otherShutsOnAnswer}`,
+      );
+      check(
+        p.otherIsLabelled,
+        `    and the box has a label tied to it, like every other field on the form`,
+      );
+      /* Three languages, three different paths, and the one you are reading
+         named on the control itself. */
+      check(
+        p.localeHrefs.length === 3 && new Set(p.localeHrefs).size === 3,
+        `    the language picker offers all three, each to its own page`,
+        p.localeHrefs.join(' ') || 'none',
+      );
+      check(
+        p.localeSummary.length > 0,
+        `    and says which one you are reading`,
+        p.localeSummary || 'blank',
+      );
       check(p.stepTurned, `    answering the questions turns the page to the contact details`);
       check(
         p.stepOneIsTheQuestions,

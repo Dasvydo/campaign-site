@@ -71,6 +71,39 @@ export function Hero({
      sentence contradict itself. */
   const tallyRef = useRef<SVGSVGElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
+  const localeRef = useRef<HTMLDetailsElement | null>(null);
+
+  /* The language you are reading, by its own name. Falls back to the code
+     rather than to nothing, so an unknown locale still labels its own
+     control. */
+  const current = localeNames.find((l) => l.code === locale);
+
+  /* What a <details> does not do by itself: shut when you press somewhere else,
+     and shut on Escape. Both are what a person expects of a thing that opened
+     over the page, and neither is needed for the control to work. */
+  useEffect(() => {
+    const el = localeRef.current;
+    if (!el) return;
+    const away = (e: Event) => {
+      if (!el.open) return;
+      const t = e.target as Node | null;
+      if (t && el.contains(t)) return;
+      el.open = false;
+    };
+    const esc = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || !el.open) return;
+      el.open = false;
+      el.querySelector('summary')?.focus();
+    };
+    document.addEventListener('pointerdown', away);
+    document.addEventListener('focusin', away);
+    document.addEventListener('keydown', esc);
+    return () => {
+      document.removeEventListener('pointerdown', away);
+      document.removeEventListener('focusin', away);
+      document.removeEventListener('keydown', esc);
+    };
+  }, []);
 
   /* The tally is drawn by stroke-dashoffset, which needs each path's own
      length. Measured here rather than guessed, because the lengths differ and a
@@ -230,26 +263,41 @@ export function Hero({
             </a>
           </nav>
 
-          {/* The prototype had no language switch because it was one page in one
-              language. The real site is three, so it goes in the masthead in the
-              nav's own micro type rather than being buried in the colophon. */}
-          <nav className="hero-locale" aria-label={c.nav.localeLabel}>
-            {localeNames.map((l) => (
-              <a
-                key={l.code}
-                href={pathFor(l.code)}
-                hrefLang={l.code}
-                /* the visible text shortens to a code on a phone, where the
-                   three full language names would cost the hero a whole band.
-                   The accessible name stays the language, in the language. */
-                aria-label={l.label}
-                aria-current={l.code === locale ? 'page' : undefined}
-              >
-                <span className="hero-locale-long">{l.label}</span>
-                <span className="hero-locale-short">{l.code.toUpperCase()}</span>
-              </a>
-            ))}
-          </nav>
+          {/* One control that says what language you are reading, and opens
+              the other two when you press it.
+
+              It was three links printed side by side, which spends a third of
+              the masthead on two words nobody wants and makes the one that is
+              current hard to pick out of the row.
+
+              A native <details>, for the reasons the Disclosure component
+              already gives: it opens with no JavaScript, Enter and Space
+              already work, it is already a disclosure to a screen reader, and
+              find-in-page can open it. The only things script adds are the two
+              a <details> does not do on its own - closing when you press
+              elsewhere, and closing on Escape - and the control is complete
+              without either. */}
+          <details className="hero-locale" ref={localeRef}>
+            <summary aria-label={c.nav.localeLabel}>
+              <span className="hero-locale-now">{current ? current.label : locale}</span>
+              <svg className="hero-locale-caret" viewBox="0 0 10 6" aria-hidden="true" focusable="false">
+                <path d="M1 1.4 L5 5 L9 1.4" />
+              </svg>
+            </summary>
+            <ul className="hero-locale-menu">
+              {localeNames.map((l) => (
+                <li key={l.code}>
+                  <a
+                    href={pathFor(l.code)}
+                    hrefLang={l.code}
+                    aria-current={l.code === locale ? 'page' : undefined}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
 
           <a className="hero-tab" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
             {c.nav.cta}

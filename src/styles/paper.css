@@ -212,27 +212,52 @@
 /* The language switch. Not in the prototype, which was one page in one
    language; the real site is three. It takes the masthead nav's own micro type
    so it reads as part of the same band rather than as a widget bolted on. */
-.hero-locale{
-  display:flex; gap:0 14px; flex-wrap:wrap; padding-block:0 3px;
-}
-.hero-locale a{
-  display:inline-flex; align-items:center; min-height:44px;
+.hero-locale{ position:relative; padding-block:0 3px }
+.hero-locale > summary{
+  display:inline-flex; align-items:center; gap:7px;
+  min-height:44px; padding-inline:2px;
   font-size:12.5px; font-weight:500; letter-spacing:.1em;
-  color:var(--muted); text-decoration:none;
+  color:var(--muted); cursor:pointer; list-style:none;
   transition:color var(--t-in) var(--e-out);
 }
-.hero-locale a:hover{color:var(--ink); transition-duration:var(--t-micro)}
-.hero-locale a[aria-current="page"]{color:var(--ink); text-decoration:underline;
-  text-decoration-color:var(--amber-text); text-underline-offset:.32em; text-decoration-thickness:2px}
-.hero-locale-short{display:none}
-/* On a phone the switch joins the brand row rather than taking one of its own,
-   and shortens to codes. The band it would otherwise cost is the band that
+.hero-locale > summary::-webkit-details-marker{ display:none }
+.hero-locale > summary:hover{ color:var(--ink); transition-duration:var(--t-micro) }
+.hero-locale-caret{
+  width:9px; height:6px; flex:none;
+  fill:none; stroke:currentColor; stroke-width:1.6;
+  stroke-linecap:round; stroke-linejoin:round;
+  transition:transform var(--t-micro) var(--e-out);
+}
+.hero-locale[open] > summary{ color:var(--ink) }
+.hero-locale[open] .hero-locale-caret{ transform:rotate(180deg) }
+
+.hero-locale-menu{
+  position:absolute; z-index:40; top:calc(100% - 2px); right:0;
+  min-width:150px; margin:0; padding:5px; list-style:none;
+  background:var(--card,#FDF9F7);
+  border:1px solid var(--taupe);
+  border-radius:var(--radius-sm,4px);
+  box-shadow:var(--shadow-soft, 0 2px 4px rgba(37,29,24,.10), 0 12px 28px rgba(37,29,24,.14));
+}
+.hero-locale-menu a{
+  display:flex; align-items:center; min-height:40px; padding-inline:10px;
+  font-size:14px; font-weight:400; letter-spacing:0;
+  color:var(--ink); text-decoration:none; border-radius:2px;
+}
+.hero-locale-menu a:hover{ background:var(--sand,#F3E7DD) }
+.hero-locale-menu a[aria-current="page"]{
+  font-weight:500;
+  box-shadow:inset 2px 0 0 var(--amber-text);
+}
+@media (prefers-reduced-motion:reduce){ .hero-locale-caret{ transition:none } }
+
+/* On a phone the control joins the brand row rather than taking one of its
+   own. It is one control now rather than three links, so it no longer has to
+   shrink to language codes to fit: the band it used to cost is the band that
    carries the example card onto the first screen. */
 @media (max-width:859px){
-  .hero-locale{order:1; margin-inline-start:auto; gap:0 10px}
-  .hero-tab{order:2}
-  .hero-locale-long{display:none}
-  .hero-locale-short{display:inline; letter-spacing:.14em}
+  .hero-locale{ order:1; margin-inline-start:auto }
+  .hero-tab{ order:2 }
 }
 
 .hero-rule{
@@ -254,7 +279,16 @@
 .hero-grid:focus{outline:none}
 .hero-grid:focus-visible{outline:3px solid var(--hero-focus); outline-offset:-3px}
 
-.hero-copy{grid-column:1 / 9; grid-row:1; position:relative; z-index:3; min-width:0}
+/* The copy fills its row, and the button sits at the bottom of it.
+
+   The art column is taller than the copy, and with `align-items:start` on the
+   grid the button finished a hundred and sixty pixels above the fold of the
+   section with nothing under it. Now the column stretches and the button is
+   pushed to its foot, so the two columns end together. */
+.hero-copy{
+  grid-column:1 / 5; grid-row:1; position:relative; z-index:3; min-width:0;
+  align-self:stretch; display:flex; flex-direction:column;
+}
 
 .hero-folio{
   margin:0 0 24px;
@@ -266,7 +300,11 @@
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
   font-weight:400;
   margin:0;
-  font-size:clamp(43px, 29.4px + 5.2vw, 96px);
+  /* Four columns, which is 379 pixels at 1512, so the size is the size that
+     sets this headline in four lines there rather than in eight. It was 96px
+     across eight columns; at eight columns of headline the copy ran most of
+     the way to the paper stack and there was nothing between them but luck. */
+  font-size:clamp(38px, 20px + 2.1vw, 54px);
   text-wrap:balance;
   text-indent:-.03em;
   line-height:1.06; letter-spacing:-.006em;
@@ -300,7 +338,10 @@
   font-variant-numeric:tabular-nums lining;
 }
 .hero-payback-fig{ font-weight:500; white-space:nowrap }
-.hero-act{margin-top:48px; display:flex; flex-direction:column; align-items:flex-start}
+.hero-act{
+  margin-top:auto; padding-top:48px;
+  display:flex; flex-direction:column; align-items:flex-start;
+}
 
 .hero-btn{
   display:inline-block;
@@ -333,7 +374,11 @@
   display:block;
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
   font-weight:400;
-  font-size:clamp(88px, 6px + 18.3vw, 240px);
+  /* Brought down with the headline. At 240px beside a 52px headline the
+     decoration was the biggest thing in the hero and the sentence the second,
+     which is the wrong way round on the one screen that has to make the
+     argument. */
+  font-size:clamp(88px, 6px + 13vw, 190px);
   line-height:.78;
   letter-spacing:-.03em;
   /* deliberate ghost numeral: taupe on cream is a watermark, not a reading
@@ -357,10 +402,22 @@
 .hero-tally-x{transition:stroke-dashoffset var(--t-tap) var(--e-hand) calc(106ms + var(--g) * var(--stag-hand))}
 .hero-tally.is-drawn path{stroke-dashoffset:0}
 
+/* Untouched. The stack, the ghost numeral and the draft card are one
+   composition tuned to this box; moving or widening it lifted the card above
+   the fade at the top of the stack and cut the two lines that say it is a
+   ready draft and who it is to. The copy narrowing to four columns leaves four
+   empty columns between them, and that gap is the point: it is what makes an
+   overlap impossible at any width rather than merely unlikely. */
 .hero-pile{
   grid-column:9 / -1; grid-row:1;
   align-self:stretch;
   position:relative; z-index:2;
+  /* Where the pile starts. Trimming this to close the gap under the button
+     pulled the whole stack up until the draft card crossed the fade at the top
+     of .hero-stack and lost its first two lines - the ones that say it is a
+     ready draft and who it is to, which are the only reason the card is
+     there. The gap under the button is closed by the copy column stretching
+     instead, which costs the artwork nothing. */
   margin-top:clamp(132px,14.5vw,190px);
   margin-left:clamp(28px,5.5vw,76px);
   margin-right:calc(-1 * var(--hero-gutter));
@@ -1164,7 +1221,10 @@
 
 .demo-beat-h{
   font-family:var(--demo-serif);font-weight:600;font-size:23px;line-height:1.25;
-  margin:0 0 26px;color:var(--ink);text-wrap:balance;
+  /* 16, then 26, now 40. He has asked for room under these three twice; the
+     rule above them is what separates a beat from the card it heads, and at 26
+     the heading still read as a caption sitting on the card. */
+  margin:0 0 40px;color:var(--ink);text-wrap:balance;
 }
 /* Each beat gets the amber rule the page already uses to mean "read this
    first". At 400 these three sat in body ink at body weight and read as
@@ -2583,10 +2643,22 @@
 .qualifier-eyebrow{ letter-spacing:.14em; margin-right:-.14em }
 .qualifier-h{
   margin:0; font-family:var(--q-serif); font-weight:400;
-  font-size:clamp(34px, 20px + 2.66vw, 54px);
+  /* Sized to fit on ONE line, in the longest of the three languages, at every
+     width it is read on.
+
+     It was 54px at the top, which is 782 English pixels of heading in a block
+     781 wide - so it broke into two lines by a single pixel, and Lithuanian,
+     which is 816 at that size, broke everywhere. The slope is measured rather
+     than guessed: Lithuanian needs 41px in the 620 the block has at 1024 and
+     51px in the 781 it has at 1512, so the size follows the block instead of
+     the viewport's idea of big.
+
+     Not `nowrap`. A heading told never to wrap does not fit, it overflows, and
+     the day a translation grows it would run off the side of the page rather
+     than take a second line. This fits with room to spare and still wraps if
+     it ever has to. */
+  font-size:clamp(34px, 19px + 2.05vw, 50px);
   line-height:1.04; letter-spacing:-.014em; text-indent:-.03em;
-  /* Was 16ch, which stacked a six word heading into three lines. One line at
-     the widths it is read on. */
   text-wrap:balance; max-width:none; color:var(--q-ink);
 }
 @media (min-width:1024px){
@@ -2737,6 +2809,21 @@
   margin-left:8px; font-size:14px; font-weight:400; color:var(--q-muted);
 }
 .qualifier-control{ grid-area:control; min-width:0 }
+
+/* The box that opens under "Something else".
+
+   It sits inside a radiogroup, so it is deliberately quiet: a small label, the
+   same underline as every other text field, and no number of its own, because
+   it is not a fourth question - it is the rest of the third one. */
+/* The `hint` row, which a chip group never uses: row three, content column,
+   directly under the chips on both the wide and the narrow template. There is
+   no `chips` area to ask for - the chips themselves sit in `control`. */
+.qualifier-other{ grid-area:hint; margin:16px 0 0 }
+.qualifier-other-label{
+  display:flex; align-items:baseline; gap:10px; margin:0 0 4px;
+  font-size:14px; line-height:1.4; color:var(--q-muted);
+}
+.qualifier-other .qualifier-input{ max-width:380px; min-height:44px; font-size:16px }
 
 .qualifier-input{
   display:block; width:100%; max-width:520px; min-height:48px;

@@ -16,9 +16,25 @@
  *   "phone": "",
  *   "team_size": "1-9 | 10-24 | 25-49 | 50+",
  *   "email_client": "outlook | gmail | other",
+ *   "email_client_other": "",   // only when email_client = other, and filled in
  *   "role": "owner_partner | ops_office_manager | it_admin | other",
+ *   "role_other": "",           // only when role = other, and filled in
  *   "submitted_at": "ISO-8601"
  * }
+ *
+ * THE TWO "_other" KEYS ARE NEW AND NOT YET IN 00-START-HERE.md.
+ *
+ * They were asked for from the live page: picking "Something else" now offers
+ * a box to say what the something else is, because "other" on its own tells
+ * the call nothing. They are additive and optional - the key is left out
+ * entirely unless the reader picked "other" AND typed something - so a
+ * consumer that ignores unknown keys is unaffected and the routing table,
+ * which reads only `team_size` and `email_client`, is untouched.
+ *
+ * What is NOT settled: whether the n8n validator rejects a payload carrying
+ * keys its schema does not name. If it does, every lead from a reader who
+ * chose "Something else" is dropped. That is one line in the spec doc and one
+ * check in n8n, and both are the founder's. Recorded in BLOCKED.md.
  */
 
 export type Source = 'reel' | 'ad' | 'outreach' | 'direct';
@@ -45,7 +61,13 @@ export interface QualifierPayload {
   phone: string;
   team_size: TeamSize;
   email_client: EmailClient;
+  /** What they typed when they picked "other". Absent unless both are true:
+      `email_client` is 'other' and they filled the box in. Optional in the
+      type because it is optional on the wire - see the header. */
+  email_client_other?: string;
   role: Role;
+  /** The same, for the role. */
+  role_other?: string;
   submitted_at: string;
 }
 

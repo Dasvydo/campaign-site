@@ -235,6 +235,25 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       );
     const stepOneAsks = labelsOn();
 
+    /* "Something else" is not an answer until there is somewhere to say what
+       else. The box opens on that option and on no other, and it is gone again
+       the moment another option is picked - which matters, because a box left
+       behind would carry a word into a payload whose answer no longer has
+       anything to do with it. Walked here in both directions. */
+    const otherClosedAtRest = host.querySelectorAll('#qualifier .qualifier-other').length;
+    await act(async () => {
+      tick('email_client', 'other');
+    });
+    const otherOpensOnOther = host.querySelectorAll('#qualifier .qualifier-other').length;
+    const otherIsLabelled = Boolean(
+      host.querySelector('#qualifier .qualifier-other label[for="q-email_client-other"]') &&
+        host.querySelector('#qualifier input#q-email_client-other'),
+    );
+    await act(async () => {
+      tick('email_client', 'outlook');
+    });
+    const otherShutsOnAnswer = host.querySelectorAll('#qualifier .qualifier-other').length;
+
     const qualifyingBand = TEAM_SIZES.find((t) => route(t, 'outlook').outcome !== 'too_small');
     await act(async () => {
       tick('team_size', qualifyingBand ?? '');
@@ -370,7 +389,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             ...(anyPlaceTaken ? [c.price.founding.spots.label] : []),
             c.price.founding.lock,
             c.price.founding.givesTitle, ...c.price.founding.gives,
-            c.price.founding.signature.name, c.price.founding.signature.line,
+            /* The name is gone from the page by request. The sentence under it
+               is not: it is the only first person on a page written in "we",
+               and it is still the thing that says a person built this. */
+            c.price.founding.signature.line,
             c.price.founding.note,
           ]
         : [c.price.founding.spotsClosed]),
@@ -789,6 +811,18 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          string, so the page stopped asking for a number it does not need. */
       questionCount: stepOneQuestions + stepTwoQuestions,
       stepsShown,
+      otherClosedAtRest,
+      otherOpensOnOther,
+      otherIsLabelled,
+      otherShutsOnAnswer,
+      /* The language control: one summary saying where you are, and every
+         language behind it, each to its own path. It was three links in a row;
+         a picker that lost one of them, or pointed two at the same page, would
+         look exactly as right as this does. */
+      localeSummary: (host.querySelector('#hero .hero-locale > summary')?.textContent ?? '').trim(),
+      localeHrefs: Array.from(
+        host.querySelectorAll<HTMLAnchorElement>('#hero .hero-locale-menu a'),
+      ).map((a) => a.getAttribute('href') ?? ''),
       stepTurned,
       backWorks,
       /* The three closed questions first, the contact details second, and
