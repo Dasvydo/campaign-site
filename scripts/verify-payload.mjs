@@ -675,6 +675,22 @@ async function main() {
       'UTM values ride along in the payload',
     );
     check(received.every((r) => r.dedupe), 'each POST carries an idempotency key header');
+    /* The half that was missing, and that a live probe caught.
+
+       n8n dedupes on `dedupe_id` in the body. The header alone bought nothing:
+       the same key twice made two leads. Asserted per POST, and asserted
+       distinct across them, because one id reused for every lead would
+       "deduplicate" every lead after the first into nothing at all. */
+    check(
+      received.every((r) => typeof r.dedupe_in_body === 'string' && r.dedupe_in_body.length > 0),
+      'and carries it in the body, which is what the webhook reads',
+      received.map((r) => r.dedupe_in_body ?? 'missing').join(' '),
+    );
+    check(
+      new Set(received.map((r) => r.dedupe_in_body)).size === received.length,
+      'and a different one per lead, so the key cannot swallow real leads',
+      `${new Set(received.map((r) => r.dedupe_in_body)).size} distinct of ${received.length}`,
+    );
 
     console.log('\n  Example payload as received:\n');
     console.log(

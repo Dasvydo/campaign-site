@@ -107,10 +107,24 @@ async function postOnce(payload: QualifierPayload, dedupeId: string): Promise<vo
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Idempotency key. n8n should drop a repeat of the same id.
+        // Kept for anything reading headers. It is NOT what n8n reads.
         'X-DoviLoop-Dedupe': dedupeId,
       },
-      body: JSON.stringify(payload),
+      /* The id goes in the body, because that is where the thing receiving it
+         looks.
+
+         It was sent as a header alone, and the file above says "Batch F must
+         treat `dedupe_id` as an idempotency key" - a body field. Probed against
+         the live webhook on 2026-09-21: two POSTs with the same
+         X-DoviLoop-Dedupe header produced two leads, `deduped:false` both
+         times; two with the same `dedupe_id` in the body produced one, the
+         second answering `lead_id:null, deduped:true`.
+
+         So every retry this file makes - the second attempt after a failure,
+         and every replay out of the localStorage queue - was creating a second
+         lead whenever the first POST had in fact landed and only the response
+         was lost. The whole point of the id was to stop exactly that. */
+      body: JSON.stringify({ ...payload, dedupe_id: dedupeId }),
       keepalive: true,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

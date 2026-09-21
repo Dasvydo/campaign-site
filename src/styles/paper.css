@@ -286,7 +286,7 @@
    section with nothing under it. Now the column stretches and the button is
    pushed to its foot, so the two columns end together. */
 .hero-copy{
-  grid-column:1 / 5; grid-row:1; position:relative; z-index:3; min-width:0;
+  grid-column:1 / 7; grid-row:1; position:relative; z-index:3; min-width:0;
   align-self:stretch; display:flex; flex-direction:column;
 }
 
@@ -300,11 +300,17 @@
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
   font-weight:400;
   margin:0;
-  /* Four columns, which is 379 pixels at 1512, so the size is the size that
-     sets this headline in four lines there rather than in eight. It was 96px
-     across eight columns; at eight columns of headline the copy ran most of
-     the way to the paper stack and there was nothing between them but luck. */
-  font-size:clamp(38px, 20px + 2.1vw, 54px);
+  /* Six columns and 72px, which is the largest this headline gets while still
+     setting in four lines.
+
+     It was eight columns at 96px, which ran most of the way to the paper stack
+     with nothing between them but luck. Four columns fixed that and cost the
+     size: 379 pixels holds this sentence in four lines only up to 52px, and
+     58px makes it six. Asked for bigger, the width is what has to give, and
+     six columns is 580 pixels - still some three hundred clear of the artwork
+     at 1512, so the thing the four columns were for is not given up with
+     them. */
+  font-size:clamp(40px, 26px + 3vw, 72px);
   text-wrap:balance;
   text-indent:-.03em;
   line-height:1.06; letter-spacing:-.006em;

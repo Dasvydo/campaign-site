@@ -32,6 +32,14 @@ const TOP_LEVEL = [
   'source', 'market', 'locale', 'utm', 'company_name', 'work_email',
   'phone', 'team_size', 'email_client', 'role', 'submitted_at',
 ];
+/* Keys that may be there and may not, which is different from keys that are
+   missing. This list used to be empty and TOP_LEVEL did both jobs, so the
+   first optional key added to the wire read as "unexpected key" here.
+
+   `dedupe_id` is put on by lib/lead.ts at post time, not by the form.
+   The two `_other` keys ride only when the reader picked "Something else" and
+   typed. The live webhook was probed on 2026-09-21 and accepts all three. */
+const OPTIONAL = ['dedupe_id', 'email_client_other', 'role_other'];
 const UTM_KEYS = ['source', 'medium', 'campaign', 'content'];
 
 export function validate(body) {
@@ -45,7 +53,21 @@ export function validate(body) {
     if (!(key in body)) problems.push(`missing key: ${key}`);
   }
   for (const key of Object.keys(body)) {
-    if (!TOP_LEVEL.includes(key)) problems.push(`unexpected key: ${key}`);
+    if (!TOP_LEVEL.includes(key) && !OPTIONAL.includes(key)) {
+      problems.push(`unexpected key: ${key}`);
+    }
+  }
+  for (const key of OPTIONAL) {
+    if (key in body && typeof body[key] !== 'string') problems.push(`${key} is not a string`);
+    if (key in body && body[key].trim() === '') problems.push(`${key} is present but empty`);
+  }
+  /* The rule the page implements, checked here rather than assumed: a word
+     saying what the something else was has no meaning beside an answer that is
+     not "other", and sending one would describe a lead wrongly. */
+  for (const [key, owner] of [['email_client_other', 'email_client'], ['role_other', 'role']]) {
+    if (key in body && body[owner] !== 'other') {
+      problems.push(`${key} sent while ${owner} = ${JSON.stringify(body[owner])}`);
+    }
   }
 
   for (const [key, allowed] of Object.entries(ENUMS)) {
@@ -142,6 +164,9 @@ const server = createServer((req, res) => {
     const record = {
       received_at: new Date().toISOString(),
       dedupe: req.headers['x-doviloop-dedupe'] ?? null,
+      /* The one the real webhook actually dedupes on. It reads the body, not
+         the header, which is how a retry was able to make a second lead. */
+      dedupe_in_body: body?.dedupe_id ?? null,
       valid: problems.length === 0,
       problems,
       expected_outcome: problems.length === 0 ? expectedOutcome(body) : null,
