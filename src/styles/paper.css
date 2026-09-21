@@ -212,7 +212,19 @@
 /* The language switch. Not in the prototype, which was one page in one
    language; the real site is three. It takes the masthead nav's own micro type
    so it reads as part of the same band rather than as a widget bolted on. */
-.hero-locale{ position:relative; padding-block:0 3px }
+/* Set apart from the nav, with a hairline to say so.
+
+   It sat 24 pixels from "FIT" and 24 from the button - the same distance from
+   the things it is not as from the thing it is - so it read as a fourth nav
+   link rather than as the control that changes the language. The gap is wider
+   now and there is a rule in it. */
+.hero-locale{ position:relative; padding-block:0 3px; margin-inline-start:12px }
+.hero-locale::before{
+  content:""; position:absolute; left:-20px; top:50%;
+  width:1px; height:18px; margin-top:-9px;
+  background:var(--taupe); opacity:.9;
+}
+@media (max-width:859px){ .hero-locale::before{ display:none } }
 .hero-locale > summary{
   display:inline-flex; align-items:center; gap:7px;
   min-height:44px; padding-inline:2px;
@@ -272,7 +284,10 @@
   column-gap:24px;
   max-width:1280px; margin-inline:auto;
   padding-inline:var(--hero-gutter);
-  padding-block:clamp(48px,5vw,80px) clamp(32px,3vw,48px);
+  /* The foot of the grid, named, because the button's spacing is measured
+     against the edge of the section rather than the edge of the column. */
+  --hero-pb:clamp(32px,3vw,48px);
+  padding-block:clamp(48px,5vw,80px) var(--hero-pb);
   align-items:start;
 }
 
@@ -344,9 +359,22 @@
   font-variant-numeric:tabular-nums lining;
 }
 .hero-payback-fig{ font-weight:500; white-space:nowrap }
+/* The same air above the button as below it, measured to where the next
+   section starts.
+
+   `margin-top:auto` alone put all the slack above: 263 pixels over the button
+   and 45 under it at 1512. Two autos split the column's slack evenly, but the
+   grid's own bottom padding still sits under the column, so the lower gap came
+   out that much bigger than the upper one.
+
+   The nudge closes exactly that. Shifting the button down by half the padding
+   adds that half to the gap above and takes it off the gap below, and the two
+   meet in the middle. `top` on a flex item moves the paint, not the layout, so
+   nothing else in the column shifts with it. */
 .hero-act{
-  margin-top:auto; padding-top:48px;
+  margin-block:auto;
   display:flex; flex-direction:column; align-items:flex-start;
+  position:relative; top:calc(var(--hero-pb) / 2);
 }
 
 .hero-btn{
@@ -2411,10 +2439,14 @@
    DOM, so nothing is lost to a screen reader; only the vertical stack is. */
 .price-trade{ margin:22px 0 0 }
 .price-gives-line{ margin:18px 0 0; max-width:60ch }
+/* Highlighted, in the page's own amber, because it is the word that turns
+   four bullets into four obligations. It was the same dim grey as the things
+   it introduces, so it read as part of the list rather than as the label on
+   it. */
 .price-gives-h{
   display:inline; margin:0;
-  font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--price-dim);
+  font-family:inherit;font-size:12.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--amber);
 }
 .price-gives{ display:inline; list-style:none; margin:0; padding:0 }
 .price-gives li{
