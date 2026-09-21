@@ -13,6 +13,7 @@ import {
   setupDue,
 } from '../lib/offer';
 import type { PackageId } from '../lib/offer';
+import { LINKEDIN_URL, LINKEDIN_LABEL } from '../lib/env';
 import { Disclosure } from './Disclosure';
 
 /**
@@ -350,7 +351,6 @@ export function Price({
                 );
               })}
             </div>
-            <p className="price-fee-note price-pkgs-note">{c.price.packages.lede}</p>
             {/* For the firm that is smaller than both cards. The pair reads
                 down: too small, then too big, then what happens either way. */}
             <p className="price-fee-note price-pkgs-under">
@@ -560,17 +560,35 @@ export function Price({
                     page that is most of them. It defeated the entire purpose of
                     adding it. It sits on the band now, under the trade it
                     explains and under the count of what is left. */}
-                {/* The line without the name over it.
+                {/* The sign-off, and somewhere to check who is signing.
 
-                    He marked the name and asked for it gone. The sentence
-                    under it is his own, in the first person, and still says a
-                    person built this and runs the calls; it is the only "I" on
-                    a page written in "we", which is what made it worth having.
-                    The name is still on the page: it is what the registered
-                    office and the contact address say. */}
+                    It was a name set over the line in display serif, and he
+                    asked for that gone. What came back is a signature rather
+                    than a nameplate: the sentence, then a first name, then the
+                    profile it belongs to, so "I built this" is a claim a
+                    reader can take two seconds to verify. That is worth more
+                    on a page with no customers to point at than the name ever
+                    was as a heading.
+
+                    The address is shown in full rather than behind the word
+                    "LinkedIn", so a reader knows where it goes before they
+                    press it. */}
                 <p className="price-signature">
                   <span className="price-signature-line">
                     {c.price.founding.signature.line}
+                  </span>
+                  <span className="price-signature-by">
+                    {'\u2014 '}
+                    {c.price.founding.signature.name}
+                    {', '}
+                    <a
+                      className="price-signature-link"
+                      href={LINKEDIN_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {LINKEDIN_LABEL}
+                    </a>
                   </span>
                 </p>
               </div>

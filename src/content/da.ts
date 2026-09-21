@@ -473,7 +473,6 @@ export const da: Content = {
 
     packages: {
       title: 'De to pakker',
-      lede: 'Samme produkt i begge. Kun størrelsen skifter.',
       pick: 'Vælg ved at tælle jeres folk.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Det mindste firma, vi sælger til.' },
@@ -528,6 +527,7 @@ export const da: Content = {
       ],
       note: 'Vil I helst ikke nævnes, betaler I opsætningsprisen, og intet andet ved produktet ændrer sig.',
       signature: {
+        name: 'Dovydas',
         line: 'Jeg har bygget det her, og jeg holder selv opsætningsmøderne.',
       },
     },

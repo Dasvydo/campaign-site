@@ -31,5 +31,13 @@ export const env = {
 /** Where a 1-9 seat lead is sent. Product pricing, not a campaign page. */
 export const PRICING_URL = 'https://doviloop.dev/pricing';
 
+/** Where the signature on the price band points. Not copy and not a secret:
+    one profile, the same in every language, so it lives beside the other fixed
+    destinations rather than in three locale files where it would have to be
+    kept identical by hand. The label is the address itself, which is what was
+    asked for - a reader can see where it goes before pressing it. */
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/dovydas-vinickis';
+export const LINKEDIN_LABEL = 'www.linkedin.com/in/dovydas-vinickis';
+
 /** Last-resort contact if no booking URL is configured yet. */
 export const FALLBACK_CONTACT_EMAIL = 'dovyvini@doviloop.dev';

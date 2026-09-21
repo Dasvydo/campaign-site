@@ -218,6 +218,17 @@ async function main() {
         p.ledgerTerms.join(' | '),
       );
       check(
+        p.signLinkHref === 'https://www.linkedin.com/in/dovydas-vinickis' &&
+          p.signLinkText === 'www.linkedin.com/in/dovydas-vinickis',
+        `    the signature links to the person signing it, at the address it shows`,
+        `${p.signLinkText || 'no label'} -> ${p.signLinkHref || 'nowhere'}`,
+      );
+      check(
+        p.signByText.startsWith('\u2014 ') && p.signByText.includes(p.signLinkText),
+        `    and reads as a sign-off, name then address`,
+        p.signByText || 'nothing',
+      );
+      check(
         p.underLinkHref === 'https://doviloop.dev' && p.underLinkText.length > 0,
         `    a firm too small for either card is sent to the product site, by a real link`,
         `${p.underLinkText || 'no link'} -> ${p.underLinkHref || 'nowhere'}`,

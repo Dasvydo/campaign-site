@@ -483,7 +483,6 @@ export const lt: Content = {
 
     packages: {
       title: 'Du paketai',
-      lede: 'Abiejuose tas pats produktas. Skiriasi tik dydis.',
       pick: 'Rinkitės suskaičiavę savo žmones.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Mažiausia įmonė, kuriai parduodame.' },
@@ -538,6 +537,7 @@ export const lt: Content = {
       ],
       note: 'Jei nenorite būti įvardyti, sumokate įdiegimo mokestį, ir niekas kitas produkte nesikeičia.',
       signature: {
+        name: 'Dovydas',
         line: 'Šį produktą sukūriau aš ir įdiegimo pokalbius vedu pats.',
       },
     },

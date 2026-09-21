@@ -472,7 +472,6 @@ export interface Content {
         reordered the list. A row whose id names no package renders nothing. */
     packages: {
       title: string;
-      lede: string;
       /** Names the group of package cards for a screen reader, and sits
           above them for everyone else: pick by counting your people. */
       pick: string;
@@ -592,13 +591,18 @@ export interface Content {
           in Denmark or Lithuania with an Estonian registry code and nobody to
           attach the promise to.
 
-          It held his name too, until he read the band and asked for the name
-          gone. What is left is his own sentence, in the first person, which is
-          a deliberate break from the page's "we" because a signature is the
-          one place a person should speak as themselves. He is still named on
-          the page: the registered office and the contact address both say so,
-          and both are facts rather than a flourish. */
-      signature: { line: string };
+          `line` is his own sentence, in the first person, which is a
+          deliberate break from the page's "we" because a signature is the one
+          place a person should speak as themselves. `name` is the first name
+          it is signed with.
+
+          It held his full name in display serif over the line, and he asked
+          for that gone; what came back is a signature rather than a nameplate.
+          The profile it links to is not here - it is one address, the same in
+          every language, and lives in lib/env.ts beside the other fixed
+          destinations rather than being kept identical by hand in three
+          files. */
+      signature: { name: string; line: string };
     };
 
     termsLabel: string;

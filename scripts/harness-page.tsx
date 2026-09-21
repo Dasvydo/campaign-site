@@ -392,12 +392,16 @@ const drivePoints = (): Array<[number, number, number, number]> => {
             /* The name is gone from the page by request. The sentence under it
                is not: it is the only first person on a page written in "we",
                and it is still the thing that says a person built this. */
-            c.price.founding.signature.line,
+            c.price.founding.signature.name, c.price.founding.signature.line,
             c.price.founding.note,
           ]
         : [c.price.founding.spotsClosed]),
       /* The two packages, in the open, and what is in both of them. */
-      c.price.packages.pick, c.price.packages.lede,
+      /* `packages.lede` - "Same product in both. Only the size changes." - was
+         asserted here until he marked it and asked for it gone. The two cards
+         already print the same figures under the same labels, so the sentence
+         was telling a reader what the table above it had just shown them. */
+      c.price.packages.pick,
       /* The line for a firm bigger than every package. It was asserted by
          nothing: an independent verifier replaced it with {null} and the whole
          suite stayed green, so it was one careless edit from vanishing in three
@@ -908,6 +912,14 @@ const drivePoints = (): Array<[number, number, number, number]> => {
           want: desk ? desk.sources.map((s) => s.label) : [],
         };
       }),
+      /* The signature's link. "I built this" is a claim, and the profile is
+         how a reader checks it, so a signature whose link had quietly lost its
+         href would leave the claim standing with nothing behind it. */
+      signLinkHref: host.querySelector('#price .price-signature-link')?.getAttribute('href') ?? '',
+      signLinkText: (host.querySelector('#price .price-signature-link')?.textContent ?? '').trim(),
+      signByText: (host.querySelector('#price .price-signature-by')?.textContent ?? '')
+        .replace(/\s+/g, ' ')
+        .trim(),
       underLinkHref: host.querySelector('#price .price-pkgs-under a')?.getAttribute('href') ?? '',
       underLinkText: (host.querySelector('#price .price-pkgs-under a')?.textContent ?? '').trim(),
       /* The calculator's rows, in the order they are read down. Nothing pinned

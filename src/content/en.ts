@@ -478,7 +478,6 @@ export const en: Content = {
 
     packages: {
       title: 'The two packages',
-      lede: 'Same product in both. Only the size changes.',
       pick: 'Pick by counting your people.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'The smallest firm we sell to.' },
@@ -533,6 +532,7 @@ export const en: Content = {
       ],
       note: 'If you would rather not be named, pay the setup fee and nothing else about the product changes.',
       signature: {
+        name: 'Dovydas',
         line: 'I built this, and I run the setup calls myself.',
       },
     },

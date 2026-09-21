@@ -3845,11 +3845,26 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
   flex-direction:column;
   gap:4px;
 }
-.price-signature-name{
-  font-family:var(--display,'Playfair Display',serif);
-  font-size:19px;
-  line-height:1.25;
-  color:var(--paper,#F7F1EA);
+/* `.price-signature-name` was the nameplate in display serif over the line.
+   It is gone; the name is on the sign-off below the sentence now. */
+.price-signature-by{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--price-dim);
+  overflow-wrap:anywhere;
+}
+.price-signature-link{
+  color:var(--price-dim);
+  text-decoration:underline;
+  text-underline-offset:.2em;
+  text-decoration-thickness:1px;
+  text-decoration-color:rgba(250,241,235,.38);
+  transition:color var(--price-t-micro) var(--price-e-out),
+             text-decoration-color var(--price-t-micro) var(--price-e-out);
+}
+.price-signature-link:hover{
+  color:var(--warmwhite);
+  text-decoration-color:var(--amber);
 }
 .price-signature-line{
   font-size:15px;
