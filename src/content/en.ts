@@ -47,6 +47,8 @@ export const en: Content = {
       sr: 'Read the whole draft in the worked example.',
     },
 
+    setup: 'Set up on our side, or inside your own firm.',
+
     bar: {
       /* It said "Five questions", which is the true count of the fields, while
          the form's own heading says "Three questions. Under a minute." Both
@@ -77,7 +79,7 @@ export const en: Content = {
     subjectLabel: 'Subject',
     pickLead: 'Pick the desk nearest yours.',
     beatIn: 'What came in, 08:40',
-    beatKnows: 'What the office already knows',
+    beatKnows: 'What the office knows',
     beatWrote: 'What it wrote back',
     beatNote: 'Switch one off and watch the draft lose it.',
     gateNote: 'There is no automatic send anywhere in this product. Someone reads it, changes what they want, and sends it themselves.',

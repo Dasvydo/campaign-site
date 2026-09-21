@@ -330,6 +330,11 @@ export function Hero({
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
               {c.nav.cta}
             </a>
+            {/* Under the button, where a reader who has just decided to press
+                it meets the one thing that would stop them. It sits inside
+                `.hero-act` rather than after it, so the auto margins that
+                centre the button in the column's slack centre the pair. */}
+            <p className="hero-setup">{c.hero.setup}</p>
           </div>
 
         </div>

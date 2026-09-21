@@ -50,6 +50,8 @@ export const da: Content = {
       sr: 'Læs hele udkastet i det gennemgåede eksempel.',
     },
 
+    setup: 'Sat op hos os, eller inde hos jer selv.',
+
     bar: {
       text: 'Under et minut, intet kort.',
     },

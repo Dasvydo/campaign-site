@@ -45,6 +45,7 @@ if (!BASE) {
 const PARTS = [
   ['the hero headline', '#hero h1'],
   ['the drafted reply in the hero', '#hero .hero-deal'],
+  ['where it is installed', '#hero .hero-setup'],
   ['the worked example', '#demo .demo-beats'],
   ['the draft it writes back', '#demo-draft'],
   ['who it is for', '#who .who-accuracy'],

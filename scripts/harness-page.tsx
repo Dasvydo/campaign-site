@@ -321,6 +321,10 @@ const drivePoints = (): Array<[number, number, number, number]> => {
        the other half comes from the offer. */
     const mustAppear = [
       c.hero.title.mark, c.nav.cta,
+      /* Where it is installed, under the button. It answers the question a
+         firm asks before it asks the price, so it is not decoration that can
+         quietly fall off the hero. */
+      c.hero.setup,
       c.hero.deal.subject,
       c.demo.title, c.demo.lede, c.demo.pickLead,
       /* The close carries the minutes from value.ts now, so its two halves

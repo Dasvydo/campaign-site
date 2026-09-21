@@ -60,6 +60,8 @@ export const lt: Content = {
       sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
     },
 
+    setup: 'Įdiegiame savo pusėje arba Jūsų įmonėje.',
+
     bar: {
       text: 'Trunka mažiau nei minutę, kortelės neprašome.',
     },

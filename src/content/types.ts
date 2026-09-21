@@ -254,6 +254,21 @@ export interface Content {
     };
 
     /** The standing price bar on phones. Its button is nav.cta. */
+    /** Under the button in the hero: where the thing is installed.
+
+        It is the first question a firm asks before it asks the price - a
+        property manager or an accountant is about to let software read client
+        correspondence, and "where does our mail actually go" comes before
+        "what does it cost". The page's only other word on it is "Hosted in the
+        EU", four sections down inside a disclosure.
+
+        This is a claim about what the business can deliver, not about the
+        page. The founder asked for it after being told the page said nothing
+        of the kind and that offering it commits him to installing inside
+        somebody else's infrastructure; he asked for it anyway, which is his
+        call to make. */
+    setup: string;
+
     bar: { text: string };
 
     /** The worked example's own paper. The demo reads these for its first desk,

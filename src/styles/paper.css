@@ -377,6 +377,16 @@
   position:relative; top:calc(var(--hero-pb) / 2);
 }
 
+/* The line under the button. Quiet on purpose: it is there for the reader who
+   has decided and then hesitated, not for the one still reading the headline.
+   Its width is held short of the column so it never runs under the artwork. */
+.hero-setup{
+  margin:16px 0 0;
+  max-width:34ch;
+  font-size:14.5px; line-height:1.5;
+  color:var(--muted);
+}
+
 .hero-btn{
   display:inline-block;
   background:var(--ink); color:var(--cream);
