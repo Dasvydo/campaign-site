@@ -572,9 +572,6 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     <section id="demo" aria-labelledby="demo-h" data-js={hasJs ? 'on' : undefined} ref={rootRef}>
       <div className="demo-wrap">
         <header className="demo-head">
-          <p className="demo-folio" aria-hidden="true">
-            02
-          </p>
           <p className="demo-eyebrow">{c.demo.eyebrow}</p>
           <h2 id="demo-h">{c.demo.title}</h2>
           <p className="demo-lede">{c.demo.lede}</p>

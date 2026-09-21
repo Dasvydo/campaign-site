@@ -58,10 +58,6 @@ export function WhoFor({ c }: { c: Content }) {
   return (
     <section id="who" aria-labelledby="who-h" ref={rootRef}>
       <div className="who-wrap">
-        <p className="who-folio" aria-hidden="true">
-          03
-        </p>
-
         <header className="who-head">
           <p className="who-eyebrow">{c.who.eyebrow}</p>
           <h2 className="who-h" id="who-h">

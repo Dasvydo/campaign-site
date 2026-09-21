@@ -494,7 +494,7 @@ export const lt: Content = {
       peopleLabel: 'Apimami žmonės, iki',
       draftsLabel: 'Juodraščiai per mėnesį, bendri',
       note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
-      under: { before: 'Mažesnė įmonė? Planas ', link: 'doviloop.dev', after: ' svetainėje daro tą patį ir kainuoja gerokai mažiau.' },
+      under: { before: 'Mažesnė įmonė? ', link: 'doviloop.dev', after: ' daro tą patį gerokai pigiau.' },
       over: 'Didesnė įmonė? Parašykite, ir apskaičiuosime kainą.',
     },
 

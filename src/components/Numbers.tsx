@@ -196,9 +196,6 @@ export function Numbers({ c }: { c: Content }) {
   return (
     <section id="numbers" aria-labelledby="numbers-h" ref={secRef}>
       <div className="numbers-wrap">
-        <p className="numbers-folio" aria-hidden="true">
-          05
-        </p>
         <header className="numbers-head">
           <p className="numbers-eyebrow">{c.numbers.eyebrow}</p>
           <h2 className="numbers-h" id="numbers-h">

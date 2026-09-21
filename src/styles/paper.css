@@ -305,12 +305,6 @@
   align-self:stretch; display:flex; flex-direction:column;
 }
 
-.hero-folio{
-  margin:0 0 24px;
-  font-size:12.5px; letter-spacing:.16em; color:var(--muted);
-  font-variant-numeric:tabular-nums lining;
-}
-
 #hero h1{
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
   font-weight:400;
@@ -760,7 +754,6 @@
      reader jumping straight to what it costs is worth more than the last
      twenty pixels of a picture. */
   .hero-grid{padding-block:20px 24px}
-  .hero-folio{margin-bottom:14px}
   .hero-act{margin-top:32px}
   .hero-pile{margin-top:clamp(26px,5vw,34px)}
 }
@@ -840,15 +833,6 @@
   column-gap:24px;
 }
 
-.who-folio{
-  grid-column:1/-1;
-  margin:0 0 8px;
-  font-size:12.5px;
-  font-weight:500;
-  letter-spacing:.16em;
-  color:var(--muted,#70635C);
-  font-variant-numeric:tabular-nums lining;
-}
 .who-head{ grid-column:1/-1 }
 @media (min-width:1024px){ .who-head{ grid-column:1/9 } }
 
@@ -1186,10 +1170,6 @@
 .demo-nojs{display:none}
 
 .demo-head{position:relative;max-width:none}
-.demo-folio{
-  margin:0;font-size:12.5px;font-weight:500;letter-spacing:.16em;
-  color:var(--muted);font-variant-numeric:tabular-nums lining;
-}
 .demo-eyebrow{
   margin:8px 0 0;font-size:12.5px;font-weight:500;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted);margin-right:-0.14em;
@@ -1716,18 +1696,8 @@
 
 .numbers-head{ position:relative; margin:0 0 48px }
 
-.numbers-folio{
-  display:block;
-  font-family:var(--nm-sans);
-  font-size:12.5px; font-weight:500;
-  letter-spacing:.16em; text-transform:uppercase;
-  color:var(--muted);
-  font-variant-numeric:tabular-nums lining;
-  margin:0 0 12px;
-}
 @media (min-width:1360px){
   /* never further left than the free margin allows, so it cannot be clipped */
-  .numbers-folio{ position:absolute; left:max(-56px, calc((100vw - 1280px) / -2 + 16px)); top:.35em; margin:0 }
 }
 
 .numbers-eyebrow{
@@ -2075,16 +2045,11 @@
 .price-wrap > *{ grid-column:1 / -1; min-width:0 }
 
 .price-eyebrow,
-.price-folio,
 .price-total-state,
 .price-stop-day{
   font-size:12.5px; line-height:1.4; font-weight:500;
   letter-spacing:.14em; text-transform:uppercase;
   font-variant-numeric:tabular-nums lining;
-}
-.price-folio{
-  margin:0 0 8px; color:var(--price-dim);
-  letter-spacing:.16em; margin-right:-.14em;
 }
 .price-rule{ height:7px; margin:0 0 32px }
 .price-rule::before,.price-rule::after{ content:""; display:block; background:var(--price-rule-strong) }
@@ -2686,7 +2651,6 @@
   font-size:12.5px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
   color:var(--q-muted);
 }
-.qualifier-folio{ font-variant-numeric:tabular-nums lining }
 .qualifier-kicker-rule{ width:24px; height:1px; background:var(--q-taupe); flex:none }
 .qualifier-eyebrow{ letter-spacing:.14em; margin-right:-.14em }
 .qualifier-h{
@@ -2733,7 +2697,7 @@
    1312: four hundred pixels of nothing beside the one thing on the page a
    reader is meant to act on, where every other section fills the width. The
    sheet is a sheet of paper and keeps its proportions; it sits in the middle
-   of the desk now, and its folio and rule move with it so the section still
+   of the desk now, and its rule moves with it so the section still
    reads as one block. */
 @media (min-width:1024px){ .qualifier-sheet{ grid-column:3/span 8 } }
 
@@ -3171,15 +3135,6 @@
   padding-inline:clamp(16px,4vw,48px);
 }
 
-#footer .footer-folio{
-  margin:0 0 12px;
-  font-size:12.5px;
-  font-weight:500;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  font-variant-numeric:tabular-nums lining-nums;
-  color:var(--footer-muted);
-}
 
 #footer .footer-rule{
   height:7px;
@@ -3761,7 +3716,6 @@ body[data-consent="pending"]{ padding-bottom:var(--consent-h, 0px) }
          beside it. The rhythm above the headline tightens by a few pixels
          each, which is what keeps the button clear of the sheet at 390. */
   .hero-grid{ padding-block:12px 24px }
-  .hero-folio{ margin-bottom:10px }
   .hero-count{ display:flex; align-items:center; gap:12px; margin:0 0 12px }
   .hero-numeral{ display:block; font-size:34px; line-height:1; color:var(--muted); letter-spacing:-.02em }
   .hero-tally{ width:min(220px,62%); margin:0 }

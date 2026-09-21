@@ -247,9 +247,6 @@ export function Price({
   return (
     <section id="price" className="price" aria-labelledby="price-h" ref={sectionRef}>
       <div className="price-wrap" ref={ref}>
-        <p className="price-folio" aria-hidden="true">
-          04
-        </p>
         <div className="price-rule" aria-hidden="true" />
 
         <header className="price-head">
@@ -443,9 +440,6 @@ export function Price({
             {waived ? (
               <p className="price-waiver" data-price-reveal style={{ ['--i' as string]: 0 }}>
                 <span className="price-waiver-term">{setupFee.term}</span>
-                <span className="price-fig-off" data-price-waiver-was aria-hidden="true">
-                  {money(OFFER.setupFee)}
-                </span>
                 <span className="price-waiver-mark" aria-hidden="true">
                   {waived.label}
                 </span>

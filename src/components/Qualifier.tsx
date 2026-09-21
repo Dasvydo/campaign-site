@@ -331,9 +331,6 @@ export function Qualifier({
       <div className="qualifier-wrap">
         <div className="qualifier-head" id="fit" tabIndex={-1}>
           <p className="qualifier-kicker">
-            <span className="qualifier-folio" aria-hidden="true">
-              06
-            </span>
             <span className="qualifier-kicker-rule" aria-hidden="true" />
             <span className="qualifier-eyebrow">{c.form.eyebrow}</span>
           </p>

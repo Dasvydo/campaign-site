@@ -309,10 +309,6 @@ export function Hero({
 
       <div className="hero-grid" id="hero-content" tabIndex={-1}>
         <div className="hero-copy">
-          <p className="hero-folio" aria-hidden="true">
-            01
-          </p>
-
           {/* The outcome, then the time it is reached by. The clock is the
               one this headline is allowed to name: clockOut is when the work
               is done, and the promise is the finishing, not the starting.

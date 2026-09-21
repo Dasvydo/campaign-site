@@ -29,9 +29,6 @@ export function Footer({ c }: { c: Content }) {
   return (
     <footer id="footer" role="contentinfo" aria-labelledby="footer-h">
       <div className="footer-wrap">
-        <p className="footer-folio" aria-hidden="true">
-          07
-        </p>
         <div className="footer-rule" aria-hidden="true" />
 
         <div className="footer-grid">
