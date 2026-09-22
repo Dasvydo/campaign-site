@@ -32,6 +32,34 @@ import { build } from 'esbuild';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+/* Read out of the component rather than repeated here. A constant copied into
+   the checker is a constant that agrees with itself and with nothing else: the
+   old origin would have passed a hardcoded copy of the old origin forever. */
+const SITE_ORIGIN = (() => {
+  const src = readFileSync(resolve(root, 'src/LocalePage.tsx'), 'utf8');
+  const m = src.match(/const SITE_ORIGIN = '([^']+)'/);
+  if (!m) throw new Error('src/LocalePage.tsx: no SITE_ORIGIN to check the head against');
+  /* Reading the constant proves the eight tags agree with each other. It
+     cannot prove they agree with reality: put the vercel.app host back and
+     both sides move together and every check below still passes. I tried it.
+     So the constant is judged too, against the one thing that makes an origin
+     wrong here: it has to be the domain the ads point at, not the hostname
+     the host happens to serve it on. A deployment hostname in the canonical
+     is the exact defect this suite missed for the whole build. */
+  const host = new URL(m[1]).host;
+  if (!/^[a-z0-9-]+\.doviloop\.dev$/.test(host)) {
+    console.error(
+      `\n  SITE_ORIGIN in src/LocalePage.tsx is ${m[1]}.\n` +
+        `  The head's canonical, og:url, og:image and hreflang alternates all\n` +
+        `  derive from it, and ${host} is not a doviloop.dev domain. A hosting\n` +
+        `  provider's own hostname there hands crawlers and link unfurlers an\n` +
+        `  origin the visitor never sees.\n`,
+    );
+    process.exit(1);
+  }
+  return m[1];
+})();
 /* The mock's port.
 
    It was the bare literal 8799. That is fine for one run at a time and wrong
@@ -197,6 +225,34 @@ async function main() {
       check(p.title.length > 20 && p.description.length > 60, `    title and description are set`);
       check(p.canonical.endsWith(p.locale === 'en' ? '/' : `/${p.locale}`), `    canonical points at this locale`, p.canonical);
       check(p.hreflangs.length === 4, `    hreflang alternates for all locales plus x-default`, p.hreflangs.join(','));
+      /* The host, not just the path. Every one of these named the vercel.app
+         deployment while the ads pointed at the custom domain, and the line
+         above passed the whole time, because every path ends the same way on
+         either host. A canonical on a hostname the visitor never sees splits
+         the ranking between two live origins serving byte identical HTML and
+         puts the wrong domain on every share card. */
+      const strays = p.headHosts.filter((u) => !u.startsWith(SITE_ORIGIN + '/'));
+      check(
+        p.headHosts.length === 8 && strays.length === 0,
+        `    canonical, og:url, og:image, twitter:image and all four alternates are on ${SITE_ORIGIN}`,
+        strays.length ? strays.join(' ') : `${p.headHosts.length} urls`,
+      );
+      /* A large-image card with no image unfurls as a bare line of text on
+         LinkedIn and Slack, and lets Facebook scrape whatever raster it finds.
+         There was no og:image at all, in any locale, and twitter:card has said
+         summary_large_image since the first commit. */
+      check(
+        p.twitterCard === 'summary_large_image' &&
+          p.ogImage === `${SITE_ORIGIN}/og-${p.locale}.png` &&
+          p.twitterImage === p.ogImage,
+        `    the share card is this locale's own, on both scrapers`,
+        `${p.ogImage || 'no og:image'} / ${p.twitterImage || 'no twitter:image'}`,
+      );
+      check(
+        p.ogImageAlt.length > 30 && p.ogLocale === { en: 'en_GB', da: 'da_DK', lt: 'lt_LT' }[p.locale],
+        `    the card carries alt text and an og:locale`,
+        `${p.ogLocale} / ${p.ogImageAlt.slice(0, 40)}`,
+      );
       check(p.hasSkipLink && p.hasMainLandmark && p.hasFooter, `    skip link, main landmark and footer present`);
       check(
         p.previewIsExcerpt,
@@ -773,7 +829,33 @@ async function main() {
     check(ltSrc.includes('NEEDS NATIVE CHECK'), 'lt.ts is marked NEEDS NATIVE CHECK');
     check(/Jūs|Jūsų/.test(ltSrc), 'lt.ts uses the formal Jus register');
 
-    /* 9. every PostHog event name exists in the source --------------------- */
+    /* 9. the share cards the head promises actually exist -------------------
+       The head can name /og-lt.png all day; if the file is not in public/ the
+       scraper gets a 404 and the card is blank again, which is the state this
+       was meant to end. Read the PNG header rather than trusting the name:
+       Facebook and LinkedIn both reject an image under 200x200 and crop
+       anything that is not close to 1.91:1. */
+    console.log('\nShare cards');
+    for (const locale of ['en', 'da', 'lt']) {
+      const file = join(root, `public/og-${locale}.png`);
+      if (!existsSync(file)) {
+        check(false, `public/og-${locale}.png exists`, 'missing. Run npm run og');
+        continue;
+      }
+      const buf = readFileSync(file);
+      const png = buf.subarray(0, 8).toString('hex') === '89504e470d0a1a0a';
+      /* IHDR is the first chunk and its width and height are big endian at
+         byte 16. */
+      const w = buf.readUInt32BE(16);
+      const h = buf.readUInt32BE(20);
+      check(png && w === 1200 && h === 630, `    og-${locale}.png is a 1200x630 png`, `${w}x${h}`);
+      /* Under 8 MB is Facebook's limit and under 5 MB is Twitter's; a card
+         this simple lands near 250 KB, so anything near a megabyte means the
+         generator drew something it should not have. */
+      check(buf.length < 1024 * 1024, `    og-${locale}.png is under 1 MB`, `${(buf.length / 1024).toFixed(0)} KB`);
+    }
+
+    /* 10. every PostHog event name exists in the source -------------------- */
     console.log('\nPostHog event names');
     const srcFiles = ['src/LocalePage.tsx', 'src/lib/analytics.ts'].map((p) => readFileSync(join(root, p), 'utf8')).join('\n');
     for (const name of ['page_view', 'demo_desk', 'pricing_view', 'form_start', 'form_step', 'form_submit', 'qualified_shown', 'too_small_shown', 'booking_click']) {

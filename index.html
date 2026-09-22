@@ -32,11 +32,62 @@
          See BLOCKED.md entry 4.
          ================================================================== -->
     <noscript>
-      <!-- The <img> fallback is written by src/lib/pixel.ts alongside the
-           script, again only when an ID is present. Nothing hardcoded here. -->
+      <!-- The pixel's <img> fallback is NOT here: src/lib/pixel.ts writes it
+           alongside the script, and only when an ID is present. Nothing about
+           the pixel is hardcoded in this file. The page a visitor without
+           JavaScript actually sees is the second <noscript>, in the body,
+           because the head's content model allows only link, style and meta
+           inside one and a <div> here would close the head early. -->
     </noscript>
   </head>
   <body>
+    <!-- The page a visitor without JavaScript gets.
+
+         The stylesheet has carried a .qualifier-nojs fallback for months and
+         it has never once rendered: this is a single page app, React writes
+         every element in #root, so with scripting off the body was empty. Not
+         a degraded page. An entirely blank one, with no address, no sentence
+         and nothing to click. Ads point here, and a locked down work browser
+         is exactly the kind of browser a 20 person firm hands its staff.
+
+         So the fallback lives in the served HTML, where it cannot depend on
+         the thing that is missing. The styles are inline for the same reason
+         the markup is: the stylesheet is a module import and does not exist
+         without the bundle either. -->
+    <noscript>
+      <style>
+        body { background: #fff0e5 }
+        .nojs {
+          margin: 0 auto; padding: 56px 24px; max-width: 34rem;
+          font: 400 17px/1.6 ui-serif, Georgia, "Times New Roman", serif;
+          color: #251d18;
+        }
+        .nojs h1 { margin: 0 0 20px; font-size: 30px; line-height: 1.25; font-weight: 400 }
+        .nojs p { margin: 0 0 16px }
+        .nojs a { color: #8a5200 }
+        .nojs hr { height: 1px; margin: 28px 0; background: #e4d7cd; border: 0 }
+        .nojs .small { font-size: 15px; color: #70635c }
+      </style>
+      <div class="nojs">
+        <h1>DoviLoop for teams</h1>
+        <p>
+          Email drafting for firms that live in Outlook. It reads the message,
+          pulls what your firm already knows, and writes the reply in your
+          voice. You read it and send it.
+        </p>
+        <p>
+          This page needs JavaScript to run the fit check. Yours is turned off,
+          so write instead and we will answer the same questions by email:
+          <a href="mailto:dovyvini@doviloop.dev?subject=DoviLoop%20for%20teams">dovyvini@doviloop.dev</a>.
+        </p>
+        <hr />
+        <p class="small">
+          Tell us how many people are on the team, what they use for email, and
+          what they answer all day. For teams of 10 or more.
+        </p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

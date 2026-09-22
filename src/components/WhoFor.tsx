@@ -193,7 +193,6 @@ export function WhoFor({ c }: { c: Content }) {
               </li>
             ))}
           </ul>
-          <p className="who-accuracy-note">{c.who.accuracy.unmeasured}</p>
         </div>
 
       </div>

@@ -87,6 +87,7 @@ front of every install for a check that runs occasionally. On a fresh machine:
 | `npm run mock` | Local mock of the n8n lead webhook, port 8787 |
 | `npm run verify:payload` | The full QA harness described above |
 | `npm run fonts` | Re-copy the woff2 faces into `public/fonts` after an install |
+| `npm run og` | Redraw the three share cards in `public/og-*.png` from the hero copy. Run it after changing the hero headline, the setup line or the palette |
 | `python3 scripts/verify-browser.py` | The real-browser pass. Needs Playwright for Python |
 
 ## Layout

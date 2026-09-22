@@ -17,6 +17,8 @@ export const da: Content = {
     title: 'DoviLoop til teams. Mailsvar til kontorer, der lever i Outlook.',
     description:
       'Dit team svarer på de samme slags mails hele dagen. DoviLoop læser hver enkelt, henter det, jeres virksomhed faktisk ved, og skriver svaret i jeres tone. Dit team læser det og sender. Til teams på 10 eller flere.',
+    cardAlt:
+      'Linjen siden åbner med: fyrre mails ind, dem jeres sager svarer på, i udkast inden klokken 08:41.',
   },
 
   nav: {
@@ -50,7 +52,7 @@ export const da: Content = {
       sr: 'Læs hele udkastet i det gennemgåede eksempel.',
     },
 
-    setup: 'Sat op hos os, eller inde hos jer selv.',
+    setup: 'Den kører på vores servere, eller vi sætter den op på jeres.',
 
     bar: {
       text: 'Under et minut, intet kort.',
@@ -77,7 +79,7 @@ export const da: Content = {
     subjectLabel: 'Emne',
     pickLead: 'Vælg det skrivebord, der ligner jeres mest.',
     beatIn: 'Det, der kom ind, 08:40',
-    beatKnows: 'Det, kontoret allerede ved',
+    beatKnows: 'Det, jeres egne sager siger',
     beatWrote: 'Det, den skrev tilbage',
     beatNote: 'Slå en fra, og se udkastet miste den.',
     gateNote: 'Der er ingen automatisk afsendelse nogen steder i produktet. Et menneske læser det, retter det, det vil, og sender selv.',
@@ -392,10 +394,7 @@ export const da: Content = {
     about: 'cirka\u00a0',
     inputs: {
       people: { label: 'Personer, der svarer på mails' },
-      drafts: {
-        label: 'Udkast sendt om måneden',
-        note: { before: 'Kender I kun jeres indbakke? Omkring ', after: ' % af den post, et firma får, er det samme spørgsmål igen.' },
-      },
+      drafts: { label: 'Udkast sendt om måneden' },
       hourly: { label: 'Hvad en time af deres tid koster' },
       minutes: { label: 'Minutter sparet pr. udkast', note: 'Jeres skøn. Vi har ikke taget tid på det endnu.' },
     },
@@ -423,7 +422,7 @@ export const da: Content = {
         def: 'Jeres, ikke vores. Hvad en af jeres folk koster virksomheden i timen, løn plus det, I betaler oveni. Skyderen åbner på et groft tal for dette marked; flyt den hen til det, I faktisk betaler.',
       },
     ],
-    note: 'Vi regner det igennem på jeres egne tal på mødet og siger det, hvis det ikke går op.',
+    note: 'På mødet regner vi det igennem igen på jeres rigtige tal, og hvis det ikke tjener sig hjem, siger vi det.',
   },
 
   who: {
@@ -446,7 +445,6 @@ export const da: Content = {
         'Et udkast citerer gebyret, fristen eller reglen fra jeres egne dokumenter, i jeres egne ord.',
       ],
       share: { before: 'Målt på en rigtig postkasse: cirka én mail ud af ', after: ' fik et udkast.' },
-      unmeasured: 'Vi har ikke målt, hvor ofte et udkast stadig skal rettes. Når vi har, kommer tallet på denne side.',
     },
   },
 
@@ -571,7 +569,7 @@ export const da: Content = {
     ],
     total: { zero: '0 EUR' },
 
-    ctaNote: 'Siger I nej på opsamlingsmødet, faktureres der ikke noget.',
+    ctaNote: 'Der faktureres ikke noget, før I siger ja på opsamlingsmødet.',
   },
 
   form: {

@@ -1,11 +1,10 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { Content } from '../content/types';
 import { OFFER, formatCount, formatMoney } from '../lib/offer';
+import type { PackageId } from '../lib/offer';
 import {
   VALUE,
-  draftRatePercent,
   formatHours,
-  formatShare,
   hourlyStart,
   hoursShown,
   keptFromDrafts,
@@ -34,7 +33,20 @@ import { Disclosure } from './Disclosure';
  * Every modelled figure is hedged with "about". The fee is not, because the
  * fee is exact.
  */
-export function Numbers({ c }: { c: Content }) {
+export function Numbers({
+  c,
+  pickedPackage,
+}: {
+  c: Content;
+  /* Which package the reader pressed in <Price />, one section up, and a
+     counter that changes on every press. The panel already moved its own
+     draft allowance when the head count crossed a band; this is the same
+     linkage driven from the other end, because pressing Firm is a louder
+     statement of size than leaving a slider where it opened. It moves the
+     head count, and the head count moves the package, so there is still
+     exactly one path from a size to an allowance. */
+  pickedPackage?: { id: PackageId; at: number } | null;
+}) {
   const secRef = useRef<HTMLElement | null>(null);
   const uid = useId();
 
@@ -126,6 +138,18 @@ export function Numbers({ c }: { c: Content }) {
     if (wasPool === null || drafts === wasPool) setDrafts(pool);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pkgId]);
+  /* A press in <Price /> lands on the head count, at the top of the band that
+     package covers: Desk is sold up to ten people, Firm up to twenty. That
+     runs the effect above, which is what carries the allowance to 5,000 or
+     10,000. Nothing here writes the allowance directly. */
+  useEffect(() => {
+    if (!pickedPackage) return;
+    const covers = OFFER.packages[pickedPackage.id]?.covers;
+    if (typeof covers !== 'number') return;
+    setHeads(Math.min(people.max, Math.max(people.min, covers)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pickedPackage]);
+
   const [hourly, setHourly] = useState(() => hourlyStart(c.htmlLang));
   const [minutes, setMinutes] = useState(VALUE.minutesPerDraft.value);
 
@@ -217,18 +241,15 @@ export function Numbers({ c }: { c: Content }) {
           </div>
           <div className="numbers-fields">
             {control('people', heads, setHeads, people, figure(heads))}
-            {/* The measured share rides under this control as a hint rather
-                than inside the sum. A reader who knows their inbox and not
-                their draft count needs it exactly here. */}
-            {control('drafts', drafts, setDrafts, VALUE.drafts, figure(drafts), (
-              <>
-                {c.numbers.inputs.drafts.note.before}
-                <span className="numbers-fig" data-n-rate>
-                  {formatShare(draftRatePercent(), c.htmlLang)}
-                </span>
-                {c.numbers.inputs.drafts.note.after}
-              </>
-            ))}
+            {/* No hint under this one. The measured share ("about 15.2% of
+                the mail a firm takes is the same question again") sat here as
+                a way in for a reader who knows their inbox and not their draft
+                count. It is still in "Show the arithmetic" under "Drafts a
+                month", where somebody looking for the basis will find it. Out
+                here it was a second number competing with the one the control
+                already shows, and the control no longer needs a way in: it
+                opens on the allowance the reader's own package pools. */}
+            {control('drafts', drafts, setDrafts, VALUE.drafts, figure(drafts))}
             {control('hourly', hourly, setHourly, VALUE.hourly, money(hourly) + c.numbers.units.perHour)}
             {control(
               'minutes',

@@ -975,9 +975,14 @@
   border-top:1px solid var(--taupe,#DDCFC6);
   max-width:56ch;
 }
+/* Amber and a step heavier, the same treatment "What you give:" carries in
+   the price block. This label introduces the five things a trade's drafts are
+   written out of, which is the answer to the objection the whole section
+   exists for, and in muted grey at 12.5px it read as a caption on the list
+   rather than as the point of it. */
 .who-sources-h{
-  font-size:12.5px; font-weight:500; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--muted);
+  font-size:12.5px; font-weight:600; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--amber);
 }
 .who-sources-list{ font-size:15px; line-height:1.7; color:var(--ink) }
 .who-source + .who-source::before{
@@ -1041,15 +1046,6 @@
   display:block; margin:6px 0 0;
   font-size:14px; line-height:1.5; color:var(--muted);
 }
-.who-accuracy-note{
-  margin:20px 0 0;
-  font-size:15px;
-  line-height:1.6;
-  max-width:52ch;
-  color:var(--muted,#6E6259);
-  text-wrap:pretty;
-}
-
 .who-pen{
   position:relative;
   display:inline-block;

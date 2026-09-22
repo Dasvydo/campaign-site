@@ -294,6 +294,118 @@ try {
     }
   }
 
+  /* One size, said once.
+
+     Section 04's two package cards and section 05's calculator were two
+     components with two opinions about how big the reader is. Pressing Firm
+     changed the fee above and nothing below it, so a reader who pressed Firm
+     and scrolled one section met "This costs (Desk)" over an allowance of
+     5,000 pooled drafts, which is the other package's number under the other
+     package's fee. The press now moves the head count, the head count moves
+     the package, and the package moves the allowance: one path, checked here
+     from the end a reader actually touches. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page = await ctx.newPage();
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+
+    const read = () =>
+      page.evaluate(() => ({
+        drafts: document.querySelector('[data-n-input="drafts"]')?.textContent?.trim() ?? '',
+        people: document.querySelector('[data-n-input="people"]')?.textContent?.trim() ?? '',
+        fee: Array.from(document.querySelectorAll('#numbers .numbers-beat'))
+          .map((b) => b.textContent ?? '')
+          .find((t) => /costs/i.test(t)) ?? '',
+      }));
+
+    /* At rest, before anything is pressed. The price block lights one card on
+       load, and the calculator used to open on its own smallest band, so a
+       reader who pressed nothing already met a lit Firm card above "This costs
+       (Desk)". The disagreement did not need a click to exist. */
+    {
+      const lit = await page.getAttribute('[data-price-pkg][aria-pressed="true"]', 'data-price-pkg');
+      const got = await read();
+      check(
+        Boolean(lit) && got.fee.toLowerCase().includes(lit),
+        '\n  at rest the calculator is already on the package the price block lit',
+        `${lit} is lit, the fee row says ${JSON.stringify(got.fee.slice(0, 32))}`,
+      );
+    }
+
+    const want = { firm: ['10,000', '20'], desk: ['5,000', '10'] };
+    const press = async (id, label) => {
+      await page.click(`[data-price-pkg="${id}"]`);
+      await page.waitForTimeout(250);
+      const got = await read();
+      const [drafts, people] = want[id];
+      /* The fee row names the package it is charging for, so it is the one
+         place the two sections can be caught disagreeing in words rather than
+         only in numbers. */
+      const named = got.fee.toLowerCase().includes(id);
+      check(
+        got.drafts === drafts && got.people === people && named,
+        label,
+        `${got.people} people, ${got.drafts} drafts, fee row says ${named ? id : JSON.stringify(got.fee.slice(0, 40))}`,
+      );
+    };
+
+    /* Both directions, because the linkage runs off a change in the picked
+       package and either one could be the value it happened to start on. */
+    await press('desk', '\n  pressing desk in the price block moves the calculator with it');
+    await press('firm', '  and pressing firm moves it back');
+
+    /* And the press that is not a change. A reader who drags the head count
+       somewhere else and then presses the card that is already lit is asking
+       to be put back where that card says. Held on to the id alone this does
+       nothing at all: same value, no re-render, a dead button under a finger
+       that just pressed it. */
+    await page.evaluate(() => {
+      const el = document.querySelector('input[name="people"]');
+      const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      set.call(el, '13');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await page.waitForTimeout(150);
+    const moved = (await read()).people;
+    check(moved === '13', '  (the head count really moved away first)', moved);
+    await press('firm', '  and pressing the card that is already lit puts it back');
+    await ctx.close();
+  }
+
+  /* The page a visitor without JavaScript gets.
+
+     There was not one. React writes every element in #root, so with scripting
+     off the body was empty: no sentence, no address, nothing to click, on a
+     page ads point at. The stylesheet has carried a .qualifier-nojs fallback
+     the whole time and it never rendered once, because it lives inside the
+     component that does not run. This is the only check that can tell the
+     difference, because it is the only one that turns the script off. */
+  {
+    const ctx = await browser.newContext({
+      viewport: { width: 1280, height: 800 },
+      javaScriptEnabled: false,
+    });
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
+    const got = await page.evaluate(() => ({
+      text: (document.body.innerText || '').replace(/\s+/g, ' ').trim(),
+      mailto: Array.from(document.querySelectorAll('a[href^="mailto:"]')).map((a) => a.getAttribute('href')),
+    }));
+    check(
+      got.text.length > 200 && /javascript/i.test(got.text),
+      '\n  with JavaScript off the page still says something',
+      got.text ? `${got.text.length} chars: ${got.text.slice(0, 60)}...` : 'the body is empty',
+    );
+    check(
+      got.mailto.some((h) => h.includes('dovyvini@doviloop.dev')),
+      '  and still gives a way to reach a person',
+      got.mailto.join(' ') || 'no address anywhere',
+    );
+    await ctx.close();
+  }
+
   /* Review mode is there when it is asked for, and nowhere near a customer
      when it is not.
 

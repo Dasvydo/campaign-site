@@ -49,11 +49,19 @@ export function Price({
   onView,
   onSeen,
   onCta,
+  onPackagePick,
 }: {
   c: Content;
   onView: () => void;
   onSeen?: () => void;
   onCta: () => void;
+  /* The two package cards are the only place on the page where a reader says
+     which size they are. The calculator one section down was working it out
+     independently from its own head count slider, so a reader who pressed
+     Firm and scrolled read "This costs (Desk)" under a fee they had just
+     rejected, against an allowance of 5,000 drafts they were not buying. The
+     press is a statement of size; it travels. */
+  onPackagePick?: (id: PackageId) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const fired = useRef(false);
@@ -300,7 +308,10 @@ export function Price({
                     aria-pressed={on}
                     data-price-pkg={p.id}
                     key={p.id}
-                    onClick={() => setPkgId(p.id)}
+                    onClick={() => {
+                      setPkgId(p.id);
+                      onPackagePick?.(p.id);
+                    }}
                   >
                     <span className="price-pkg-name">{row.name}</span>
                     <span className="price-pkg-fee">
@@ -423,33 +434,19 @@ export function Price({
               </p>
             </div>
 
-            {/* The waiver, and what it is worth.
+            {/* No waiver line here.
 
-                It said "Setup — WAIVED" and nothing else. The fee sheet three
-                hundred pixels below already prints the amount struck through,
-                with the sentence that explains it, under a comment saying a
-                fee waived in silence is a fee nobody knows they were spared -
-                but that sheet is inside "Show the terms", which is closed at
-                rest. So on the open band the reader was told that something
-                unnamed had been taken off, which is worth nothing to them.
+                It read "Setup / Waived", with the struck amount and the
+                sentence about the founding places. Founder's call: on the
+                open band, before anybody has been told what setup normally
+                costs, a struck 500 EUR is a discount arriving ahead of the
+                thing it discounts, and it reads as pressure rather than as a
+                saving. The fee sheet inside "Show the terms" still prints the
+                amount and still says it is waived while the places are open,
+                which is where a reader who wants the number goes looking. The
+                gap this leaves is deliberate: the band holds the fee, the
+                trade and the counter, and nothing else. */}
 
-                The amount is struck here now. It is drawn from the offer, like
-                every other figure on this page, and the sentence that says why
-                it is struck goes to a screen reader, which cannot see a line
-                through a number. */}
-            {waived ? (
-              <p className="price-waiver" data-price-reveal style={{ ['--i' as string]: 0 }}>
-                <span className="price-waiver-term">{setupFee.term}</span>
-                <span className="price-waiver-mark" aria-hidden="true">
-                  {waived.label}
-                </span>
-                <span className="price-sr">
-                  {waived.say.before}
-                  {money(OFFER.setupFee)}
-                  {waived.say.after}
-                </span>
-              </p>
-            ) : null}
 
             {/* The trade, in the open, in the order a reader needs it: why
                 the price is low, that it stays there, what it asks for, and

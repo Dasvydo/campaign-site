@@ -14,6 +14,8 @@ export const en: Content = {
     title: 'DoviLoop for teams. Email drafting for firms that live in Outlook.',
     description:
       'Your team answers the same kinds of message all day. DoviLoop reads each one, pulls what your firm actually knows, and writes the reply in your voice. Your team reads it and sends it. For teams of 10 or more.',
+    cardAlt:
+      'The line the page opens with: forty emails in, the ones your files answer, drafted by 08:41.',
   },
 
   nav: {
@@ -47,7 +49,7 @@ export const en: Content = {
       sr: 'Read the whole draft in the worked example.',
     },
 
-    setup: 'Set up on our side, or inside your own firm.',
+    setup: 'It runs on our servers, or we install it on yours.',
 
     bar: {
       /* It said "Five questions", which is the true count of the fields, while
@@ -79,7 +81,7 @@ export const en: Content = {
     subjectLabel: 'Subject',
     pickLead: 'Pick the desk nearest yours.',
     beatIn: 'What came in, 08:40',
-    beatKnows: 'What the office knows',
+    beatKnows: 'What your own files say',
     beatWrote: 'What it wrote back',
     beatNote: 'Switch one off and watch the draft lose it.',
     gateNote: 'There is no automatic send anywhere in this product. Someone reads it, changes what they want, and sends it themselves.',
@@ -394,10 +396,7 @@ export const en: Content = {
     about: 'about\u00a0',
     inputs: {
       people: { label: 'People who answer mail' },
-      drafts: {
-        label: 'Drafts sent a month',
-        note: { before: 'Only know your inbox? About ', after: '% of the mail a firm takes is the same question again.' },
-      },
+      drafts: { label: 'Drafts sent a month' },
       hourly: { label: 'What an hour of their time costs' },
       minutes: { label: 'Minutes saved on each draft', note: 'Your estimate. We have not timed this yet.' },
     },
@@ -425,7 +424,7 @@ export const en: Content = {
         def: 'Yours, not ours. What one of your people costs the firm for an hour, wages plus what you pay on top of them. The slider opens on a rough figure for this market; move it to what you actually pay.',
       },
     ],
-    note: 'We will do the sum on your figures on the call, and say so if it does not clear.',
+    note: 'On the call we run this again on your real numbers, and if it does not pay for itself we say so.',
   },
 
   who: {
@@ -451,7 +450,6 @@ export const en: Content = {
         'A draft quotes the fee, the deadline or the rule out of your own documents, in your own wording.',
       ],
       share: { before: 'Measured on a live mailbox: about one email in ', after: ' got a draft.' },
-      unmeasured: 'We have not measured how often a draft still needs correcting. When we have, the figure goes on this page.',
     },
   },
 
@@ -576,7 +574,7 @@ export const en: Content = {
     ],
     total: { zero: '0 EUR' },
 
-    ctaNote: 'Say no at the review call and nothing is invoiced.',
+    ctaNote: 'Nothing is invoiced until you say yes at the review call.',
   },
 
   form: {

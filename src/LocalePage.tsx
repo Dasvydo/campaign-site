@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { content, pathFor, LOCALES } from './content';
 import type { Locale, QualifierPayload } from './lib/contract';
+import type { PackageId } from './lib/offer';
+import { headlinePackage } from './lib/offer';
 import { captureUtm, resolveMarket, resolveSource } from './lib/attribution';
 import { applyConsent, initAnalytics, setAnalyticsContext, track } from './lib/analytics';
 import { initMetaPixel, pixelTrack, revokeMetaPixel } from './lib/pixel';
@@ -16,13 +18,25 @@ import { Price } from './components/Price';
 import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
 
-/* teams.doviloop.dev 301s to www.doviloop.dev: it is not dead, which is worse
-   than dead. Ads pointing there would have returned 200 and landed every paid
-   click on the product homepage, with no qualifier and no instrumentation. The
-   ad-engine repo was repointed at the deployment on 2026-09-14 and this is the
-   same correction: canonical, og:url and every hreflang alternate now name the
-   origin the page is actually served from. */
-const SITE_ORIGIN = 'https://campaign-site-azure.vercel.app';
+/* The origin every absolute URL in the head names: canonical, og:url, the
+   og:image and all four hreflang alternates.
+
+   This was campaign-site-azure.vercel.app, and correctly so at the time: the
+   custom domain was still 301ing to www.doviloop.dev, so naming it would have
+   pointed search engines and link unfurlers at the product homepage. That is
+   no longer true. teams.doviloop.dev now serves this deployment (same bundle
+   hash, checked against the vercel.app host), and the ads go to the custom
+   domain. Leaving the old value here would hand every share card and every
+   indexed page a canonical on a hostname the visitor never sees, and split
+   the ranking between two live origins serving identical HTML.
+
+   If the domain is ever moved again, this constant is the only place to
+   change, and scripts/verify-payload.mjs asserts every head URL starts with
+   it. */
+const SITE_ORIGIN = 'https://teams.doviloop.dev';
+
+/* Open Graph wants a language_TERRITORY pair, not a bare language tag. */
+const OG_LOCALE: Record<Locale, string> = { en: 'en_GB', da: 'da_DK', lt: 'lt_LT' };
 
 export function LocalePage({ locale }: { locale: Locale }) {
   const c = content[locale];
@@ -46,7 +60,20 @@ export function LocalePage({ locale }: { locale: Locale }) {
     setMeta('og:description', c.meta.description, 'property');
     setMeta('og:type', 'website', 'property');
     setMeta('og:url', SITE_ORIGIN + pathFor(locale), 'property');
+    setMeta('og:site_name', 'DoviLoop for teams', 'property');
+    setMeta('og:locale', OG_LOCALE[locale], 'property');
+    /* The card. twitter:card said summary_large_image and there was no image
+       to be large, which unfurls as a bare line of text on LinkedIn and Slack
+       and lets Facebook scrape whatever raster it can find. One per locale,
+       drawn from that locale's own hero copy by scripts/make-og.mjs. Absolute,
+       because a relative og:image is ignored by every scraper. */
+    const card = `${SITE_ORIGIN}/og-${locale}.png`;
+    setMeta('og:image', card, 'property');
+    setMeta('og:image:width', '1200', 'property');
+    setMeta('og:image:height', '630', 'property');
+    setMeta('og:image:alt', c.meta.cardAlt, 'property');
     setMeta('twitter:card', 'summary_large_image', 'name');
+    setMeta('twitter:image', card, 'name');
     setLink('canonical', SITE_ORIGIN + pathFor(locale));
     for (const l of LOCALES) setAlternate(l, SITE_ORIGIN + pathFor(l));
     setAlternate('x-default', SITE_ORIGIN + '/');
@@ -83,6 +110,29 @@ export function LocalePage({ locale }: { locale: Locale }) {
     }
     track('page_view', { path: pathFor(locale) });
   }, [locale, market, utm]);
+
+  /* The package a reader presses in <Price /> (04) and the calculator in
+     <Numbers /> (05) are two components, and until now two opinions. Pressing
+     Firm and scrolling read "This costs (Desk)" against 5,000 pooled drafts,
+     which is the other package's allowance under the other package's fee. The
+     selection is held here because it is the only place both sections can see
+     it.
+
+     It starts on the headline package rather than on null, because the price
+     block starts there: the Firm card is lit at rest, and a calculator opening
+     on Desk underneath it is the same disagreement one scroll down, with
+     nobody having pressed anything.
+
+     The `at` counter is not decoration. A reader who drags the head count away
+     and then presses the package that is already lit is asking to be put back,
+     and a bare id would be the same value as last time, so the effect
+     downstream would not run and the press would do nothing. The counter makes
+     every press a new value. */
+  const [pickedPackage, setPickedPackage] = useState<{ id: PackageId; at: number }>(() => ({
+    id: headlinePackage().id,
+    at: 0,
+  }));
+  const pickPackage = (id: PackageId) => setPickedPackage((prev) => ({ id, at: prev.at + 1 }));
 
   const localeNames = LOCALES.map((l) => ({ code: l, label: c.nav.localeNames[l] }));
 
@@ -128,13 +178,14 @@ export function LocalePage({ locale }: { locale: Locale }) {
             })
           }
           onCta={() => track('booking_click', { placement: 'price' })}
+          onPackagePick={pickPackage}
         />
 
 
         {/* After the price, not before it. A cold click scrolls for the price;
             the calculator is the justification and reads better once the fee
             it subtracts has been seen. */}
-        <Numbers c={c} />
+        <Numbers c={c} pickedPackage={pickedPackage} />
 
         <Qualifier
           c={c}

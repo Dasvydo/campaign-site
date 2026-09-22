@@ -164,6 +164,10 @@ export interface Content {
   meta: {
     title: string;
     description: string;
+    /* Alt text for the share card in public/og-<locale>.png. A scraped image
+       with no alt is what a screen reader announces as "image" in a timeline,
+       so it carries the headline it draws. */
+    cardAlt: string;
   };
 
   nav: {
@@ -379,7 +383,7 @@ export interface Content {
           drafts are what the firm is buying. `note` carries the measured share
           as a hint for a reader who knows their inbox and not their draft
           count: "<before><the share, as a percentage><after>". */
-      drafts: { label: string; note: { before: string; after: string } };
+      drafts: { label: string };
       hourly: { label: string };
       /** The one input that is an assumption of ours rather than a fact of
           theirs. `note` says so in words beside the control. */
@@ -436,11 +440,7 @@ export interface Content {
         the absence of any automatic send, and documents indexed so a figure can
         be checked against the file it came from. If a line here ever needs
         evidence the product cannot produce, it does not belong on the page.
-
-        `unmeasured` is the one thing that is not a claim: how often a draft
-        needs correcting has not been measured, and the page says so rather than
-        implying a number it does not have. It is the same move the calculator
-        makes about the minutes. */
+ */
     /** The lead-in over the five things a trade's drafts are written out of.
 
         The five themselves are not held here. They are `demo.desks[].sources`,
@@ -461,7 +461,6 @@ export interface Content {
           other limits. "<before><one in how many, as a count><after>", the
           count derived from the measured share in src/lib/value.ts. */
       share: { before: string; after: string };
-      unmeasured: string;
     };
   };
 

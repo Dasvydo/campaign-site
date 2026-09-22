@@ -17,6 +17,8 @@ export const lt: Content = {
     title: 'DoviLoop komandoms. Laiškų atsakymai biurams, dirbantiems su Outlook.',
     description:
       'Jūsų komanda visą dieną atsako į tokio paties pobūdžio laiškus. DoviLoop perskaito kiekvieną, paima tai, ką Jūsų įmonė iš tikrųjų žino, ir parašo atsakymą Jūsų tonu. Jūsų žmonės perskaito ir išsiunčia. Komandoms nuo 10 žmonių.',
+    cardAlt:
+      'Puslapio pradžios eilutė: 40 laiškų, tie, į kuriuos atsako Jūsų bylos, juodraščiuose iki 08:41 val.',
   },
 
   nav: {
@@ -60,7 +62,7 @@ export const lt: Content = {
       sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
     },
 
-    setup: 'Įdiegiame savo pusėje arba Jūsų įmonėje.',
+    setup: 'Veikia mūsų serveriuose arba įdiegiame Jūsų.',
 
     bar: {
       text: 'Trunka mažiau nei minutę, kortelės neprašome.',
@@ -87,7 +89,7 @@ export const lt: Content = {
     subjectLabel: 'Tema',
     pickLead: 'Pasirinkite stalą, artimiausią Jūsiškiam.',
     beatIn: 'Kas atėjo, 08:40',
-    beatKnows: 'Ką biuras jau žino',
+    beatKnows: 'Ką sako Jūsų pačių bylos',
     beatWrote: 'Ką jis parašė atgal',
     beatNote: 'Išjunkite vieną ir žiūrėkite, kaip juodraštis jos netenka.',
     gateNote: 'Šiame produkte niekur nėra automatinio išsiuntimo. Žmogus perskaito, pakeičia, ką nori, ir išsiunčia pats.',
@@ -402,10 +404,7 @@ export const lt: Content = {
     about: 'maždaug\u00a0',
     inputs: {
       people: { label: 'Žmonės, atsakantys į laiškus' },
-      drafts: {
-        label: 'Išsiųsta juodraščių per mėnesį',
-        note: { before: 'Žinote tik savo pašto dėžutę? Maždaug ', after: ' % laiškų, kuriuos gauna įmonė, yra tas pats klausimas iš naujo.' },
-      },
+      drafts: { label: 'Išsiųsta juodraščių per mėnesį' },
       hourly: { label: 'Kiek kainuoja jų darbo valanda' },
       minutes: { label: 'Minučių, sutaupomų vienam juodraščiui', note: 'Jūsų įvertis. Mes to dar nematavome.' },
     },
@@ -433,7 +432,7 @@ export const lt: Content = {
         def: 'Jūsų, ne mūsų. Kiek įmonei kainuoja vieno Jūsų žmogaus darbo valanda: atlyginimas ir tai, ką mokate be jo. Valdiklis atsidaro su apytiksliu šios rinkos skaičiumi; pastumkite iki to, kiek mokate iš tikrųjų.',
       },
     ],
-    note: 'Pokalbio metu suskaičiuosime pagal Jūsų duomenis ir pasakysime, jei nesueina.',
+    note: 'Per pokalbį perskaičiuosime tai su tikrais Jūsų skaičiais, ir jei neatsiperka, taip ir pasakysime.',
   },
 
   who: {
@@ -456,7 +455,6 @@ export const lt: Content = {
         'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, Jūsų pačių žodžiais.',
       ],
       share: { before: 'Išmatuota tikroje pašto dėžutėje: juodraštį gavo maždaug vienas laiškas iš ', after: '.' },
-      unmeasured: 'Nematavome, kaip dažnai juodraštį vis dar reikia taisyti. Kai išmatuosime, skaičius atsiras šiame puslapyje.',
     },
   },
 
@@ -582,7 +580,7 @@ export const lt: Content = {
     ],
     total: { zero: '0 EUR' },
 
-    ctaNote: 'Pasakykite ne per apžvalgos pokalbį, ir jokia sąskaita neišrašoma.',
+    ctaNote: 'Jokia sąskaita neišrašoma, kol per apžvalgos pokalbį nepasakote taip.',
   },
 
   form: {

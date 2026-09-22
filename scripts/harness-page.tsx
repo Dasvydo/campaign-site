@@ -43,9 +43,7 @@ import {
 import type { PackageId } from '../src/lib/offer';
 import {
   VALUE,
-  draftRatePercent,
   formatHours,
-  formatShare,
   heroHoursBack,
   hourlyStart,
   hoursShown,
@@ -344,7 +342,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       /* The accuracy block. Asserted line by line because it is the answer to
          the objection that decides a regulated sale, and a block that quietly
          stopped rendering would look like nothing at all. */
-      c.who.accuracy.title, ...c.who.accuracy.items, c.who.accuracy.unmeasured,
+      c.who.accuracy.title, ...c.who.accuracy.items,
       c.numbers.title,
       ...Object.values(c.numbers.inputs).map((i) => i.label), c.numbers.inputs.minutes.note,
       ...Object.values(c.numbers.beats).map((b) => ('label' in b ? b.label : '')).filter(Boolean),
@@ -481,13 +479,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         c.demo.close.before + c.demo.close.mark + figure(VALUE.minutesFromScratch.value) +
           c.demo.close.markEnd + c.demo.close.after,
       ],
-      /* The measured share, which no longer multiplies anything on this panel
-         and is a hint under the control instead. Still assembled from value.ts
-         and not from the copy, so the hint cannot drift from the measurement. */
-      [
-        'the measured draft share, as the hint under the drafts control',
-        c.numbers.inputs.drafts.note.before + formatShare(draftRatePercent(), c.htmlLang) + c.numbers.inputs.drafts.note.after,
-      ],
       /* The counter only exists once the cohort has begun to fill. Gated
          separately from the line below it, which is true of any capped tier
          whether or not a place has gone. */
@@ -544,22 +535,34 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       .filter((k) => bounds(ranges[k]) !== wantBounds[k])
       .map((k) => `${k}: ${bounds(ranges[k])}, value.ts says ${wantBounds[k]}`);
     /* Where each control opens, against where the model says it should. The
-       hourly one is the market's, not a constant. */
+       hourly one is the market's, not a constant.
+
+       The first two are the headline package's, not value.ts's raw starts.
+       The price block lights one card on load, and the calculator opening on
+       the smallest band under a lit Firm card was the two sections disagreeing
+       with nobody having pressed anything. So the package the page leads with
+       sets the head count, at the top of the band it covers, and the head
+       count sets the allowance. Still derived, still from the offer; the
+       change is which number in the offer it derives from. */
     const opensAt = {
       people: Number(ranges.people?.value),
       drafts: Number(ranges.drafts?.value),
       hourly: Number(ranges.hourly?.value),
       minutes: Number(ranges.minutes?.value),
     };
+    const lead = headlinePackage();
     const wantOpen = {
-      people: pr.start,
-      drafts: VALUE.drafts.start,
+      people: Math.min(pr.max, Math.max(pr.min, lead.covers)),
+      drafts: lead.draftCap,
       hourly: hourlyStart(c.htmlLang),
       minutes: VALUE.minutesPerDraft.value,
     };
     const badOpen = (Object.keys(opensAt) as Array<keyof typeof opensAt>)
       .filter((k) => opensAt[k] !== wantOpen[k])
-      .map((k) => `${k} opens at ${opensAt[k]}, value.ts says ${wantOpen[k]}`);
+      .map((k) => {
+        const from = k === 'people' || k === 'drafts' ? `the ${lead.id} package` : 'value.ts';
+        return `${k} opens at ${opensAt[k]}, ${from} says ${wantOpen[k]}`;
+      });
 
     const readBeat = (sel: string): string =>
       (host.querySelector(`#numbers [${sel}] .numbers-amt, #numbers [${sel}] .numbers-keep`)?.childNodes[0]
@@ -741,6 +744,25 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       description: document.head.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
       canonical: document.head.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '',
       hreflangs: Array.from(document.head.querySelectorAll('link[rel="alternate"]')).map((l) => l.getAttribute('hreflang')),
+      /* Every absolute URL the head hands a crawler or a link unfurler. These
+         all named campaign-site-azure.vercel.app while the ads pointed at
+         teams.doviloop.dev, and nothing here noticed: the only check on the
+         canonical was that it ended with the locale path, which is true of
+         any host. So the hosts are collected, not just the paths. */
+      headHosts: [
+        document.head.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? '',
+        document.head.querySelector('meta[property="og:url"]')?.getAttribute('content') ?? '',
+        document.head.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? '',
+        document.head.querySelector('meta[name="twitter:image"]')?.getAttribute('content') ?? '',
+        ...Array.from(document.head.querySelectorAll('link[rel="alternate"]')).map(
+          (l) => l.getAttribute('href') ?? '',
+        ),
+      ],
+      ogImage: document.head.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? '',
+      ogImageAlt: document.head.querySelector('meta[property="og:image:alt"]')?.getAttribute('content') ?? '',
+      twitterCard: document.head.querySelector('meta[name="twitter:card"]')?.getAttribute('content') ?? '',
+      twitterImage: document.head.querySelector('meta[name="twitter:image"]')?.getAttribute('content') ?? '',
+      ogLocale: document.head.querySelector('meta[property="og:locale"]')?.getAttribute('content') ?? '',
       sectionsExpected: SECTION_IDS,
       sectionsFound: SECTION_IDS.filter((id) => host.querySelector(`#${id}`)),
       /* Presence is not enough for the newest section. "compare" reads as the
