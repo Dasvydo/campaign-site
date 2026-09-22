@@ -146,14 +146,24 @@ These are the things Lighthouse would flag, but the score itself is unverified.
 ## 9. The phone number is collected again, but only this repo knows it
 
 **Asked for on 2026-09-22:** a field where a visitor can type their number, so it shows up in
-Supabase against the lead. The field is back on the form (step two, optional, `06 Phone`), and the
-number now travels in the payload as `phone`.
+Supabase against the lead. The field is back on the form (step two, `06 Phone`), and the number
+now travels in the payload as `phone`. It shipped optional that morning and was made **required**
+the same day, on the founder's call: an optional number on a lead form is a number most people do
+not give, and the point of the field is to have it.
+
+The requirement is the FORM's, not the wire's. The mock still accepts an empty `phone` and n8n
+should keep doing the same, because the recovery queue in `src/lib/lead.ts` replays payloads saved
+on earlier visits: a lead who filled the form in while the field was optional, failed to reach the
+webhook and came back later would be dropped by a validator that had since started insisting on a
+non-empty string. Tightening it server-side would throw away exactly the leads the queue exists to
+save.
 
 **What is done here and needs nothing further.** `phone` never left the contract. It has been
 declared in `src/lib/contract.ts`, sent on every POST and type-checked by the mock throughout the
 period the form did not ask for it, carrying `""`. It carries what was typed now. `npm run
-verify:payload` proves the typed number reaches the webhook byte for byte and that a blank box
-still submits as an empty string rather than a missing key, both over real HTTP.
+verify:payload` proves the typed number reaches the webhook byte for byte, over real HTTP, in four
+different formats; `scripts/verify-visible.mjs` proves the form refuses to send a lead with the box
+left empty, in a real browser, and that nothing is POSTed when it refuses.
 
 **What this repo cannot do and has not done.** The page POSTs to n8n; n8n writes the ledger row to
 Supabase project `yheilbuunzdugfnermfb`, schema `campaign`. Neither is in this repository and this

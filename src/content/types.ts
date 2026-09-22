@@ -600,7 +600,9 @@ export interface Content {
     lead: string;
     /** The form number on the letterhead. */
     formNo: string;
-    /** Marks the one field that is not required. */
+    /** Marks a field that is not required. The phone carried it for one
+        morning on 2026-09-22 and no longer does; the "Something else" box
+        beside a radio group is what wears it now. */
     optional: string;
     companyLabel: string;
     companyPlaceholder: string;
@@ -608,8 +610,8 @@ export interface Content {
     emailPlaceholder: string;
     emailHint: string;
     emailFreeWarning: string;
-    /** The one optional field on the form. Back since 2026-09-22 after being
-        taken off on 2026-09-19; the payload key never left. */
+    /** Back since 2026-09-22 after being taken off on 2026-09-19; the payload
+        key never left. Required, as of the same day. */
     phoneLabel: string;
     phoneHint: string;
     teamSizeLabel: string;
@@ -641,8 +643,9 @@ export interface Content {
     submitting: string;
     required: string;
     invalidEmail: string;
-    /** Only shown when the optional number is filled in and has fewer than six
-        digits in it. An empty box is never an error. */
+    /** Shown when the number has fewer than six digits in it. An empty box
+        gets `required` instead: "needed" and "that is not a number" are
+        different mistakes. */
     invalidPhone: string;
     privacyNote: string;
   };

@@ -583,7 +583,7 @@ export const lt: Content = {
     emailPlaceholder: 'jus@jusuimone.lt',
     emailHint: 'Naudojame tik pokalbio detalėms ir bandomojo laikotarpio sutarčiai išsiųsti.',
     phoneLabel: 'Telefonas',
-    phoneHint: 'Jei norėtumėte, kad paskambintume, o ne rašytume. Daugiau niekam jo nenaudosime.',
+    phoneHint: 'Kad galėtume susisiekti, jei laiškas nepasieks. Naudosime tik šiam pokalbiui.',
     emailFreeWarning:
       'Atrodo, kad tai asmeninis adresas. Jis tiks, bet darbo adresas padeda mums rasti Jūsų įmonę prieš pokalbį.',
     teamSizeLabel: 'Kiek žmonių kasdien tvarko laiškus?',

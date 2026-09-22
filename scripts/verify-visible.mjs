@@ -488,6 +488,80 @@ try {
     await ctx.close();
   }
 
+  /* Every one of the six is required, pressed the way a reader presses it.
+
+     The phone shipped optional on 2026-09-22 and was made required the same
+     day. "Required" is a claim about what the form REFUSES, and the payload
+     harness cannot make it: that one only ever sees what got through, so a
+     form that quietly accepted a blank number would leave it with nothing to
+     notice. This fills every box but one, presses the button, and checks the
+     form stayed put and said which box.
+
+     Done for the phone because it is the field that changed, and for the
+     email beside it as a control: if a check like this passes on a form where
+     nothing is required at all, it is measuring nothing. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+
+    /* If one ever gets through, it must not reach a webhook: a lead POSTed by
+       a form that was supposed to refuse it is a worse outcome than a failing
+       check, so the request is counted and would fail this too. */
+    let posted = 0;
+    await ctx.route('**/api/lead*', (r) => {
+      posted += 1;
+      return r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+    });
+
+    for (const [leaveBlank, what] of [['phone', 'the number'], ['work_email', 'the email']]) {
+      const page = await ctx.newPage();
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.querySelector('#fit')?.scrollIntoView());
+      await page.check('[data-field="team_size"] input[value="10-24"]');
+      await page.check('[data-field="email_client"] input[value="outlook"]');
+      await page.check('[data-field="role"] input[value="ops_office_manager"]');
+      await page.click('#qualifier button[type="submit"]');
+      await page.waitForTimeout(300);
+
+      const fill = { company_name: 'Vesterled', work_email: 'lars@vesterled.dk', phone: '+45 31 42 55 90' };
+      for (const [id, value] of Object.entries(fill)) {
+        if (id !== leaveBlank) await page.fill(`#f-${id}`, value);
+      }
+      const before = posted;
+      await page.click('#qualifier button[type="submit"]');
+      await page.waitForTimeout(600);
+
+      const got = await page.evaluate((id) => {
+        /* Every field keeps its error paragraph in the DOM at all times,
+           `hidden` until there is something to say, so that the id an input's
+           aria-describedby points at always resolves. Counting the paragraphs
+           therefore counts the fields, not the complaints. The first version
+           of this check did exactly that and reported all three fields
+           failing on a form that was behaving perfectly. Only the ones that
+           are both shown and have text in them are complaints. */
+        const shown = [...document.querySelectorAll('#qualifier [id^="e-"]')].filter(
+          (e) => !e.hidden && (e.textContent || '').trim(),
+        );
+        return {
+          onForm: Boolean(document.querySelector('#qualifier .qualifier-form')),
+          said: shown.find((e) => e.id === `e-${id}`)?.textContent?.trim() ?? '',
+          complaints: shown.map((e) => e.id),
+        };
+      }, leaveBlank);
+
+      check(
+        got.onForm && got.said.length > 0 && got.complaints.length === 1 && posted === before,
+        `\n  the form refuses to send a lead with ${what} left blank`,
+        got.onForm
+          ? `said ${JSON.stringify(got.said)}, complaining about ${got.complaints.join(',') || 'nothing'}${posted > before ? ', BUT POSTED IT ANYWAY' : ''}`
+          : 'it went through to an answer screen',
+      );
+      await page.close();
+    }
+    await ctx.close();
+  }
+
   /* The answer screens, which nothing had ever looked at.
 
      The fit check's three outcomes are behind a submitted form, so no gate
@@ -528,6 +602,10 @@ try {
       await page.waitForTimeout(300);
       await page.fill('#qualifier input[type="email"]', 'someone@example-firm.dk');
       await page.fill('#qualifier input[name="company_name"]', 'Example Firm ApS');
+      /* Required since 2026-09-22. Without it this walk never leaves the
+         second screen and every check below reports an answer screen that
+         does not exist, which is how the change announced itself here. */
+      await page.fill('#qualifier input[name="phone"]', '+45 31 42 55 90');
       await page.click('#qualifier button[type="submit"]');
       await page.waitForTimeout(1200);
 

@@ -829,10 +829,11 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       /* Six controls: three chosen from radio groups, then three written.
          It was six, then five from 2026-09-19 when the phone field went
          (T23), and six again from 2026-09-22 because the founder wants a
-         number against a lead. The phone is the one that is optional, which
-         is why the form's heading can still say three questions: it is the
-         only control a reader may leave alone and still submit. The payload
-         key was declared and sent throughout, empty while nothing asked. */
+         number against a lead. All six are required: the phone shipped
+         optional that morning and was made required the same day, on the
+         grounds that an optional number is a number most people do not give.
+         The payload key was declared and sent throughout, empty while
+         nothing asked. */
       questionCount: stepOneQuestions + stepTwoQuestions,
       stepsShown,
       otherClosedAtRest,
@@ -856,15 +857,13 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       stepOneIsTheQuestions:
         stepOneAsks.join('|') ===
         [c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel].join('|'),
-      /* The phone's label carries the optional marker inside it, because the
-         marker is a span within the label element the walk reads. Compared
-         against the same assembly rather than stripped, so a marker that
-         silently disappeared would fail here too: an optional field that
-         stops saying it is optional is a required sixth question by any
-         reader's reckoning. */
+      /* Three plain labels. The phone's carried the optional marker inside it
+         for the one morning the field was optional; it is required now, so a
+         marker reappearing here would be the form telling a reader they may
+         skip a field the form will then refuse. */
       stepTwoIsTheDetails:
         stepTwoAsks.join('|') ===
-        [c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel + c.form.optional].join('|'),
+        [c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel].join('|'),
       blankKeys,
       missing,
       unassembled,

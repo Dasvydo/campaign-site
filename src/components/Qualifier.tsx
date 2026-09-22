@@ -74,9 +74,13 @@ interface FormState {
      (T23) to keep the count down, and the contract kept carrying the key with
      an empty string in it, which is why putting it back costs nothing on the
      wire: `phone` is already declared, already accepted by the n8n validator
-     and already type checked by the mock. Optional, because the form's own
-     heading promises three questions and a required sixth would make that
-     heading false. */
+     and already type checked by the mock.
+
+     Required since 2026-09-22, the founder's call: it shipped optional that
+     morning and an optional number on a lead form is a number most people do
+     not give. The form's heading is untouched by this, because it counts the
+     three closed questions on the first screen and has never counted the
+     contact details on the second. */
   phone: string;
   team_size: '' | TeamSize;
   email_client: '' | EmailClient;
@@ -186,10 +190,13 @@ export function Qualifier({
     if (!v.company_name.trim()) e.company_name = c.form.required;
     if (!v.work_email.trim()) e.work_email = c.form.required;
     else if (!EMAIL_RE.test(v.work_email.trim())) e.work_email = c.form.invalidEmail;
-    /* Optional, so an empty box is never an error. Deliberately loose when it
-       is filled: international formats vary and a wrong reject here costs a
-       real lead. Anything with six or more digits gets through. */
-    if (v.phone.trim() && (v.phone.match(/\d/g) ?? []).length < 6) e.phone = c.form.invalidPhone;
+    /* Required, and still deliberately loose about the shape: international
+       formats vary and a wrong reject here costs a real lead. Anything with
+       six or more digits gets through. Two different complaints, because
+       "needed" and "that is not a number" are different mistakes and telling
+       someone their empty box is malformed helps nobody. */
+    if (!v.phone.trim()) e.phone = c.form.required;
+    else if ((v.phone.match(/\d/g) ?? []).length < 6) e.phone = c.form.invalidPhone;
     if (!v.team_size) e.team_size = c.form.required;
     if (!v.email_client) e.email_client = c.form.required;
     if (!v.role) e.role = c.form.required;
@@ -510,15 +517,11 @@ export function Qualifier({
                       }}
                     />
 
-                    {/* Optional, and marked so. The form's heading says three
-                        questions; this is a way to reach you faster if you
-                        want one, not a sixth thing to answer. */}
                     <TextField
                       n="06"
                       id="phone"
                       label={c.form.phoneLabel}
                       hint={c.form.phoneHint}
-                      optional={c.form.optional}
                       error={errors.phone}
                       value={values.phone}
                       onChange={(v) => set('phone', v)}
@@ -527,6 +530,7 @@ export function Qualifier({
                         type: 'tel',
                         inputMode: 'tel',
                         autoComplete: 'tel',
+                        required: true,
                       }}
                     />
 

@@ -152,9 +152,9 @@ async function runOne(s: Scenario) {
   await act(async () => {
     setValue(q<HTMLInputElement>('#f-company_name'), 'Vesterled Ejendomsadministration');
     setValue(q<HTMLInputElement>('#f-work_email'), s.email);
-    /* Only when the scenario gives one. Leaving the box untouched is the
-       other half of what the optional field has to survive. */
-    if (s.phone) setValue(q<HTMLInputElement>('#f-phone'), s.phone);
+    /* Required since 2026-09-22, so every scenario carries one; leaving it
+       out here would simply stop the form submitting. */
+    setValue(q<HTMLInputElement>('#f-phone'), s.phone);
   });
 
   const freeEmailWarningShown = Boolean(host.querySelector('#w-work_email'));

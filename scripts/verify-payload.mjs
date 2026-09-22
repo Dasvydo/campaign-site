@@ -85,15 +85,17 @@ const check = (ok, label, detail = '') => {
   if (!ok) failures += 1;
 };
 
-/* `phone` is the optional field, so half of these leave it blank on purpose:
-   the point of the checks below is that a typed number arrives verbatim AND
-   that an empty box still submits, carrying ''. A scenario set where every
-   lead typed a number would prove only the first half. */
+/* Every scenario gives a number, because since 2026-09-22 a lead cannot get
+   past the second screen without one. Two of these carried '' for the one
+   morning the field was optional; leaving them that way would have been a
+   scenario set that could no longer submit at all, which is how this change
+   announced itself. The formats differ on purpose: the validator counts
+   digits and must not care about spaces, a leading plus or a country code. */
 const SCENARIOS = [
   { name: '10-24 seats on Outlook', locale: 'en', team_size: '10-24', email_client: 'outlook', role: 'owner_partner', email: 'lars@vesterled.dk', phone: '+45 31 42 55 90', expect: 'qualified' },
-  { name: '50+ seats on Gmail', locale: 'da', team_size: '50+', email_client: 'gmail', role: 'ops_office_manager', email: 'kontor@vesterled.dk', phone: '', expect: 'gmail_on_request' },
+  { name: '50+ seats on Gmail', locale: 'da', team_size: '50+', email_client: 'gmail', role: 'ops_office_manager', email: 'kontor@vesterled.dk', phone: '31425590', expect: 'gmail_on_request' },
   { name: '25-49 seats on something else', locale: 'lt', team_size: '25-49', email_client: 'other', role: 'it_admin', email: 'admin@imone.lt', phone: '+370 612 34567', expect: 'gmail_on_request' },
-  { name: '1-9 seats, too small', locale: 'en', team_size: '1-9', email_client: 'outlook', role: 'other', email: 'someone@gmail.com', phone: '', expect: 'too_small' },
+  { name: '1-9 seats, too small', locale: 'en', team_size: '1-9', email_client: 'outlook', role: 'other', email: 'someone@gmail.com', phone: '(020) 7946 0958', expect: 'too_small' },
 ];
 
 async function waitForMock(tries = 60) {
@@ -328,10 +330,11 @@ async function main() {
         );
       }
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
-      /* Six controls, five of them required. The phone came back on
-         2026-09-22 and is the only one a reader may leave alone, which is
-         what keeps the form's own heading ("Three questions") true. */
-      check(p.questionCount === 6, `    the qualifier asks exactly 6 things, five of them required`, String(p.questionCount));
+      /* Six controls, all required since 2026-09-22. The form's own heading
+         says "Three questions", which counts the three closed questions on
+         the first screen; it has never counted the contact details on the
+         second, so the phone going required does not touch it. */
+      check(p.questionCount === 6, `    the qualifier asks exactly 6 things, all of them required`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of
          a walk, so it needs the walk to have actually gone somewhere: without
          these three it would be satisfied by counting one screen twice. */
@@ -365,7 +368,7 @@ async function main() {
       );
       check(
         p.stepTwoIsTheDetails,
-        `    the second step asks the three contact details, the number marked optional`,
+        `    the second step asks the three contact details and nothing else`,
         p.stepTwoAsks.join(' | '),
       );
       check(p.backWorks, `    and Back returns to the questions`);
@@ -766,10 +769,15 @@ async function main() {
       'the number reaches the webhook exactly as it was typed',
       phoneMismatch.length ? phoneMismatch.join(' | ') : received.map((r) => JSON.stringify(r.body.phone)).join(' '),
     );
+    /* No lead reaches the webhook without one, since the field went required.
+       That the form REFUSES an empty box is checked in a real browser, in
+       scripts/verify-visible.mjs, where a reader can actually press the
+       button on an empty field. Here the claim is narrower and about the
+       wire: nothing that got through arrived blank. */
     check(
-      received.some((r) => r.body.phone !== '') && received.some((r) => r.body.phone === ''),
-      'and a blank one still submits, as an empty string rather than a missing key',
-      received.every((r) => 'phone' in r.body) ? 'every payload carries the key' : 'a payload is missing the key entirely',
+      received.every((r) => typeof r.body.phone === 'string' && r.body.phone.trim() !== ''),
+      'and no payload reaches the webhook without one',
+      received.map((r) => JSON.stringify(r.body.phone)).join(' '),
     );
     check(received.every((r) => r.dedupe), 'each POST carries an idempotency key header');
     /* The half that was missing, and that a live probe caught.

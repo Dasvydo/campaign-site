@@ -583,7 +583,7 @@ export const da: Content = {
     emailPlaceholder: 'dig@ditfirma.dk',
     emailHint: 'Bruges kun til at sende mødedetaljer og pilotaftalen.',
     phoneLabel: 'Telefon',
-    phoneHint: 'Hvis I hellere vil ringes op end skrives til. Vi bruger det ikke til andet.',
+    phoneHint: 'Så vi kan få fat i jer, hvis mailen ikke når frem. Bruges til dette møde og intet andet.',
     emailFreeWarning:
       'Det ligner en privat adresse. Den virker fint, men en arbejdsmail hjælper os med at finde jeres virksomhed, inden vi taler sammen.',
     teamSizeLabel: 'Hvor mange sidder med mails hver dag?',
