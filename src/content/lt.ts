@@ -2,6 +2,7 @@ import type { Content } from './types';
 import { meta } from './lt/meta';
 import { nav } from './lt/nav';
 import { hero } from './lt/hero';
+import { tiers } from './lt/tiers';
 import { demo } from './lt/demo';
 import { who } from './lt/who';
 import { trial } from './lt/trial';
@@ -24,6 +25,7 @@ export const lt: Content = {
   meta,
   nav,
   hero,
+  tiers,
   demo,
   who,
   trial,

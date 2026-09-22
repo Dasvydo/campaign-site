@@ -1,0 +1,598 @@
+/* ==========================================================================
+   SECTION: tiers   "Free for the first 14 days"   #price
+
+   The band that sits directly under the hero. Charcoal, because the hero and
+   the worked example are both cream and this has to read as a hard edge
+   between them, and because the one fact the founder asked to be painfully
+   obvious is loudest on the darkest ground the palette owns.
+
+   NO NEW COLOUR AND NO NEW TYPEFACE. Everything here is a token: charcoal,
+   warmwhite, amber, Playfair for the display figures and DM Sans for the rest.
+   Amber never carries a letterform. It is a dot, a pill's tint, a card's top
+   rule and the pen that strikes the fee out, and nowhere else.
+
+   INTERACTION IS BORROWED, NOT INVENTED. The section carries `on-dark`, which
+   re-points all six dark ground values in interaction.css at once, and the two
+   controls take the primitives: the tier cards are .ix-raise, the timeline
+   stops are .ix-tap. Nothing below declares a hover shadow, a press transform,
+   a focus ring or a transition curve of its own, and the two hover rules that
+   do exist are colour only and sit inside @media (hover: hover).
+
+   THE STUCK HOVER THIS DOES NOT REPEAT. The deleted price band styled
+   `.price-pkg:hover{ border-color: var(--amber) }` with no guard, so on a
+   phone the last card a thumb touched kept an amber border and the section
+   showed a tier as chosen that nobody had chosen. Every hover here is guarded,
+   and the chosen state is a class the component sets, never a hover.
+   ========================================================================== */
+
+#price {
+  /* The three warm neutrals this band mixes out of warmwhite, so an alpha is
+     never typed twice. Named for what they do, not for what they are. */
+  --tiers-dim: rgba(250, 241, 235, 0.72);
+  --tiers-rule: rgba(250, 241, 235, 0.2);
+  --tiers-rule-strong: rgba(250, 241, 235, 0.42);
+  --tiers-wash: rgba(250, 241, 235, 0.08);
+  /* Amber, as a ground and an edge. Never as text. */
+  --tiers-amber-wash: rgba(245, 155, 10, 0.12);
+  --tiers-amber-edge: rgba(245, 155, 10, 0.55);
+
+  /* The same paper fibre the deleted band carried, at the same five percent.
+     It is what keeps a dark software band on a paper desk. */
+  --tiers-fibre: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='tf'><feTurbulence type='fractalNoise' baseFrequency='.74 .88' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .47  0 0 0 0 .42  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23tf)'/></svg>");
+
+  position: relative;
+  isolation: isolate;
+  background: var(--charcoal);
+  color: var(--warmwhite);
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  overflow-x: clip;
+  /* The page's one vertical rhythm: every band opens at 56 and closes at 48,
+     and doubles from 1024 up. See coherence.css. */
+  padding-block: 56px 48px;
+}
+@media (min-width: 1024px) {
+  #price { padding-block: 96px 80px; }
+}
+
+#price::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.05;
+  background-image: var(--tiers-fibre);
+}
+#price > * { position: relative; z-index: 2; }
+
+.tiers-wrap {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+  min-width: 0;
+}
+
+.tiers-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* --- the loudest fact on the page -----------------------------------------
+   "Free for the first" is set at reading size and the count is set as a
+   display numeral, so the eye lands on the number and the sentence explains
+   it rather than the other way round. At 390 the figure sets at ninety six
+   pixels, which is larger than the hero's own headline at that width; that is
+   the point, and this is the one place on the page where a figure is allowed
+   to outrun a headline. */
+.tiers-head { margin: 0 0 40px; }
+@media (min-width: 1024px) {
+  .tiers-head { margin-bottom: 56px; }
+}
+
+.tiers-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tiers-dim);
+}
+
+/* No max-width on the heading itself. A ch unit resolves against the element's
+   OWN font size, and this element has none of its own - it inherits the body's
+   17px, so a cap set here in ch is a third of the width it looks like and it
+   broke "Free for the first" over two lines in every language. The two spans
+   inside carry their own sizes and their own measure. */
+.tiers-h {
+  margin: 0;
+  color: var(--warmwhite);
+}
+.tiers-h-lead {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(26px, 14px + 2.4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  color: var(--tiers-dim);
+}
+/* Sized at the UNIT's size rather than left to inherit the body's 17px,
+   because the single space between the numeral and the word it counts is a
+   text node in here: inherited, it set at 17px and "14" and "days" all but
+   touched. The unit inherits this; the numeral overrides it. */
+.tiers-h-free {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(38px, 20px + 4.8vw, 76px);
+  line-height: 1;
+}
+.tiers-h-fig {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(96px, 34px + 16vw, 190px);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--warmwhite);
+}
+.tiers-h-unit {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--warmwhite);
+}
+/* The amber rule under the count. A mark, not a letterform: it is the same
+   device the masthead and the fee sheet use to say "this line is the point". */
+.tiers-h-free::after {
+  content: '';
+  display: block;
+  width: min(220px, 52%);
+  height: 4px;
+  margin-top: 14px;
+  background: var(--amber);
+}
+
+.tiers-lede {
+  margin: 20px 0 0;
+  max-width: 48ch;
+  font-size: 17.5px;
+  line-height: 1.55;
+  color: var(--tiers-dim);
+}
+@media (min-width: 1024px) {
+  .tiers-lede { font-size: 19px; }
+}
+
+/* --- the three tiers ------------------------------------------------------ */
+.tiers-pick {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--tiers-dim);
+}
+
+.tiers-row {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+@media (min-width: 680px) {
+  .tiers-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+}
+
+/* A card is a button. Colour, type and geometry are declared here; the rest
+   and the lift, the press and the ring all come from .ix-raise and from
+   on-dark, where the lift is a warm halo with no offset rather than a drop
+   shadow - which is why the large-surface caveat on --ix-lift does not bite
+   on this band. */
+.tiers-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 18px 18px 16px;
+  position: relative;
+  text-align: left;
+  font: inherit;
+  color: var(--warmwhite);
+  background: transparent;
+  border: 1px solid var(--tiers-rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+@media (hover: hover) {
+  /* Colour only. The lift and the press are the primitive's. */
+  .tiers-card:hover { border-color: var(--tiers-rule-strong); }
+}
+/* The chosen tier. A class the component sets, never a hover, and an amber
+   edge with an amber bar across the top rather than amber type. */
+.tiers-card.is-on {
+  border-color: var(--tiers-amber-edge);
+  background: var(--tiers-amber-wash);
+}
+.tiers-card.is-on::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: -1px;
+  height: 3px;
+  background: var(--amber);
+}
+
+.tiers-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid var(--tiers-amber-edge);
+  border-radius: 999px;
+  background: var(--tiers-amber-wash);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--warmwhite);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.tiers-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  flex: none;
+}
+
+.tiers-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--warmwhite);
+}
+
+.tiers-fee {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tiers-fee-fig {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(34px, 24px + 1.4vw, 46px);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--warmwhite);
+}
+.tiers-fee-per {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--tiers-dim);
+}
+
+.tiers-line {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--warmwhite);
+  max-width: 34ch;
+}
+
+/* Label left, count right. The label knows whether the figure is an only
+   seat, a ceiling or a floor; the figure never sits inside a noun phrase. */
+.tiers-seats {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--tiers-rule);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.tiers-seats-label {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tiers-dim);
+}
+.tiers-seats-fig {
+  font-weight: 600;
+  font-size: 16px;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--warmwhite);
+}
+
+/* --- the trial, walked ---------------------------------------------------- */
+.tiers-when { margin-top: 44px; }
+@media (min-width: 1024px) {
+  .tiers-when { margin-top: 64px; }
+}
+
+.tiers-when-h {
+  margin: 0 0 22px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 16px + 1vw, 30px);
+  line-height: 1.15;
+  color: var(--warmwhite);
+}
+
+.tiers-stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 22px;
+}
+@media (min-width: 720px) {
+  .tiers-stops { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+}
+
+/* The timeline itself: a dot per stop and a hairline between them. Vertical
+   on a phone, horizontal from 720 up. */
+.tiers-stop-item {
+  position: relative;
+  padding-left: 30px;
+  min-width: 0;
+}
+.tiers-stop-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--charcoal);
+  border: 1px solid var(--tiers-rule-strong);
+  transition: background-color var(--ix-curve), border-color var(--ix-curve);
+}
+.tiers-stop-item::before {
+  content: '';
+  position: absolute;
+  left: 5.5px;
+  top: 27px;
+  bottom: -31px;
+  width: 1px;
+  background: var(--tiers-rule);
+}
+.tiers-stop-item:last-child::before { display: none; }
+.tiers-stop-item.is-on::after {
+  background: var(--amber);
+  border-color: var(--amber);
+}
+@media (min-width: 720px) {
+  .tiers-stop-item { padding-left: 0; padding-top: 30px; }
+  .tiers-stop-item::after { top: 0; left: 0; }
+  .tiers-stop-item::before {
+    left: 6px;
+    right: -30px;
+    top: 5.5px;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+  }
+}
+
+.tiers-stop {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 14px 15px;
+  text-align: left;
+  font: inherit;
+  color: var(--warmwhite);
+  background: transparent;
+  border: 1px solid var(--tiers-rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.tiers-stop-item.is-on .tiers-stop {
+  background: var(--tiers-wash);
+  border-color: var(--tiers-rule-strong);
+}
+.tiers-stop-day {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--tiers-dim);
+}
+.tiers-stop-item.is-on .tiers-stop-day { color: var(--warmwhite); }
+.tiers-stop-note {
+  display: block;
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--warmwhite);
+}
+
+/* --- what the stops act on ------------------------------------------------
+   The answer sits directly under the control, not on the cards a screen and a
+   half above it. Smaller than the headline by a clear margin: the section has
+   one loudest thing and this is not it. */
+.tiers-total {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 2px solid var(--tiers-rule-strong);
+  position: relative;
+}
+.tiers-total::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px;
+  height: 1px;
+  background: var(--tiers-rule-strong);
+}
+.tiers-state {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tiers-dim);
+}
+.tiers-total.is-struck .tiers-state { color: var(--warmwhite); }
+
+.tiers-total-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin: 0;
+}
+.tiers-total-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 16px + 1vw, 28px);
+  line-height: 1.2;
+  color: var(--warmwhite);
+}
+.tiers-total-amt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 14px;
+  min-width: 0;
+}
+.tiers-total-strike {
+  position: relative;
+  display: inline-block;
+}
+.tiers-total-fig,
+.tiers-total-zero {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 28px + 2vw, 62px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--warmwhite);
+}
+.tiers-total.is-struck .tiers-total-fig { color: var(--tiers-dim); }
+.tiers-total-per {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--tiers-dim);
+}
+
+/* The pen that strikes the fee out. pathLength on the path normalises the
+   stroke to one unit, so the draw is a CSS dash rather than a length measured
+   in JavaScript. The curve and the duration are the page's own hand-drawn
+   pair from paper.css; nothing new is declared. Under reduced motion
+   index.css collapses the duration, so the stroke arrives at once rather than
+   not at all, which is the right answer: it carries meaning. */
+.tiers-strike {
+  position: absolute;
+  left: -0.04em;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(100% + 0.08em);
+  height: 0.46em;
+  overflow: visible;
+  pointer-events: none;
+}
+.tiers-strike path {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--t-mark) var(--e-hand);
+}
+.tiers-total.is-struck .tiers-strike path { stroke-dashoffset: 0; }
+
+/* --- the ask -------------------------------------------------------------- */
+.tiers-act { margin-top: 36px; }
+.tiers-cta { min-height: 52px; }
+.tiers-note {
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--tiers-dim);
+}
+
+/* --- what the trial includes, and the terms behind them ------------------- */
+.tiers-inc {
+  margin-top: 48px;
+  padding-top: 26px;
+  border-top: 1px dashed var(--tiers-rule);
+}
+.tiers-inc-h {
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 16px + 1vw, 30px);
+  line-height: 1.15;
+  color: var(--warmwhite);
+}
+.tiers-inc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px 32px;
+}
+@media (min-width: 900px) {
+  .tiers-inc-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.tiers-inc-list li {
+  position: relative;
+  margin: 0;
+  padding-left: 20px;
+  max-width: 46ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--warmwhite);
+  text-wrap: pretty;
+}
+.tiers-inc-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+/* The shared disclosure, on a ground it was not drawn for. Its summary is
+   #8A5200 on cream, which measures 2.5:1 against charcoal, so the colour is
+   re-pointed here rather than in the shared file. The base rule also settles
+   the one unguarded hover this page still ships: `.disc-sum:hover` is (0,2,0)
+   and this is (1,1,0), so the underline only appears where there is a real
+   pointer to draw it. */
+#price .disc-sum,
+#price .disc-mark {
+  color: var(--warmwhite);
+}
+#price .disc-sum { border-bottom-color: transparent; }
+@media (hover: hover) {
+  #price .disc-sum:hover { border-bottom-color: currentColor; }
+}
+#price .disc-dl > div { border-top-color: var(--tiers-rule); }
+#price .disc-dl dd { color: var(--tiers-dim); }
+#price .disc-body { color: var(--warmwhite); }

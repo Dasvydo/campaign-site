@@ -21,6 +21,7 @@
  *     the slot says which counts are reachable, so the form can be chosen
  *     rather than guessed.
  */
+import type { TierId } from '../lib/pricing';
 
 /** The five things a firm knows, and the five switches that turn them off.
     They are deliberately the same five on every desk: a rule, a date, the file,
@@ -102,6 +103,29 @@ export interface AudienceCopy {
   tab: string;
   /** The single line on the sheet below it. */
   line: string;
+}
+
+/** One pricing tier's words. Every figure on the card is the data module's.
+
+    `id` is the join to src/lib/pricing.ts, and it is typed as that module's
+    own union rather than as a string, so a card naming a tier that does not
+    exist is a build failure rather than a blank fee at render time. It is the
+    same device `AudienceCopy.id` uses for the folders and the desks. */
+export interface TierCopy {
+  id: TierId;
+  /** The tier's name. Translated rather than shared: the locale audit reads
+      an identical string in two files as a translation that never happened,
+      and a plan name is not a brand name. */
+  name: string;
+  /** One line about who picks this tier. No figures, and no claim about what
+      the tier includes that the page does not make elsewhere. */
+  line: string;
+  /** The label over this tier's seat count, which is printed AFTER it: the
+      count is "1", "up to 9", "from 10", and only the label knows which. A
+      label with the figure behind it is right at every count in all three
+      languages, which is the shape this file asks for everywhere a numeral
+      meets a noun. */
+  seatsLabel: string;
 }
 
 export interface Content {
@@ -203,6 +227,53 @@ export interface Content {
       body: string;
       signoff: string;
     };
+  };
+
+  /** The pricing tiers, and the free trial said out loud over the top of them.
+
+      It sits directly under the hero because that is where the founder put
+      it: "immediately after the hero section, we want to have actually
+      pricing tiers, just like it is on the website for DoviLoop. And we want
+      to make it very, very painfully obvious that it's free for the first 14
+      days." The second sentence is why the trial is the section's own
+      headline rather than a line under the cards. The numeral in that quote
+      is the founder's own words and is the only digit anywhere near this
+      block: it is a comment, not copy, and the figure the page prints comes
+      from src/lib/pricing.ts like every other.
+
+      It renders alongside `trial`, which is not duplicated here: the
+      timeline, the terms, the capability list and the note under the button
+      all live there and are rendered from there. This block is only what the
+      tiers themselves need.
+
+      Not one figure is in it. The rates, the seat bands, the length of the
+      trial and the currency are all in src/lib/pricing.ts, and every slot
+      below that meets a number either splits into `before` and `after` halves
+      around it or is a label with the count printed after it. Both shapes are
+      right at every count in all three languages; a bare numeral inside a
+      noun phrase is not. */
+  tiers: {
+    eyebrow: string;
+
+    /** The loudest line in the section, split around the free days:
+        "<before><the days><after>". The figure is set as a display numeral
+        between the two halves, so neither half carries a space of its own. */
+    headline: { before: string; after: string };
+    /** The sentence under it. Says what the free days apply to. */
+    lede: string;
+
+    /** Repeated on every tier card: "<before><the days><after>". Inline, so
+        the halves carry their own spacing. */
+    freeBadge: { before: string; after: string };
+
+    /** Over the three cards. Also names the group for a screen reader. */
+    pickLead: string;
+    rows: [TierCopy, TierCopy, TierCopy];
+    /** Under the figure on a card, and again under the total the timeline
+        drives. The unit only: the currency code is the data module's, because
+        one of the two halves it would need here is empty in the language that
+        writes the code on the other side. */
+    per: string;
   };
 
   demo: {

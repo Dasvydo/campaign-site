@@ -9,6 +9,7 @@ import { flushLeadQueue } from './lib/lead';
 import { Consent } from './components/Consent';
 import { Rail } from './components/Rail';
 import { Hero } from './components/Hero';
+import { Tiers } from './components/Tiers';
 import { Demo } from './components/Demo';
 import { WhoFor } from './components/WhoFor';
 import { Footer } from './components/Footer';
@@ -126,6 +127,14 @@ export function LocalePage({ locale }: { locale: Locale }) {
           pathFor={(code) => pathFor(code as Locale)}
           onCta={() => track('booking_click', { placement: 'hero' })}
         />
+
+        {/* The price, immediately after the hero and before anything else,
+            because that is where the founder put it and because an ad click
+            that has to scroll past a worked example to find out what it costs
+            is an ad click that leaves. It carries id="price", which is the
+            target the masthead's own nav link has been pointing at since the
+            old band was deleted. */}
+        <Tiers c={c} />
 
         {/* Which desk a visitor picks is the strongest signal on the page of
             what they actually do for a living, so it goes to analytics. */}

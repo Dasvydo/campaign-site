@@ -2,6 +2,7 @@ import type { Content } from './types';
 import { meta } from './en/meta';
 import { nav } from './en/nav';
 import { hero } from './en/hero';
+import { tiers } from './en/tiers';
 import { demo } from './en/demo';
 import { who } from './en/who';
 import { trial } from './en/trial';
@@ -21,6 +22,7 @@ export const en: Content = {
   meta,
   nav,
   hero,
+  tiers,
   demo,
   who,
   trial,

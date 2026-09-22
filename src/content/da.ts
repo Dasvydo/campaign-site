@@ -2,6 +2,7 @@ import type { Content } from './types';
 import { meta } from './da/meta';
 import { nav } from './da/nav';
 import { hero } from './da/hero';
+import { tiers } from './da/tiers';
 import { demo } from './da/demo';
 import { who } from './da/who';
 import { trial } from './da/trial';
@@ -24,6 +25,7 @@ export const da: Content = {
   meta,
   nav,
   hero,
+  tiers,
   demo,
   who,
   trial,
