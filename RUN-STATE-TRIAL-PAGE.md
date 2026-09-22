@@ -37,7 +37,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T1 | Split paper.css into section stylesheets | 1 | returned | 1 | verifying | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
 | T2 | Split content into per-section modules | 1 | returned | 1 | verifying | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
-| T4 | Build the interaction system | 1 | running | 0 | | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
+| T4 | Build the interaction system | 1 | returned | 1 | verifying | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
 | T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
@@ -54,7 +54,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | C1 | T1 | T6,T7,T8,T11,T12 | Section stylesheets at src/styles/sections/<section>.css, imported by paper.css in current cascade order. Only T1 edits the index. | |
 | C2 | T2 | T5,T6,T7,T8,T11 | Per-locale section modules at src/content/<locale>/<section>.ts, each exporting its slice as a named export. Content interface shape unchanged. | YES |
 | C3 | T3 | T2,T6,T10 | Locale and Utm exported from src/lib/types.ts ONLY. contract.ts imports them as any other consumer. | YES |
-| C4 | T4 | T7,T8,T11,T12 | One interaction vocabulary: --ix-lift, --ix-press, --ix-ring, --ix-curve. No component declares its own hover shadow or transition curve. | |
+| C4 | T4 | T7,T8,T11,T12 | One interaction vocabulary: --ix-lift, --ix-press, --ix-ring, --ix-curve (+10 supporting --ix-* listed in the file header). No component declares its own hover shadow or transition curve. Wrap dark-band blocks in class="on-dark" to flip all six dark-ground values at once. | YES |
 | C5 | T5 | T8 | Trial copy exports { stops, terms, included } from src/content/<locale>/trial.ts. T8 renders it, does not rewrite it. | |
 
 ## Hard stops
@@ -109,6 +109,23 @@ New `scripts/content-src.mjs` assembles a locale's full source (composing file +
 adding a section cannot silently narrow what the gates see. Each fix was negative-tested: an em dash
 injected into a section module turns `audit:locales` red, and removing the Lithuanian formal register turns
 `verify:payload` red. Both were green against the same mutations before the fix.
+
+### Carried forward to T12 (raised by T4)
+- **42 unguarded `:hover` rules in `sections/**`** — a tap leaves them lit. Ranked by harm, not count:
+  1. `sections/price.css:328` `.price-pkg:hover{border-color:var(--amber)}` — WORST. On touch the last-tapped
+     pricing tier keeps an amber border, so the comparison table shows a tier as chosen that nobody chose.
+     Directly in the way of T8's pricing work.
+  2. `sections/qualifier.css:327` `.qualifier-chip:hover` — a hovered chip looks checked, on the most-tapped mobile control.
+  3. `sections/hero.css:109`, `:591`, `sections/demo.css:112` — tab strips showing two tabs lit.
+  4. `sections/hero.css:302` `.hero-btn:hover` — the button the ad click aims at, stays raised after the tap.
+  5. `sections/price.css:553`, `sections/qualifier.css:386`, `sections/consent.css:113` — same, on the conversion path.
+- **5 reduced-motion blocks cancel the press outright** (not 3): `phone-hero.css:62`, `price.css:588`,
+  `qualifier.css:598`, `footer.css:292`, `demo.css:550`. Fix is to drop the `:active` selector and keep `:hover`.
+- **`.field`/`.field-label`/`.field-hint`/`.field-error` are unused scaffolding** — clearly meant for the signup
+  form. `.field` re-points its ring to `--ix-ring-dark` because it assumes a charcoal ground; if the form lands
+  on cream instead, that re-point is wrong.
+- Tokens not provided, to add with an `--ix-` name if needed: a disabled-state token, a pending/loading state for
+  the signup button, and a `--ix-lift` variant tuned for a large surface (the current one is tuned for controls).
 
 ## Coherence audit
 <pending — phase 6>
