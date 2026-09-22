@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { content, pathFor, LOCALES } from './content';
-import type { Locale, QualifierPayload } from './lib/contract';
+import type { QualifierPayload } from './lib/contract';
+import type { Locale } from './lib/types';
 import type { PackageId } from './lib/offer';
 import { headlinePackage } from './lib/offer';
 import { captureUtm, resolveMarket, resolveSource } from './lib/attribution';

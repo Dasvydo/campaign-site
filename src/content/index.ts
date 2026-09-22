@@ -1,4 +1,4 @@
-import type { Locale } from '../lib/contract';
+import type { Locale } from '../lib/types';
 import type { Content } from './types';
 import { en } from './en';
 import { da } from './da';

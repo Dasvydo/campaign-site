@@ -8,7 +8,8 @@
  */
 import { env } from './env';
 import { consentDecided, consentGranted } from './consent';
-import type { Locale, Market, Utm } from './contract';
+import type { Market } from './contract';
+import type { Locale, Utm } from './types';
 
 /** The eight event names, exactly as the spec lists them. */
 export type EventName =

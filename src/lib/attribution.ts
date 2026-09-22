@@ -6,7 +6,8 @@
  * session: if someone lands from an ad, wanders to the pricing page and comes
  * back with a bare URL, the ad still gets the credit.
  */
-import type { Locale, Market, Source, Utm } from './contract';
+import type { Market, Source } from './contract';
+import type { Locale, Utm } from './types';
 
 const UTM_KEY = 'dl_utm';
 const SOURCE_KEY = 'dl_source';

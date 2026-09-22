@@ -2,14 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Content } from '../content/types';
 import type {
   EmailClient,
-  Locale,
   Market,
   QualifierPayload,
   Role,
   Source,
   TeamSize,
-  Utm,
 } from '../lib/contract';
+import type { Locale, Utm } from '../lib/types';
 import { route } from '../lib/contract';
 import { submitLead } from '../lib/lead';
 import { env, FALLBACK_CONTACT_EMAIL, PRICING_URL } from '../lib/env';

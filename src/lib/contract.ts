@@ -37,19 +37,16 @@
  * check in n8n, and both are the founder's. Recorded in BLOCKED.md.
  */
 
+/* `Locale` and `Utm` are declared in ./types, not here. The content layer,
+   attribution and analytics all depend on them and all outlive this file, so
+   this file consumes them rather than owning them. */
+import type { Locale, Utm } from './types';
+
 export type Source = 'reel' | 'ad' | 'outreach' | 'direct';
 export type Market = 'dk' | 'lt' | 'global';
-export type Locale = 'en' | 'da' | 'lt';
 export type TeamSize = '1-9' | '10-24' | '25-49' | '50+';
 export type EmailClient = 'outlook' | 'gmail' | 'other';
 export type Role = 'owner_partner' | 'ops_office_manager' | 'it_admin' | 'other';
-
-export interface Utm {
-  source: string;
-  medium: string;
-  campaign: string;
-  content: string;
-}
 
 export interface QualifierPayload {
   source: Source;

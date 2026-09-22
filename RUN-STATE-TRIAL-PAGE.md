@@ -36,7 +36,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 |----|-------|------|--------|----------|---------|-------------|------|
 | T1 | Split paper.css into section stylesheets | 1 | running | 0 | | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
 | T2 | Split content into per-section modules | 1 | running | 0 | | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
-| T3 | Rehouse Locale + Utm out of contract.ts | 1 | running | 0 | | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
+| T3 | Rehouse Locale + Utm out of contract.ts | 1 | returned | 1 | PARTIAL (orchestrator closed gap) | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | running | 0 | | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
@@ -53,7 +53,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 |----|----------|-----------|-----------|---------|
 | C1 | T1 | T6,T7,T8,T11,T12 | Section stylesheets at src/styles/sections/<section>.css, imported by paper.css in current cascade order. Only T1 edits the index. | |
 | C2 | T2 | T5,T6,T7,T8,T11 | Per-locale section modules at src/content/<locale>/<section>.ts, each default-exporting its slice. Content interface shape unchanged. | |
-| C3 | T3 | T2,T6,T10 | Locale and Utm exported from src/lib/types.ts ONLY. contract.ts imports them as any other consumer. | |
+| C3 | T3 | T2,T6,T10 | Locale and Utm exported from src/lib/types.ts ONLY. contract.ts imports them as any other consumer. | YES |
 | C4 | T4 | T7,T8,T11,T12 | One interaction vocabulary: --ix-lift, --ix-press, --ix-ring, --ix-curve. No component declares its own hover shadow or transition curve. | |
 | C5 | T5 | T8 | Trial copy exports { stops, terms, included } from src/content/<locale>/trial.ts. T8 renders it, does not rewrite it. | |
 
@@ -74,6 +74,15 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 ## Verification log
 | Task | Attempt | Verdict | Gaps | Action |
 |------|---------|---------|------|--------|
+| T3 | 1 | PARTIAL | Two files outside T3's declared boundary still imported Locale/Utm from contract: src/LocalePage.tsx:3 and src/components/Qualifier.tsx:3-12. Tree was red (tsc exit 2, 4 errors). Agent correctly stopped at its boundary rather than reaching outside it — the scoping error was mine, T3's `owns` list should have included both. | Orchestrator applied the two import fixes between waves (neither file was owned by a live agent). Verified: `tsc -b --noEmit` exit 0, multiline-aware scan finds zero residual Locale/Utm imports from contract, zero emitted .js. Independent verifier launched. |
+
+### Carried forward to T6 (raised by T3, important)
+T3 did NOT make `contract.ts` free-standing-deletable — it only made the `Locale`/`Utm` half safe.
+`src/lib/attribution.ts` still legitimately imports `Market` and `Source` from contract, and
+`src/lib/analytics.ts` still imports `Market`. Both modules SURVIVE the funnel deletion. So T6 cannot
+simply delete contract.ts: it must first rehouse `Market` and `Source` (they belong in `src/lib/types.ts`
+alongside Locale/Utm, or be inlined into attribution). If T6 deletes contract.ts without doing this,
+attribution and analytics break and the page stops building.
 
 ## Coherence audit
 <pending — phase 6>
