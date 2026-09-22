@@ -38,8 +38,8 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T2 | Split content into per-section modules | 1 | verified | 1 | PASS | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | verified | 1 | PARTIAL -> PASS (fix applied) | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
-| T5 | Extract trial copy before deletion | 2 | retrying | 1 | PARTIAL | src/content/*/trial.ts | src/content/*/trial.ts |
-| T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
+| T5 | Extract trial copy before deletion | 2 | verified | 2 | PARTIAL -> PASS (retry) | src/content/*/trial.ts | src/content/*/trial.ts |
+| T6 | Delete the dead funnel | 2 | running | 0 | | removals | +Price.tsx, LocalePage.tsx, content price/numbers/form/results, sections css (SCOPE AMENDED) |
 | T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
 | T8 | Pricing tiers section | 3 | pending | 0 | | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
 | T9 | Wire trial CTA + analytics | 3 | held | 0 | | CTA wiring | Hero/Tiers CTA blocks, src/lib/env.ts |
@@ -183,6 +183,18 @@ rather than pass, or require an explicit opt-out constant so disarming it is a d
   controls on light ground, 16 already ring the passing `#8a5200`; these are the stragglers.
 - **`.on-dark` is applied in zero .tsx files**, so every dark-ground token flip is currently dead code. A `.btn`
   dropped on a charcoal band today rings at 2.46:1. T7/T8/T11 must wrap dark bands in `class="on-dark"`.
+
+### SCOPE AMENDMENT — T6 (orchestrator, before launch)
+`Price.tsx` was not in T6's declared `owns`, but T6 strips the whole-firm model out of `src/lib/offer.ts`, from
+which `Price.tsx` imports eleven named symbols. Deleting one without the other cannot build, so the two cannot
+be separated and the granularity rule says merge rather than split. T6's boundary is widened to the whole dead
+funnel: `Price.tsx`, its content modules, its section stylesheet, and its removal from `LocalePage`.
+The replacement pricing section is still T8's to build; T6 only removes.
+
+### "Nothing to install" — product claim confirmed
+Checked in the product repository rather than assumed: mailbox connection is an OAuth consent against a
+Microsoft app registration (`apps/api/src/handlers/startMailboxConnect.ts`), and there is no add-in, no
+`manifest.xml` and no `office.js` anywhere in `apps/` or `packages/`. Nothing is installed on a user's machine.
 
 ## Coherence audit
 <pending — phase 6>
