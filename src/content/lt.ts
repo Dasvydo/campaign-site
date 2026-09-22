@@ -52,7 +52,7 @@ export const lt: Content = {
       sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
     },
 
-    setup: 'Veikia mūsų serveriuose arba įdiegiame Jūsų.',
+    setup: 'DoviLoop veikia mūsų serveriuose arba įdiegiame jį Jūsų.',
 
     bar: {
       text: 'Trunka mažiau nei minutę, kortelės neprašome.',
@@ -73,7 +73,7 @@ export const lt: Content = {
   demo: {
     eyebrow: 'Išnagrinėtas pavyzdys',
     title: 'Vienas iš keturiasdešimties',
-    lede: 'Juodraštis parašytas iš to, ką biuras jau turi byloje.',
+    lede: 'Juodraštis parašytas iš to, ką įmonė jau turi byloje.',
     noJs: 'Reikia JavaScript. Laiškas, juodraštis ir stabdys sako tą patį bet kuriuo atveju.',
     fromLabel: 'Nuo',
     subjectLabel: 'Tema',
@@ -90,7 +90,7 @@ export const lt: Content = {
     draftStamp: 'Juodraštis',
     sentChip: 'Išsiuntėte Jūs, 08:41',
     dealLabel: 'Kitas laiškas',
-    payoff: 'Iš šio biuro niekas neišėjo, kol nepaspaudėte siųsti. Kito kelio laukan nėra.',
+    payoff: 'Iš šios įmonės niekas neišėjo, kol nepaspaudėte siųsti. Kito kelio laukan nėra.',
     editNote: 'Jūs jį pakeitėte prieš išsiunčiant. Būtent taip atrodo pirma savaitė.',
     reLabel: 'Dėl',
     close: {
@@ -156,11 +156,11 @@ export const lt: Content = {
           },
           {
             key: 'tone',
-            label: 'biuro rašymo maniera',
+            label: 'įmonės rašymo maniera',
             count: 'tonas',
-            name: 'biuro rašymo maniera',
+            name: 'įmonės rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
-            on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
+            on: 'Įmonės tonas įjungtas. Juodraštis vėl skamba įmonės balsu.',
           },
         ],
         salutation:
@@ -247,11 +247,11 @@ export const lt: Content = {
           },
           {
             key: 'tone',
-            label: 'biuro rašymo maniera',
+            label: 'įmonės rašymo maniera',
             count: 'tonas',
-            name: 'biuro rašymo maniera',
+            name: 'įmonės rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
-            on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
+            on: 'Įmonės tonas įjungtas. Juodraštis vėl skamba įmonės balsu.',
           },
         ],
         salutation:
@@ -338,11 +338,11 @@ export const lt: Content = {
           },
           {
             key: 'tone',
-            label: 'biuro rašymo maniera',
+            label: 'įmonės rašymo maniera',
             count: 'tonas',
-            name: 'biuro rašymo maniera',
+            name: 'įmonės rašymo maniera',
             off: 'Biuro tonas išjungtas. Tie patys faktai, sausesnė kalba.',
-            on: 'Biuro tonas įjungtas. Juodraštis vėl skamba biuro balsu.',
+            on: 'Įmonės tonas įjungtas. Juodraštis vėl skamba įmonės balsu.',
           },
         ],
         salutation:
@@ -390,7 +390,7 @@ export const lt: Content = {
 
   numbers: {
     eyebrow: 'Jūsų pačių skaičiavimas',
-    title: 'Kiek Jums lieka',
+    title: 'Kiek sutaupote',
     about: 'maždaug\u00a0',
     inputs: {
       people: { label: 'Žmonės, atsakantys į laiškus' },
@@ -478,8 +478,8 @@ export const lt: Content = {
         { id: 'firm', name: 'Firm', note: 'Viena kaina, kad ir kiek žmonių priimtumėte.' },
       ],
       feeLabel: 'Per mėnesį, visai įmonei',
-      peopleLabel: 'Apimami žmonės, iki',
-      draftsLabel: 'Juodraščiai per mėnesį, bendri',
+      people: { before: 'Iki ', after: ' žmonių' },
+      drafts: { before: 'Bendrai ', after: ' juodraščių per mėnesį' },
       note: 'Nė vienas skaičius nėra vienam žmogui. Juodraščiai bendri, ir niekas neturi savo atskiros kvotos, kuri galėtų baigtis.',
       under: { before: 'Mažesnė įmonė? ', link: 'doviloop.dev', after: ' daro tą patį gerokai pigiau.' },
       over: 'Didesnė įmonė? Parašykite, ir apskaičiuosime kainą.',

@@ -369,11 +369,19 @@ export function Price({
                       ) : null}
                       <span className="price-pkg-per">{firmFee.per}</span>
                     </span>
+                    {/* Both lines lead with their figure and mark it. These
+                        are the two numbers a reader is comparing across the
+                        two cards, and they used to trail their labels in the
+                        smallest type on the card, unmarked. */}
                     <span className="price-pkg-line">
-                      {c.price.packages.peopleLabel} {figure(p.covers)}
+                      {c.price.packages.people.before}
+                      <span className="price-pkg-fig-sm">{figure(p.covers)}</span>
+                      {c.price.packages.people.after}
                     </span>
                     <span className="price-pkg-line">
-                      {c.price.packages.draftsLabel} {figure(p.draftCap)}
+                      {c.price.packages.drafts.before}
+                      <span className="price-pkg-fig-sm">{figure(p.draftCap)}</span>
+                      {c.price.packages.drafts.after}
                     </span>
                     <span className="price-pkg-note">{row.note}</span>
                   </button>

@@ -62,6 +62,10 @@ const PARTS = [
   ['each thing it promises about accuracy', '#who .who-accuracy-list li'],
   ['the price band', '#price'],
   ['the package cards', '#price [data-price-pkg]'],
+  /* The head count and the draft allowance inside each card: four figures,
+     two per card, and the only basis a reader has for choosing one over the
+     other. */
+  ['the figures a reader picks a package by', '#price [data-price-pkg] .price-pkg-fig-sm'],
   ['where a firm too small is sent', '#price .price-pkgs-under a'],
   /* Each of the four obligations the trade asks for. They were four bulleted
      sentences and are one wrapped run now, which is exactly the kind of change
@@ -171,20 +175,47 @@ try {
           if (cs.clipPath && cs.clipPath !== 'none' && /inset\(\s*(100%|50%\s+50%)/.test(cs.clipPath)) {
             problems.push(`clip-path:${cs.clipPath}`); continue;
           }
-          /* Type the same colour as what is behind it. Walks up for the first
-             painted background, because a transparent element inherits one. */
+          /* Type the same colour as what is behind it.
+
+             The walk used to stop at the first background that was not fully
+             transparent and then read its RGB, alpha ignored. That is wrong
+             for any tint: the selected package card is painted
+             rgba(245,155,10,.08), an eight percent amber wash over a near
+             black card, and against amber type this read as amber on amber
+             and failed two figures that are perfectly legible on the page. A
+             tint is not what you see; what you see is the tint composited
+             over whatever is under it.
+
+             So every partly transparent layer is collected on the way up and
+             composited from the bottom, and the walk only stops at something
+             opaque. The `continue` in the covering check below already
+             skipped layers under .9 alpha for the same reason; this half of
+             the file had not caught up. */
+          const rgb = (v) => (v.match(/[\d.]+/g) || []).map(Number);
           const ink = cs.color;
-          let bgEl = el, bg = 'rgba(0, 0, 0, 0)';
-          while (bgEl && bg === 'rgba(0, 0, 0, 0)') {
-            bg = getComputedStyle(bgEl).backgroundColor;
+          const layers = [];
+          let bgEl = el;
+          while (bgEl) {
+            const c = getComputedStyle(bgEl).backgroundColor;
+            const [, , , a = 1] = rgb(c);
+            if (a > 0) layers.push(rgb(c));
+            if (a >= 0.99) break;
             bgEl = bgEl.parentElement;
           }
-          const rgb = (v) => (v.match(/[\d.]+/g) || []).map(Number);
+          /* Bottom up: the deepest opaque layer first, each tint over it. */
+          let out = layers.length ? layers[layers.length - 1].slice(0, 3) : undefined;
+          for (let i = layers.length - 2; i >= 0 && out; i -= 1) {
+            const [lr, lg, lb, la = 1] = layers[i];
+            out = [
+              lr * la + out[0] * (1 - la),
+              lg * la + out[1] * (1 - la),
+              lb * la + out[2] * (1 - la),
+            ];
+          }
           const [ir, ig, ib, ia = 1] = rgb(ink);
-          const [br, bgc, bb] = rgb(bg);
           if (ia === 0) { problems.push('text is transparent'); continue; }
-          if (br !== undefined && Math.abs(ir - br) + Math.abs(ig - bgc) + Math.abs(ib - bb) < 24) {
-            problems.push(`text ${ink} on ${bg}`); continue;
+          if (out && Math.abs(ir - out[0]) + Math.abs(ig - out[1]) + Math.abs(ib - out[2]) < 24) {
+            problems.push(`text ${ink} on rgb(${out.map((v) => Math.round(v)).join(', ')})`); continue;
           }
           /* Something painted over it.
 
@@ -296,6 +327,53 @@ try {
         marks.length ? marks.join(' | ') : `${MARKS.length} copies`);
       await ctx.close();
     }
+  }
+
+  /* The four figures on the package cards are marked, not just present.
+
+     They read "People covered, up to 10" and "Drafts a month, pooled 5,000":
+     label first, figure last, in the smallest type on the card and the same
+     colour as the words around it. A reader choosing between the two cards is
+     comparing exactly these four numbers, and they were the least visible
+     thing on either. The figure leads its line now and is drawn in amber, so
+     this checks the amber rather than the markup: a span that stopped being
+     marked would still be in the document and would still occupy a box. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+
+    const got = await page.evaluate(() => {
+      const figs = [...document.querySelectorAll('#price [data-price-pkg] .price-pkg-fig-sm')];
+      const amber = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-amber')
+        .trim()
+        .toLowerCase();
+      /* Resolve the token through the engine rather than string matching a
+         hex against an rgb(). */
+      const probe = document.createElement('span');
+      probe.style.color = amber || '#f59b0a';
+      document.body.appendChild(probe);
+      const want = getComputedStyle(probe).color;
+      probe.remove();
+      return {
+        n: figs.length,
+        unmarked: figs
+          .filter((f) => getComputedStyle(f).color !== want)
+          .map((f) => `${f.textContent} is ${getComputedStyle(f).color}`),
+        text: figs.map((f) => f.textContent).join(' '),
+        want,
+      };
+    });
+    check(
+      got.n === 4 && got.unmarked.length === 0,
+      '\n  both figures on both package cards are marked',
+      got.unmarked.length ? got.unmarked.join(' | ') : `${got.text} in ${got.want}`,
+    );
+    await page.close();
+    await ctx.close();
   }
 
   /* The two lines the founder asked to fit on one line.

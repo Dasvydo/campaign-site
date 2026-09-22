@@ -50,7 +50,7 @@ export const en: Content = {
       sr: 'Read the whole draft in the worked example.',
     },
 
-    setup: 'It runs on our servers, or we install it on yours.',
+    setup: 'DoviLoop runs on our servers, or we install it on yours.',
 
     bar: {
       /* It said "Five questions", which is the true count of the fields, while
@@ -76,7 +76,7 @@ export const en: Content = {
   demo: {
     eyebrow: 'Worked example',
     title: 'One of the forty',
-    lede: 'The draft is written from what the office already has on file.',
+    lede: 'The draft is written from what the company already has on file.',
     noJs: 'Needs JavaScript. The message, draft and gate read the same either way.',
     fromLabel: 'From',
     subjectLabel: 'Subject',
@@ -93,7 +93,7 @@ export const en: Content = {
     draftStamp: 'Draft',
     sentChip: 'Sent by you, 08:41',
     dealLabel: 'Next letter',
-    payoff: 'Nothing left this office until you pressed send. There is no other way out.',
+    payoff: 'Nothing left this company until you pressed send. There is no other way out.',
     editNote: 'You changed it before it went out. That is what the first week looks like.',
     reLabel: 'Re',
     close: {
@@ -159,11 +159,11 @@ export const en: Content = {
           },
           {
             key: 'tone',
-            label: 'the way the office writes',
+            label: 'the way the company writes',
             count: 'the tone',
-            name: 'the way the office writes',
+            name: 'the way the company writes',
             off: 'House tone off. Same facts, stiffer wording.',
-            on: 'House tone on. The draft reads in the office voice again.',
+            on: 'House tone on. The draft reads in the company voice again.',
           },
         ],
         salutation:
@@ -250,11 +250,11 @@ export const en: Content = {
           },
           {
             key: 'tone',
-            label: 'the way the office writes',
+            label: 'the way the company writes',
             count: 'the tone',
-            name: 'the way the office writes',
+            name: 'the way the company writes',
             off: 'House tone off. Same facts, stiffer wording.',
-            on: 'House tone on. The draft reads in the office voice again.',
+            on: 'House tone on. The draft reads in the company voice again.',
           },
         ],
         salutation:
@@ -341,11 +341,11 @@ export const en: Content = {
           },
           {
             key: 'tone',
-            label: 'the way the office writes',
+            label: 'the way the company writes',
             count: 'the tone',
-            name: 'the way the office writes',
+            name: 'the way the company writes',
             off: 'House tone off. Same facts, stiffer wording.',
-            on: 'House tone on. The draft reads in the office voice again.',
+            on: 'House tone on. The draft reads in the company voice again.',
           },
         ],
         salutation:
@@ -393,7 +393,7 @@ export const en: Content = {
 
   numbers: {
     eyebrow: 'Your own arithmetic',
-    title: 'What you keep',
+    title: 'What you save',
     about: 'about\u00a0',
     inputs: {
       people: { label: 'People who answer mail' },
@@ -484,8 +484,8 @@ export const en: Content = {
         { id: 'firm', name: 'Firm', note: 'One fee, however many you hire.' },
       ],
       feeLabel: 'Per month, whole firm',
-      peopleLabel: 'People covered, up to',
-      draftsLabel: 'Drafts a month, pooled',
+      people: { before: 'Up to ', after: ' people covered' },
+      drafts: { before: 'A pool of ', after: ' drafts a month' },
       note: 'Neither number is per person. The drafts are shared, and nobody has their own allowance to run out of.',
       under: { before: 'Smaller than that? ', link: 'doviloop.dev', after: ' does the same for much less.' },
       over: 'Bigger than that? Ask, and we will price it properly.',

@@ -483,10 +483,19 @@ export interface Content {
           above them for everyone else: pick by counting your people. */
       pick: string;
       rows: readonly { id: string; name: string; note: string }[];
-      /** Column headings. Neither carries a figure. */
+      /** The fee column's heading. Carries no figure. */
       feeLabel: string;
-      peopleLabel: string;
-      draftsLabel: string;
+      /** The two lines inside a package card, each wrapped around the figure
+          it is about rather than trailing it.
+
+          They read "People covered, up to 10" and "Drafts a month, pooled
+          5,000", label first and number last, which is the order a table
+          wants and the opposite of the order a card is read in. A reader
+          picking a package is comparing two numbers across two cards, and
+          both were the last thing on their line in the smallest type on the
+          card. The figure leads now, and is marked. */
+      people: { before: string; after: string };
+      drafts: { before: string; after: string };
       note: string;
       /** What a firm larger than the biggest package reads.
 

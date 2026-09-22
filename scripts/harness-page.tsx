@@ -449,8 +449,8 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       ]),
       ...packages().map((p): [string, string] => [
         `the ${p.id} card, with its coverage and pooled drafts`,
-        c.price.packages.peopleLabel + ' ' + figure(p.covers) +
-          c.price.packages.draftsLabel + ' ' + figure(p.draftCap),
+        c.price.packages.people.before + figure(p.covers) + c.price.packages.people.after +
+          c.price.packages.drafts.before + figure(p.draftCap) + c.price.packages.drafts.after,
       ]),
       /* The reason beside the price, with the cohort's size in it. */
       ...(capped && anyPlaceTaken

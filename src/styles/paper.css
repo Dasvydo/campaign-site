@@ -2352,6 +2352,11 @@
   font-variant-numeric:tabular-nums lining;
 }
 .price-pkg-line:first-of-type{ margin-top:10px }
+/* The head count and the draft allowance, which are the whole basis of
+   choosing one card over the other. Amber and a weight up, the same treatment
+   "Drafted out of:" and "What you give:" carry, so the two figures a reader is
+   comparing are the two things their eye lands on. */
+.price-pkg-fig-sm{ color:var(--amber); font-weight:600 }
 .price-pkg-note{ margin-top:8px; font-size:14px; line-height:1.5; color:var(--price-dim) }
 .price-pkgs-note{ margin-top:0 }
 

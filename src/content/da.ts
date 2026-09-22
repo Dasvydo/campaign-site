@@ -53,7 +53,7 @@ export const da: Content = {
       sr: 'Læs hele udkastet i det gennemgåede eksempel.',
     },
 
-    setup: 'Den kører på vores servere, eller vi sætter den op på jeres.',
+    setup: 'DoviLoop kører på vores servere, eller vi sætter det op på jeres.',
 
     bar: {
       text: 'Under et minut, intet kort.',
@@ -74,7 +74,7 @@ export const da: Content = {
   demo: {
     eyebrow: 'Gennemgået eksempel',
     title: 'En af de fyrre',
-    lede: 'Udkastet er skrevet ud fra det, kontoret allerede har på sagen.',
+    lede: 'Udkastet er skrevet ud fra det, virksomheden allerede har på sagen.',
     noJs: 'Kræver JavaScript. Mailen, udkastet og spærren siger det samme uanset hvad.',
     fromLabel: 'Fra',
     subjectLabel: 'Emne',
@@ -91,7 +91,7 @@ export const da: Content = {
     draftStamp: 'Udkast',
     sentChip: 'Sendt af dig, 08:41',
     dealLabel: 'Næste brev',
-    payoff: 'Intet forlod kontoret, før du trykkede send. Der er ingen anden vej ud.',
+    payoff: 'Intet forlod virksomheden, før du trykkede send. Der er ingen anden vej ud.',
     editNote: 'Du rettede det, før det blev sendt. Sådan ser den første uge ud.',
     reLabel: 'Vedr',
     close: {
@@ -104,7 +104,7 @@ export const da: Content = {
       allOff: 'Intet er slået til. Udkastet er fire intetsigende linjer.',
       restore: 'Alle fem er slået til igen. Udkastet er helt.',
       deal: 'Et nyt brev på bordet. Udkastet er tilbage, hvor det startede.',
-      sent: 'Sendt. Udkastet forlod kun kontoret, fordi du trykkede send.',
+      sent: 'Sendt. Udkastet forlod kun virksomheden, fordi du trykkede send.',
       edit: 'Udkastet kan rettes. Tryk Færdig, eller Escape, når du er klar.',
       done: 'Rettelsen er afsluttet. Dine ændringer er beholdt.',
       source: 'Kilde: ',
@@ -157,11 +157,11 @@ export const da: Content = {
           },
           {
             key: 'tone',
-            label: 'den måde kontoret skriver på',
+            label: 'den måde virksomheden skriver på',
             count: 'tonen',
-            name: 'den måde kontoret skriver på',
+            name: 'den måde virksomheden skriver på',
             off: 'Kontortonen er slået fra. Samme fakta, stivere sprog.',
-            on: 'Kontortonen er slået til. Udkastet lyder som kontoret igen.',
+            on: 'Kontortonen er slået til. Udkastet lyder som virksomheden igen.',
           },
         ],
         salutation:
@@ -248,11 +248,11 @@ export const da: Content = {
           },
           {
             key: 'tone',
-            label: 'den måde kontoret skriver på',
+            label: 'den måde virksomheden skriver på',
             count: 'tonen',
-            name: 'den måde kontoret skriver på',
+            name: 'den måde virksomheden skriver på',
             off: 'Kontortonen er slået fra. Samme fakta, stivere sprog.',
-            on: 'Kontortonen er slået til. Udkastet lyder som kontoret igen.',
+            on: 'Kontortonen er slået til. Udkastet lyder som virksomheden igen.',
           },
         ],
         salutation:
@@ -339,11 +339,11 @@ export const da: Content = {
           },
           {
             key: 'tone',
-            label: 'den måde kontoret skriver på',
+            label: 'den måde virksomheden skriver på',
             count: 'tonen',
-            name: 'den måde kontoret skriver på',
+            name: 'den måde virksomheden skriver på',
             off: 'Kontortonen er slået fra. Samme fakta, stivere sprog.',
-            on: 'Kontortonen er slået til. Udkastet lyder som kontoret igen.',
+            on: 'Kontortonen er slået til. Udkastet lyder som virksomheden igen.',
           },
         ],
         salutation:
@@ -391,7 +391,7 @@ export const da: Content = {
 
   numbers: {
     eyebrow: 'Jeres eget regnestykke',
-    title: 'Hvad I beholder',
+    title: 'Hvad I sparer',
     about: 'cirka\u00a0',
     inputs: {
       people: { label: 'Personer, der svarer på mails' },
@@ -479,8 +479,8 @@ export const da: Content = {
         { id: 'firm', name: 'Firm', note: 'Én pris, uanset hvor mange I ansætter.' },
       ],
       feeLabel: 'Pr. måned, hele firmaet',
-      peopleLabel: 'Personer dækket, op til',
-      draftsLabel: 'Udkast om måneden, fælles',
+      people: { before: 'Op til ', after: ' personer dækket' },
+      drafts: { before: 'En pulje på ', after: ' udkast om måneden' },
       note: 'Ingen af tallene er pr. person. Udkastene er fælles, og ingen har deres egen kvote, der kan løbe tør.',
       under: { before: 'Mindre end det? ', link: 'doviloop.dev', after: ' gør det samme for meget mindre.' },
       over: 'Større end det? Spørg, så regner vi en pris ud til jer.',
