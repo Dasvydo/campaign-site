@@ -71,16 +71,31 @@ export function initMetaPixel(): void {
   window.fbq?.('init', id);
   window.fbq?.('track', 'PageView');
 
-  // The noscript fallback, also only when an ID exists.
-  const img = document.createElement('img');
-  img.height = 1;
-  img.width = 1;
-  img.style.display = 'none';
-  img.alt = '';
-  img.src = `https://www.facebook.com/tr?id=${encodeURIComponent(id)}&ev=PageView&noscript=1`;
-  const ns = document.createElement('noscript');
-  ns.appendChild(img);
-  document.body.appendChild(ns);
+  /* There used to be a <noscript> <img> beacon here, Meta's standard fallback
+     for visitors with JavaScript turned off. It was removed on 2026-09-22
+     because it could never do that job and was actively corrupting the count.
+
+     Two reasons, and the second is the one that cost us numbers.
+
+     It cannot help a visitor without JavaScript, because this whole file is
+     JavaScript. If the loader above ran, scripts are on, and the browser will
+     never render the contents of a <noscript> it just built. So the beacon was
+     unreachable for the only audience it existed to serve.
+
+     And setting `.src` on an element created by document.createElement fires
+     the request THERE AND THEN, while it is still detached. Parking it inside a
+     <noscript> afterwards does not unsend it. So every visitor WITH JavaScript
+     sent two PageViews for one page load - one from this beacon, one from fbq -
+     and neither carried an event_id, so Meta had nothing to deduplicate on.
+     Landing page views, and every ratio built on them, read about twice high.
+     Measured in a real browser, 2026-09-22.
+
+     There is no replacement, and that is deliberate rather than an omission. A
+     real no-JS beacon would have to be static markup in index.html, which would
+     fire before the visitor answered the consent notice - exactly the thing
+     consent.ts exists to prevent. A no-JS visitor is not counted. That is the
+     correct trade in DK and LT, and it is a rounding error next to counting
+     every other visitor twice. */
 }
 
 /** Mirrors a funnel step to Meta. No-ops when the pixel is inert or unconsented. */

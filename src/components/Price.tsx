@@ -34,12 +34,29 @@ import { Disclosure } from './Disclosure';
  * screen. It is a product metric and its meaning is two months old, so its
  * threshold is left exactly as it was.
  *
- * `onSeen` is the stricter one, and it feeds Meta. It needs 50% of the band
- * visible CONTINUOUSLY for two seconds, per campaigns/pixel-install.md in the
- * ad-engine repo. That dwell is the whole point: the pixel audience it builds
- * is the campaign's only high-intent pool, and counting everyone who scrolled
- * past the price on the way to the form would dilute it until it means nothing.
- * Scrolling away before the two seconds are up cancels it.
+ * `onSeen` is the stricter one, and it feeds Meta. It needs the band to cover
+ * the middle half of the screen CONTINUOUSLY for two seconds, per
+ * campaigns/pixel-install.md in the ad-engine repo. That dwell is the whole
+ * point: the pixel audience it builds is the campaign's only high-intent pool,
+ * and counting everyone who scrolled past the price on the way to the form
+ * would dilute it until it means nothing. Scrolling away before the two seconds
+ * are up cancels it.
+ *
+ * ⚠️ It used to ask for 50% of THE BAND, and on a phone that was unreachable.
+ * IntersectionObserver measures the ratio against the target's own area, so a
+ * target taller than the viewport can never exceed viewport / target however
+ * far you scroll. This band renders about 1,705px tall against an 844px phone,
+ * which caps the ratio at 0.49 against a gate of 0.50. Measured in a real
+ * browser on 2026-09-22: peak 0.494 on a 390x844 viewport, 0.684 on 1440x900.
+ * So ViewContent fired on desktop and NEVER on mobile, and mobile is where paid
+ * traffic lands - the high-intent pool was quietly not being built at all.
+ *
+ * Framing it the other way round fixes it for good. Shrinking the root by 25%
+ * top and bottom and asking only for any overlap means "the price band is what
+ * fills the middle of your screen", which is what the signal was always trying
+ * to say, and it holds on every viewport because it no longer divides by the
+ * height of the thing being measured. The same idiom is already used further
+ * down this file for the reveal.
  *
  * Both fire at most once per page load.
  */
@@ -118,7 +135,11 @@ export function Price({
           }
         }
       },
-      { threshold: 0.5 },
+      /* Not a ratio of the band. The root is cut to its middle half and any
+         overlap counts, so the test is "the price is what is on screen" rather
+         than "half of a band taller than the screen is on screen", which no
+         phone can ever satisfy. See the header note. */
+      { threshold: 0, rootMargin: '-25% 0px -25% 0px' },
     );
     obs.observe(node);
     return () => {

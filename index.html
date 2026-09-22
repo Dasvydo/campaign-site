@@ -32,12 +32,18 @@
          See BLOCKED.md entry 4.
          ================================================================== -->
     <noscript>
-      <!-- The pixel's <img> fallback is NOT here: src/lib/pixel.ts writes it
-           alongside the script, and only when an ID is present. Nothing about
-           the pixel is hardcoded in this file. The page a visitor without
-           JavaScript actually sees is the second <noscript>, in the body,
-           because the head's content model allows only link, style and meta
-           inside one and a <div> here would close the head early. -->
+      <!-- There is no <img> pixel beacon here, and there is none in pixel.ts
+           either any more. It was removed on 2026-09-22: it was firing for
+           every visitor WITH JavaScript, which doubled every PageView, and it
+           could never reach a visitor without. A static beacon here would fire
+           before the consent notice is answered, which is the one thing
+           consent.ts exists to prevent, so it is not coming back. See the long
+           note in src/lib/pixel.ts.
+
+           Nothing about the pixel is hardcoded in this file. The page a visitor
+           without JavaScript actually sees is the second <noscript>, in the
+           body, because the head's content model allows only link, style and
+           meta inside one and a <div> here would close the head early. -->
     </noscript>
   </head>
   <body>
