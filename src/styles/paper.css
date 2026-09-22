@@ -20,6 +20,21 @@
  * Tailwind's preflight already do that work.
  */
 
+@import './sections/rail.css';
+@import './sections/hero.css';
+@import './sections/phone-hero.css';
+@import './sections/who.css';
+@import './sections/demo.css';
+@import './sections/numbers.css';
+@import './sections/price.css';
+@import './sections/qualifier.css';
+@import './sections/footer.css';
+@import './sections/coherence.css';
+@import './sections/disclosure.css';
+@import './sections/tonal.css';
+@import './sections/consent.css';
+@import './sections/phone-overrides.css';
+
 :root {
   /* colour: aliases onto @theme, never literals */
   --cream: var(--color-cream);
@@ -59,18 +74,3 @@
   /* the hero tally is drawn by hand, group by group, slower than the page stagger */
   --stag-hand: 128ms;
 }
-
-@import './sections/rail.css';
-@import './sections/hero.css';
-@import './sections/phone-hero.css';
-@import './sections/who.css';
-@import './sections/demo.css';
-@import './sections/numbers.css';
-@import './sections/price.css';
-@import './sections/qualifier.css';
-@import './sections/footer.css';
-@import './sections/coherence.css';
-@import './sections/disclosure.css';
-@import './sections/tonal.css';
-@import './sections/consent.css';
-@import './sections/phone-overrides.css';
