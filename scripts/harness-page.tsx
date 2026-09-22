@@ -44,12 +44,10 @@ import type { PackageId } from '../src/lib/offer';
 import {
   VALUE,
   formatHours,
-  heroHoursBack,
   hourlyStart,
   hoursShown,
   keptFromDrafts,
   packageFor,
-  oneEmailIn,
   peopleRange,
   worthFromDrafts,
 } from '../src/lib/value';
@@ -455,13 +453,6 @@ const drivePoints = (): Array<[number, number, number, number]> => {
         c.price.packages.peopleLabel + ' ' + figure(p.covers) +
           c.price.packages.draftsLabel + ' ' + figure(p.draftCap),
       ]),
-      /* The one measured figure, assembled, wherever the accuracy block puts
-         it. This line was deleted once and nothing noticed, because nothing
-         asserted it; it is asserted now. */
-      [
-        'the accuracy block saying what share of mail gets a draft',
-        c.who.accuracy.share.before + figure(oneEmailIn()) + c.who.accuracy.share.after,
-      ],
       /* The reason beside the price, with the cohort's size in it. */
       ...(capped && anyPlaceTaken
         ? ([[

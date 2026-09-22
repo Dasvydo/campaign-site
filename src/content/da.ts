@@ -415,7 +415,7 @@ export const da: Content = {
       },
       {
         term: 'Minutter sparet pr. udkast',
-        def: 'Vores gæt, ikke en måling. At skrive et svar fra bunden tager omkring fem minutter; at læse et, der ligger klar, og trykke send tager omkring ét. Så fire er forskellen. Sæt jeres eget tal ind, hvis vores er forkert.',
+        def: 'Vores gæt, ikke en måling. At skrive et svar fra bunden tager omkring seks minutter; at læse et, der ligger klar, og trykke send tager omkring ét. Så fem er forskellen. Sæt jeres eget tal ind, hvis vores er forkert.',
       },
       {
         term: 'Hvad en time koster',
@@ -444,7 +444,6 @@ export const da: Content = {
         'Der er ingen automatisk afsendelse nogen steder i produktet. Et menneske læser hvert udkast og sender det selv.',
         'Et udkast citerer gebyret, fristen eller reglen fra jeres egne dokumenter, i jeres egne ord.',
       ],
-      share: { before: 'Målt på en rigtig postkasse: cirka én mail ud af ', after: ' fik et udkast.' },
     },
   },
 
@@ -476,7 +475,7 @@ export const da: Content = {
       pick: 'Vælg ved at tælle jeres folk.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Det mindste firma, vi sælger til.' },
-        { id: 'firm', name: 'Firm', note: 'Én pris for hele spændet. Den stiger ikke, når I ansætter.' },
+        { id: 'firm', name: 'Firm', note: 'Én pris, uanset hvor mange I ansætter.' },
       ],
       feeLabel: 'Pr. måned, hele firmaet',
       peopleLabel: 'Personer dækket, op til',
@@ -513,9 +512,9 @@ export const da: Content = {
 
     founding: {
       title: 'En byttehandel, ikke en rabat',
-      noProofYet: 'Vi har endnu ingen kunder at pege på.',
-      reason: { before: 'Prisen er så lav, fordi vi har brug for ', after: ' virksomheder, der vil sige, at det virker.' },
-      lock: 'Jeres pris ændrer sig ikke, så længe I bliver.',
+      noProofYet: 'Ingen kunder endnu.',
+      reason: { before: 'Lav pris for ', after: ' virksomheder, der vil gå god for det.' },
+      lock: 'Jeres pris stiger aldrig.',
       spots: { label: 'Ledige pladser tilbage:', of: ' af ' },
       spotsClosed: 'Pladserne, der fulgte med en byttehandel, er taget. Månedsprisen nedenfor er uændret; opsætningsprisen opkræves nu fuldt ud.',
       givesTitle: 'Det, I giver:',
@@ -544,7 +543,7 @@ export const da: Content = {
     stops: [
       {
         day: 'Dag 0',
-        note: 'Ét opsætningsmøde med den, der ved, hvad I bliver spurgt om. Så begynder udkastene.',
+        note: 'Ét møde med den, der kender svarene. Så begynder udkastene.',
         state: 'Intet faktureret endnu',
         say: {
           before: 'Dag 0. Ét opsætningsmøde, så begynder udkastene. Der faktureres ikke noget. Månedsprisen lyder på ',

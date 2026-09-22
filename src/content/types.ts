@@ -201,39 +201,6 @@ export interface Content {
         into three translations of the same sentence. The headline carries the
         outcome: what the reader ends up with, and when. */
     title: { before: string; mark: string; mid: string; after: string };
-    /** The one value figure the page states flatly, and the reason it may.
-        "<before><the hours handed back a month><after>": the drafts a firm of
-        that size would get, at the assumed minutes, on the largest package at
-        its own coverage and at the low end of the illustrative volume. It is
-        arithmetic on a stated volume and a stated assumption, not a claim
-        about anyone's staff or their cost.
-
-        It used to carry the break even hourly cost instead, and the sentence
-        read "it pays for itself if the people answering your email cost more
-        than about 5 EUR an hour". True, and useless: that is below the legal
-        minimum everywhere this page is sold, so the condition never fails and
-        the line reads as rhetoric rather than as the sum it is. The hours are
-        the same sum stopped one step earlier. See heroHoursBack in
-        src/lib/value.ts.
-
-        The figure is hedged with "about" in the copy, because it moves with
-        the volume and the minutes.
-
-        TWO SLOTS, NOT ONE, and the first is why. The head count was spelled
-        out in words in all three locale files, "a firm of twenty", with
-        nothing tying it to the coverage the hours were computed on. An
-        independent verifier moved that coverage to 25 and got a page reading
-        "a firm of twenty gets back about 51 hours a month": half derived, half
-        typed, and the typed half quietly contradicting the package the derived
-        half came from. Both figures are read from the offer and the model now,
-        the head count first and the hours second.
-
-        Both are pinned in scripts/verify-offer.mjs, which is what makes the
-        inflection safe: Danish and Lithuanian agree a noun with each of them,
-        so each translation is written for one pair of counts and the build
-        refuses a change that would move either without the endings being read
-        again. */
-
     /** The pile of letters, and the one dealt off the top of it.
 
         The card is the drafted reply rather than the message that asked for
@@ -454,13 +421,6 @@ export interface Content {
     accuracy: {
       title: string;
       items: readonly string[];
-      /** The one measured figure on this block, said quietly and said here
-          rather than beside the draft the reader has just watched appear.
-          It was a full sized line under the worked example, which put a
-          limitation in the loudest place on the page; it belongs with the
-          other limits. "<before><one in how many, as a count><after>", the
-          count derived from the measured share in src/lib/value.ts. */
-      share: { before: string; after: string };
     };
   };
 

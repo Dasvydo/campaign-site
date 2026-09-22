@@ -1040,12 +1040,6 @@
   border-radius:50%;
   background:var(--amber-text,#B4740E);
 }
-/* The measurement, hanging off the claim it qualifies rather than off the
-   list, so the two column grid above cannot separate them. */
-.who-accuracy-share{
-  display:block; margin:6px 0 0;
-  font-size:14px; line-height:1.5; color:var(--muted);
-}
 .who-pen{
   position:relative;
   display:inline-block;

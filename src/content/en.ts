@@ -417,7 +417,7 @@ export const en: Content = {
       },
       {
         term: 'Minutes saved on each draft',
-        def: 'Our guess, not a measurement. Writing a reply from nothing takes about five minutes; reading one that is ready and pressing send takes about one. So four is the gap. Put your own number in if ours is wrong.',
+        def: 'Our guess, not a measurement. Writing a reply from nothing takes about six minutes; reading one that is ready and pressing send takes about one. So five is the gap. Put your own number in if ours is wrong.',
       },
       {
         term: 'What an hour costs',
@@ -449,7 +449,6 @@ export const en: Content = {
         'There is no automatic send anywhere in this product. A person reads every draft and sends it themselves.',
         'A draft quotes the fee, the deadline or the rule out of your own documents, in your own wording.',
       ],
-      share: { before: 'Measured on a live mailbox: about one email in ', after: ' got a draft.' },
     },
   },
 
@@ -481,7 +480,7 @@ export const en: Content = {
       pick: 'Pick by counting your people.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'The smallest firm we sell to.' },
-        { id: 'firm', name: 'Firm', note: 'One fee across the whole band. It does not rise as you hire.' },
+        { id: 'firm', name: 'Firm', note: 'One fee, however many you hire.' },
       ],
       feeLabel: 'Per month, whole firm',
       peopleLabel: 'People covered, up to',
@@ -518,9 +517,9 @@ export const en: Content = {
 
     founding: {
       title: 'A trade, not a discount',
-      noProofYet: 'We have no customers to point at yet.',
-      reason: { before: 'Priced this low because we need ', after: ' firms who will say it works.' },
-      lock: 'Your price does not change while you stay.',
+      noProofYet: 'No customers yet.',
+      reason: { before: 'Priced low for ', after: ' firms who will vouch.' },
+      lock: 'Yours never rises.',
       spots: { label: 'Places still open:', of: ' of ' },
       spotsClosed: 'The places that came with a trade are taken. The monthly fee below does not change; the setup fee is now charged in full.',
       givesTitle: 'What you give:',
@@ -549,7 +548,7 @@ export const en: Content = {
     stops: [
       {
         day: 'Day 0',
-        note: 'One setup call with whoever knows what you get asked. Then drafts start.',
+        note: 'One call with whoever knows the answers. Then drafts start.',
         state: 'Nothing invoiced yet',
         say: {
           before: 'Day 0. One setup call, then the drafts start. Nothing is invoiced. The monthly fee reads ',

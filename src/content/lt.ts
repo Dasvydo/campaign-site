@@ -41,17 +41,6 @@ export const lt: Content = {
       mid: '. Iki ',
       after: ' val.',
     },
-    /* Two counts, two endings, and Lithuanian inflects around both.
-
-       The head count is the largest package's coverage, 20, which takes the
-       genitive plural: "dirba 20 zmoniu". The hours are what heroHoursBack
-       returns, 41, and 21, 31 and 41 take the SINGULAR, so it reads
-       "41 valanda" in the accusative and not "41 valandu".
-
-       Both counts are pinned in scripts/verify-offer.mjs. Moving either fails
-       the build, which is the only reason these endings are safe: they are
-       right for this pair and nothing else. */
-
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
       draftLabel: 'Atsakymo juodraštis, paruoštas',
@@ -425,7 +414,7 @@ export const lt: Content = {
       },
       {
         term: 'Sutaupytos minutės kiekvienam juodraščiui',
-        def: 'Mūsų spėjimas, ne matavimas. Parašyti atsakymą nuo nulio užtrunka apie penkias minutes; perskaityti jau parengtą ir paspausti siųsti - apie vieną. Taigi skirtumas yra keturios. Jei mūsų skaičius netinka, įrašykite savo.',
+        def: 'Mūsų spėjimas, ne matavimas. Parašyti atsakymą nuo nulio užtrunka apie šešias minutes; perskaityti jau parengtą ir paspausti siųsti - apie vieną. Taigi skirtumas yra penkios. Jei mūsų skaičius netinka, įrašykite savo.',
       },
       {
         term: 'Kiek kainuoja valanda',
@@ -454,7 +443,6 @@ export const lt: Content = {
         'Šiame produkte niekur nėra automatinio išsiuntimo. Kiekvieną juodraštį perskaito žmogus ir išsiunčia pats.',
         'Juodraštis cituoja mokestį, terminą ar taisyklę iš Jūsų pačių dokumentų, Jūsų pačių žodžiais.',
       ],
-      share: { before: 'Išmatuota tikroje pašto dėžutėje: juodraštį gavo maždaug vienas laiškas iš ', after: '.' },
     },
   },
 
@@ -486,7 +474,7 @@ export const lt: Content = {
       pick: 'Rinkitės suskaičiavę savo žmones.',
       rows: [
         { id: 'desk', name: 'Desk', note: 'Mažiausia įmonė, kuriai parduodame.' },
-        { id: 'firm', name: 'Firm', note: 'Viena kaina visam intervalui. Ji nekyla, kai priimate naujų žmonių.' },
+        { id: 'firm', name: 'Firm', note: 'Viena kaina, kad ir kiek žmonių priimtumėte.' },
       ],
       feeLabel: 'Per mėnesį, visai įmonei',
       peopleLabel: 'Apimami žmonės, iki',
@@ -523,9 +511,9 @@ export const lt: Content = {
 
     founding: {
       title: 'Mainai, o ne nuolaida',
-      noProofYet: 'Kol kas neturime klientų, į kuriuos galėtume parodyti.',
-      reason: { before: 'Kaina tokia žema, nes mums reikia ', after: ' įmonių, kurios pasakys, kad tai veikia.' },
-      lock: 'Jūsų kaina nesikeičia, kol liekate.',
+      noProofYet: 'Klientų kol kas nėra.',
+      reason: { before: 'Žema kaina pirmosioms ', after: ' įmonėms, kurios už tai laiduos.' },
+      lock: 'Jūsų kaina niekada nekyla.',
       spots: { label: 'Laisvų vietų dar yra:', of: ' iš ' },
       spotsClosed: 'Vietos, kurios ėjo kartu su mainais, jau užimtos. Mėnesinis mokestis žemiau nesikeičia; įdiegimo mokestis dabar taikomas visas.',
       givesTitle: 'Ką duodate Jūs:',
@@ -554,7 +542,7 @@ export const lt: Content = {
     stops: [
       {
         day: '0 diena',
-        note: 'Vienas įdiegimo pokalbis su tuo, kas žino, ko Jūsų klausiama. Tada pradeda rastis juodraščiai.',
+        note: 'Vienas pokalbis su tuo, kas žino atsakymus. Tada pradeda rastis juodraščiai.',
         state: 'Kol kas jokios sąskaitos',
         say: {
           before: '0 diena. Vienas įdiegimo pokalbis, tada pradeda rastis juodraščiai. Jokia sąskaita neišrašoma. Mėnesinis mokestis rodo ',

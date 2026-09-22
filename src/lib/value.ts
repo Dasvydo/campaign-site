@@ -112,7 +112,21 @@ function deepFreeze<T>(obj: T): T {
    Referencing the constants makes the drift unrepresentable rather than
    merely checked: move either one and the saving moves with it. The guard in
    `validateValue` stays as a second line, but it is no longer the only one. */
-const MINUTES_FROM_SCRATCH = 5;
+/* Six, not five, since 2026-09-22. Founder's call: the calculator should
+   open on five minutes saved rather than four, because four is a number
+   nobody arrives at on their own and the control is the reader's to move
+   anyway. Five saved is only reachable by moving one of these two, since the
+   saving is their difference and not a figure anybody may type. Six minutes
+   to write a substantive reply from nothing is the assumption that moved, and
+   it is the more defensible of the two: the worked example's letter quotes a
+   deposit rule, a deadline and a logged deduction, and one minute to read a
+   prepared reply and press send does not stretch any further than it already
+   does.
+
+   Both are still `basis: 'assumed'` and the page still says so in words. What
+   moves with this constant, automatically: the saving the calculator opens
+   on, the worked example's closing line, and the arithmetic disclosure. */
+const MINUTES_FROM_SCRATCH = 6;
 const MINUTES_TO_SEND = 1;
 
 export const VALUE: Value = deepFreeze({

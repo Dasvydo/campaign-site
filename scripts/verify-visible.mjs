@@ -294,6 +294,53 @@ try {
     }
   }
 
+  /* The two lines the founder asked to fit on one line.
+
+     Both were two lines when he read the page, and both are copy: nothing
+     stops the next edit putting the wrap back, and nothing would notice. A
+     character count would not do it either, because what matters is the box,
+     which is 676px for the reason and 333px for a package card, and both are
+     set in different type at different sizes. So it is measured, in a browser,
+     at the width he reviewed at. Below 1280 the reason's column narrows and it
+     wraps again, which is expected and not checked. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1920, height: 990 } });
+    const page = await ctx.newPage();
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+
+    const lines = (sel, nth) =>
+      page.evaluate(
+        ([sel, nth]) => {
+          const el = document.querySelectorAll(sel)[nth];
+          if (!el) return null;
+          const cs = getComputedStyle(el);
+          const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.4;
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          return {
+            n: Math.round(r.getBoundingClientRect().height / lh),
+            text: (el.textContent || '').replace(/\s+/g, ' ').trim(),
+          };
+        },
+        [sel, nth],
+      );
+
+    for (const [sel, nth, what] of [
+      ['#price .price-reason', 0, 'the reason the price is low'],
+      ['#price .price-pkg-note', 1, "the Firm card's note"],
+    ]) {
+      const got = await lines(sel, nth);
+      check(
+        got !== null && got.n === 1,
+        `\n  ${what} is one line at 1920`,
+        got === null ? `${sel} is not on the page` : `${got.n} line(s): ${JSON.stringify(got.text.slice(0, 64))}`,
+      );
+    }
+    await ctx.close();
+  }
+
   /* One size, said once.
 
      Section 04's two package cards and section 05's calculator were two

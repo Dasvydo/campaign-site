@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Content } from '../content/types';
-import { formatCount } from '../lib/offer';
-import { oneEmailIn } from '../lib/value';
 
 /**
  * Three folders on a desk, and the two things worth saying beside them.
@@ -180,17 +178,8 @@ export function WhoFor({ c }: { c: Content }) {
               to the claim it qualifies at every width, because it is part of
               it. */}
           <ul className="who-accuracy-list" aria-labelledby="who-accuracy-h">
-            {c.who.accuracy.items.map((item, i) => (
-              <li key={item}>
-                {item}
-                {i === 0 ? (
-                  <span className="who-accuracy-share">
-                    {c.who.accuracy.share.before}
-                    {formatCount(oneEmailIn(), c.htmlLang)}
-                    {c.who.accuracy.share.after}
-                  </span>
-                ) : null}
-              </li>
+            {c.who.accuracy.items.map((item) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
         </div>

@@ -374,37 +374,38 @@ check(valueProblems.length === 0, 'validateValue finds no problem',
    claim that these numbers are right forever; it is a demand that anyone who
    changes them goes and reads the two locale files. The comments at
    src/content/lt.ts:47 and src/content/types.ts name the endings involved. */
-/* The head count in that same hero sentence. It is the largest package's
-   coverage, and it is rendered from the offer rather than spelled out in the
-   copy, but Danish and Lithuanian still agree a noun with it ("20 ansatte",
-   "dirba 20 zmoniu"). Pinned for the same reason as the hours below. */
-check(headlinePackage().covers === 20,
-  'the hero head count is still the count the da and lt endings were written for',
-  `covers is ${headlinePackage().covers}; if this moved, re-read the payback endings in lt.ts and da.ts`);
-check(value.heroHoursBack() === 41,
-  'the hero hours are still the count the da and lt endings were written for',
-  `heroHoursBack() is ${value.heroHoursBack()}; if this moved, re-read the endings in lt.ts and da.ts`);
-/* A tripwire, and it is worth being exact about what kind.
- *
- * This pin shipped claiming a grammatical reason: that Lithuanian's case after
- * "is" had been written for seven. An independent verifier checked and it is
- * false. "Is" governs the genitive for every numeral, the count renders as a
- * digit in all three languages, and no character of any of the three sentences
- * changes with N. Inventing a convention to justify a guard is the same fault
- * a verifier found in the T30 comment, and it is worse here because it would
- * have taught the next person a rule about a language they may not read.
- *
- * The real reason to pin it: the sentence says "about one email in N GOT a
- * draft", which is a claim about a measurement taken on a particular mailbox
- * on a particular day. If the rate moves, the sentence is still grammatical
- * and still wrong, and no automated check can see that. This stops the build
- * and makes a person re-read the copy. */
-check(value.oneEmailIn() === 7,
-  'the accuracy block still prints the count the measured line was written around',
-  `oneEmailIn() is ${value.oneEmailIn()}; the share line in en.ts, da.ts and lt.ts was written for 7, so re-read all three before moving on`);
-check(value.VALUE.minutesFromScratch.value === 5,
+/* The hero's hours sentence used to be pinned here, twice: the head count and
+   the hours, each with the Danish and Lithuanian ending written for it. The
+   founder had that whole sentence taken off the hero, so there are no endings
+   left for either pin to protect. A guard that names copy which no longer
+   exists is worse than no guard: it passes, it reads like coverage, and the
+   next person to move a figure trusts it. Both are gone. The offer ceiling is
+   still checked, on its own terms, further down (`maxCovers()`).
+
+   `heroHoursBack` and `heroBreakEvenHourly` in src/lib/value.ts are dead with
+   it. Nothing renders either one. They are left in place rather than removed
+   in a copy pass, and they are the next thing to delete. */
+/* The measured share line ("about one email in 7 got a draft") was pinned
+   here, because the sentence is a claim about one mailbox on one day and no
+   automated check can see it go stale. The founder had the line removed from
+   all three locales on 2026-09-22, so the pin now names a sentence that is not
+   on the page. `oneEmailIn` in src/lib/value.ts has no caller left either.
+   Removed rather than weakened, for the same reason as the hero pins above.
+
+   This one is real and stays. The worked example's close renders the count
+   inside a noun phrase that Danish and Lithuanian each inflect, and the
+   calculator's arithmetic disclosure spells the same two figures out in
+   words in all three languages.
+
+   Moved from 5 to 6 on 2026-09-22, and both endings were read before it
+   moved. Danish `markEnd` is ' minutter', which is the plural for five and
+   for six alike. Lithuanian is ' minučių', the genitive plural, which 5 and 6
+   both take. Neither string changes. The prose in `numbers.basis` did change,
+   in all three files, because it spells out both halves of the subtraction
+   and the result. */
+check(value.VALUE.minutesFromScratch.value === 6,
   'the worked example minutes are still the count the da and lt endings were written for',
-  `minutesFromScratch is ${value.VALUE.minutesFromScratch.value}; if this moved, re-read closeBasis in lt.ts and da.ts`);
+  `minutesFromScratch is ${value.VALUE.minutesFromScratch.value}; if this moved, re-read demo.close.markEnd and numbers.basis in lt.ts and da.ts`);
 
 const lead = headlinePackage();
 check(lead.id === OFFER.order[OFFER.order.length - 1],
