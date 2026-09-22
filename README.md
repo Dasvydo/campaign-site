@@ -222,8 +222,13 @@ it, neither of which ships. To use a supplied file instead, drop it at
 
 PostHog, EU host. Eight events, named exactly as the campaign spec fixes them:
 
-`page_view` · `demo_desk` · `pricing_view` · `form_start` · `form_submit` ·
-`qualified_shown` · `too_small_shown` · `booking_click`
+`page_view` · `demo_desk` · `pricing_view` · `booking_click`
+
+The five form events (`form_start`, `form_step`, `form_submit`, `qualified_shown`,
+`too_small_shown`) went with the fit-check form. `pricing_view` is declared and
+deliberately not raised yet: the pricing band is being rebuilt. `verify:payload`
+reads the live set out of the `EventName` union rather than from this list, so a
+name added here that nothing raises does not make the gate pass.
 
 Every event carries `market`, `locale`, `utm_source`, `utm_medium`,
 `utm_campaign` and `utm_content`. Those properties are how the three-market A/B

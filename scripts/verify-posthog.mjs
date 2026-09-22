@@ -11,6 +11,12 @@
  * entire on-page funnel - was posted at a host that does not know the key, and
  * silently dropped.
  *
+ * That list is the funnel as it stood on the day, and is left as it was: it is
+ * an account of what was lost, not a register of what the page raises now.
+ * Five of those events went with the fit-check form. The live set is whatever
+ * `EventName` in src/lib/analytics.ts declares, which verify-payload.mjs reads
+ * from the union itself rather than from a copy kept here.
+ *
  * Nothing caught it, and nothing was going to. analytics.ts swallows its own
  * errors on purpose, because a broken analytics library must never break a
  * landing page. PostHog's capture endpoint answers `{"status":"Ok"}` to anything

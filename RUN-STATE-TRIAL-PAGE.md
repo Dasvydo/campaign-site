@@ -39,7 +39,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | verified | 1 | PARTIAL -> PASS (fix applied) | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | verified | 2 | PARTIAL -> PASS (retry) | src/content/*/trial.ts | src/content/*/trial.ts |
-| T6 | Delete the dead funnel | 2 | running | 0 | | removals | +Price.tsx, LocalePage.tsx, content price/numbers/form/results, sections css (SCOPE AMENDED) |
+| T6 | Delete the dead funnel | 2 | verified | 1 | PARTIAL -> PASS (coverage restored) | removals | +Price.tsx, LocalePage.tsx, content price/numbers/form/results, sections css (SCOPE AMENDED) |
 | T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
 | T8 | Pricing tiers section | 3 | pending | 0 | | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
 | T9 | Wire trial CTA + analytics | 3 | held | 0 | | CTA wiring | Hero/Tiers CTA blocks, src/lib/env.ts |
@@ -195,6 +195,32 @@ The replacement pricing section is still T8's to build; T6 only removes.
 Checked in the product repository rather than assumed: mailbox connection is an OAuth consent against a
 Microsoft app registration (`apps/api/src/handlers/startMailboxConnect.ts`), and there is no add-in, no
 `manifest.xml` and no `office.js` anywhere in `apps/` or `packages/`. Nothing is installed on a user's machine.
+
+### Carried forward to T7 (raised by T6's verifier) — USER-FACING, not a doc nit
+**`index.html`'s no-JS fallback still sells the deleted funnel.** Lines 63-95 tell a visitor with scripting off
+"This page needs JavaScript to run the fit check" and "For teams of 10 or more". Neither is true any more: there
+is no fit check, and the offer is per-seat self-serve. This is the one surface a search engine reads without
+script, and `verify:visible` green-lights it because it only asserts the block is >200 chars, mentions
+JavaScript, and carries a mailto. T7 owns the hero message, so it should write this block to match — and the
+gate should then assert something about its CONTENT, not just its length.
+
+### Carried forward to T8 (raised by T6's verifier)
+- **`Disclosure.tsx` is orphaned but deliberately kept.** Its only importers were the deleted Price and Numbers.
+  `trial.termsLabel` ("Show the terms") and `trial.included.title` are exactly the two disclosures it renders,
+  and `sections/disclosure.css` still ships. Use it; do not rewrite it. It tree-shakes out until something does.
+- **`src/content/types.ts` trial doc comment is stale** — still says "price still renders, and still owns its own
+  copy, until the whole firm model is taken off the page." The price section is gone. One-line fix.
+- **`offer.ts` now exports only formatters.** No `OFFER`, no `PackageId`, no `packages()`, no validator, and the
+  `prebuild` hook that guarded the old one has been removed. The new pricing data module starts from an empty
+  file and will want its own guard re-added.
+- `booking_click` still fires from the hero on a press that navigates nowhere, so PostHog records intent that
+  produced no movement for as long as the interim lasts. T9 renames the event when it repoints the CTA.
+
+### Known-broken, left deliberately
+`scripts/verify-browser.py` (520 lines, manual, not in `package.json`, not in CI) drives the deleted form in
+three of its sections and now **fails loudly** rather than passing green, which is the safe direction. Its other
+sections — layout at 360/768/1280, the 16px input rule, pixel call ordering, UTM persistence across a History
+navigation — still have live subjects and are worth recovering. Needs a decision, not a silent deletion.
 
 ## Coherence audit
 <pending — phase 6>

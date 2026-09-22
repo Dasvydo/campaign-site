@@ -69,13 +69,6 @@ const server = createServer((req, res) => {
     raw += chunk;
   });
   req.on('end', () => {
-    if (req.url === '/api/lead-fail') {
-      console.log('[mock] deliberate 500 on /api/lead-fail');
-      res.writeHead(500, { ...cors, 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'deliberate failure for retry testing' }));
-      return;
-    }
-
     let body;
     try {
       body = JSON.parse(raw);
@@ -88,6 +81,12 @@ const server = createServer((req, res) => {
     const problems = validate(body);
     const record = {
       received_at: new Date().toISOString(),
+      /* Which endpoint took it. `/api/lead-fail` answers 500 on purpose so the
+         retry can be exercised, and those attempts are recorded here rather
+         than dropped: a gate that only sees the attempt that succeeded cannot
+         tell one POST from two, and so cannot tell a working retry from a
+         missing one. */
+      path: req.url,
       dedupe: req.headers['x-doviloop-dedupe'] ?? null,
       /* The one the real webhook actually dedupes on. It reads the body, not
          the header, which is how a retry was able to make a second lead. */
@@ -98,6 +97,15 @@ const server = createServer((req, res) => {
     };
 
     if (LOG) appendFileSync(LOG, JSON.stringify(record) + '\n');
+
+    /* Answered after the record is written, not before, so the attempts that
+       fail are on the wire too. */
+    if (req.url === '/api/lead-fail') {
+      console.log('[mock] deliberate 500 on /api/lead-fail');
+      res.writeHead(500, { ...cors, 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'deliberate failure for retry testing' }));
+      return;
+    }
 
     if (problems.length === 0) {
       console.log(`[mock] received  ${Object.keys(body).length} keys  dedupe ${record.dedupe_in_body ?? 'none'}`);

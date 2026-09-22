@@ -43,7 +43,8 @@ jobs:
       - name: npm run verify
         run: npm run verify
 
-      # `prebuild` runs verify:offer again on the way in, which is the point:
+      # `prebuild` no longer runs a gate: verify:offer asserted the whole-firm fee,
+      # the two packages and the founding cohort, none of which are on the page now.
       # a build that would ship a broken offer must not produce a bundle.
       - name: Build
         run: npm run build

@@ -246,7 +246,7 @@ export interface Content {
         is followed immediately by "minutes", "minutter" or "minuciu", a noun
         that has to agree with it. The claim was copied from the `share` slot
         below, where it is true. The endings written here are correct for the
-        one count that renders, and scripts/verify-offer.mjs pins that count, so
+        one count that renders, and scripts/verify-payload.mjs pins that count, so
         moving it fails the build rather than shipping bad grammar in a language
         the person moving it may not read. */
     /** The example's closing line, split so the highlighter can fall on the

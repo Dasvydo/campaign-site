@@ -376,6 +376,52 @@ async function main() {
     check(w.__RECOVERY__.flush?.sent === 1, 'the queued lead is delivered on the next load');
     check(w.__RECOVERY__.queuedAfterFlush === 0, 'and the queue is emptied afterwards');
 
+    /* What actually went over the wire, read back from the mock's own log
+       rather than from what the page says it did.
+
+       This is the one mechanism in lead.ts that was paid for in production. A
+       probe on 2026-09-21 established that the live webhook dedupes on the
+       BODY and ignores the header, so a retry sending the id as a header only
+       created a second lead every time it fired. The coverage for it was
+       written against the fit-check form, and when that form was deleted the
+       driver went with it - but the mechanism did not, and for one commit the
+       suite could not tell the fixed behaviour from the broken one. Asserted
+       here against the transport instead, so it no longer depends on which
+       form is sending. */
+    const wire = readFileSync(LOG, 'utf8')
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+      .map((l) => JSON.parse(l));
+
+    check(wire.length > 0, 'the recovery pass reached the endpoint at all', `${wire.length} POST(s)`);
+    check(
+      wire.every((r) => typeof r.dedupe_in_body === 'string' && r.dedupe_in_body.length > 0),
+      'every POST carries dedupe_id in the body, which is what the webhook reads',
+      wire.map((r) => r.dedupe_in_body ?? 'MISSING').join(' '),
+    );
+
+    /* A retry must reuse its id, or the webhook cannot recognise the second
+       attempt as the same lead and creates a duplicate - which is the failure
+       the live probe found.
+
+       The other half of the property, that two DIFFERENT leads get different
+       ids, is deliberately not asserted here: this pass submits one lead and
+       watches it fail twice and then flush, so every POST on the wire belongs
+       to that one lead and a single id across all three is the correct
+       result. Asserting distinctness against this fixture would fail on
+       working code. It wants a second lead to be meaningful, and the fixture
+       does not send one. */
+    const attempts = wire.filter((r) => r.path === '/api/lead-fail');
+    if (attempts.length > 1) {
+      const ids = new Set(attempts.map((r) => r.dedupe_in_body));
+      check(
+        ids.size === 1,
+        'a retry reuses the same id, so the webhook can recognise it',
+        `${attempts.length} attempts, ${ids.size} distinct`,
+      );
+    }
+
     /* 5. static checks on the content files -------------------------------- */
     console.log('\nContent files');
     for (const f of ['en', 'da', 'lt']) {
