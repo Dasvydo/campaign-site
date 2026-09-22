@@ -402,7 +402,7 @@ export const lt: Content = {
       hours: { label: 'Valandų, kurias atgaunate:' },
       worth: { label: 'Kiek tos valandos Jums kainuoja šiandien:' },
       fee: { before: 'Tai kainuoja (', after: '):' },
-      keep: { label: 'Jums lieka:' },
+      keep: { label: 'Sutaupote:' },
     },
     units: { hours: '\u00a0val.', perMonth: ' per mėnesį', perHour: ' už valandą' },
     yearLabel: 'Per metus:',

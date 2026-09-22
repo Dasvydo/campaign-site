@@ -405,7 +405,7 @@ export const en: Content = {
       hours: { label: 'Hours handed back:' },
       worth: { label: 'What those hours cost you today:' },
       fee: { before: 'This costs (', after: '):' },
-      keep: { label: 'You keep:' },
+      keep: { label: 'You save:' },
     },
     units: { hours: '\u00a0h', perMonth: ' a month', perHour: ' an hour' },
     yearLabel: 'Over a year:',

@@ -403,7 +403,7 @@ export const da: Content = {
       hours: { label: 'Timer, I får tilbage:' },
       worth: { label: 'Hvad de timer koster jer i dag:' },
       fee: { before: 'Det her koster (', after: '):' },
-      keep: { label: 'I beholder:' },
+      keep: { label: 'I sparer:' },
     },
     units: { hours: '\u00a0t', perMonth: ' om måneden', perHour: ' i timen' },
     yearLabel: 'Over et år:',

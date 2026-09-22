@@ -399,12 +399,17 @@ export interface Content {
           name is the one the price band prints for the package the head
           count lands on, so the two sections call it the same thing. */
       fee: { before: string; after: string };
+      /** The last row, and the one the section is named after. It said "You
+          keep:" under a heading that said "What you keep"; both are "save"
+          since 2026-09-22, so the row and the heading go on agreeing. The key
+          stays `keep` because renaming it would touch the pin strip, the live
+          region and three locale files to say nothing new. */
       keep: { label: string };
     };
     /** Units the figures wear. Neither inflects in any of the three
         languages, which is what makes a bare unit beside a numeral safe. */
     units: { hours: string; perMonth: string; perHour: string };
-    /** "Over a year:", then the kept figure times twelve. */
+    /** "Over a year:", then the saved figure times twelve. */
     yearLabel: string;
     /** Printed in place of the year line where the sum comes out below zero.
         The page says it does not clear rather than hiding the row. */
