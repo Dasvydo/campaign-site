@@ -38,7 +38,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T2 | Split content into per-section modules | 1 | verified | 1 | PASS | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | verified | 1 | PARTIAL -> PASS (fix applied) | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
-| T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
+| T5 | Extract trial copy before deletion | 2 | retrying | 1 | PARTIAL | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
 | T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
 | T8 | Pricing tiers section | 3 | pending | 0 | | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
@@ -55,13 +55,50 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | C2 | T2 | T5,T6,T7,T8,T11 | Per-locale section modules at src/content/<locale>/<section>.ts, each exporting its slice as a named export. Content interface shape unchanged. | YES |
 | C3 | T3 | T2,T6,T10 | Locale and Utm exported from src/lib/types.ts ONLY. contract.ts imports them as any other consumer. | YES |
 | C4 | T4 | T7,T8,T11,T12 | One interaction vocabulary: --ix-lift, --ix-press, --ix-ring, --ix-curve (+10 supporting --ix-* listed in the file header). No component declares its own hover shadow or transition curve. Wrap dark-band blocks in class="on-dark" to flip all six dark-ground values at once. | YES |
-| C5 | T5 | T8 | Trial copy exports { stops, terms, included } from src/content/<locale>/trial.ts. T8 renders it, does not rewrite it. | |
+| C5 | T5 | T8 | Trial copy exports { whenTitle, stops, termsLabel, terms, included, ctaNote } from src/content/<locale>/trial.ts. T8 renders it, does not rewrite it. AMENDED from { stops, terms, included }: the three extra keys are the heading, the disclosure label and the CTA note, each with an exact counterpart in the price block being rescued. Without them T8 would have to write English and break C5 in spirit. | YES (amended) |
 
 ## Hard stops
 | ID | Category | Status | Resolved by |
 |----|----------|--------|-------------|
 | HS1 | External write / only conversion path — where "Start free trial" points | OPEN — T9 held | Founder confirms live app signup URL |
 | HS2 | Deploy / push / DNS | Standing — never on my initiative | Founder |
+| HS3 | Copy promises a billing behaviour nobody has decided — "No card, and nothing taken." | OPEN — blocks T8/T9 rendering it | Founder confirms whether self-serve signup takes a card |
+
+### HS3 — "No card, and nothing taken." (raised by T5's verifier)
+`trial.terms[1]` reads **"No card, and nothing taken." / "Payment details come later, and only if you keep it."**
+Under the old funnel this was simply true: a salesperson took details after a yes. Carried into self-serve it
+becomes an unverified promise about a signup flow that does not exist yet, and billing is explicitly out of
+scope for this run. Most 14-day self-serve trials DO take a card.
+
+**This is coupled to HS1.** Whichever signup "Start free trial" points at decides whether this sentence is
+true. If the live app's signup takes a card, the page lies on its most trust-bearing line — on a page whose
+entire asset is candour. T9 must not wire a signup that takes a card under a page that says it will not.
+
+### T5 flagged copy — recorded here rather than left in a commit body
+| Line | Concern | Status |
+|------|---------|--------|
+| `terms[0]` "The setup is included." / "It is not billed afterwards." | Contradicts `stops[0].note` "You set it up yourself" on the same screen — included by whom? Also promises unconditionally what `src/lib/offer.ts` still charges (`setupFee: 500`, waived only while founding places remain). `price.ts` carries the waiver condition and T6 deletes it. | **FIXING — T5 retry** |
+| `terms[1]` "No card, and nothing taken." | See HS3 above. | **BLOCKED on founder** |
+| `terms[3]` "No year to sign, and no notice period." | Replaced "no head count to keep up", which was an artefact of whole-firm flat pricing and would be false per-seat. Sound reasoning, tighter line — but a contractual promise nobody confirmed. | **Needs founder confirmation** |
+| `stops[2].day` 'Stop' + ' sooner' | Verifier verdict: acceptable, keep. "Stop any time" would be marginally stronger but collides with the note beneath it. | Keep |
+| `included.items[0]` "a place to add whatever it misses" | Surface confirmed real in the product repo (14-pillar coach + a queue that routes users to it). Wording is honest but inert where the original named a person. | Keep; T8 may improve |
+
+### Owed to T8 by this task
+- **The trial length figure does not exist anywhere.** `grep -ri trial src/lib/` finds nothing; `offer.ts` has no
+  trial length. `figure: 'start'` and `figure: 'end'` resolve to nothing until T8 adds it. The 14-day assumption
+  is recorded below and is the founder's choice, not a recovered value.
+- **Renderer shape:** `before + (figure === 'none' ? '' : n) + after`. Note `Price.tsx:415` uses `key={s.day}`
+  with `day` a string; a trial renderer needs `key={s.day.before + s.day.after}` or the index.
+- **Editorial, non-blocking:** the block's frame is money rather than value — six of seven uses of "invoic*" are
+  about billing, and only `stops[0]` says what the reader gets, under a heading that promises "What happens, and
+  when". Also "invoiced" is inherited sales vocabulary; self-serve normally says "charged". Both are conscious
+  choices to make, not defects.
+
+### Deferred, recorded so it is a decision rather than a coincidence
+`figure` is a machine key living in the locale copy tree. It escapes `audit-locales.mjs`'s untranslated-string
+check only because the generic option-value rule `/^[a-z0-9_]+$/` happens to swallow 'start'/'end'/'none'. That
+file's own comment about `isAudienceId` says this exact coincidence is unacceptable. T13 should add an explicit
+`isFigureKind` exemption.
 
 ## Assumptions made unattended
 | When | Task | Decision | Alternative not taken |
