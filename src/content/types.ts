@@ -608,6 +608,10 @@ export interface Content {
     emailPlaceholder: string;
     emailHint: string;
     emailFreeWarning: string;
+    /** The one optional field on the form. Back since 2026-09-22 after being
+        taken off on 2026-09-19; the payload key never left. */
+    phoneLabel: string;
+    phoneHint: string;
     teamSizeLabel: string;
     teamSizeOptions: SelectOption[];
     emailClientLabel: string;
@@ -637,6 +641,9 @@ export interface Content {
     submitting: string;
     required: string;
     invalidEmail: string;
+    /** Only shown when the optional number is filled in and has fewer than six
+        digits in it. An empty box is never an error. */
+    invalidPhone: string;
     privacyNote: string;
   };
 

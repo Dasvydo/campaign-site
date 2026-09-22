@@ -85,11 +85,15 @@ const check = (ok, label, detail = '') => {
   if (!ok) failures += 1;
 };
 
+/* `phone` is the optional field, so half of these leave it blank on purpose:
+   the point of the checks below is that a typed number arrives verbatim AND
+   that an empty box still submits, carrying ''. A scenario set where every
+   lead typed a number would prove only the first half. */
 const SCENARIOS = [
-  { name: '10-24 seats on Outlook', locale: 'en', team_size: '10-24', email_client: 'outlook', role: 'owner_partner', email: 'lars@vesterled.dk', expect: 'qualified' },
-  { name: '50+ seats on Gmail', locale: 'da', team_size: '50+', email_client: 'gmail', role: 'ops_office_manager', email: 'kontor@vesterled.dk', expect: 'gmail_on_request' },
-  { name: '25-49 seats on something else', locale: 'lt', team_size: '25-49', email_client: 'other', role: 'it_admin', email: 'admin@imone.lt', expect: 'gmail_on_request' },
-  { name: '1-9 seats, too small', locale: 'en', team_size: '1-9', email_client: 'outlook', role: 'other', email: 'someone@gmail.com', expect: 'too_small' },
+  { name: '10-24 seats on Outlook', locale: 'en', team_size: '10-24', email_client: 'outlook', role: 'owner_partner', email: 'lars@vesterled.dk', phone: '+45 31 42 55 90', expect: 'qualified' },
+  { name: '50+ seats on Gmail', locale: 'da', team_size: '50+', email_client: 'gmail', role: 'ops_office_manager', email: 'kontor@vesterled.dk', phone: '', expect: 'gmail_on_request' },
+  { name: '25-49 seats on something else', locale: 'lt', team_size: '25-49', email_client: 'other', role: 'it_admin', email: 'admin@imone.lt', phone: '+370 612 34567', expect: 'gmail_on_request' },
+  { name: '1-9 seats, too small', locale: 'en', team_size: '1-9', email_client: 'outlook', role: 'other', email: 'someone@gmail.com', phone: '', expect: 'too_small' },
 ];
 
 async function waitForMock(tries = 60) {
@@ -324,7 +328,10 @@ async function main() {
         );
       }
       check(p.deskCount === 3, `    the worked example offers three desks`, String(p.deskCount));
-      check(p.questionCount === 5, `    the qualifier asks exactly 5 questions`, String(p.questionCount));
+      /* Six controls, five of them required. The phone came back on
+         2026-09-22 and is the only one a reader may leave alone, which is
+         what keeps the form's own heading ("Three questions") true. */
+      check(p.questionCount === 6, `    the qualifier asks exactly 6 things, five of them required`, String(p.questionCount));
       /* Six across two screens, not six on one. The count above is the sum of
          a walk, so it needs the walk to have actually gone somewhere: without
          these three it would be satisfied by counting one screen twice. */
@@ -358,7 +365,7 @@ async function main() {
       );
       check(
         p.stepTwoIsTheDetails,
-        `    the second step asks the three contact details and nothing else`,
+        `    the second step asks the three contact details, the number marked optional`,
         p.stepTwoAsks.join(' | '),
       );
       check(p.backWorks, `    and Back returns to the questions`);
@@ -740,6 +747,29 @@ async function main() {
     check(
       received.every((r) => r.body.utm.source === 'meta' && r.body.utm.medium === 'paid_social' && r.body.utm.campaign === 'teams_launch_sept' && r.body.utm.content === 'static_a'),
       'UTM values ride along in the payload',
+    );
+    /* The number, which is the whole reason the field came back. It is the
+       only answer on the form that may be empty, so both halves are checked:
+       what was typed arrives untouched, and a blank box arrives as '' rather
+       than as a missing key, which is what the n8n validator was changed to
+       accept in 2019-09 and what it still expects. */
+    const phoneMismatch = received
+      .map((r) => {
+        const want = SCENARIOS.find(
+          (sc) => sc.team_size === r.body.team_size && sc.email_client === r.body.email_client,
+        )?.phone;
+        return r.body.phone === want ? null : `${JSON.stringify(r.body.phone)} for ${r.body.team_size}, wanted ${JSON.stringify(want)}`;
+      })
+      .filter(Boolean);
+    check(
+      phoneMismatch.length === 0,
+      'the number reaches the webhook exactly as it was typed',
+      phoneMismatch.length ? phoneMismatch.join(' | ') : received.map((r) => JSON.stringify(r.body.phone)).join(' '),
+    );
+    check(
+      received.some((r) => r.body.phone !== '') && received.some((r) => r.body.phone === ''),
+      'and a blank one still submits, as an empty string rather than a missing key',
+      received.every((r) => 'phone' in r.body) ? 'every payload carries the key' : 'a payload is missing the key entirely',
     );
     check(received.every((r) => r.dedupe), 'each POST carries an idempotency key header');
     /* The half that was missing, and that a live probe caught.

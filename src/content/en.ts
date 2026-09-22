@@ -589,6 +589,8 @@ export const en: Content = {
     emailHint: 'Only used to send the call details and the pilot agreement.',
     emailFreeWarning:
       'That looks like a personal address. It will still work, but a work address helps us find your firm before we speak.',
+    phoneLabel: 'Phone',
+    phoneHint: 'If you would rather we called than emailed. We will not use it for anything else.',
     teamSizeLabel: 'How many people handle email daily?',
     teamSizeOptions: [
       { value: '1-9', label: '1 to 9 people' },
@@ -619,6 +621,7 @@ export const en: Content = {
     submitting: 'One moment',
     required: 'This one is needed.',
     invalidEmail: 'That address does not look complete.',
+    invalidPhone: 'That does not look like enough digits for a number.',
     privacyNote: 'Used to prepare for the call. No list, no resale.',
   },
 

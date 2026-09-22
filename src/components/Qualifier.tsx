@@ -41,7 +41,7 @@ import { Mark } from './Hero';
    ever complain about a field the reader can see. */
 const STEP_FIELDS: Record<1 | 2, readonly FieldName[]> = {
   1: ['team_size', 'email_client', 'role'],
-  2: ['company_name', 'work_email'],
+  2: ['company_name', 'work_email', 'phone'],
 };
 
 /* Free providers get a soft warning, never a block. Someone at a ten person
@@ -60,6 +60,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 type FieldName =
   | 'company_name'
   | 'work_email'
+  | 'phone'
   | 'team_size'
   | 'email_client'
   | 'email_client_other'
@@ -69,6 +70,14 @@ type FieldName =
 interface FormState {
   company_name: string;
   work_email: string;
+  /* Asked again since 2026-09-22. It was taken off the form on 2026-09-19
+     (T23) to keep the count down, and the contract kept carrying the key with
+     an empty string in it, which is why putting it back costs nothing on the
+     wire: `phone` is already declared, already accepted by the n8n validator
+     and already type checked by the mock. Optional, because the form's own
+     heading promises three questions and a required sixth would make that
+     heading false. */
+  phone: string;
   team_size: '' | TeamSize;
   email_client: '' | EmailClient;
   /* What they typed after picking "Something else". Kept even if they change
@@ -83,6 +92,7 @@ interface FormState {
 const EMPTY: FormState = {
   company_name: '',
   work_email: '',
+  phone: '',
   team_size: '',
   email_client: '',
   email_client_other: '',
@@ -176,8 +186,10 @@ export function Qualifier({
     if (!v.company_name.trim()) e.company_name = c.form.required;
     if (!v.work_email.trim()) e.work_email = c.form.required;
     else if (!EMAIL_RE.test(v.work_email.trim())) e.work_email = c.form.invalidEmail;
-    // Deliberately loose: international formats vary and a wrong reject here
-    // costs a real lead. Anything with six or more digits gets through.
+    /* Optional, so an empty box is never an error. Deliberately loose when it
+       is filled: international formats vary and a wrong reject here costs a
+       real lead. Anything with six or more digits gets through. */
+    if (v.phone.trim() && (v.phone.match(/\d/g) ?? []).length < 6) e.phone = c.form.invalidPhone;
     if (!v.team_size) e.team_size = c.form.required;
     if (!v.email_client) e.email_client = c.form.required;
     if (!v.role) e.role = c.form.required;
@@ -261,12 +273,12 @@ export function Qualifier({
       },
       company_name: values.company_name.trim(),
       work_email: values.work_email.trim(),
-      /* The contract still declares `phone`, so the key is still sent. It is
-         sent empty because the page no longer asks: the spec was changed and
-         the n8n validator updated to accept an empty string (T23, 2026-09-19).
-         Dropping the key entirely would break the contract; asking for a
-         number the page does not need would be the sixth question. */
-      phone: '',
+      /* Asked again since 2026-09-22, at the founder's request, so he can see
+         a number against a lead. The key never left the contract, so nothing
+         downstream changes shape: it carried '' while the page did not ask,
+         and carries what was typed now that it does. Still '' when the box is
+         left empty, which the n8n validator already accepts. */
+      phone: values.phone.trim(),
       team_size: values.team_size as TeamSize,
       email_client: values.email_client as EmailClient,
       role: values.role as Role,
@@ -495,6 +507,26 @@ export function Qualifier({
                         autoComplete: 'email',
                         spellCheck: false,
                         required: true,
+                      }}
+                    />
+
+                    {/* Optional, and marked so. The form's heading says three
+                        questions; this is a way to reach you faster if you
+                        want one, not a sixth thing to answer. */}
+                    <TextField
+                      n="06"
+                      id="phone"
+                      label={c.form.phoneLabel}
+                      hint={c.form.phoneHint}
+                      optional={c.form.optional}
+                      error={errors.phone}
+                      value={values.phone}
+                      onChange={(v) => set('phone', v)}
+                      onFocus={touch}
+                      inputProps={{
+                        type: 'tel',
+                        inputMode: 'tel',
+                        autoComplete: 'tel',
                       }}
                     />
 

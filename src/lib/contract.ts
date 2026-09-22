@@ -13,7 +13,7 @@
  *   "utm": { "source": "", "medium": "", "campaign": "", "content": "" },
  *   "company_name": "",
  *   "work_email": "",
- *   "phone": "",
+ *   "phone": "",                // optional: "" when the reader leaves it blank
  *   "team_size": "1-9 | 10-24 | 25-49 | 50+",
  *   "email_client": "outlook | gmail | other",
  *   "email_client_other": "",   // only when email_client = other, and filled in
@@ -58,6 +58,12 @@ export interface QualifierPayload {
   utm: Utm;
   company_name: string;
   work_email: string;
+  /** The only optional answer on the form, and the only key here that may be
+      an empty string. It was asked for, then not asked for from 2026-09-19
+      (T23), and asked for again from 2026-09-22. Through all of that this key
+      has been declared, sent and validated, which is why the form can take it
+      on and off without a spec change: '' when the box is blank, whatever was
+      typed when it is not. */
   phone: string;
   team_size: TeamSize;
   email_client: EmailClient;

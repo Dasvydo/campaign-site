@@ -582,6 +582,8 @@ export const lt: Content = {
     emailLabel: 'Darbo el. paštas',
     emailPlaceholder: 'jus@jusuimone.lt',
     emailHint: 'Naudojame tik pokalbio detalėms ir bandomojo laikotarpio sutarčiai išsiųsti.',
+    phoneLabel: 'Telefonas',
+    phoneHint: 'Jei norėtumėte, kad paskambintume, o ne rašytume. Daugiau niekam jo nenaudosime.',
     emailFreeWarning:
       'Atrodo, kad tai asmeninis adresas. Jis tiks, bet darbo adresas padeda mums rasti Jūsų įmonę prieš pokalbį.',
     teamSizeLabel: 'Kiek žmonių kasdien tvarko laiškus?',
@@ -614,6 +616,7 @@ export const lt: Content = {
     submitting: 'Palaukite akimirką',
     required: 'Šį lauką reikia užpildyti.',
     invalidEmail: 'Šis adresas atrodo neužbaigtas.',
+    invalidPhone: 'Atrodo, kad skaitmenų numeriui per mažai.',
     privacyNote: 'Naudojama pasiruošti pokalbiui. Jokių sąrašų, jokio perpardavimo.',
   },
 

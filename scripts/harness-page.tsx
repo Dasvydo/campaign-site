@@ -826,10 +826,13 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          aria-label would not count here on purpose. Measured on both screens
          by the walk above. */
       labelledControls: stepOneLabelled && stepTwoLabelled,
-      /* Five questions: three chosen from radio groups, then two written.
-         It was six until 2026-09-19, when the phone field went (T23): the
-         spec was changed and the n8n validator updated to accept an empty
-         string, so the page stopped asking for a number it does not need. */
+      /* Six controls: three chosen from radio groups, then three written.
+         It was six, then five from 2026-09-19 when the phone field went
+         (T23), and six again from 2026-09-22 because the founder wants a
+         number against a lead. The phone is the one that is optional, which
+         is why the form's heading can still say three questions: it is the
+         only control a reader may leave alone and still submit. The payload
+         key was declared and sent throughout, empty while nothing asked. */
       questionCount: stepOneQuestions + stepTwoQuestions,
       stepsShown,
       otherClosedAtRest,
@@ -853,8 +856,15 @@ const drivePoints = (): Array<[number, number, number, number]> => {
       stepOneIsTheQuestions:
         stepOneAsks.join('|') ===
         [c.form.teamSizeLabel, c.form.emailClientLabel, c.form.roleLabel].join('|'),
+      /* The phone's label carries the optional marker inside it, because the
+         marker is a span within the label element the walk reads. Compared
+         against the same assembly rather than stripped, so a marker that
+         silently disappeared would fail here too: an optional field that
+         stops saying it is optional is a required sixth question by any
+         reader's reckoning. */
       stepTwoIsTheDetails:
-        stepTwoAsks.join('|') === [c.form.companyLabel, c.form.emailLabel].join('|'),
+        stepTwoAsks.join('|') ===
+        [c.form.companyLabel, c.form.emailLabel, c.form.phoneLabel + c.form.optional].join('|'),
       blankKeys,
       missing,
       unassembled,

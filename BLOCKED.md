@@ -143,6 +143,35 @@ These are the things Lighthouse would flag, but the score itself is unverified.
 
 ---
 
+## 9. The phone number is collected again, but only this repo knows it
+
+**Asked for on 2026-09-22:** a field where a visitor can type their number, so it shows up in
+Supabase against the lead. The field is back on the form (step two, optional, `06 Phone`), and the
+number now travels in the payload as `phone`.
+
+**What is done here and needs nothing further.** `phone` never left the contract. It has been
+declared in `src/lib/contract.ts`, sent on every POST and type-checked by the mock throughout the
+period the form did not ask for it, carrying `""`. It carries what was typed now. `npm run
+verify:payload` proves the typed number reaches the webhook byte for byte and that a blank box
+still submits as an empty string rather than a missing key, both over real HTTP.
+
+**What this repo cannot do and has not done.** The page POSTs to n8n; n8n writes the ledger row to
+Supabase project `yheilbuunzdugfnermfb`, schema `campaign`. Neither is in this repository and this
+container has credentials for neither. So two things are unverified and both are outside Batch A:
+
+1. whether the n8n workflow maps `phone` into the row it inserts, rather than simply accepting the
+   key and dropping it. The validator accepts `phone` as a string - that was settled in T23 when
+   the field came off - but accepting a key and storing it are different things.
+2. whether the `campaign` schema's lead table still has a `phone` column. It very likely does,
+   since the field was collected before 2026-09-19 and the column would not have been dropped when
+   the form stopped asking, but "very likely" is not "checked".
+
+**Unblocks it:** open one lead through the live form with a number in the box, then look at the
+row. If the column is there and populated, nothing more is needed. If the value is missing, it is
+an n8n mapping change or a column, and both are the founder's, not this repo's.
+
+---
+
 ## Resolved by Dovy's decisions of 2026-09-06
 
 Four campaign-wide decisions landed. Checked each of the eight entries above against them.

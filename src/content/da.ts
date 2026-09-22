@@ -582,6 +582,8 @@ export const da: Content = {
     emailLabel: 'Arbejdsmail',
     emailPlaceholder: 'dig@ditfirma.dk',
     emailHint: 'Bruges kun til at sende mødedetaljer og pilotaftalen.',
+    phoneLabel: 'Telefon',
+    phoneHint: 'Hvis I hellere vil ringes op end skrives til. Vi bruger det ikke til andet.',
     emailFreeWarning:
       'Det ligner en privat adresse. Den virker fint, men en arbejdsmail hjælper os med at finde jeres virksomhed, inden vi taler sammen.',
     teamSizeLabel: 'Hvor mange sidder med mails hver dag?',
@@ -614,6 +616,7 @@ export const da: Content = {
     submitting: 'Et øjeblik',
     required: 'Den her skal udfyldes.',
     invalidEmail: 'Den adresse ser ikke komplet ud.',
+    invalidPhone: 'Det ser ikke ud til at være cifre nok til et nummer.',
     privacyNote: 'Bruges til at forberede mødet. Ingen liste, intet videresalg.',
   },
 
