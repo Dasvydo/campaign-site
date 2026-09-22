@@ -37,7 +37,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T1 | Split paper.css into section stylesheets | 1 | verified | 1 | PASS | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
 | T2 | Split content into per-section modules | 1 | verified | 1 | PASS | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
-| T4 | Build the interaction system | 1 | returned | 1 | verifying | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
+| T4 | Build the interaction system | 1 | verified | 1 | PARTIAL -> PASS (fix applied) | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
 | T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
@@ -119,8 +119,10 @@ injected into a section module turns `audit:locales` red, and removing the Lithu
   3. `sections/hero.css:109`, `:591`, `sections/demo.css:112` — tab strips showing two tabs lit.
   4. `sections/hero.css:302` `.hero-btn:hover` — the button the ad click aims at, stays raised after the tap.
   5. `sections/price.css:553`, `sections/qualifier.css:386`, `sections/consent.css:113` — same, on the conversion path.
-- **5 reduced-motion blocks cancel the press outright** (not 3): `phone-hero.css:62`, `price.css:588`,
-  `qualifier.css:598`, `footer.css:292`, `demo.css:550`. Fix is to drop the `:active` selector and keep `:hover`.
+- **6 reduced-motion rules cancel the press outright** across 5 files (T4 said 5 sites; its verifier found a
+  sixth): `phone-hero.css:62`, **`phone-hero.css:63-64`** (`.hero-deal:active .hero-sheet-face`, same shape as the
+  demo case), `price.css:588`, `qualifier.css:598`, `footer.css:292`, `demo.css:550`. Fix is to drop the `:active`
+  selector and keep `:hover`. T12 must fix SIX sites, not five.
 - **`.field`/`.field-label`/`.field-hint`/`.field-error` are unused scaffolding** — clearly meant for the signup
   form. `.field` re-points its ring to `--ix-ring-dark` because it assumes a charcoal ground; if the form lands
   on cream instead, that re-point is wrong.
@@ -136,6 +138,14 @@ one gate standing between a copy edit and silently shipping EU visitors' analyti
 off by deleting a sentence. Worth closing before any ad spend starts.
 Recommendation for T13: make the EU claim mandatory rather than optional — if no locale claims EU hosting, fail
 rather than pass, or require an explicit opt-out constant so disarming it is a deliberate, reviewable act.
+
+### Also carried forward to T12 (raised by T4's verifier, measured in-browser)
+- **Focus rings still failing after the global fix** — the global ring change does not reach section rules:
+  `consent-sum`, `consent-priv`, `consent-btn` (consent.css) and `numbers-range` (numbers.css) still ring
+  `#f59b0a` at **2.10:1**; `price-signature-link` rings `#8a5200` on charcoal at **2.75:1**. Of 19 focusable
+  controls on light ground, 16 already ring the passing `#8a5200`; these are the stragglers.
+- **`.on-dark` is applied in zero .tsx files**, so every dark-ground token flip is currently dead code. A `.btn`
+  dropped on a charcoal band today rings at 2.46:1. T7/T8/T11 must wrap dark bands in `class="on-dark"`.
 
 ## Coherence audit
 <pending — phase 6>

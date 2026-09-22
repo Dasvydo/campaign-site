@@ -181,8 +181,15 @@
       box-shadow var(--ix-curve),
       transform var(--ix-curve);
   }
-  /* The ring is restated at component level so it beats any section rule the
-     button is dropped into, and so the offset gap is never a section's guess. */
+  /* The ring is restated at component level so the offset gap is never a
+     section's guess.
+
+     It does NOT outrank a section rule, whatever the specificity: this block is
+     inside `@layer components`, every section file is unlayered, and unlayered
+     wins over any layer regardless. Nothing depends on that today - the two
+     classes carrying `.btn` declare no focus rule of their own - but a section
+     that adds one will take this ring, not the other way round. The `.ix-*`
+     primitives in interaction.css are unlayered and do outrank sections. */
   .btn:focus-visible {
     outline: var(--ix-ring);
     outline-offset: var(--ix-ring-offset);
@@ -208,7 +215,17 @@
       transform: translateY(var(--ix-lift-y));
     }
   }
-  .btn-primary:not(:disabled):active { box-shadow: var(--ix-press-shadow); }
+  /* The transform is restated here, and it has to be. `.btn:not(:disabled):active`
+     above and the `:hover` block just above this line carry the same specificity,
+     (0,3,0), and `@media` adds none - so the later rule wins, and on a pointer
+     device you cannot press without hovering first. Without this line the primary
+     button never goes down: it sits lifted at -1px under normal motion, and flat
+     under reduced motion, which is the one control on the page where a missing
+     press is most expensive. */
+  .btn-primary:not(:disabled):active {
+    transform: var(--ix-press);
+    box-shadow: var(--ix-press-shadow);
+  }
   .on-dark .btn-primary {
     background: var(--color-warmwhite);
     color: var(--color-charcoal);
