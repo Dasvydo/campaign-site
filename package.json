@@ -9,7 +9,7 @@
     "prebuild": "npm run verify:offer",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false",
+    "typecheck": "tsc -b --noEmit",
     "fonts": "node scripts/copy-fonts.mjs",
     "mock": "node scripts/mock-webhook.mjs",
     "og": "node scripts/make-og.mjs",
