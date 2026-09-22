@@ -20,7 +20,8 @@
     "verify:consent-layout": "node scripts/verify-consent-layout.mjs",
     "verify:demo": "node scripts/verify-demo.mjs",
     "verify:visible": "node scripts/verify-visible.mjs",
-    "verify": "npm run verify:offer && npm run verify:consent && npm run verify:payload && npm run audit:locales"
+    "verify": "npm run verify:offer && npm run verify:consent && npm run verify:payload && npm run verify:posthog && npm run audit:locales",
+    "verify:posthog": "node scripts/verify-posthog.mjs"
   },
   "dependencies": {
     "posthog-js": "^1.203.1",

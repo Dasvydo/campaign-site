@@ -33,6 +33,16 @@ function footprint() {
         (el as HTMLImageElement).src?.includes('facebook.com/tr'),
       ),
     ).length,
+    /* Every beacon this page built for itself, wherever it ended up parked.
+       The count above only looks inside <noscript>, which is where the old
+       duplicate PageView was eventually appended - but the request had already
+       gone out the moment `.src` was assigned, while the element was still
+       detached, so "inside a noscript" was never the thing that mattered.
+       fbevents.js is the only thing allowed to talk to Meta; anything the page
+       constructs itself is a second, undeduplicated hit. */
+    trBeacons: Array.from(document.querySelectorAll('*')).filter((el) =>
+      (el as HTMLImageElement).src?.includes('facebook.com/tr'),
+    ).length,
     fbqDefined: typeof window.fbq !== 'undefined',
     cookies: document.cookie,
     storageKeys: Object.keys(window.localStorage),

@@ -92,6 +92,7 @@ try {
   const b = r.beforeChoice;
   check(b.fbScripts === 0, 'no Meta pixel script is injected', `${b.fbScripts} found`);
   check(b.noscriptPixels === 0, 'no tracking pixel image is injected');
+  check(b.trBeacons === 0, 'no beacon to facebook.com/tr is built at all');
   check(!b.fbqDefined, 'window.fbq is never defined');
   check(b.cookies === '', 'no cookie is written', JSON.stringify(b.cookies));
   check(
@@ -126,7 +127,19 @@ try {
   check(r.choiceAfterAccept === 'granted', 'the choice is recorded');
   check(a.fbScripts === 1, 'the pixel loads, exactly once', `${a.fbScripts} found`);
   check(a.fbqDefined, 'window.fbq is defined');
-  check(a.noscriptPixels === 1, 'the noscript fallback is added');
+  /* Inverted on 2026-09-22, and this is the point of the test rather than a
+     relaxation of it. This used to assert the noscript fallback WAS added.
+     It was, and it was also firing: setting `.src` on an element made by
+     document.createElement sends the request immediately, while it is still
+     detached, so parking it in a <noscript> afterwards changed nothing. Every
+     visitor with JavaScript sent two PageViews for one page load, neither
+     carrying an event_id, so Meta could not deduplicate them and landing page
+     views read about twice high. The fallback could never have served a visitor
+     without JavaScript either, because pixel.ts is JavaScript.
+
+     fbevents.js is now the only thing on this page that speaks to Meta. */
+  check(a.noscriptPixels === 0, 'no noscript beacon is built, so PageView is not doubled');
+  check(a.trBeacons === 0, 'the page builds no facebook.com/tr beacon of its own');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
