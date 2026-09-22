@@ -487,6 +487,139 @@ try {
 
     await ctx.close();
   }
+
+  /* The answer screens, which nothing had ever looked at.
+
+     The fit check's three outcomes are behind a submitted form, so no gate
+     reached them and no screenshot pass had opened them. They were written in
+     Tailwind utilities naming DARK theme tokens - text-warmwhite/90,
+     bg-card-dark, text-muted-dark - on a sheet that is #FDF9F7 paper. Both
+     sentences explaining the call measured 1.06:1 against it. The Gmail note
+     was a near black box with near black text inside it, also 1.06:1. That is
+     not low contrast, it is a live page showing a visitor nothing where its
+     copy should be, and the founder read it as the screens being mostly empty.
+
+     So this walks every piece of text on every outcome and measures it against
+     the background actually painted behind it, rather than trusting a class
+     name. 4.5:1 is the WCAG AA threshold for body text. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+    await ctx.route('**/api/lead*', (r) =>
+      r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }),
+    );
+
+    /* team size, mail client, and what the page should conclude */
+    const RUNS = [
+      ['1-9', 'outlook', 'too small'],
+      ['10-24', 'outlook', 'qualified'],
+      ['50+', 'gmail', 'qualified, on Gmail'],
+    ];
+
+    for (const [size, client, what] of RUNS) {
+      const page = await ctx.newPage();
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+      await page.evaluate(() => document.querySelector('#fit')?.scrollIntoView());
+      await page.check(`[data-field="team_size"] input[value="${size}"]`);
+      await page.check(`[data-field="email_client"] input[value="${client}"]`);
+      await page.check('[data-field="role"] input[value="ops_office_manager"]');
+      await page.click('#qualifier button:has-text("Continue"), #qualifier button[type="submit"]');
+      await page.waitForTimeout(300);
+      await page.fill('#qualifier input[type="email"]', 'someone@example-firm.dk');
+      await page.fill('#qualifier input[name="company_name"]', 'Example Firm ApS');
+      await page.click('#qualifier button[type="submit"]');
+      await page.waitForTimeout(1200);
+
+      const got = await page.evaluate(() => {
+        const lum = (rgb) => {
+          const f = rgb.map((v) => {
+            v /= 255;
+            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2];
+        };
+        const parse = (c) => {
+          const m = c.match(/-?[\d.]+/g);
+          if (!m) return null;
+          /* oklab and oklch cannot be read off the string, so bounce the colour
+             through a canvas, which reports whatever the engine resolved. */
+          if (!c.startsWith('rgb')) {
+            const cv = document.createElement('canvas');
+            cv.width = cv.height = 1;
+            const g = cv.getContext('2d');
+            g.fillStyle = '#fff';
+            g.fillRect(0, 0, 1, 1);
+            g.fillStyle = c;
+            g.fillRect(0, 0, 1, 1);
+            const d = g.getImageData(0, 0, 1, 1).data;
+            return [d[0], d[1], d[2]];
+          }
+          return [Number(m[0]), Number(m[1]), Number(m[2])];
+        };
+        /* What is really painted behind this element: walk up until something
+           is not transparent. An element on a see through parent is sitting on
+           whatever that parent is sitting on. */
+        const behind = (el) => {
+          let n = el;
+          while (n && n !== document.documentElement) {
+            const bg = getComputedStyle(n).backgroundColor;
+            const a = bg.match(/-?[\d.]+/g);
+            if (a && (a.length < 4 || Number(a[3]) > 0.9)) return parse(bg);
+            n = n.parentElement;
+          }
+          return [255, 255, 255];
+        };
+        const root = document.querySelector('#qualifier .qualifier-result');
+        if (!root) return { missing: true };
+        const bad = [];
+        let seen = 0;
+        for (const el of root.querySelectorAll('*')) {
+          /* Only elements that paint text of their own. */
+          const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+          if (!own) continue;
+          const cs = getComputedStyle(el);
+          if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+          const fg = parse(cs.color);
+          const bg = behind(el);
+          if (!fg || !bg) continue;
+          seen++;
+          const l1 = lum(fg);
+          const l2 = lum(bg);
+          const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+          if (ratio < 4.5) {
+            bad.push(
+              `${ratio.toFixed(2)}:1 "${(el.textContent || '').trim().slice(0, 34)}"`,
+            );
+          }
+        }
+        /* The answer uses the whole sheet. The rail is the form's margin, for
+           the question numbers; on an answer it was 132px of nothing with the
+           text squeezed into what was left. */
+        const body = document.querySelector('#qualifier .qualifier-body');
+        const gutter = Math.round(root.getBoundingClientRect().x - body.getBoundingClientRect().x);
+        return { bad, seen, gutter };
+      });
+
+      check(
+        !got.missing && got.seen >= 3 && got.bad.length === 0,
+        `\n  every word of the "${what}" answer is legible on the paper it is printed on`,
+        got.missing
+          ? 'no answer screen rendered at all'
+          : got.bad.length
+            ? `${got.seen} checked, ${got.bad.length} under 4.5:1 -> ${got.bad.slice(0, 3).join(' | ')}`
+            : `${got.seen} pieces of text, all at or above 4.5:1`,
+      );
+      check(
+        got.gutter === 0,
+        `  and it uses the sheet, not the form's numbering margin`,
+        `${got.gutter}px of empty gutter to its left`,
+      );
+      await page.close();
+    }
+    await ctx.close();
+  }
+
 } finally {
   await browser.close();
 }

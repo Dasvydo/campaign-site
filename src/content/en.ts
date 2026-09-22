@@ -644,13 +644,6 @@ export const en: Content = {
       title: 'This one starts at ten people.',
       body: 'You are under that today, so a call would spend twenty minutes of your time to reach the same answer. The plan on doviloop.dev does the same drafting for smaller teams and costs a great deal less. Come back to us when the team grows and we will pick this up.',
       pricingCta: 'See the plan for smaller teams',
-      nurtureTitle: 'Want the short version by email instead?',
-      nurtureBody:
-        'Three notes over two weeks on how small offices cut repeat mail. No calls, and you can stop after the first one.',
-      nurtureCta: 'Send me the three emails',
-      nurtureSubject: 'Send me the three emails',
-      nurtureMailBody:
-        'Please send me the three short notes on cutting repeat mail. We are a smaller firm for now.',
     },
     deliveryWarning:
       'Our system did not confirm your answers, so we have kept them on this device and will send them again automatically. Nothing is lost. Book the call below either way.',

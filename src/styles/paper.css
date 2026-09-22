@@ -2717,8 +2717,17 @@
 }
 
 .qualifier-body{ position:relative }
+/* The rail, and the hairline that closes it.
+
+   It is the form's margin: the question numbers 01, 02, 03 stand in it, and
+   the line is what makes them read as numbering rather than as three stray
+   figures. The answer screens have no numbered anything, so on those it was
+   132px of empty paper down the left of the sheet with a line beside it, and
+   the answer itself squeezed into 543px of a 699px body. That is what the
+   founder saw as too much white space, and it is: it is a margin ruled for
+   content that is not there. The answer screens use the full width. */
 @media (min-width:760px){
-  .qualifier-body::before{
+  .qualifier-body[data-screen="form"]::before{
     content:""; position:absolute; top:-8px; bottom:-8px;
     left:calc(var(--qualifier-rail) + 12px); width:1px;
     background:var(--q-taupe); pointer-events:none;
@@ -2968,12 +2977,92 @@
   font-size:14px; line-height:1.5; color:var(--q-muted);
 }
 
+/* The answer, which is the whole sheet once it arrives.
+
+   This carried a rule with 40px above it and 32px below, from when the answer
+   appeared underneath the form it came from. It replaces the form now, so the
+   rule separated the heading from nothing, directly under the letterhead's own
+   rule: two lines, 72px apart, with no content between them. */
 .qualifier-result{
   position:relative;
-  margin-top:40px; padding-top:32px;
-  border-top:1px solid var(--q-border);
+  margin-top:4px;
   scroll-margin-top:32px;
 }
+
+/* ---------------------------------------------------------------------------
+   The answer screens.
+
+   Every one of these rules replaces a Tailwind utility that named a DARK theme
+   token, on a sheet that is #FDF9F7 paper. Measured against that background:
+
+     the two body paragraphs   text-warmwhite/90   1.06 : 1
+     the Gmail note's own text ink on bg-card-dark 1.06 : 1
+     the delivery warning      text-muted-dark     2.31 : 1
+
+   1.06 is not low contrast, it is no contrast. Both sentences explaining the
+   call, and the whole of the Gmail note, were invisible on a live page: the
+   note rendered as a black bar with black text inside it. The founder read the
+   screens as having too much white space, and they did, but the space was the
+   copy, unreadable where it stood.
+
+   These use the sheet's own tokens, the same ones the form above them uses, so
+   an answer screen cannot be restyled for a background it is not on again. The
+   browser gate measures the contrast rather than trusting the token names.
+   --------------------------------------------------------------------------- */
+.qualifier-result-h{
+  margin:0;
+  font-family:var(--q-serif);
+  font-weight:400;
+  font-size:clamp(28px, 20px + 1.3vw, 40px);
+  line-height:1.16; letter-spacing:-.008em;
+  color:var(--q-ink); text-wrap:balance; max-width:22ch;
+}
+.qualifier-result-lead{
+  margin:18px 0 0; max-width:58ch;
+  font-size:17px; line-height:1.6; color:var(--q-muted); text-wrap:pretty;
+}
+/* The one thing on the answer that is a condition rather than a reassurance,
+   so it is inked rather than muted, and boxed on the sand the sheet already
+   uses for a field. It was a near black card, which on this paper meant a
+   black bar with nothing legible in it. */
+.qualifier-result-note{
+  margin:20px 0 0; padding:14px 18px; max-width:60ch;
+  background:var(--q-sand); border:1px solid var(--q-border);
+  border-radius:var(--q-radius-sm);
+  font-size:15px; line-height:1.55; color:var(--q-ink);
+}
+.qualifier-result-cta{ margin-top:28px }
+/* Under the button, about the page the button opens. */
+.qualifier-result-aside{
+  margin:14px 0 0; max-width:52ch;
+  font-size:14.5px; line-height:1.55; color:var(--q-muted);
+}
+.qualifier-result-more{
+  margin-top:32px; padding-top:24px; border-top:1px solid var(--q-border);
+}
+.qualifier-result-more-h{
+  margin:0;
+  font-family:var(--q-serif);
+  font-weight:400; font-size:21px; line-height:1.25; color:var(--q-ink);
+}
+/* The list itself is NOT defined here. `.qualifier-covers` already existed,
+   further down this file, with the sheet's own marker: a 12px taupe rule
+   rather than a dot. It was written for an earlier answer screen that was
+   never wired up, along with .qualifier-r-label, .qualifier-r-act,
+   .qualifier-r-fine, .qualifier-book and .qualifier-stamp, all still unused by
+   the component. Defining the class twice drew both markers at once, a dash
+   and a dot per line. The older definition wins because the dash is what this
+   sheet uses; the orphans beside it are the next thing to clear out. */
+/* Scoped, so the shared list keeps its own spacing everywhere else. The
+   heading above it has margin 0 and the list has no top margin of its own. */
+.qualifier-result-more .qualifier-covers{ margin-top:16px }
+.qualifier-result-warn{
+  margin:28px 0 0; padding:14px 18px; max-width:62ch;
+  border:1px solid var(--q-border); border-radius:var(--q-radius-sm);
+  font-size:14.5px; line-height:1.55; color:var(--q-muted);
+}
+.qualifier-result-again{ margin-top:30px }
+
 .qualifier-result:focus{ outline:none }
 .qualifier-result:focus-visible{ outline:3px solid var(--focus); outline-offset:8px; border-radius:2px }
 

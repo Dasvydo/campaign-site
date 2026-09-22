@@ -661,11 +661,6 @@ export interface Content {
       title: string;
       body: string;
       pricingCta: string;
-      nurtureTitle: string;
-      nurtureBody: string;
-      nurtureCta: string;
-      nurtureSubject: string;
-      nurtureMailBody: string;
     };
     deliveryWarning: string;
     startOver: string;

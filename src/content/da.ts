@@ -639,13 +639,6 @@ export const da: Content = {
       title: 'Det her starter ved ti personer.',
       body: 'I er under det i dag, så et møde ville bruge tyve minutter af din tid på at nå frem til det samme svar. Planen på doviloop.dev laver den samme skrivning for mindre teams og koster væsentligt mindre. Vend tilbage, når teamet vokser, så tager vi den derfra.',
       pricingCta: 'Se planen til mindre teams',
-      nurtureTitle: 'Vil du hellere have den korte version på mail?',
-      nurtureBody:
-        'Tre mails over fjorten dage om, hvordan små kontorer skærer ned på gentagen post. Ingen opkald, og du kan stoppe efter den første.',
-      nurtureCta: 'Send mig de tre mails',
-      nurtureSubject: 'Send mig de tre mails',
-      nurtureMailBody:
-        'Send mig gerne de tre korte mails om at skære ned på gentagen post. Vi er et mindre firma indtil videre.',
     },
     deliveryWarning:
       'Vores system nåede ikke at bekræfte dine svar, så vi har gemt dem på den her enhed og sender dem igen automatisk. Der er ikke noget gået tabt. Book endelig mødet nedenfor alligevel.',

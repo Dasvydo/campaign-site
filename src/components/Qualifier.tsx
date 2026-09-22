@@ -136,7 +136,6 @@ export function Qualifier({
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [busy, setBusy] = useState(false);
   const [screen, setScreen] = useState<Screen>({ kind: 'form', step: 1 });
-  const [nurtureAsked, setNurtureAsked] = useState(false);
   const startFired = useRef(false);
   const resultRef = useRef<HTMLDivElement | null>(null);
   const stepRef = useRef<HTMLLIElement | null>(null);
@@ -306,10 +305,6 @@ export function Qualifier({
     env.bookingUrl ||
     `mailto:${FALLBACK_CONTACT_EMAIL}?subject=${encodeURIComponent('Book a DoviLoop call')}`;
 
-  const nurtureHref =
-    `mailto:${FALLBACK_CONTACT_EMAIL}` +
-    `?subject=${encodeURIComponent(c.results.tooSmall.nurtureSubject)}` +
-    `&body=${encodeURIComponent(c.results.tooSmall.nurtureMailBody)}`;
 
   /* The three closed questions are radio chips rather than selects. A select
      hides its options until you open it, which on a five question form is one
@@ -351,7 +346,7 @@ export function Qualifier({
             <span className="qualifier-formno">{c.form.formNo}</span>
           </div>
 
-          <div className="qualifier-body">
+          <div className="qualifier-body" data-screen={screen.kind}>
             {screen.kind === 'form' ? (
               <form className="qualifier-form" noValidate onSubmit={handleSubmit}>
                 <p className="qualifier-lead qualifier-indent">{c.form.lead}</p>
@@ -539,7 +534,7 @@ export function Qualifier({
               </form>
             ) : (
               <div
-                className="qualifier-result qualifier-indent"
+                className="qualifier-result"
                 ref={resultRef}
                 tabIndex={-1}
                 role="status"
@@ -547,13 +542,11 @@ export function Qualifier({
               >
                 {screen.outcome === 'too_small' ? (
                   <>
-                    <h3 className="text-[clamp(1.6rem,3.2vw,2.3rem)]">{c.results.tooSmall.title}</h3>
-                    <p className="mt-5 max-w-[58ch] leading-relaxed text-warmwhite/90">
-                      {c.results.tooSmall.body}
-                    </p>
+                    <h3 className="qualifier-result-h">{c.results.tooSmall.title}</h3>
+                    <p className="qualifier-result-lead">{c.results.tooSmall.body}</p>
 
                     <a
-                      className="btn btn-primary mt-8"
+                      className="btn btn-primary qualifier-result-cta"
                       href={PRICING_URL}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -561,40 +554,18 @@ export function Qualifier({
                       {c.results.tooSmall.pricingCta}
                     </a>
 
-                    <div className="mt-11 rule-top pt-7">
-                      <h4 className="font-display text-[1.3rem]">{c.results.tooSmall.nurtureTitle}</h4>
-                      <p className="mt-2.5 max-w-[56ch] text-[15.5px] leading-relaxed text-muted-dark">
-                        {c.results.tooSmall.nurtureBody}
-                      </p>
-                      <a
-                        className="btn btn-quiet mt-5"
-                        href={nurtureHref}
-                        onClick={() => setNurtureAsked(true)}
-                      >
-                        {c.results.tooSmall.nurtureCta}
-                      </a>
-                      {nurtureAsked ? (
-                        <p className="mt-3 text-[14px] text-muted-dark" aria-live="polite">
-                          {c.form.submitting}
-                        </p>
-                      ) : null}
-                    </div>
                   </>
                 ) : (
                   <>
-                    <h3 className="text-[clamp(1.6rem,3.2vw,2.3rem)]">{c.results.qualified.title}</h3>
-                    <p className="mt-5 max-w-[56ch] leading-relaxed text-warmwhite/90">
-                      {c.results.qualified.body}
-                    </p>
+                    <h3 className="qualifier-result-h">{c.results.qualified.title}</h3>
+                    <p className="qualifier-result-lead">{c.results.qualified.body}</p>
 
                     {screen.outcome === 'gmail_on_request' ? (
-                      <p className="mt-6 max-w-[62ch] rounded-brand border border-rule-dark bg-card-dark px-5 py-4 text-[15px] leading-relaxed">
-                        {c.results.gmailNote}
-                      </p>
+                      <p className="qualifier-result-note">{c.results.gmailNote}</p>
                     ) : null}
 
                     <a
-                      className="btn btn-primary mt-8"
+                      className="btn btn-primary qualifier-result-cta"
                       href={bookingHref}
                       target={env.bookingUrl ? '_blank' : undefined}
                       rel={env.bookingUrl ? 'noopener noreferrer' : undefined}
@@ -610,22 +581,13 @@ export function Qualifier({
                         reason to press it. Shown on both branches: the fallback
                         is a mailto, and a lead who writes in from a different
                         address is the same unmatched booking by another route. */}
-                    <p className="mt-4 max-w-[52ch] text-[14.5px] leading-relaxed text-warmwhite/90">
-                      {c.results.qualified.sameEmail}
-                    </p>
+                    <p className="qualifier-result-aside">{c.results.qualified.sameEmail}</p>
 
-                    <div className="mt-11 rule-top pt-7">
-                      <h4 className="font-display text-[1.3rem]">{c.results.qualified.coversTitle}</h4>
-                      <ul className="mt-4 m-0 list-none p-0">
+                    <div className="qualifier-result-more">
+                      <h4 className="qualifier-result-more-h">{c.results.qualified.coversTitle}</h4>
+                      <ul className="qualifier-covers">
                         {c.results.qualified.covers.map((line) => (
-                          <li key={line} className="flex gap-3 py-2 text-[15.5px] leading-relaxed">
-                            <span
-                              aria-hidden="true"
-                              className="mt-2.5 h-1.5 w-1.5 flex-none rounded-full"
-                              style={{ background: 'var(--color-amber-dark)' }}
-                            />
-                            <span>{line}</span>
-                          </li>
+                          <li key={line}>{line}</li>
                         ))}
                       </ul>
                     </div>
@@ -636,14 +598,12 @@ export function Qualifier({
                     already in the localStorage queue and will retry on next load, and
                     the visitor still gets their booking link. */}
                 {!screen.delivered ? (
-                  <p className="mt-9 max-w-[62ch] rounded-brand border border-rule-dark px-5 py-4 text-[14.5px] leading-relaxed text-muted-dark">
-                    {c.results.deliveryWarning}
-                  </p>
+                  <p className="qualifier-result-warn">{c.results.deliveryWarning}</p>
                 ) : null}
 
                 <button
                   type="button"
-                  className="btn btn-quiet mt-9"
+                  className="btn btn-quiet qualifier-result-again"
                   onClick={() => {
                     setScreen({ kind: 'form', step: 1 });
                     setErrors({});

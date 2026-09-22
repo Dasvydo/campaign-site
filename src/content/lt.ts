@@ -639,13 +639,6 @@ export const lt: Content = {
       title: 'Šis pasiūlymas prasideda nuo dešimties žmonių.',
       body: 'Šiandien Jūsų yra mažiau, tad pokalbis atimtų dvidešimt Jūsų minučių ir baigtųsi tuo pačiu atsakymu. Planas doviloop.dev svetainėje daro tą patį mažesnėms komandoms ir kainuoja gerokai mažiau. Grįžkite, kai komanda paaugs, ir tęsime nuo čia.',
       pricingCta: 'Pažiūrėti planą mažesnėms komandoms',
-      nurtureTitle: 'Gal norite trumpos versijos el. paštu?',
-      nurtureBody:
-        'Trys laiškai per dvi savaites apie tai, kaip maži biurai mažina pasikartojantį paštą. Jokių skambučių, ir galite sustoti po pirmojo.',
-      nurtureCta: 'Atsiųskite man tuos tris laiškus',
-      nurtureSubject: 'Atsiųskite man tuos tris laiškus',
-      nurtureMailBody:
-        'Prašau atsiųsti tuos tris trumpus laiškus apie pasikartojančio pašto mažinimą. Kol kas esame mažesnė įmonė.',
     },
     deliveryWarning:
       'Mūsų sistema nepatvirtino Jūsų atsakymų, todėl išsaugojome juos šiame įrenginyje ir išsiųsime dar kartą automatiškai. Niekas neprarasta. Pokalbį žemiau vis tiek galite užsisakyti.',
