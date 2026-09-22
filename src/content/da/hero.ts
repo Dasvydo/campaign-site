@@ -7,10 +7,12 @@ export const hero: Content['hero'] = {
   skip: 'Spring til indholdet',
   nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
 
+  /* Re-cut around the clause the pen should mark. Concatenated with clockOut
+     it is the same sentence as before, word for word. */
   title: {
-    before: 'Fyrre mails ind. Dem jeres sager svarer på, ',
-    mark: 'i udkast',
-    mid: '. Inden klokken ',
+    before: 'Fyrre mails ind. ',
+    mark: 'Dem jeres sager svarer på',
+    mid: ', i udkast. Inden klokken ',
     after: '.',
   },
 
@@ -24,7 +26,10 @@ export const hero: Content['hero'] = {
     sr: 'Læs hele udkastet i det gennemgåede eksempel.',
   },
 
-  setup: 'Den kører på vores servere, eller vi sætter den op på jeres.',
+  /* The sub-headline. See the long note on the English key: this slot carried
+     where the thing is installed, and now carries what the thing is. */
+  setup:
+    'DoviLoop skriver svarudkast inde i Outlook, ud fra de sager, jeres virksomhed allerede har, i jeres egen tone. Jeres team læser hvert udkast og trykker send.',
 
   bar: {
     text: 'Under et minut, intet kort.',

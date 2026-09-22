@@ -78,6 +78,37 @@ export function Hero({
      control. */
   const current = localeNames.find((l) => l.code === locale);
 
+  /* The one checkable fact the page already owns, lifted to the first screen.
+
+     A design review scored this hero 3/10 on "is it credible", and the reason
+     was arithmetic rather than taste: the two facts a stranger can go and
+     verify - the registered entity and its registry code - were at 92% scroll
+     depth, and an ad click that bounces off the fold never reaches them. They
+     are read out of `footer.company` rather than retyped, because a registry
+     code typed twice is a registry code that can disagree with itself, and
+     because the locale audit exempts that block from translation for exactly
+     the reason it should not be duplicated: it is what the Estonian business
+     register says, in every language.
+
+     The address is one field because it is one fact, and the hero wants the
+     town rather than the doorway: the street line stays in the colophon where
+     the full disclosure belongs, and the postal code comes off the town so the
+     line does not read as two unexplained numbers in a row. Every part is
+     dropped when it is empty, so an unfilled company block leaves no stub. */
+  const { legalName, registrationNumber, address } = c.footer.company;
+  const registryFacts = [
+    legalName,
+    registrationNumber,
+    address
+      .split(',')
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .slice(1)
+      .map((l) => l.replace(/^[\d\s]+/, '').trim())
+      .filter(Boolean)
+      .join(', '),
+  ].filter(Boolean);
+
   /* What a <details> does not do by itself: shut when you press somewhere else,
      and shut on Escape. Both are what a person expects of a thing that opened
      over the page, and neither is needed for the control to work. */
@@ -322,15 +353,67 @@ export function Hero({
             {c.hero.title.after}
           </h1>
 
+          {/* THE SUB-HEADLINE. The headline above is an outcome, which is a
+              good thing for a headline to be and a useless thing for it to be
+              alone: it names no product, no category and no tool, and there
+              was nothing under it. The DOM had no element here at all, and
+              `.hero-act{margin-block:auto}` filled the hole it left with about
+              a hundred and sixty pixels of empty cream.
+
+              A cute headline is allowed exactly once it has a literal sentence
+              beneath it. This is that sentence, and the page was already
+              telling it to everybody except the reader: to crawlers in
+              meta.title, to visitors with scripting off in the <noscript>
+              block, and to whoever scrolled to the colophon. The class name is
+              `hero-setup` because the content key is `setup` and because
+              scripts/verify-visible.mjs names this selector in the list of
+              parts the argument is made of; both belong to files this task
+              does not own, and a rename that cannot be made in the same commit
+              is a gate pointed at nothing. */}
+          <p className="hero-setup">{c.hero.setup}</p>
+
+          {/* AND WHO IT IS FOR, in the same breath. Nothing above the fold
+              named a trade: a property manager had to reach the audience
+              folders, most of a screen down, to find out the page was written
+              for them.
+
+              The three trades are read off `who.groups` rather than written
+              again here. They are already translated, already true, and
+              already the list the worked example's desks are paired against,
+              so a hero that named its own three could name three the rest of
+              the page does not serve. The label is `who.title` for the same
+              reason: it is the sentence that section already opens with. */}
+          <div className="hero-for">
+            <span className="hero-for-label">{c.who.title}</span>
+            <ul className="hero-for-list">
+              {c.who.groups.map((g) => (
+                <li key={g.id}>{g.tab}</li>
+              ))}
+            </ul>
+          </div>
+
           <div className="hero-act">
-            <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
+            <a
+              className="hero-btn ix-raise"
+              href="#fit"
+              onClick={() => { onCta(); focusTarget('fit'); }}
+            >
               {c.nav.cta}
             </a>
             {/* Under the button, where a reader who has just decided to press
-                it meets the one thing that would stop them. It sits inside
-                `.hero-act` rather than after it, so the auto margins that
-                centre the button in the column's slack centre the pair. */}
-            <p className="hero-setup">{c.hero.setup}</p>
+                it asks who they would be pressing it with. A registered
+                company with a registry code is the cheapest honest answer to
+                that, and it was at the very bottom of the page. */}
+            {registryFacts.length ? (
+              <p className="hero-trust">
+                <span className="hero-trust-label">{c.footer.officeLabel}</span>
+                {registryFacts.map((fact) => (
+                  <span className="hero-trust-fact" key={fact}>
+                    {fact}
+                  </span>
+                ))}
+              </p>
+            ) : null}
           </div>
 
         </div>
@@ -397,7 +480,11 @@ export function Hero({
 
       <div className="hero-bar" ref={barRef}>
         <p>{c.hero.bar.text}</p>
-        <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>
+        <a
+          className="hero-btn ix-raise"
+          href="#fit"
+          onClick={() => { onCta(); focusTarget('fit'); }}
+        >
           {c.nav.cta}
         </a>
       </div>

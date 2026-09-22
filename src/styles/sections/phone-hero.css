@@ -20,11 +20,22 @@
     width:min(268px,74%);
     margin:0 0 4px;
   }
+  /* It sat ABOVE the headline: `order:-1` spent roughly 46px of the one fold
+     that matters on a block that is aria-hidden and whose only word is the
+     headline's own first word. On a 390x844 screen that is the difference
+     between the button being on the first screen and not. It falls in
+     document order now, after the copy the visitor came for. */
   .hero-count{
-    order:-1;
-    margin:0 0 18px;
+    margin:18px 0 0;
     display:block;
   }
+
+  /* The deck and the strips, one step down from their desktop sizes. The deck
+     stays a reading size: it is the sentence that says what this is, and it is
+     the last thing on the page that should shrink. */
+  .hero-setup{ margin-top:16px; font-size:17px }
+  .hero-for{ margin-top:16px }
+  .hero-trust{ margin-top:12px }
 
   /* the desktop rhythm is 48px between bands, which is right for a page read
      at arm's length and too airy on a screen the size of a hand. The phone
@@ -58,8 +69,13 @@
   .hero-sheet--lit{animation:none; filter:drop-shadow(0 1.5px 2px rgba(37,29,24,.20))}
   .hero-pile-shadow{animation:none; transform:scale(1); opacity:1}
   .hero-tally path{stroke-dasharray:none; stroke-dashoffset:0}
-  .hero-tab:hover,.hero-tab:active,
-  .hero-btn:hover,.hero-btn:active{transform:none}
+  /* .hero-btn is NOT in this list any more. It carries .ix-raise, and
+     interaction.css deliberately re-asserts the press under reduced motion:
+     "do not animate me" is not "do not tell me my click worked", and this rule
+     was one of the six that took the only confirmation a reader gets that
+     their tap on the primary call to action landed. The hover RISE is still
+     withdrawn, by --ix-lift-y going to 0 in that same block. */
+  .hero-tab:hover,.hero-tab:active{transform:none}
   .hero-deal:hover .hero-sheet-face,
   .hero-deal:active .hero-sheet-face{transform:rotate(var(--r))}
   @media (max-width:559px){

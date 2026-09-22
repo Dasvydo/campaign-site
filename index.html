@@ -59,7 +59,15 @@
          So the fallback lives in the served HTML, where it cannot depend on
          the thing that is missing. The styles are inline for the same reason
          the markup is: the stylesheet is a module import and does not exist
-         without the bundle either. -->
+         without the bundle either.
+
+         REWRITTEN 2026-09-22. It said "This page needs JavaScript to run the
+         fit check" and "For teams of 10 or more". The fit check was deleted
+         with the old funnel and the offer is per-seat self-serve, so this
+         block was making two false statements on the one surface a search
+         engine reads without running a script. It now says what the product
+         is, who it is for, and how to reach a person - the same three things
+         the hero says, in the same words. -->
     <noscript>
       <style>
         body { background: #fff0e5 }
@@ -77,19 +85,23 @@
       <div class="nojs">
         <h1>DoviLoop for teams</h1>
         <p>
-          Email drafting for firms that live in Outlook. It reads the message,
-          pulls what your firm already knows, and writes the reply in your
-          voice. You read it and send it.
+          DoviLoop drafts replies inside Outlook, out of the files your firm
+          already has, in your own voice. Your team reads each one and presses
+          send. Nothing sends itself.
         </p>
         <p>
-          This page needs JavaScript to run the fit check. Yours is turned off,
-          so write instead and we will answer the same questions by email:
+          For property managers, accounting firms and insurance brokers.
+        </p>
+        <p>
+          The rest of this page is built by JavaScript and yours is turned off,
+          so the free trial cannot be started from here. Write instead and we
+          will start it with you:
           <a href="mailto:dovyvini@doviloop.dev?subject=DoviLoop%20for%20teams">dovyvini@doviloop.dev</a>.
         </p>
         <hr />
         <p class="small">
-          Tell us how many people are on the team, what they use for email, and
-          what they answer all day. For teams of 10 or more.
+          Tell us what your team answers all day and what they use for email.
+          DoviLoop OU, registered office in Tallinn, Estonia. Hosted in the EU.
         </p>
       </div>
     </noscript>

@@ -253,61 +253,122 @@
   to{background-size:100% .66em}
 }
 
-/* The one figure the hero states flatly. Set as a sentence under the deck,
-   in the deck's own measure, with the figure lifted so it reads as a number
-   rather than as a word. */
-.hero-payback{
-  margin:22px 0 0; max-width:34ch;
-  font-size:19px; line-height:1.45; color:var(--ink);
-  font-variant-numeric:tabular-nums lining;
-}
-.hero-payback-fig{ font-weight:500; white-space:nowrap }
-/* The same air above the button as below it, measured to where the next
-   section starts.
+/* ---- the deck, the audience, and the act -------------------------------
+   Three elements, in the order a stranger asks for them: what is this, is it
+   for me, and who would I be pressing that button with.
 
-   `margin-top:auto` alone put all the slack above: 263 pixels over the button
-   and 45 under it at 1512. Two autos split the column's slack evenly, but the
-   grid's own bottom padding still sits under the column, so the lower gap came
-   out that much bigger than the upper one.
+   What used to be here was a rule called `.hero-payback` that nothing
+   rendered - a deck at 19px on a 34ch measure, left behind when the figure it
+   set was deleted - and an `.hero-act` that filled the resulting hole with
+   `margin-block:auto`. About a hundred and sixty pixels of empty cream sat
+   between the headline and the button, and the only sub-copy on the screen was
+   a 14.5px muted line UNDER the button. The measurements the dead rule carried
+   are not thrown away; they are what `.hero-setup` is set in now.
+   ------------------------------------------------------------------------ */
 
-   The nudge closes exactly that. Shifting the button down by half the padding
-   adds that half to the gap above and takes it off the gap below, and the two
-   meet in the middle. `top` on a flex item moves the paint, not the layout, so
-   nothing else in the column shifts with it. */
-.hero-act{
-  margin-block:auto;
-  display:flex; flex-direction:column; align-items:flex-start;
-  position:relative; top:calc(var(--hero-pb) / 2);
-}
-
-/* The line under the button. Quiet on purpose: it is there for the reader who
-   has decided and then hesitated, not for the one still reading the headline.
-   Its width is held short of the column so it never runs under the artwork. */
+/* THE SUB-HEADLINE. A sentence to be read rather than a caption, so it takes
+   a reading size and full ink. The measure runs a little wider than the dead
+   deck's 34ch because this is three clauses rather than one, and at 34ch on a
+   580px column it set in five short lines with a ragged right. */
 .hero-setup{
-  margin:16px 0 0;
-  max-width:34ch;
-  font-size:14.5px; line-height:1.5;
+  margin:20px 0 0;
+  max-width:42ch;
+  font-size:19px; line-height:1.5;
+  color:var(--ink);
+}
+
+/* WHO IT IS FOR. The label takes the page's own eyebrow - 12.5px, 500, .14em,
+   uppercase, muted - the same micro type the masthead nav and both section
+   eyebrows are set in, so the strip reads as part of the page rather than as a
+   widget bolted on.
+
+   Each trade is marked with an amber dot. Amber is allowed to be a dot, a rule
+   or a focus ring on this page and nothing else; it never carries a letterform,
+   and this one carries no letter.
+
+   No reading measure on it. The deck above is a paragraph and is held to one;
+   this is three labels, and capping it would wrap a row that the copy column
+   is already wide enough to hold. The column is the bound. */
+.hero-for{
+  margin:18px 0 0;
+}
+.hero-for-label{
+  display:block; margin:0 -.14em 5px 0;
+  font-size:12.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
   color:var(--muted);
 }
+/* Flex-wrapped rather than inline, and the dot is a MARKER on every trade
+   rather than a separator between two of them.
 
+   Both of those are the same bug seen from two sides, and both showed up on a
+   390px screen. Set inline, the line could break on the far side of a
+   separator, so the first line ended "Accounting firms ." with a bullet that
+   had lost its word. Made a flex item so it could not, the separator instead
+   started the wrapped line, which is an orphan of the other kind: the
+   Lithuanian trades are half as long again as the English and always wrap. A
+   marker every item carries reads the same wherever the line breaks. */
+.hero-for-list{
+  display:flex; flex-wrap:wrap; align-items:baseline;
+  gap:2px 16px;
+  margin:0; padding:0; list-style:none;
+  font-size:15.5px; line-height:1.45; color:var(--ink);
+}
+.hero-for-list li{ display:flex; align-items:center; min-width:0 }
+.hero-for-list li::before{
+  content:""; flex:none;
+  width:4px; height:4px; margin-inline-end:.5em; border-radius:50%;
+  background:var(--amber);
+}
+
+/* THE ACT. A real margin, not two autos.
+
+   The autos were there to centre the button in a column whose only other
+   content was the headline, and centring in a void is what made the void
+   legible. With a deck and an audience strip above it the button belongs with
+   the copy, one clear step below the last line of it. */
+.hero-act{
+  margin-block:clamp(26px,2.4vw,36px) 0;
+  display:flex; flex-direction:column; align-items:flex-start;
+}
+
+/* UNDER THE BUTTON: who this is. The registry facts, in the order the
+   colophon prints them, separated by a taupe dot rather than an amber one so
+   the strip above stays the louder of the two. Quiet type on purpose: it is
+   there for the reader who has decided and then hesitated. */
+.hero-trust{
+  display:flex; flex-wrap:wrap; align-items:center; gap:2px 12px;
+  margin:14px 0 0;
+  font-size:13px; line-height:1.5;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums lining;
+}
+.hero-trust-label{
+  font-size:11.5px; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+}
+.hero-trust-fact{ display:flex; align-items:center }
+/* A marker on every fact, for the reason the strip above gives at length. */
+.hero-trust-fact::before{
+  content:""; flex:none;
+  width:3px; height:3px; margin-inline-end:.5em; border-radius:50%;
+  background:var(--taupe);
+}
+
+/* The primary button declares its colour, its type and its geometry, and
+   nothing about how it answers a cursor. That is `.ix-raise`, which the
+   element carries in Hero.tsx: the resting shadow, the hover lift, the press,
+   the one curve, the hover guard and the reduced-motion behaviour all come
+   from src/styles/interaction.css. It used to write its own hover shadow and
+   its own timing here, and its `:hover` had no `@media (hover: hover)` guard,
+   so on a phone the button stayed lit after the tap that navigated away. */
 .hero-btn{
   display:inline-block;
   background:var(--ink); color:var(--cream);
   font:500 17px/1.2 "DM Sans","Helvetica Neue",Arial,sans-serif;
   text-decoration:none; border:0; cursor:pointer;
   padding:17px 28px; border-radius:3px;
-  box-shadow:0 1px 1px rgba(37,29,24,.24), 0 8px 16px -8px rgba(37,29,24,.40);
-  transition:transform var(--t-in) var(--e-out), box-shadow var(--t-in) var(--e-out);
 }
-.hero-btn:hover{
-  box-shadow:0 1px 1px rgba(37,29,24,.24), 0 12px 22px -8px rgba(37,29,24,.50);
-  transition-duration:var(--t-micro);
-}
-.hero-btn:active{
-  transform:translateY(1px) scale(.994);
-  box-shadow:0 1px 1px rgba(37,29,24,.32);
-  transition-duration:var(--t-tap);
-  transition-timing-function:var(--e-press);
+@media (hover:hover){
+  .hero-btn:hover{ background:var(--ix-solid-hover) }
 }
 
 .hero-count{
@@ -563,8 +624,12 @@
   .hero-grid{display:flex; flex-direction:column; align-items:stretch}
   .hero-copy{order:0}
   .hero-pile{order:1}
+  /* `order:-1` used to pull the count above the headline, which spent the top
+     of the one screen that has to make the argument on a decorative block that
+     is aria-hidden and repeats the headline's first word. It falls in document
+     order now, under the copy and above the pile. */
   .hero-count{
-    order:-1; margin:0 0 24px;
+    margin:0 0 24px;
     display:flex; align-items:flex-end; gap:clamp(16px,4vw,32px);
   }
   .hero-numeral{font-size:clamp(88px, 30px + 13vw, 168px)}

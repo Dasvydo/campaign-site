@@ -7,10 +7,12 @@ export const hero: Content['hero'] = {
   skip: 'Pereiti prie turinio',
   nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
 
+  /* Re-cut around the clause the pen should mark. Concatenated with clockOut
+     it is the same sentence as before, word for word. */
   title: {
-    before: '40 laiškų. Tie, į kuriuos atsako Jūsų bylos, ',
-    mark: 'juodraščiuose',
-    mid: '. Iki ',
+    before: '40 laiškų. ',
+    mark: 'Tie, į kuriuos atsako Jūsų bylos',
+    mid: ', juodraščiuose. Iki ',
     after: ' val.',
   },
   pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
@@ -23,7 +25,10 @@ export const hero: Content['hero'] = {
     sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
   },
 
-  setup: 'Veikia mūsų serveriuose arba įdiegiame Jūsų.',
+  /* The sub-headline. See the long note on the English key: this slot carried
+     where the thing is installed, and now carries what the thing is. */
+  setup:
+    'DoviLoop rašo atsakymų juodraščius Outlook programoje, remdamasi bylomis, kurias Jūsų įmonė jau turi, ir Jūsų pačių tonu. Jūsų žmonės kiekvieną perskaito ir išsiunčia.',
 
   bar: {
     text: 'Trunka mažiau nei minutę, kortelės neprašome.',
