@@ -309,18 +309,33 @@ export function Hero({
 
       <div className="hero-grid" id="hero-content" tabIndex={-1}>
         <div className="hero-copy">
-          {/* The outcome, then the time it is reached by. The clock is the
-              one this headline is allowed to name: clockOut is when the work
-              is done, and the promise is the finishing, not the starting.
-              clockIn still opens the worked example, where the hour is the
-              beginning of a morning rather than the end of a job. */}
+          {/* The problem and the answer to it, in the same breath and the same
+              number. The clock came out on 2026-09-22: the headline used to
+              end "by 08:41", which is a promise about when, made before the
+              reader knows what. Both clocks still run in the worked example,
+              where a time means something because there is a morning around
+              it. */}
           <h1 id="hero-title">
-            {c.hero.title.before}
-            <span className="hero-hl">{c.hero.title.mark}</span>
-            {c.hero.title.mid}
-            <span className="hero-clock">{c.hero.clockOut}</span>
-            {c.hero.title.after}
+            {/* A line each, by the markup rather than by where the text
+                happens to wrap. The two beats are the same shape and open on
+                the same number, and that is the whole argument of the line, so
+                a break that lands inside the second one throws it away.
+                `text-wrap:balance` put English at "40 emails in. 40 / drafts
+                ready", which is exactly that; no max-width moves it, because
+                balance evens the lines inside whatever width it is given. */}
+            <span className="hero-h-beat">{c.hero.title.problem}</span>
+            <span className="hero-h-beat">
+              {c.hero.title.before}
+              <span className="hero-hl">{c.hero.title.mark}</span>
+              {c.hero.title.after}
+            </span>
           </h1>
+
+          {/* Where a draft comes from, which is the only thing that separates
+              this from the chatbot the reader is already pasting into. The
+              headline cannot carry it without becoming the four line sentence
+              it just stopped being. */}
+          <p className="hero-lede">{c.hero.lede}</p>
 
           <div className="hero-act">
             <a className="hero-btn" href="#fit" onClick={() => { onCta(); focusTarget('fit'); }}>

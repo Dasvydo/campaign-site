@@ -429,8 +429,7 @@ const drivePoints = (): Array<[number, number, number, number]> => {
          not enough on its own. */
       [
         'the headline, with the hour the work is finished by',
-        c.hero.title.before + c.hero.title.mark + c.hero.title.mid + c.hero.clockOut +
-          c.hero.title.after,
+        c.hero.title.problem + c.hero.title.before + c.hero.title.mark + c.hero.title.after,
       ],
       ['the flat firm fee, on the fee sheet', firmFee.term + money(tier.price) + firmFee.per],
       ['the setup fee, on the fee sheet', setupFee.term + money(OFFER.setupFee)],

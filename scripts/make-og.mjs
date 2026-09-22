@@ -30,11 +30,6 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
    card with a blank headline. */
 function copyFor(locale) {
   const src = readFileSync(resolve(root, `src/content/${locale}.ts`), 'utf8');
-  const slot = (name) => {
-    const m = src.match(new RegExp(`${name}:\\s*'((?:[^'\\\\]|\\\\.)*)'`));
-    if (!m) throw new Error(`${locale}.ts: no ${name} in the hero title`);
-    return m[1].replace(/\\'/g, "'");
-  };
   const block = src.slice(src.indexOf('  hero: {'));
   const title = block.slice(block.indexOf('title: {'), block.indexOf('pileAlt'));
   const t = (name) => {
@@ -42,12 +37,17 @@ function copyFor(locale) {
     if (!m) throw new Error(`${locale}.ts: no ${name} in the hero title`);
     return m[1].replace(/\\'/g, "'");
   };
-  const clockOut = slot('clockOut');
+  /* The headline lost its `mid` slot and its clock on 2026-09-22. The card
+     carries the line under the headline instead of the setup line now, for
+     the same reason the page does: with a two beat headline there is room to
+     say where a draft comes from, and that is the thing worth putting on
+     something people share. */
   return {
+    problem: t('problem'),
     before: t('before'),
     mark: t('mark'),
-    mid: t('mid') + clockOut + t('after'),
-    setup: (block.match(/\n    setup:\s*'((?:[^'\\]|\\.)*)'/) ?? [, ''])[1].replace(/\\'/g, "'"),
+    mid: t('after'),
+    setup: (block.match(/\n    lede:\s*'((?:[^'\\]|\\.)*)'/) ?? [, ''])[1].replace(/\\'/g, "'"),
   };
 }
 
@@ -93,6 +93,7 @@ body::before{
   font-size:19px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
   color:#70635c;
 }
+.beat{display:block}
 h1{
   font-family:'Playfair Display',serif; font-weight:400;
   font-size:66px; line-height:1.14; letter-spacing:-.01em;
@@ -113,7 +114,7 @@ h1{
 }
 </style></head><body>
 <div class="kicker">DoviLoop for teams</div>
-<h1>${esc(c.before)}<span class="mark">${esc(c.mark)}</span>${esc(c.mid)}</h1>
+<h1><span class="beat">${esc(c.problem)}</span><span class="beat">${esc(c.before)}<span class="mark">${esc(c.mark)}</span>${esc(c.mid)}</span></h1>
 <div class="foot"><div class="setup">${esc(c.setup)}</div><div class="host">teams.doviloop.dev</div></div>
 </body></html>`;
 }
@@ -132,7 +133,7 @@ for (const locale of ['en', 'da', 'lt']) {
   const buf = await page.screenshot({ type: 'png' });
   const out = resolve(root, `public/og-${locale}.png`);
   writeFileSync(out, buf);
-  console.log(`  og-${locale}.png  ${(buf.length / 1024).toFixed(0)} KB  "${c.before}${c.mark}${c.mid}"`);
+  console.log(`  og-${locale}.png  ${(buf.length / 1024).toFixed(0)} KB  "${c.problem} ${c.before}${c.mark}${c.mid}"`);
 }
 
 await browser.close();

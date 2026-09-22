@@ -33,11 +33,12 @@ export const en: Content = {
     nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
 
     title: {
-      before: 'Forty emails in. The ones your files answer, ',
-      mark: 'drafted',
-      mid: '. By ',
+      problem: '40 emails in.',
+      before: '40 drafts ',
+      mark: 'ready',
       after: '.',
     },
+    lede: 'Written from your own files, so you send them instead of fixing them.',
 
     pileAlt: 'A pile of forty letters waiting on a desk.',
     deal: {

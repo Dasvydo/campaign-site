@@ -195,12 +195,45 @@ export interface Content {
     skip: string;
     nav: { example: string; price: string; fit: string };
 
-    /** The headline is split so the highlighter can fall on the right phrase in
-        each language rather than on a fixed word count, and so the time the
-        work is finished by is written once, in hero.clockOut, rather than typed
-        into three translations of the same sentence. The headline carries the
-        outcome: what the reader ends up with, and when. */
-    title: { before: string; mark: string; mid: string; after: string };
+    /** The headline, split so the highlighter can fall on the right phrase in
+        each language rather than on a fixed word count.
+
+        Two beats and nothing else since 2026-09-22: the problem, then the
+        same number as the answer to it. Each beat is a slot of its own, and
+        the component gives each one its own line, because the whole force of
+        the headline is the two of them being the same shape and the same
+        number. Left to wrap, `text-wrap:balance` evens the line lengths
+        instead and English broke as "40 emails in. 40 / drafts ready", which
+        splits the second beat and hides the parallel. No max-width moves it:
+        balance works inside whatever width it is given. Danish broke correctly
+        by luck and Lithuanian broke into three. It used to carry the mechanism and
+        the finishing time as well, and ran to four lines at desktop width
+        with the mechanism buried in a subordinate clause, which is a lot of
+        headline for a reader who has been on the page for one second.
+
+        The `mid` slot and the clock went with that. They printed hero.clockOut
+        between two fragments, so the line ended "by 08:41"; the finishing time
+        is the worked example's to make, where the same clock still runs, and
+        the headline now makes the simpler claim. */
+    title: {
+      /** The first beat, whole: the problem, as a sentence of its own. */
+      problem: string;
+      /** The second beat, split so the highlighter can fall on the right word
+          in each language rather than on a fixed word count. */
+      before: string;
+      mark: string;
+      after: string;
+    };
+    /** The line under the headline, and the only place on the page above the
+        fold that says where a draft comes from.
+
+        This is the whole wedge in one sentence. The reader's current answer to
+        this problem is pasting the question into a chatbot, reading back
+        something generic and correcting it into something true, and the
+        difference here is not that a draft appears but that it was written out
+        of their own files and does not need that correction. The headline can
+        say what arrives; only this can say why it is worth having. */
+    lede: string;
     /** The pile of letters, and the one dealt off the top of it.
 
         The card is the drafted reply rather than the message that asked for

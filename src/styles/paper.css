@@ -328,7 +328,25 @@
 @media (min-width:601px){ #hero h1{line-height:1.02; letter-spacing:-.014em} }
 @media (min-width:1024px){ #hero h1{line-height:.98; letter-spacing:-.022em} }
 
-.hero-clock{font-variant-numeric:tabular-nums lining}
+/* One line per beat. A long language wraps inside its own beat, which is a
+   readable three line headline rather than a parallel taken apart. */
+.hero-h-beat{ display:block }
+
+/* `.hero-clock` was here, setting tabular numerals on the 08:41 the headline
+   used to end with. The headline stopped naming a time on 2026-09-22 and the
+   rule had nothing left to style. The two figures the headline does carry are
+   both "40", where tabular spacing would be worse than the proportional
+   default rather than better.
+
+   The line under the headline. It is the wedge, so it is sized to be read
+   rather than skimmed: bigger than body copy, well short of the headline, and
+   measured at 46 characters so it breaks into two lines at desktop width and
+   reads as a sentence rather than a banner. */
+.hero-lede{
+  margin:20px 0 0; max-width:46ch;
+  font-size:clamp(17px, 15px + .42vw, 22px);
+  line-height:1.5; color:var(--muted); text-wrap:pretty;
+}
 
 .hero-hl{
   background-image:linear-gradient(rgba(245,155,10,.52),rgba(245,155,10,.52));

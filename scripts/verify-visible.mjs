@@ -44,6 +44,10 @@ if (!BASE) {
    would satisfy a check on the section alone. */
 const PARTS = [
   ['the hero headline', '#hero h1'],
+  /* The line under it, which is the only thing above the fold that says where
+     a draft comes from. Added with the headline rewrite of 2026-09-22; a
+     headline that short is only honest if this is beside it. */
+  ['what the drafts are written out of', '#hero .hero-lede'],
   ['the drafted reply in the hero', '#hero .hero-deal'],
   ['where it is installed', '#hero .hero-setup'],
   ['the worked example', '#demo .demo-beats'],
@@ -485,6 +489,74 @@ try {
       '  and ?review brings it, code and all',
       `${armed} button(s), ${asked.length} chunk request(s)`);
 
+    await ctx.close();
+  }
+
+  /* The headline is two beats and they get a line each.
+
+     The whole force of the line is that the two halves are the same shape and
+     open on the same number: 40 in, 40 ready. A break inside the second half
+     throws that away, and that is what the page did until 2026-09-22, because
+     `text-wrap:balance` evens the line lengths rather than respecting the
+     sentence. English read "40 emails in. 40 / drafts ready". No max-width
+     moves it; balance works inside whatever width it is given. Danish broke
+     correctly by luck, which is the part worth guarding: a check written
+     against Danish alone would have passed on a broken English headline.
+
+     So it is measured in all three languages and at four widths, by grouping
+     the headline's words by the top of their client rect and comparing the
+     first line to the copy's own first beat. A long language may wrap inside
+     its second beat, which is fine and not checked; what is checked is that
+     the first beat is a line, alone. */
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
+    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
+    const page = await ctx.newPage();
+
+    for (const width of [1920, 1440, 1100, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const loc of LOCALES) {
+        await page.goto(`${BASE}/${loc}`, { waitUntil: 'domcontentloaded' });
+        await page.waitForSelector('#hero h1');
+        await page.waitForTimeout(250);
+        const got = await page.evaluate(() => {
+          const h1 = document.querySelector('#hero h1');
+          const walker = document.createTreeWalker(h1, NodeFilter.SHOW_TEXT);
+          const rows = new Map();
+          let node;
+          while ((node = walker.nextNode())) {
+            const text = node.textContent;
+            let i = 0;
+            while (i < text.length) {
+              while (i < text.length && /\s/.test(text[i])) i += 1;
+              let j = i;
+              while (j < text.length && !/\s/.test(text[j])) j += 1;
+              if (j > i) {
+                const r = document.createRange();
+                r.setStart(node, i);
+                r.setEnd(node, j);
+                const top = Math.round(r.getBoundingClientRect().top);
+                if (!rows.has(top)) rows.set(top, []);
+                rows.get(top).push(text.slice(i, j));
+              }
+              i = j;
+            }
+          }
+          const lines = [...rows.entries()].sort((a, b) => a[0] - b[0]).map(([, ws]) => ws.join(' '));
+          const beat = document.querySelector('#hero h1 .hero-h-beat');
+          return { first: lines[0] ?? '', lines: lines.length, beat: (beat?.textContent ?? '').trim() };
+        });
+        /* Compared against the copy's own first beat, read off the page, so
+           this cannot drift from whatever the locale file says. */
+        check(
+          got.first.replace(/\s+/g, ' ') === got.beat.replace(/\s+/g, ' ') && got.lines >= 2,
+          `\n  /${loc || 'en'} at ${width}: the headline's first beat has the line to itself`,
+          `${got.lines} line(s), first reads ${JSON.stringify(got.first)}`,
+        );
+      }
+    }
+    await page.close();
     await ctx.close();
   }
 

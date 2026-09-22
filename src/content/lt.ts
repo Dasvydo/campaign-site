@@ -36,11 +36,12 @@ export const lt: Content = {
     nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
 
     title: {
-      before: '40 laiškų. Tie, į kuriuos atsako Jūsų bylos, ',
-      mark: 'juodraščiuose',
-      mid: '. Iki ',
-      after: ' val.',
+      problem: '40 laiškų.',
+      before: '40 juodraščių ',
+      mark: 'paruošta',
+      after: '.',
     },
+    lede: 'Parašyta remiantis Jūsų pačių bylomis, todėl juos siunčiate, o ne taisote.',
     pileAlt: 'Keturiasdešimties laiškų krūva, laukianti ant stalo.',
     deal: {
       draftLabel: 'Atsakymo juodraštis, paruoštas',

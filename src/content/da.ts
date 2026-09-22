@@ -36,11 +36,12 @@ export const da: Content = {
     nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
 
     title: {
-      before: 'Fyrre mails ind. Dem jeres sager svarer på, ',
-      mark: 'i udkast',
-      mid: '. Inden klokken ',
+      problem: '40 mails ind.',
+      before: '40 udkast ',
+      mark: 'klar',
       after: '.',
     },
+    lede: 'Skrevet ud fra jeres egne sager, så I sender dem i stedet for at rette dem.',
 
     pileAlt: 'En bunke på fyrre breve, der venter på et skrivebord.',
     deal: {
