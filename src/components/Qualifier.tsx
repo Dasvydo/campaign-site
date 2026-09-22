@@ -330,8 +330,11 @@ export function Qualifier({
     <section id="qualifier" aria-labelledby="qualifier-h" data-js={hasJs ? 'on' : undefined}>
       <div className="qualifier-wrap">
         <div className="qualifier-head" id="fit" tabIndex={-1}>
+          {/* The rule went with the number it separated. It sat between the
+              folio and the eyebrow; with the folio gone it hung off the left
+              of the section as a dash attached to nothing - "- WHAT DO I DO
+              NOW". A separator needs two things to separate. */}
           <p className="qualifier-kicker">
-            <span className="qualifier-kicker-rule" aria-hidden="true" />
             <span className="qualifier-eyebrow">{c.form.eyebrow}</span>
           </p>
           <h2 className="qualifier-h" id="qualifier-h">
