@@ -1,0 +1,367 @@
+/* ==========================================================================
+   interaction.css - the page's interaction vocabulary.
+
+   WHY THIS FILE EXISTS
+   The founder's brief for "modernise it" was explicit and narrow: no palette
+   change, no typeface change, keep it on brand - "this is going to be mainly
+   reflected in the UI elements that people interact with, such as hovering
+   over buttons, clicking on buttons, hovering over stuff in general."
+
+   So the whole distance between "editorial print artefact" and "software
+   product" is carried here, by how things answer back when they are touched.
+   Nothing in this file changes a colour, a typeface or a size. It changes
+   how fast, how far and how certainly a control responds.
+
+   The page already had the right instincts scattered across nine sections:
+   four different section files each defined a hover shadow, and all four were
+   byte-identical by intent (--hero-sh-lift, --demo-sh-lift, --q-lift,
+   --nm-lift). That consistency was the strength. This file is that agreement,
+   written down once, so a new component cannot quietly disagree with it.
+
+   ---------------------------------------------------------------------------
+   THE CONTRACT. Four tokens. A component consumes these and declares no
+   hover shadow and no transition curve of its own.
+
+     --ix-lift    the hover response   (the box-shadow a raised control wears)
+     --ix-press   the press response   (the transform a pressed control takes)
+     --ix-ring    the focus ring       (the outline shorthand for :focus-visible)
+     --ix-curve   the transition       (duration + timing function, together,
+                                        so it drops straight into a shorthand)
+
+   SUPPORTING TOKENS. Same --ix- prefix, same rules, listed here so a later
+   task can find them without reading the file:
+
+     --ix-rest          the resting box-shadow - the other end of --ix-lift
+     --ix-lift-y        the hover translate distance (0 under reduced motion)
+     --ix-press-shadow  the flattened box-shadow of a pressed control
+     --ix-curve-press   --ix-curve at press speed (see its comment)
+     --ix-ring-offset   outline-offset for the focus ring
+     --ix-ring-light    the ring on the cream ground, named for re-pointing
+     --ix-ring-dark     the ring on the charcoal grounds, likewise
+     --ix-tint          the hover wash under a quiet/ghost control
+     --ix-solid-hover   the hover background of a solid control
+     --ix-edge          the optional 1px paper highlight, for sheet surfaces
+
+   PRIMITIVES. Four classes at the bottom of this file - .ix-raise, .ix-tap,
+   .ix-link, .ix-focus - apply the vocabulary so a component does not have to
+   restate it. Prefer them. They already carry the hover guard and the
+   reduced-motion behaviour, which is the part that is easy to get wrong.
+
+   ---------------------------------------------------------------------------
+   THREE RULES OF USE
+
+   1. No component declares its own hover shadow or transition curve.
+      If a value is missing here, add it here with an --ix- name. Do not
+      inline it. The moment two components disagree about how long a hover
+      takes, the page stops feeling like one piece of software.
+
+   2. Every :hover rule is wrapped in @media (hover: hover).
+      Without the guard, a touch device synthesises hover on tap and the
+      hovered state sticks after the finger leaves - the control stays lit
+      until something else is tapped. It reads as a bug, and on a landing
+      page whose job is a signup click, it reads as a broken button.
+
+   3. Reduced motion removes the transition, never the press.
+      "Do not animate me" is not "do not tell me my click worked." Under
+      prefers-reduced-motion the pressed state still happens, it just happens
+      instantly. See the reduced-motion block below.
+
+   CASCADE. Unlayered, like paper.css and the section files, and imported
+   after them from index.css - so an .ix- primitive outranks a section rule
+   it is combined with, and both outrank Tailwind's layers.
+   ========================================================================== */
+
+:root {
+  /* ------------------------------------------------------------------
+     --ix-curve: 160ms on the page's own out-curve.
+
+     Duration and easing travel together in one token so a component writes
+     `transition: box-shadow var(--ix-curve)` and cannot pick its own timing
+     by accident.
+
+     160ms is not invented: it is --t-micro, the step every existing hover on
+     this page already uses, and cubic-bezier(.2,.8,.3,1) is --e-out, the
+     curve they use with it. A new, faster value would have made the new
+     components feel out of step with the sections around them, which is the
+     opposite of what "one piece of software" means. It is fast enough to
+     read as immediate and slow enough not to flicker on a trackpad sweep.
+
+     Written as literals rather than var(--t-micro) var(--e-out) on purpose:
+     this vocabulary has to be auditable on its own, and the section files it
+     would otherwise depend on are being reorganised. The provenance is the
+     comment; the value is the same.
+     ------------------------------------------------------------------ */
+  --ix-curve: 160ms cubic-bezier(0.2, 0.8, 0.3, 1);
+
+  /* --ix-curve-press: the same gesture, at press speed.
+
+     There is one curve for entering a state. A press is the exception and
+     gets its own, because a press that takes as long as a hover feels mushy
+     - the finger is already up before the control has finished moving. 90ms
+     is --t-tap and cubic-bezier(.3,0,0,1) is --e-press, the pairing the
+     existing buttons already tap with. This is the only sanctioned second
+     timing; anything else belongs on --ix-curve. */
+  --ix-curve-press: 90ms cubic-bezier(0.3, 0, 0, 1);
+
+  /* ------------------------------------------------------------------
+     --ix-rest / --ix-lift: the two ends of the hover elevation.
+
+     --ix-lift is the one hover shadow for the page. The value is the lift
+     that --hero-sh-lift, --demo-sh-lift, --q-lift and --nm-lift all already
+     carried, byte for byte, minus their inset highlight (see --ix-edge).
+     Keeping the 1-2px x-offset matters: everything on this page is lit from
+     the top left, and a new card that cast a straight-down shadow would look
+     like it had been pasted in from another site.
+
+     --ix-rest is the flat rung of the same ladder (--demo-sh-flat,
+     --who-sh-flat). It exists so a control has something to transition FROM.
+     Both values are two shadow layers with matching geometry, which is what
+     lets box-shadow interpolate cleanly instead of popping; keep the layer
+     counts equal if either is ever edited.
+     ------------------------------------------------------------------ */
+  --ix-rest:
+    0 1px 1px rgba(37, 29, 24, 0.16),
+    0 2px 4px -1px rgba(37, 29, 24, 0.10);
+  --ix-lift:
+    1px 2px 2px -1px rgba(37, 29, 24, 0.18),
+    2px 6px 12px -4px rgba(37, 29, 24, 0.16);
+
+  /* --ix-lift-y: how far a hovered control rises.
+
+     1px. Every existing hover on this page that moves at all moves exactly
+     this far. A larger rise reads as a toy; this reads as the control coming
+     up to meet the cursor. Set to 0 under reduced motion, which is how the
+     hover translate is withdrawn without any component writing
+     `transform: none` - see the reduced-motion block. */
+  --ix-lift-y: -1px;
+
+  /* --ix-edge: the 1px inset highlight that makes a surface read as a raised
+     sheet of paper. Deliberately NOT folded into --ix-lift, because on a
+     solid espresso button it draws a bevel rather than a paper edge. A sheet
+     surface opts in by appending it:
+
+         box-shadow: var(--ix-lift), var(--ix-edge);
+
+     Same value as --edge. It stays a valid shadow list item on every ground
+     (on dark it is a zero-size transparent shadow, not `none`) so appending
+     it can never invalidate the declaration it is appended to. */
+  --ix-edge: inset 1px 1px 0 rgba(253, 249, 247, 0.72);
+
+  /* ------------------------------------------------------------------
+     --ix-press: the pressed response.
+
+     translateY(1px) scale(.994) - the control goes down and very slightly
+     in, the way a physical key does. Both numbers are the existing press of
+     .hero-btn and .qualifier-submit; the scale is what makes it read as
+     pressed rather than merely nudged, and at .994 it is under a pixel on a
+     button and about two on a full-width mobile one - felt, not seen.
+
+     This is the single most important value in the file. It is the only
+     confirmation a person gets that their click landed before the page
+     navigates, and it is the one state that survives reduced motion.
+
+     Used as `transform: var(--ix-press)`, so it REPLACES any base transform.
+     A component with a resting rotation or offset must compose the two
+     itself rather than reach for a second press token. */
+  --ix-press: translateY(1px) scale(0.994);
+
+  /* --ix-press-shadow: the shadow of a pressed control, flattened to a
+     single hairline - the elevation collapses because the control is now
+     against the page. Byte-identical to the existing press shadow
+     (--demo-sh-press, and the :active of .hero-btn and .qualifier-submit). */
+  --ix-press-shadow: 0 1px 1px rgba(37, 29, 24, 0.32);
+
+  /* ------------------------------------------------------------------
+     --ix-ring: the focus-visible ring.
+
+     Amber as a ring is allowed by the identity - it is amber as a LETTERFORM
+     that is forbidden. But the ring still has to be seen: WCAG 1.4.11 wants
+     3:1 against what surrounds it, and the plain amber #f59b0a measures
+     1.97:1 on the cream ground, the same failure that bars it from carrying
+     text. So the light-ground ring is #8a5200, the identity's darkened amber
+     - still amber, 5.73:1 on cream, and already what #hero rings with. No
+     new colour is introduced here; the ring moves one step along a value the
+     brand already owns, to a value the page already uses for this purpose.
+
+     On the charcoal grounds that inverts to #fbbd23: 10.4:1 on #1d1816 and
+     9.3:1 on the #28221f cards. The inversion follows the .on-dark pattern
+     index.css already established. #8a5200 on #28221f would be 2.5:1, so a
+     control on a dark ground that is NOT inside .on-dark must re-point the
+     ring itself - `--ix-ring: var(--ix-ring-dark)` - the way .field does.
+
+     2px, offset 2px: unchanged from the ring the page already had.
+     ------------------------------------------------------------------ */
+  --ix-ring-light: 2px solid var(--color-amber-text);
+  --ix-ring-dark: 2px solid var(--color-amber-dark);
+  --ix-ring: var(--ix-ring-light);
+  --ix-ring-offset: 2px;
+
+  /* ------------------------------------------------------------------
+     Hover colour, for controls whose hover is a wash rather than a lift.
+
+     --ix-tint is the ground that appears under a quiet/ghost control on
+     hover; --ix-solid-hover is what a solid control's background moves to.
+     Both are the values .btn-quiet:hover and .btn-primary:hover already
+     used, moved here verbatim and not otherwise touched.
+
+     --ix-solid-hover is a literal rather than an @theme entry because it is
+     an interaction state of a theme colour, not a palette entry: nothing is
+     ever painted flat in it.
+     ------------------------------------------------------------------ */
+  --ix-tint: var(--color-sand);
+  --ix-solid-hover: #12100e;
+}
+
+/* --------------------------------------------------------------------------
+   THE DARK GROUNDS.
+
+   On charcoal a downward shadow is invisible, so elevation is carried by a
+   soft warm halo instead - the value .price-cta:hover already uses, which is
+   --color-warmwhite at 16%. The resting and pressed ends are the same halo
+   at zero size and zero alpha rather than `none`, so box-shadow has matching
+   geometry to interpolate between and the hover fades in instead of popping.
+   -------------------------------------------------------------------------- */
+.on-dark {
+  --ix-rest: 0 0 0 0 rgba(250, 241, 235, 0);
+  --ix-lift: 0 0 0 3px rgba(250, 241, 235, 0.16);
+  --ix-press-shadow: 0 0 0 0 rgba(250, 241, 235, 0);
+  --ix-edge: inset 0 0 0 0 transparent;
+  --ix-ring: var(--ix-ring-dark);
+  --ix-tint: var(--color-secondary-dark);
+  --ix-solid-hover: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   REDUCED MOTION.
+
+   index.css already drops every transition to 0.001ms here, which is the
+   correct global floor: the state change still happens, it just happens at
+   once. This block adds the two judgements that floor cannot make.
+
+   The hover RISE is withdrawn. A 1px translate that arrives instantly is a
+   jump, not a lift, and it tells the reader nothing the shadow and the tint
+   are not already telling them. Withdrawing it by zeroing --ix-lift-y means
+   no component needs a `transform: none` rule to opt in.
+
+   The PRESS SURVIVES. It is re-asserted below rather than merely left alone,
+   because three separate places in the existing stylesheet zero their
+   :active transform in exactly this media query, and a reduced-motion reader
+   there gets no confirmation their click registered at all. That is a
+   feedback failure wearing an accessibility costume. Reduced motion is a
+   request about ambient movement, not a request to be told less.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ix-lift-y: 0px;
+  }
+
+  .ix-raise:active,
+  .ix-tap:active {
+    transform: var(--ix-press);
+  }
+}
+
+/* ==========================================================================
+   PRIMITIVES
+
+   Four classes. Each one is the vocabulary already wired up, including the
+   hover guard and the reduced-motion behaviour. A component that uses one of
+   these needs to declare only its own colour, type and geometry.
+   ========================================================================== */
+
+/* .ix-raise - a control that lifts.
+   Cards, tiles, and any button solid enough to cast a shadow. Rests on
+   --ix-rest, rises on hover, goes down and flat on press. */
+.ix-raise {
+  box-shadow: var(--ix-rest);
+  transition:
+    box-shadow var(--ix-curve),
+    transform var(--ix-curve),
+    background-color var(--ix-curve),
+    border-color var(--ix-curve),
+    color var(--ix-curve);
+}
+
+@media (hover: hover) {
+  .ix-raise:hover {
+    box-shadow: var(--ix-lift);
+    transform: translateY(var(--ix-lift-y));
+  }
+}
+
+.ix-raise:active {
+  transform: var(--ix-press);
+  box-shadow: var(--ix-press-shadow);
+  transition-duration: var(--ix-curve-press);
+}
+
+/* .ix-tap - a control that presses but does not lift.
+   Chips, tabs, segmented controls, quiet buttons: things that sit IN the
+   page rather than on top of it, where a shadow would be noise. The hover is
+   a wash, the press is the same press as everything else. */
+.ix-tap {
+  transition:
+    background-color var(--ix-curve),
+    border-color var(--ix-curve),
+    color var(--ix-curve),
+    box-shadow var(--ix-curve),
+    transform var(--ix-curve);
+}
+
+@media (hover: hover) {
+  .ix-tap:hover {
+    background-color: var(--ix-tint);
+  }
+}
+
+.ix-tap:active {
+  transform: var(--ix-press);
+  transition-duration: var(--ix-curve-press);
+}
+
+/* .ix-link - a text link that answers on hover.
+   The page's existing link idiom is an underline that thickens rather than a
+   colour change, which is what keeps amber off the letterforms. currentColor
+   throughout, so this carries no colour of its own and works on both grounds. */
+.ix-link {
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition:
+    text-decoration-thickness var(--ix-curve),
+    text-underline-offset var(--ix-curve),
+    color var(--ix-curve);
+}
+
+@media (hover: hover) {
+  .ix-link:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* A link presses with opacity rather than --ix-press, and this is deliberate:
+   an inline element is not transformable, so a translate on a link sitting in
+   a sentence would silently do nothing, and forcing inline-block to make it
+   work would change how the sentence wraps. .78 is the page's existing
+   knocked-back value (.hero-brand:hover). A link used as a standalone control
+   - inline-flex, with an icon - should take .ix-tap instead and get the real
+   press. */
+.ix-link:active {
+  opacity: 0.78;
+}
+
+/* .ix-focus - the ring on its own.
+   For anything that needs a visible keyboard focus but no motion: a skip
+   link, a summary, a custom control that is not a button. The global
+   :focus-visible in index.css already covers the ordinary case; this is for
+   an element that has to override a section's own ring. */
+.ix-focus:focus-visible {
+  outline: var(--ix-ring);
+  outline-offset: var(--ix-ring-offset);
+}
+
+/* A pressed control must never be masked by the ring's offset gap: the ring
+   follows the element down. Nothing to declare - outline tracks the
+   transform automatically - but it is worth knowing that is why the press is
+   a transform rather than a margin or a padding change, which would reflow. */

@@ -5,6 +5,13 @@
    so it outranks the utility and base layers below without !important. */
 @import './paper.css';
 
+/* The interaction vocabulary: one hover response, one press, one focus ring,
+   one curve. Imported after the composition so an .ix- primitive outranks a
+   section rule it is combined with. Read its header before styling anything
+   people click - components consume its tokens and declare no hover shadow
+   and no transition curve of their own. */
+@import './interaction.css';
+
 /* ==========================================================================
    Design tokens. Every colour is from brand-lock.md and is authoritative,
    not provisional. See AUDIT.md section 2 and DESIGN-PLAN.md section 2.
@@ -92,14 +99,26 @@
 
   p { margin: 0; text-wrap: pretty; }
 
-  /* Visible keyboard focus on both grounds. Never removed without a replacement. */
+  /* Visible keyboard focus on both grounds. Never removed without a replacement.
+
+     The ring is --ix-ring, defined in interaction.css: still amber, but the
+     identity's darkened amber #8a5200 on the cream ground rather than plain
+     #f59b0a, which measures 1.97:1 there and is no more visible as a ring
+     than it is legible as text. #hero already rings with #8a5200; this brings
+     the global ring in line with it. On the charcoal grounds .on-dark flips
+     the token to #fbbd23 (10.4:1). See the --ix-ring comment for the numbers.
+
+     A control on a dark ground that is not inside .on-dark re-points the
+     token on itself - `--ix-ring: var(--ix-ring-dark)` - the way .field does
+     below. The explicit .on-dark rule is kept as well as the token
+     inheritance so the pattern survives being read out of context. */
   :focus-visible {
-    outline: 2px solid var(--color-amber);
-    outline-offset: 2px;
+    outline: var(--ix-ring);
+    outline-offset: var(--ix-ring-offset);
     border-radius: 4px;
   }
   .on-dark :focus-visible {
-    outline-color: var(--color-amber-dark);
+    outline: var(--ix-ring-dark);
   }
 
   ::selection {
@@ -128,6 +147,20 @@
   }
   .on-dark .margin-number { color: var(--color-muted-dark); }
 
+  /* THE BUTTONS. Geometry, type and colour are unchanged. What changed is the
+     answer: every button now rests, lifts, presses and rings on the shared
+     vocabulary in interaction.css instead of on a locally invented 140ms ease
+     with no press and no ring of its own.
+
+     The hover rules sit inside @media (hover: hover). A touch device
+     synthesises hover on tap, and an unguarded hover leaves the button lit
+     after the finger has gone - on a page whose whole job is one signup
+     click, a CTA that stays stuck on reads as a broken button.
+
+     Both grounds are served by one rule each, because --ix-tint and
+     --ix-solid-hover invert under .on-dark. The separate .on-dark hover rules
+     this block used to carry are gone, not lost: their values are the token
+     values, moved verbatim. */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -141,30 +174,61 @@
     border: 1px solid transparent;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+    transition:
+      background-color var(--ix-curve),
+      border-color var(--ix-curve),
+      color var(--ix-curve),
+      box-shadow var(--ix-curve),
+      transform var(--ix-curve);
   }
+  /* The ring is restated at component level so it beats any section rule the
+     button is dropped into, and so the offset gap is never a section's guess. */
+  .btn:focus-visible {
+    outline: var(--ix-ring);
+    outline-offset: var(--ix-ring-offset);
+  }
+  /* The press. Not conditional on anything except the button being live: this
+     is the only confirmation a person gets that the click landed before the
+     page starts navigating, and under reduced motion it survives - it simply
+     arrives at once. */
+  .btn:not(:disabled):active {
+    transform: var(--ix-press);
+    transition-duration: var(--ix-curve-press);
+  }
+
   .btn-primary {
     background: var(--color-espresso);
     color: var(--color-cream);
+    box-shadow: var(--ix-rest);
   }
-  .btn-primary:hover { background: #12100e; }
+  @media (hover: hover) {
+    .btn-primary:not(:disabled):hover {
+      background: var(--ix-solid-hover);
+      box-shadow: var(--ix-lift);
+      transform: translateY(var(--ix-lift-y));
+    }
+  }
+  .btn-primary:not(:disabled):active { box-shadow: var(--ix-press-shadow); }
   .on-dark .btn-primary {
     background: var(--color-warmwhite);
     color: var(--color-charcoal);
   }
-  .on-dark .btn-primary:hover { background: #ffffff; }
 
+  /* The quiet button sits in the page rather than on it, so it washes rather
+     than lifts - a shadow under a ghost button reads as a mistake. It still
+     presses, because it is still a button. */
   .btn-quiet {
     background: transparent;
     color: var(--color-espresso);
     border-color: var(--color-rule);
   }
-  .btn-quiet:hover { background: var(--color-sand); }
+  @media (hover: hover) {
+    .btn-quiet:not(:disabled):hover { background: var(--ix-tint); }
+  }
   .on-dark .btn-quiet {
     color: var(--color-warmwhite);
     border-color: var(--color-rule-dark);
   }
-  .on-dark .btn-quiet:hover { background: var(--color-secondary-dark); }
 
   .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
@@ -197,11 +261,23 @@
     line-height: 1.4;
     padding: 14px 15px;
     appearance: none;
+    /* The fields sit on --color-card-dark but are not wrapped in .on-dark, so
+       the ring is re-pointed here. The light-ground ring #8a5200 measures
+       2.5:1 against #28221f and would be close to invisible; #fbbd23 is
+       9.3:1. This is the documented escape hatch, not a special case. */
+    --ix-ring: var(--ix-ring-dark);
+    transition:
+      border-color var(--ix-curve),
+      background-color var(--ix-curve);
   }
   /* 4.62:1 on card-dark. The brand-era #8e7d72 was 3.98:1 and failed 1.4.3 as
      placeholder text; this is the smallest warm-neutral step that passes. */
   .field::placeholder { color: #9a887c; }
-  .field:hover { border-color: #5a504a; }
+  /* Guarded: an unguarded hover leaves a tapped field looking permanently
+     focused on a phone, which is exactly where this form is filled in. */
+  @media (hover: hover) {
+    .field:hover { border-color: #5a504a; }
+  }
   .field[aria-invalid='true'] { border-color: #e07575; }
 
   select.field {
@@ -241,7 +317,14 @@
   }
 }
 
-/* Respect the setting. This kills the only animation and the smooth scroll. */
+/* Respect the setting. This kills the only animation and the smooth scroll.
+
+   Note what it does NOT do: it collapses transition-duration, so a state
+   change still happens, it just happens at once. That is the correct floor -
+   a pressed button must still go down for a reduced-motion reader, because
+   "do not animate me" is not "do not tell me my click worked." interaction.css
+   builds on that: it withdraws the hover rise and re-asserts the press. Any
+   new rule added here must not zero an :active transform. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
