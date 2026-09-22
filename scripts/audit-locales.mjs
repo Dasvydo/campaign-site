@@ -132,7 +132,7 @@ const enArrays = arrayLengths(en);
 console.log(`\nEnglish master: ${enPaths.size} leaf keys, ${enArrays.size} arrays\n`);
 
 for (const loc of TARGETS) {
-  console.log(`src/content/${loc}.ts`);
+  console.log(`the ${loc} copy (src/content/${loc}.ts + src/content/${loc}/)`);
   const c = content[loc];
   const locLeaves = leaves(c);
   const locPaths = new Set(locLeaves.map(([p]) => p));
@@ -184,12 +184,12 @@ for (const loc of TARGETS) {
         it catches one in a comment too. */
   const src = localeSource(root, loc);
   report(!src.includes('—'), `the ${loc} copy contains no em dash`);
-  report(src.includes('NEEDS NATIVE CHECK'), `${loc}.ts still marked NEEDS NATIVE CHECK`);
+  report(src.includes('NEEDS NATIVE CHECK'), `the ${loc} copy is still marked NEEDS NATIVE CHECK`);
   console.log('');
 }
 
 const enSrc = localeSource(root, 'en');
-console.log('src/content/en.ts');
+console.log('the en copy (src/content/en.ts + src/content/en/)');
 report(!enSrc.includes('—'), 'the en copy contains no em dash');
 const enBlank = enLeaves
   .filter(([p, v]) => typeof v === 'string' && v.trim() === '' &&

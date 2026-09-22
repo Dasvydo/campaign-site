@@ -34,8 +34,8 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 ## Tasks
 | ID | Title | Wave | Status | Attempts | Verdict | Deliverable | Owns |
 |----|-------|------|--------|----------|---------|-------------|------|
-| T1 | Split paper.css into section stylesheets | 1 | returned | 1 | verifying | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
-| T2 | Split content into per-section modules | 1 | returned | 1 | verifying | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
+| T1 | Split paper.css into section stylesheets | 1 | verified | 1 | PASS | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
+| T2 | Split content into per-section modules | 1 | verified | 1 | PASS | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
 | T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | returned | 1 | verifying | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
@@ -126,6 +126,16 @@ injected into a section module turns `audit:locales` red, and removing the Lithu
   on cream instead, that re-point is wrong.
 - Tokens not provided, to add with an `--ix-` name if needed: a disabled-state token, a pending/loading state for
   the signup button, and a `--ix-lift` variant tuned for a large surface (the current one is tuned for controls).
+
+### Carried forward to T13 (raised by T2's verifier)
+**`verify:posthog` can be disarmed by a copy edit, and this predates the run.** The gate compares the consent
+copy's EU-hosting promise against the configured ingest host. If that sentence were deleted from all three
+consent modules it takes the `!claimsEu.length` branch and passes *even against a US host* (confirmed: exit 0).
+That branch is unchanged from 18cbaeb, so it is pre-existing design rather than a regression — but it means the
+one gate standing between a copy edit and silently shipping EU visitors' analytics to a US host can be switched
+off by deleting a sentence. Worth closing before any ad spend starts.
+Recommendation for T13: make the EU claim mandatory rather than optional — if no locale claims EU hosting, fail
+rather than pass, or require an explicit opt-out constant so disarming it is a deliberate, reviewable act.
 
 ## Coherence audit
 <pending — phase 6>
