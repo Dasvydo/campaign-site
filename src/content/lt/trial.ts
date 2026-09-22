@@ -42,7 +42,7 @@ export const trial: Content['trial'] = {
 
   termsLabel: 'Parodyti sąlygas',
   terms: [
-    { t: 'Įdiegimas įskaičiuotas.', n: 'Vėliau jis neapmokestinamas.' },
+    { t: 'Nieko nereikia diegti.', n: 'Veikia su tuo paštu, kurį jau turite.' },
     { t: 'Kortelės neprašome ir nieko nenuskaitome.', n: 'Mokėjimo duomenų prireiks vėliau ir tik tuo atveju, jei tęsiate.' },
     { t: 'Nutraukę nemokate nieko.', n: 'Jokia sąskaita neišrašoma ir nėra ko atšaukti.' },
     { t: 'Mokestis mokamas kas mėnesį.', n: 'Nereikia pasirašyti metams ir nėra įspėjimo termino.' },

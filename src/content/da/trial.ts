@@ -42,7 +42,7 @@ export const trial: Content['trial'] = {
 
   termsLabel: 'Vis vilkårene',
   terms: [
-    { t: 'Opsætningen er med.', n: 'Den faktureres ikke bagefter.' },
+    { t: 'Intet at installere.', n: 'Det kører på den post, I allerede har.' },
     { t: 'Intet kort, og ingen betaling.', n: 'Betalingsoplysninger kommer senere, og kun hvis I beholder det.' },
     { t: 'Stopper I, betaler I intet.', n: 'Der faktureres ikke noget, og der er ikke noget at opsige.' },
     { t: 'Prisen er måned til måned.', n: 'Ingen binding på et år, og intet opsigelsesvarsel.' },

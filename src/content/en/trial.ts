@@ -49,7 +49,7 @@ export const trial: Content['trial'] = {
 
   termsLabel: 'Show the terms',
   terms: [
-    { t: 'The setup is included.', n: 'It is not billed afterwards.' },
+    { t: 'Nothing to install.', n: 'It runs on the mail you already have.' },
     { t: 'No card, and nothing taken.', n: 'Payment details come later, and only if you keep it.' },
     { t: 'Stop and you pay nothing.', n: 'Nothing is invoiced, and there is nothing to cancel.' },
     { t: 'The fee is month to month.', n: 'No year to sign, and no notice period.' },
