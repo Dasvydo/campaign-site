@@ -27,7 +27,7 @@ import { LocalePage } from '../src/LocalePage';
 import { MARK_BOWL, MARK_STEM } from '../src/components/Hero';
 import { content, pathFor } from '../src/content';
 import { TEAM_SIZES, route } from '../src/lib/contract';
-import type { Locale } from '../src/lib/contract';
+import type { Locale } from '../src/lib/types';
 import {
   OFFER,
   headlinePackage,

@@ -57,9 +57,9 @@ const US_HOST = 'https://us.i.posthog.com';
 
 /** Phrases that promise EU hosting, one per locale, as the consent copy words it. */
 const EU_CLAIMS = [
-  { file: 'src/content/en.ts', phrase: 'hosted in the EU' },
-  { file: 'src/content/da.ts', phrase: 'hostet i EU' },
-  { file: 'src/content/lt.ts', phrase: 'talpinama ES' },
+  { file: 'src/content/en/consent.ts', phrase: 'hosted in the EU' },
+  { file: 'src/content/da/consent.ts', phrase: 'hostet i EU' },
+  { file: 'src/content/lt/consent.ts', phrase: 'talpinama ES' },
 ];
 
 const problems = [];

@@ -12,7 +12,7 @@ import { createRoot } from 'react-dom/client';
 import { act } from 'react';
 import { Qualifier } from '../src/components/Qualifier';
 import { content } from '../src/content';
-import type { Locale } from '../src/lib/contract';
+import type { Locale } from '../src/lib/types';
 
 interface Scenario {
   name: string;

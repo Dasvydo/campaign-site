@@ -25,6 +25,7 @@
  */
 import { spawn } from 'node:child_process';
 import { readFileSync, rmSync, mkdtempSync, existsSync } from 'node:fs';
+import { localeSource } from './content-src.mjs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -857,15 +858,15 @@ async function main() {
     /* 8. static checks on the content files -------------------------------- */
     console.log('\nContent files');
     for (const f of ['en', 'da', 'lt']) {
-      const src = readFileSync(join(root, `src/content/${f}.ts`), 'utf8');
-      check(!src.includes('—'), `src/content/${f}.ts contains no em dash`);
-      check(!/lorem|ipsum|TODO|FIXME|XXX|placeholder text/i.test(src), `src/content/${f}.ts contains no placeholder text`);
+      const src = localeSource(root, f);
+      check(!src.includes('—'), `the ${f} copy contains no em dash`);
+      check(!/lorem|ipsum|TODO|FIXME|XXX|placeholder text/i.test(src), `the ${f} copy contains no placeholder text`);
     }
-    const daSrc = readFileSync(join(root, 'src/content/da.ts'), 'utf8');
-    const ltSrc = readFileSync(join(root, 'src/content/lt.ts'), 'utf8');
+    const daSrc = localeSource(root, 'da');
+    const ltSrc = localeSource(root, 'lt');
     check(daSrc.includes('NEEDS NATIVE CHECK'), 'da.ts is marked NEEDS NATIVE CHECK');
-    check(ltSrc.includes('NEEDS NATIVE CHECK'), 'lt.ts is marked NEEDS NATIVE CHECK');
-    check(/Jūs|Jūsų/.test(ltSrc), 'lt.ts uses the formal Jus register');
+    check(ltSrc.includes('NEEDS NATIVE CHECK'), 'the lt copy is marked NEEDS NATIVE CHECK');
+    check(/Jūs|Jūsų/.test(ltSrc), 'the lt copy uses the formal Jus register');
 
     /* 9. the share cards the head promises actually exist -------------------
        The head can name /og-lt.png all day; if the file is not in public/ the

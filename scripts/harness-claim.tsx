@@ -23,7 +23,7 @@ import { act } from 'react';
 import { Price } from '../src/components/Price';
 import { content } from '../src/content';
 import { noCustomersYet, pilotsStarted } from '../src/lib/offer';
-import type { Locale } from '../src/lib/contract';
+import type { Locale } from '../src/lib/types';
 
 declare global {
   // eslint-disable-next-line no-var

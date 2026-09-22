@@ -29,17 +29,17 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
    and the setup line out of the source. A miss throws instead of drawing a
    card with a blank headline. */
 function copyFor(locale) {
-  const src = readFileSync(resolve(root, `src/content/${locale}.ts`), 'utf8');
+  const src = readFileSync(resolve(root, `src/content/${locale}/hero.ts`), 'utf8');
   const slot = (name) => {
     const m = src.match(new RegExp(`${name}:\\s*'((?:[^'\\\\]|\\\\.)*)'`));
-    if (!m) throw new Error(`${locale}.ts: no ${name} in the hero title`);
+    if (!m) throw new Error(`${locale}/hero.ts: no ${name} in the hero title`);
     return m[1].replace(/\\'/g, "'");
   };
-  const block = src.slice(src.indexOf('  hero: {'));
+  const block = src;
   const title = block.slice(block.indexOf('title: {'), block.indexOf('pileAlt'));
   const t = (name) => {
     const m = title.match(new RegExp(`${name}:\\s*'((?:[^'\\\\]|\\\\.)*)'`));
-    if (!m) throw new Error(`${locale}.ts: no ${name} in the hero title`);
+    if (!m) throw new Error(`${locale}/hero.ts: no ${name} in the hero title`);
     return m[1].replace(/\\'/g, "'");
   };
   const clockOut = slot('clockOut');

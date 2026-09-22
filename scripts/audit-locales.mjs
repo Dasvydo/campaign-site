@@ -17,6 +17,7 @@
  */
 import { build } from 'esbuild';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { localeSource } from './content-src.mjs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -181,15 +182,15 @@ for (const loc of TARGETS) {
 
   /* 6. the em dash rule the QA harness enforces, checked on the raw source so
         it catches one in a comment too. */
-  const src = readFileSync(join(root, `src/content/${loc}.ts`), 'utf8');
-  report(!src.includes('—'), `src/content/${loc}.ts contains no em dash`);
+  const src = localeSource(root, loc);
+  report(!src.includes('—'), `the ${loc} copy contains no em dash`);
   report(src.includes('NEEDS NATIVE CHECK'), `${loc}.ts still marked NEEDS NATIVE CHECK`);
   console.log('');
 }
 
-const enSrc = readFileSync(join(root, 'src/content/en.ts'), 'utf8');
+const enSrc = localeSource(root, 'en');
 console.log('src/content/en.ts');
-report(!enSrc.includes('—'), 'src/content/en.ts contains no em dash');
+report(!enSrc.includes('—'), 'the en copy contains no em dash');
 const enBlank = enLeaves
   .filter(([p, v]) => typeof v === 'string' && v.trim() === '' &&
     !p.startsWith('footer.company') && p !== 'nativeCheck')

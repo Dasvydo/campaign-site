@@ -34,9 +34,9 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 ## Tasks
 | ID | Title | Wave | Status | Attempts | Verdict | Deliverable | Owns |
 |----|-------|------|--------|----------|---------|-------------|------|
-| T1 | Split paper.css into section stylesheets | 1 | running | 0 | | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
-| T2 | Split content into per-section modules | 1 | running | 0 | | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
-| T3 | Rehouse Locale + Utm out of contract.ts | 1 | returned | 1 | PARTIAL (orchestrator closed gap) | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
+| T1 | Split paper.css into section stylesheets | 1 | returned | 1 | verifying | src/styles/sections/** | src/styles/paper.css, src/styles/sections/** |
+| T2 | Split content into per-section modules | 1 | returned | 1 | verifying | src/content/{en,da,lt}/** | src/content/{en,da,lt}.ts, types.ts, src/content/{en,da,lt}/** |
+| T3 | Rehouse Locale + Utm out of contract.ts | 1 | verified | 1 | PASS | src/lib/types.ts | src/lib/{types,contract,attribution,analytics}.ts, src/content/index.ts |
 | T4 | Build the interaction system | 1 | running | 0 | | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | pending | 0 | | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | pending | 0 | | removals | Qualifier/Numbers/Pen.tsx, offer/value/contract.ts, package.json |
@@ -52,7 +52,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | ID | Producer | Consumers | Interface | Honored |
 |----|----------|-----------|-----------|---------|
 | C1 | T1 | T6,T7,T8,T11,T12 | Section stylesheets at src/styles/sections/<section>.css, imported by paper.css in current cascade order. Only T1 edits the index. | |
-| C2 | T2 | T5,T6,T7,T8,T11 | Per-locale section modules at src/content/<locale>/<section>.ts, each default-exporting its slice. Content interface shape unchanged. | |
+| C2 | T2 | T5,T6,T7,T8,T11 | Per-locale section modules at src/content/<locale>/<section>.ts, each exporting its slice as a named export. Content interface shape unchanged. | YES |
 | C3 | T3 | T2,T6,T10 | Locale and Utm exported from src/lib/types.ts ONLY. contract.ts imports them as any other consumer. | YES |
 | C4 | T4 | T7,T8,T11,T12 | One interaction vocabulary: --ix-lift, --ix-press, --ix-ring, --ix-curve. No component declares its own hover shadow or transition curve. | |
 | C5 | T5 | T8 | Trial copy exports { stops, terms, included } from src/content/<locale>/trial.ts. T8 renders it, does not rewrite it. | |
@@ -76,13 +76,39 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 |------|---------|---------|------|--------|
 | T3 | 1 | PARTIAL | Two files outside T3's declared boundary still imported Locale/Utm from contract: src/LocalePage.tsx:3 and src/components/Qualifier.tsx:3-12. Tree was red (tsc exit 2, 4 errors). Agent correctly stopped at its boundary rather than reaching outside it — the scoping error was mine, T3's `owns` list should have included both. | Orchestrator applied the two import fixes between waves (neither file was owned by a live agent). Verified: `tsc -b --noEmit` exit 0, multiline-aware scan finds zero residual Locale/Utm imports from contract, zero emitted .js. Independent verifier launched. |
 
-### Carried forward to T6 (raised by T3, important)
-T3 did NOT make `contract.ts` free-standing-deletable — it only made the `Locale`/`Utm` half safe.
-`src/lib/attribution.ts` still legitimately imports `Market` and `Source` from contract, and
-`src/lib/analytics.ts` still imports `Market`. Both modules SURVIVE the funnel deletion. So T6 cannot
-simply delete contract.ts: it must first rehouse `Market` and `Source` (they belong in `src/lib/types.ts`
-alongside Locale/Utm, or be inlined into attribution). If T6 deletes contract.ts without doing this,
-attribution and analytics break and the page stops building.
+### Carried forward to T6 — contract.ts is NOT freely deletable (EXHAUSTIVE)
+T3 made only the `Locale`/`Utm` half safe. Six things still tie `contract.ts` to code that survives the
+funnel deletion. T6 must resolve every one BEFORE deleting the file, or the page stops building:
+
+| # | Site | Symbols | Kind | Survives T6? |
+|---|------|---------|------|--------------|
+| 1 | `src/lib/attribution.ts:9` | `Market`, `Source` | type-only | YES — rehouse to `src/lib/types.ts` |
+| 2 | `src/lib/analytics.ts:11` | `Market` | type-only | YES — rehouse to `src/lib/types.ts` |
+| 3 | `src/LocalePage.tsx:3` | `QualifierPayload` | type-only | YES (the page itself) — dies with the form's props |
+| 4 | `src/lib/lead.ts:22` | `QualifierPayload` | type-only | YES — `lead.ts` is NOT in T6's removal list; retype to whatever the 10+ enquiry form sends |
+| 5 | `scripts/harness-page.tsx:29` | `TEAM_SIZES`, `route` | **VALUE import** | **HARD BREAK** — esbuild cannot erase a value import, so `verify:payload` fails to bundle the moment contract.ts goes. Sharpest of the six. |
+| 6 | `scripts/harness-recovery.ts:8` | `QualifierPayload` | type-only | erased by esbuild, harmless |
+
+Already fixed by the orchestrator between waves: `scripts/harness.tsx:15`, `harness-page.tsx:30` and
+`harness-claim.tsx:26` imported `Locale` from contract and were latently broken — `scripts/` is in no
+tsconfig project (`tsconfig.app.json` includes only `src`), so typecheck never looked at them, and esbuild
+erased the type import, so every gate stayed green over a real error. All three now point at `src/lib/types`.
+
+### Gate regressions caused by the T2 content split, fixed between waves
+Splitting the copy out of `src/content/<loc>.ts` broke four source-text gates that grepped those files.
+Two of them went VACUOUS — still exit 0, checking nothing — which is the dangerous kind:
+
+| Gate | Was | Fix |
+|------|-----|-----|
+| `verify:payload` lt formal register | RED (exit 1) | reads assembled source via `scripts/content-src.mjs` |
+| `verify:posthog` EU_CLAIMS | vacuous — "no locale claims EU hosting" | repointed at `src/content/<loc>/consent.ts`, a stricter check than the whole-file match |
+| `audit:locales` + `verify:payload` em-dash / placeholder | vacuous — scanned files with no copy | assembled source via `content-src.mjs` |
+| `npm run og` | threw | reads `src/content/<locale>/hero.ts` |
+
+New `scripts/content-src.mjs` assembles a locale's full source (composing file + every section module) so
+adding a section cannot silently narrow what the gates see. Each fix was negative-tested: an em dash
+injected into a section module turns `audit:locales` red, and removing the Lithuanian formal register turns
+`verify:payload` red. Both were green against the same mutations before the fix.
 
 ## Coherence audit
 <pending — phase 6>
