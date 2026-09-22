@@ -1,0 +1,294 @@
+/* ============================================================
+   SECTION: footer / colophon. The last sheet in the ream.
+   ============================================================ */
+
+#footer{
+  --footer-focus: var(--amber-text, #8A5200);
+
+  --footer-cream: var(--cream, #FFF0E5);
+  --footer-ink:   var(--ink, #251D18);
+  --footer-card:  var(--card, #FDF9F7);
+  --footer-border:var(--border, #E4D7CD);
+  --footer-sand:  var(--sand, #F2E3D9);
+  --footer-muted: var(--muted, #70635C);
+  --footer-taupe: var(--taupe, #DDCFC6);
+  --footer-amber-text: var(--amber-text, #8A5200);
+
+  --footer-fibre: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='ff'><feTurbulence type='fractalNoise' baseFrequency='.74 .88' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .35  0 0 0 0 .31  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23ff)'/></svg>");
+  --footer-blotch: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='fb'><feTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .35  0 0 0 0 .31  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23fb)'/></svg>");
+
+  --footer-sh-flat:
+    0 1px 1px rgba(37,29,24,.16),
+    0 2px 4px -1px rgba(37,29,24,.10),
+    inset 1px 1px 0 var(--edge);
+
+  background:var(--footer-cream);
+  color:var(--footer-ink);
+  padding-block:64px 48px;
+}
+
+#footer .footer-wrap{
+  position:relative;
+  max-width:1280px;
+  margin-inline:auto;
+  padding-inline:clamp(16px,4vw,48px);
+}
+
+
+#footer .footer-rule{
+  height:7px;
+  margin-bottom:32px;
+  background-image:
+    linear-gradient(var(--footer-border),var(--footer-border)),
+    linear-gradient(var(--footer-taupe),var(--footer-taupe));
+  background-size:100% 1px, 100% 2px;
+  background-position:0 0, 0 5px;
+  background-repeat:no-repeat;
+}
+
+#footer .footer-grid{
+  display:grid;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:24px;
+  row-gap:48px;
+  align-items:start;
+}
+#footer .footer-sign { grid-column:1 / span 5; }
+#footer .footer-co   { grid-column:6 / span 3; }
+#footer .footer-links{ grid-column:9 / span 4; }
+
+#footer .footer-h{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:0;
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-weight:400;
+  font-size:30px;
+  line-height:1;
+  letter-spacing:.01em;
+}
+#footer .footer-h svg{
+  width:34px; height:34px; display:block; flex:none;
+  filter:drop-shadow(1px 1.5px 1px rgba(37,29,24,.14));
+}
+#footer .footer-tag{
+  margin:16px 0 0;
+  font-size:17px;
+  line-height:1.5;
+  max-width:32ch;
+  color:var(--footer-ink);
+  text-wrap:balance;
+}
+
+#footer .footer-label{
+  margin:0 0 12px;
+  font-size:12.5px;
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--footer-muted);
+  line-height:1.4;
+}
+
+#footer .footer-slipwrap{
+  transform:rotate(-.5deg);
+  transform-origin:top left;
+}
+/* Smaller. It is a registry fact at the bottom of a page, and it was set as a
+   card with a mark embossed on it, at seventeen point, taking as much room as
+   the things that are selling. */
+#footer .footer-slip{
+  position:relative;
+  isolation:isolate;
+  background:var(--footer-card);
+  border:1px solid var(--footer-border);
+  border-radius:3px;
+  box-shadow:var(--footer-sh-flat);
+  padding:12px 14px 13px;
+  overflow:hidden;
+}
+#footer .footer-slip::after{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  mix-blend-mode:multiply;
+  background-image:var(--footer-fibre), var(--footer-blotch);
+  background-size:180px 180px, 520px 520px;
+}
+#footer .footer-emboss{
+  position:absolute;
+  right:8px; bottom:6px;
+  width:34px; height:34px;
+  z-index:0;
+  opacity:.55;
+  pointer-events:none;
+}
+#footer .footer-emboss path{
+  fill:var(--footer-card);
+  filter:drop-shadow(-1px -1px 0 rgba(253,249,247,.9)) drop-shadow(1px 1.5px 1px rgba(37,29,24,.18));
+}
+#footer .footer-addr{
+  position:relative;
+  z-index:1;
+  font-style:normal;
+  font-size:13.5px;
+  line-height:1.45;
+  font-variant-numeric:tabular-nums lining-nums;
+}
+#footer .footer-addr span{ display:block; }
+#footer .footer-entity{ font-weight:500; }
+#footer .footer-reg{
+  color:var(--footer-muted);
+  font-size:12px;
+  letter-spacing:.01em;
+  margin-bottom:8px;
+}
+
+#footer .footer-cut{
+  height:7px;
+  margin:0 3px;
+  border-inline:1px solid var(--footer-border);
+  border-bottom:1px solid var(--footer-border);
+  border-radius:0 0 3px 3px;
+  background-image:repeating-linear-gradient(
+    to bottom,
+    var(--footer-taupe) 0 1px,
+    var(--footer-sand) 1px 3px
+  );
+  opacity:.75;
+}
+
+#footer .footer-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  border-top:1px solid var(--footer-border);
+}
+#footer .footer-list li{
+  display:grid;
+  grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  align-items:center;
+  column-gap:16px;
+  min-height:48px;
+  border-bottom:1px solid var(--footer-border);
+}
+#footer .footer-term{
+  font-size:12.5px;
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--footer-muted);
+  line-height:1.3;
+}
+#footer .footer-a{
+  justify-self:end;
+  display:inline-flex;
+  align-items:baseline;
+  gap:6px;
+  padding-block:12px;
+  color:var(--footer-ink);
+  font-size:17px;
+  line-height:1.4;
+  text-align:right;
+  min-width:0;
+  overflow-wrap:anywhere;
+  text-decoration-line:underline;
+  text-decoration-color:var(--footer-amber-text);
+  text-decoration-thickness:1px;
+  text-underline-offset:.22em;
+  background-image:linear-gradient(rgba(245,155,10,.30), rgba(245,155,10,.30));
+  background-repeat:no-repeat;
+  background-size:0 .72em;
+  background-position:0 .84em;
+  -webkit-box-decoration-break:clone;
+          box-decoration-break:clone;
+  transition:
+    background-size var(--t-in, 260ms) var(--e-hand, cubic-bezier(.33,.06,.28,1)),
+    text-decoration-color var(--t-in, 260ms) linear;
+}
+#footer .footer-a:hover,
+#footer .footer-a:focus-visible{
+  background-size:100% .72em;
+  text-decoration-color:var(--footer-amber-text);
+  text-decoration-thickness:2px;
+  transition-duration:var(--t-mark, 340ms);
+}
+#footer .footer-a:active{
+  transform:translateY(1px);
+}
+#footer .footer-ext{
+  width:11px; height:11px; flex:none;
+  align-self:center;
+  fill:none;
+  stroke:var(--footer-muted);
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+#footer .footer-foot{
+  margin-top:48px;
+  padding-top:16px;
+  border-top:1px dashed var(--footer-taupe);
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 24px;
+  align-items:baseline;
+  justify-content:space-between;
+}
+/* A stray comma put the copyright line in the focus ring's selector list, so
+   it sat permanently inside a three pixel outline and read as a focused
+   control nobody could act on. */
+#footer .footer-legal{
+  margin:0;
+  font-size:12.5px;
+  letter-spacing:.01em;
+  color:var(--footer-muted);
+}
+#footer a:focus-visible,
+#footer button:focus-visible{
+  outline:3px solid var(--footer-focus);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+@media (max-width:1023px){
+  #footer .footer-sign { grid-column:1 / -1; }
+  #footer .footer-co   { grid-column:1 / span 6; }
+  #footer .footer-links{ grid-column:7 / span 6; }
+  #footer .footer-grid { row-gap:32px; }
+}
+@media (max-width:719px){
+  /* the body already buys room for the fixed price bar, so this only needs
+     its own foot margin back */
+  #footer{ padding-block:48px 48px; }
+  #footer .footer-co,
+  #footer .footer-links{ grid-column:1 / -1; }
+  #footer .footer-slipwrap{ transform:none; }
+  #footer .footer-h{ font-size:30px; }
+  #footer .footer-foot{ margin-top:32px; }
+}
+@media (max-width:419px){
+  #footer .footer-list li{
+    grid-template-columns:minmax(0,1fr);
+    row-gap:0;
+    padding-block:8px;
+    min-height:0;
+  }
+  #footer .footer-a{
+    justify-self:start;
+    text-align:left;
+    padding-block:12px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  #footer .footer-a,
+  #footer .footer-a:hover,
+  #footer .footer-a:focus-visible{
+    transition:none;
+  }
+  #footer .footer-a:active{ transform:none; }
+}
+

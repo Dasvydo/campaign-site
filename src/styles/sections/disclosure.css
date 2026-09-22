@@ -1,0 +1,42 @@
+/* ============================================================
+   DISCLOSURE  .disc
+   Detail that must stay available but not sit in the eye path.
+   Native <details>, so it opens with no JS, is keyboard operable
+   for free, and Find-in-page still reaches the closed content in
+   browsers that support hidden=until-found semantics.
+   ============================================================ */
+.disc{ margin-top:20px; }
+.disc-sum{
+  display:inline-flex; align-items:center; gap:10px;
+  min-height:44px; padding:4px 2px;
+  font-family:'DM Sans',sans-serif; font-size:14.5px; font-weight:500;
+  letter-spacing:.01em; color:var(--amber-text); cursor:pointer;
+  list-style:none; border-bottom:1px solid transparent;
+}
+.disc-sum::-webkit-details-marker{ display:none; }
+.disc-sum::marker{ content:""; }
+.disc-sum:hover{ border-bottom-color:var(--amber-text); }
+.disc-sum:focus-visible{ outline:2px solid var(--amber); outline-offset:4px; border-radius:2px; }
+.disc-mark{ position:relative; width:11px; height:11px; flex:none; color:var(--amber-text); }
+.disc-mark::before,.disc-mark::after{ content:""; position:absolute; background:currentColor; border-radius:1px; }
+.disc-mark::before{ left:0; right:0; top:50%; height:1.5px; transform:translateY(-50%); }
+.disc-mark::after{
+  top:0; bottom:0; left:50%; width:1.5px; transform:translateX(-50%);
+  transition:opacity .2s ease, transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.disc[open] .disc-mark::after{ opacity:0; transform:translateX(-50%) scaleY(.3); }
+.disc-body{ padding-top:15px; max-width:62ch; }
+.disc-dl{ margin:0 0 15px; }
+/* Stacked, not two column: this list lives inside a narrow column, and a
+   viewport media query cannot see that. Term over definition reads cleanly
+   at every container width. */
+.disc-dl > div{ padding:10px 0; border-top:1px solid var(--border); }
+.disc-dl > div:first-child{ border-top:none; padding-top:0; }
+.disc-dl dt{ font-weight:500; margin-bottom:2px; }
+.disc-dl dd{ margin:0; color:var(--muted); }
+.disc-p{ margin:0 0 9px; color:var(--muted); font-size:15px; line-height:1.62; }
+.disc-p:last-child{ margin-bottom:0; }
+
+@media (prefers-reduced-motion:reduce){ .disc-mark::after{ transition:none; } }
+
+

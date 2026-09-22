@@ -1,0 +1,556 @@
+/* ============================================================
+   SECTION: demo / the worked example
+   ============================================================ */
+
+#demo{
+  --demo-t-tap:90ms;
+  --demo-t-micro:160ms;
+  --demo-t-in:260ms;
+  --demo-t-mark:340ms;
+  --demo-t-settle:520ms;
+  --demo-e-out:cubic-bezier(.2,.8,.3,1);
+  --demo-e-hand:cubic-bezier(.33,.06,.28,1);
+  --demo-stag:74ms;
+
+  --demo-focus:var(--amber-text);
+
+  --demo-sh-flat:
+    0 1px 1px rgba(37,29,24,.16),
+    0 2px 4px -1px rgba(37,29,24,.10),
+    inset 1px 1px 0 var(--edge);
+  --demo-sh-lift:
+    1px 2px 2px -1px rgba(37,29,24,.18),
+    2px 6px 12px -4px rgba(37,29,24,.16),
+    inset 1px 1px 0 var(--edge);
+  --demo-sh-raise:
+    2px 3px 3px -1px rgba(37,29,24,.20),
+    6px 18px 34px -12px rgba(37,29,24,.26),
+    inset 1px 1px 0 var(--edge);
+  --demo-sh-press:0 1px 1px rgba(37,29,24,.32);
+
+  --demo-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.74 .88' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .33  0 0 0 0 .27  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+  --demo-blotch:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .33  0 0 0 0 .27  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23b)'/></svg>");
+
+  --demo-strike:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'><path d='M1 6 C 18 3 30 8 46 5 C 62 2 78 8 94 5 C 105 3 114 6 119 5' fill='none' stroke='%238A5200' stroke-width='3.2' stroke-linecap='round'/></svg>");
+  --demo-ring:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'><path d='M52 3 C 78 1 99 8 97 21 C 95 35 60 40 30 37 C 8 35 0 26 3 17 C 6 6 30 2 58 4' fill='none' stroke='%238A5200' stroke-width='2.8' stroke-linecap='round'/></svg>");
+
+  --demo-serif:"Playfair Display","Iowan Old Style",Georgia,serif;
+  --demo-sans:"DM Sans","Helvetica Neue",Arial,sans-serif;
+
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--demo-sans);
+  font-size:17px;
+  line-height:1.55;
+  font-variant-numeric:tabular-nums lining;
+  position:relative;
+  overflow-x:clip;
+}
+
+.demo-wrap{
+  max-width:1280px;
+  margin-inline:auto;
+  padding-inline:clamp(16px,4vw,48px);
+  padding-block:56px 48px;
+}
+@media (min-width:1024px){ .demo-wrap{padding-block:96px 80px} }
+
+#demo a:focus-visible,
+#demo button:focus-visible,
+#demo [role="switch"]:focus-visible,
+#demo [contenteditable="true"]:focus-visible,
+#demo [tabindex]:focus-visible{
+  outline:3px solid var(--demo-focus);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+.demo-sr{
+  position:absolute!important;width:1px;height:1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0;
+}
+.demo-nojs{display:none}
+
+.demo-head{position:relative;max-width:none}
+.demo-eyebrow{
+  margin:8px 0 0;font-size:12.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-right:-0.14em;
+}
+#demo h2{
+  font-family:var(--demo-serif);font-weight:600;
+  font-size:clamp(34px,4.4vw,54px);
+  line-height:1.04;letter-spacing:-.016em;text-indent:-.03em;
+  margin:24px 0 0;text-wrap:balance;
+}
+.demo-lede{
+  font-size:23px;line-height:1.38;margin:16px 0 0;max-width:58ch;color:var(--ink);
+}
+.demo-nojs{
+  margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--muted);max-width:46ch;
+}
+
+/* the picker. Index tabs on a folder: the live one sits forward and joins the
+   paper below it, the other two sit back. Hidden without script, because with
+   no script there is one scenario and three controls that would do nothing. */
+.demo-pick{margin-top:40px}
+.demo-pick-lead{
+  margin:0 0 14px;font-size:14px;font-weight:500;letter-spacing:.02em;color:var(--muted);
+}
+.demo-tabs{
+  display:flex;flex-wrap:wrap;gap:6px;
+  border-bottom:1px solid var(--taupe);
+}
+.demo-tab{
+  appearance:none;-webkit-appearance:none;
+  margin:0 0 -1px;padding:12px 18px 13px;
+  font:inherit;font-size:15.5px;font-weight:500;line-height:1.2;color:var(--muted);
+  background:transparent;border:1px solid transparent;border-bottom:none;
+  border-radius:3px 3px 0 0;cursor:pointer;
+  transition:color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1)),
+             background-color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1));
+}
+.demo-tab:hover{color:var(--ink);background:var(--sand,rgba(37,29,24,.04))}
+.demo-tab[aria-selected="true"]{
+  color:var(--ink);background:var(--card);
+  border-color:var(--taupe);
+  box-shadow:0 -1px 0 var(--card) inset, 0 -2px 0 var(--amber-text) inset;
+}
+.demo-tab:focus-visible{outline:3px solid var(--hero-focus,var(--amber-text));outline-offset:-3px}
+.demo-tab:active{transform:translateY(1px)}
+/* three tabs on one row at 360px, rather than one orphan on a second row. */
+@media (max-width:399px){
+  .demo-tab{padding:12px 11px 13px;font-size:14.5px}
+  .demo-tabs{gap:4px}
+}
+#demo:not([data-js="on"]) .demo-pick{display:none}
+
+.demo-beats{
+  margin-top:48px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:48px 24px;
+  align-items:start;
+}
+@media (min-width:960px){
+  .demo-beats{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px 24px}
+  .demo-beat--a{grid-column:1;grid-row:1}
+  .demo-beat--b{grid-column:1;grid-row:2}
+  .demo-beat--c{grid-column:2;grid-row:1 / span 2}
+}
+@media (min-width:1100px){
+  .demo-beats{grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(0,5fr);gap:24px}
+  .demo-beat--a{grid-column:1;grid-row:1}
+  .demo-beat--b{grid-column:2;grid-row:1}
+  .demo-beat--c{grid-column:3;grid-row:1}
+}
+.demo-beat{min-width:0}
+
+.demo-beat-h{
+  font-family:var(--demo-serif);font-weight:600;font-size:23px;line-height:1.25;
+  /* 16, then 26, now 40. He has asked for room under these three twice; the
+     rule above them is what separates a beat from the card it heads, and at 26
+     the heading still read as a caption sitting on the card. */
+  margin:0 0 40px;color:var(--ink);text-wrap:balance;
+}
+/* Each beat gets the amber rule the page already uses to mean "read this
+   first". At 400 these three sat in body ink at body weight and read as
+   captions on the cards below them, so the one structure that makes the
+   example an argument rather than three pictures was invisible. */
+.demo-beat-h::before{
+  content:""; display:block; width:30px; height:2px;
+  margin:0 0 10px; background:var(--amber); border-radius:1px;
+}
+.demo-beat-note{
+  margin:-8px 0 16px;font-size:14px;line-height:1.5;color:var(--muted);max-width:46ch;
+}
+/* The one instruction on the page that changes what a reader understands.
+
+   The five switches under it are real controls with a hover lift and a press,
+   but at rest they read as a list of things the office knows, and the line
+   inviting anyone to touch them was set as a 14px grey caption like every
+   other note on the page. So the interaction that carries the whole argument,
+   that the draft is built from the firm's own files and visibly loses a clause
+   when one is taken away, went undiscovered by anyone who did not happen to
+   click. Inked, sized up, and given the amber rule the page uses everywhere
+   else to mean "this one does something". */
+.demo-beat--b .demo-beat-note{
+  margin:-4px 0 18px;
+  padding-left:13px;
+  border-left:2px solid var(--amber-text);
+  font-size:15.5px;
+  color:var(--ink);
+  max-width:40ch;
+}
+
+.demo-paper{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  max-width:100%;
+}
+.demo-paper::after,
+.demo-sw::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  border-radius:inherit;mix-blend-mode:multiply;
+  background-image:var(--demo-fibre),var(--demo-blotch);
+  background-size:180px 180px,520px 520px;
+  z-index:3;
+}
+/* the switch carries 12.5px uppercase type, so its fibre goes under the ink
+   rather than over it; the label is then read against clean sand. */
+.demo-sw::after{z-index:1}
+
+.demo-letter{
+  --r:-1.6deg;
+  padding:clamp(20px,2.4vw,28px);
+  transform:rotate(var(--r));
+  transform-origin:top left;
+  box-shadow:var(--demo-sh-lift);
+  transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
+}
+.demo-letter:hover{
+  transform:rotate(-1.05deg);
+  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-meta{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;
+  margin:0 0 16px;padding-bottom:16px;border-bottom:1px solid var(--border);
+}
+.demo-meta dt{
+  font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding-top:.35em;margin-right:-0.14em;
+}
+.demo-meta dd{margin:0;font-size:17px;line-height:1.4}
+.demo-meta dd.demo-subj{font-family:var(--demo-serif);font-size:23px;line-height:1.2}
+.demo-letter-body{margin:0;font-size:17px;line-height:1.62;max-width:52ch}
+
+.demo-switches{
+  display:flex;flex-direction:column;gap:8px;margin:0;padding:6px;
+  border-radius:var(--radius-sm);
+}
+
+.demo-sw{
+  position:relative;
+  display:block;text-align:left;
+  min-height:44px;
+  padding:13px 44px 13px 41px;
+  margin-left:var(--ml,0);
+  font:inherit;font-size:17px;line-height:1.35;color:var(--ink);
+  background:var(--sand);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  box-shadow:var(--demo-sh-flat);
+  transform:rotate(var(--r,0deg));
+  cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  transition:
+    transform var(--demo-t-in) var(--demo-e-out),
+    box-shadow var(--demo-t-in) var(--demo-e-out),
+    background-color var(--demo-t-in) var(--demo-e-out);
+}
+.demo-sw:hover{
+  transform:rotate(var(--r,0deg)) translateY(-1px);
+  box-shadow:var(--demo-sh-lift);
+  transition:
+    transform var(--demo-t-micro) var(--demo-e-out),
+    box-shadow var(--demo-t-micro) var(--demo-e-out),
+    background-color var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-sw:active{
+  transform:rotate(var(--r,0deg)) translateY(1px) scale(.994);
+  box-shadow:var(--demo-sh-press);
+  transition-duration:var(--demo-t-tap);
+  transition-timing-function:var(--e-press);
+}
+.demo-sw::before{
+  content:"";position:absolute;left:17px;top:9px;bottom:9px;width:2px;
+  background:var(--taupe);z-index:2;
+}
+.demo-sw:nth-child(1){--r:-.8deg;--ml:3px;--i:0}
+.demo-sw:nth-child(2){--r:.9deg;--ml:17px;--i:1}
+.demo-sw:nth-child(3){--r:-.5deg;--ml:8px;--i:2}
+.demo-sw:nth-child(4){--r:1.2deg;--ml:24px;--i:3}
+.demo-sw:nth-child(5){--r:-1deg;--ml:2px;--i:4}
+
+@media (max-width:599px){
+  .demo-switches .demo-sw{--ml:0}
+  .demo-letter,.demo-letter:hover{transform:none}
+  .demo-reply{transform:none}
+}
+
+.demo-sw-label{display:inline;position:relative;z-index:2}
+.demo-sw-count{
+  display:block;margin-top:4px;font-size:12.5px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  position:relative;z-index:2;margin-right:-0.14em;
+}
+.demo-sw-tick{position:absolute;left:11px;top:12px;width:19px;height:19px;z-index:2}
+.demo-sw-tick svg{width:100%;height:100%;display:block;overflow:visible}
+.demo-sw-tick path{
+  fill:none;stroke:var(--amber-text);stroke-linecap:round;stroke-linejoin:round;
+  mix-blend-mode:multiply;
+}
+.demo-sw-trace{
+  position:absolute;right:12px;top:50%;margin-top:-8px;width:22px;height:16px;
+  z-index:2;opacity:0;transition:opacity var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-sw-trace svg{width:100%;height:100%;display:block;overflow:visible}
+.demo-sw-trace path{
+  fill:none;stroke:var(--amber-text);stroke-linecap:round;stroke-linejoin:round;
+  mix-blend-mode:multiply;
+}
+.demo-sw-clip{
+  position:absolute;right:6px;top:-9px;width:17px;height:24px;z-index:4;
+  opacity:0;transform:rotate(8deg) translateY(-4px);
+  transition:opacity var(--demo-t-micro) var(--demo-e-out),transform var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-sw-clip svg{width:100%;height:100%;display:block;overflow:visible}
+.demo-sw-clip path{
+  fill:none;stroke:var(--amber-text);stroke-width:2.2;stroke-linecap:round;
+  filter:drop-shadow(1px 1.5px 1px rgba(37,29,24,.22));
+}
+
+.demo-draw path{
+  stroke-dasharray:var(--len,0);
+  stroke-dashoffset:var(--len,0);
+  stroke-width:2.2;
+  transition:
+    stroke-dashoffset var(--dur,var(--demo-t-mark)) var(--demo-e-hand),
+    stroke-width calc(var(--dur,340ms) * 1.4) var(--demo-e-out);
+}
+.demo-draw.demo-drawn path{stroke-dashoffset:0;stroke-width:3}
+
+.demo-sw[aria-checked="false"]{
+  background:var(--cream);
+  box-shadow:0 1px 1px rgba(37,29,24,.10),inset 1px 1px 0 var(--edge);
+  color:var(--muted);
+}
+.demo-sw[aria-checked="false"] .demo-sw-tick{opacity:0}
+.demo-sw[aria-checked="false"] .demo-sw-label{
+  background-image:var(--demo-strike);
+  background-repeat:no-repeat;
+  background-position:0 .48em;
+  background-size:100% .34em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+}
+.demo-sw[aria-checked="false"]::before{background:var(--border)}
+
+.demo-switches.demo-in .demo-sw{
+  animation:demo-slip var(--demo-t-micro) var(--demo-e-out) backwards;
+  animation-delay:calc(var(--i) * var(--demo-stag));
+}
+@keyframes demo-slip{
+  from{opacity:0;transform:translateY(7px) rotate(calc(var(--r,0deg) - 1.5deg))}
+  to{opacity:1;transform:translateY(0) rotate(var(--r,0deg))}
+}
+
+.demo-sw.demo-ticked .demo-sw-trace{opacity:1}
+.demo-sw.demo-pinned{background:var(--peach)}
+.demo-sw.demo-pinned .demo-sw-clip{opacity:1;transform:rotate(8deg) translateY(0)}
+
+.demo-alloff{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;
+  margin-top:24px;
+}
+.demo-pencil{
+  margin:0;font-size:14px;line-height:1.45;color:var(--muted);
+  max-width:30ch;transform:rotate(-2deg);transform-origin:left center;
+  font-style:italic;
+}
+.demo-restore{
+  position:relative;display:inline-flex;align-items:center;gap:8px;
+  min-height:44px;padding:10px 16px 10px 14px;
+  font:inherit;font-size:14px;font-weight:500;color:var(--ink);
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);box-shadow:var(--demo-sh-flat);cursor:pointer;
+  transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
+}
+.demo-restore:hover{
+  transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
+  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-restore:active{
+  transform:translateY(1px) scale(.994);box-shadow:var(--demo-sh-press);
+  transition-duration:var(--demo-t-tap);transition-timing-function:var(--e-press);
+}
+.demo-restore-clip{width:14px;height:20px;flex:none;display:block}
+.demo-restore-clip svg{width:100%;height:100%;display:block;overflow:visible}
+.demo-restore-clip path{
+  fill:none;stroke:var(--amber-text);stroke-width:2.2;stroke-linecap:round;
+}
+
+.demo-reply{
+  padding:clamp(20px,2.4vw,30px);
+  box-shadow:var(--demo-sh-raise);
+  transform:rotate(.45deg);
+  overflow:hidden;
+}
+.demo-reply-head,
+.demo-salut,
+.demo-body{position:relative;z-index:2}
+
+.demo-reply-head{
+  display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;
+  gap:8px 16px;padding-bottom:12px;margin-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.demo-reply-ref{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;min-width:0;
+}
+.demo-clock{
+  font-size:12.5px;font-weight:500;letter-spacing:.16em;color:var(--muted);
+  font-variant-numeric:tabular-nums lining;
+}
+.demo-label{
+  font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-right:-0.14em;
+}
+.demo-ref{font-family:var(--demo-serif);font-size:19px;line-height:1.25;min-width:0}
+.demo-stamps{margin:0;display:flex;gap:8px;flex:none}
+.demo-stamp{
+  display:inline-block;padding:4px 10px;border-radius:3px;
+  font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  margin-right:-0.14em;transform:rotate(-2.5deg);
+}
+.demo-stamp--draft{
+  color:var(--ink);border:1px solid var(--taupe);background:var(--sand);
+}
+.demo-stamp--sent{
+  color:var(--charcoal);background:var(--amber);border:1px solid var(--amber-text);
+  transform:rotate(2deg);
+}
+
+.demo-salut{margin:0 0 12px;font-size:17px;line-height:1.62}
+.demo-body p{margin:0;font-size:17px;line-height:1.68;max-width:60ch;overflow-wrap:anywhere}
+.demo-body[contenteditable="true"]{
+  outline-offset:4px;background:var(--peach);border-radius:4px;
+  box-shadow:0 0 0 6px var(--peach);
+}
+
+.demo-clause{min-width:0}
+.demo-clause[role="button"]{cursor:pointer}
+.demo-v{
+  transition:opacity var(--demo-t-in) var(--demo-e-out),
+             background-color var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-v.demo-enter{opacity:0}
+/* The prototype faded a swapped clause in by adding a class and taking it off
+   two frames later. React mounts a new element when the reading changes, so the
+   fade is a mount animation instead and needs no second render. It is applied
+   only after the first paint, so the draft does not fade in on arrival. */
+.demo-v.demo-v-in{animation:demo-v-in var(--demo-t-in) var(--demo-e-out) backwards}
+@keyframes demo-v-in{from{opacity:0}to{opacity:1}}
+
+.demo-v.demo-struck{
+  background-image:var(--demo-strike);
+  background-repeat:no-repeat;
+  background-position:0 .56em;
+  background-size:0% .34em;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  transition:background-size var(--demo-t-mark) var(--demo-e-hand);
+}
+.demo-v.demo-struck.demo-drawn{background-size:100% .34em}
+
+.demo-clause.demo-traced .demo-v{
+  background-color:var(--peach);border-radius:3px;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  box-shadow:0 0 0 3px var(--peach);
+}
+
+.demo-circ{
+  display:inline-block;padding:.06em .34em;
+  background-image:var(--demo-ring);
+  background-repeat:no-repeat;background-position:left center;
+  background-size:0% 100%;
+  transition:background-size var(--demo-t-settle) var(--demo-e-hand);
+}
+.demo-circ.demo-drawn{background-size:100% 100%}
+
+.demo-emboss{
+  position:absolute;right:-14px;bottom:-18px;
+  width:clamp(110px,26%,190px);height:auto;
+  fill:var(--taupe);opacity:.3;mix-blend-mode:multiply;
+  pointer-events:none;z-index:1;
+}
+
+.demo-gate{
+  margin-top:24px;display:flex;flex-direction:column;align-items:flex-start;gap:16px;
+}
+.demo-gate-note{
+  margin:0;font-size:14px;line-height:1.5;color:var(--muted);max-width:52ch;
+  padding-top:12px;border-top:1px dashed var(--taupe);width:100%;
+}
+.demo-gate-controls{display:flex;flex-wrap:wrap;gap:12px}
+.demo-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:11px 20px;
+  font:inherit;font-size:15px;font-weight:500;
+  border-radius:var(--radius-sm);cursor:pointer;
+  box-shadow:var(--demo-sh-flat);
+  transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
+}
+.demo-btn:hover{
+  transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
+  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+}
+.demo-btn:active{
+  transform:translateY(1px) scale(.994);box-shadow:var(--demo-sh-press);
+  transition-duration:var(--demo-t-tap);transition-timing-function:var(--e-press);
+}
+.demo-btn--send{background:var(--amber);color:var(--charcoal);border:1px solid var(--amber-text)}
+.demo-btn--edit{background:var(--card);color:var(--ink);border:1px solid var(--border)}
+.demo-btn--ghost{background:var(--cream);color:var(--ink);border:1px dashed var(--taupe);box-shadow:none}
+.demo-btn--ghost:hover{box-shadow:var(--demo-sh-flat)}
+
+.demo-gate-done{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+.demo-sent-chip{
+  margin:0;padding:8px 12px;border-radius:var(--radius-sm);
+  background:var(--peach);border:1px solid var(--taupe);color:var(--ink);
+  font-size:12.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  margin-right:-0.14em;font-variant-numeric:tabular-nums lining;
+}
+.demo-payoff{
+  margin:0;font-family:var(--demo-serif);font-size:19px;line-height:1.35;
+  color:var(--ink);max-width:44ch;
+}
+.demo-editnote{
+  margin:0;font-size:14px;line-height:1.5;color:var(--muted);max-width:44ch;font-style:italic;
+}
+
+/* the closing line, set as the example's caption rather than a second ending */
+/* Was 20ch, which broke a three clause sentence into four stacked lines and
+   spent most of a screen doing it. One measure, read across. */
+/* The same amber wash the hero's headline uses, so the page has one way of
+   saying "this is the bit". Drawn as a background rather than a fill, which is
+   what lets it sit under the words like a marker stroke and wrap with them. */
+.demo-close-hl{
+  background-image:linear-gradient(rgba(245,155,10,.52),rgba(245,155,10,.52));
+  background-repeat:no-repeat;
+  background-position:0 .56em;
+  background-size:100% .62em;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+.demo-close{
+  margin:48px 0 0;
+  font-family:var(--demo-serif);font-weight:400;
+  font-size:clamp(24px, 13px + 1.5vw, 33px);
+  line-height:1.2;letter-spacing:-.012em;
+  max-width:66ch;text-wrap:balance;color:var(--ink);
+}
+.demo-close-basis{
+  margin:20px 0 0;padding-top:12px;
+  border-top:1px dashed var(--taupe);
+  font-size:14px;line-height:1.5;color:var(--muted);max-width:60ch;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .demo-letter:hover,.demo-sw:hover,.demo-restore:hover,.demo-btn:hover{transform:rotate(var(--r,0deg))}
+  .demo-sw:active,.demo-restore:active,.demo-btn:active{transform:rotate(var(--r,0deg))}
+  .demo-draw path{stroke-dasharray:none;stroke-dashoffset:0;stroke-width:3}
+  .demo-v.demo-struck{background-size:100% .34em}
+  .demo-v.demo-enter{opacity:1}
+  .demo-circ.demo-drawn{background-size:100% 100%}
+}
+

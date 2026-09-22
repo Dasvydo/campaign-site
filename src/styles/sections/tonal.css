@@ -1,0 +1,13 @@
+/* ============================================================
+   TONAL RHYTHM
+   The page was eight sections of one ground, so nothing ever
+   changed underfoot. Cream is the desk; sand is the blotter the
+   two exhibits sit on, the worked example and the ledger. Reading
+   order is now cream, sand, cream, cream, sand, charcoal, cream.
+   The paper objects keep --card, which stays lighter than sand,
+   so every sheet still reads as raised.
+   ============================================================ */
+#demo, #numbers{ background-color:var(--sand); }
+
+
+

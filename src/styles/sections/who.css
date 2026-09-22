@@ -1,0 +1,297 @@
+/* ==========================================================================
+   SECTION: who   "Filed under"
+   ========================================================================== */
+
+#who{
+  --who-t-micro:160ms;
+  --who-t-in:260ms;
+  --who-e-out:cubic-bezier(.2,.8,.3,1);
+  --who-e-hand:cubic-bezier(.33,.06,.28,1);
+  --who-stag:74ms;
+
+  --who-focus:var(--amber-text,#8A5200);
+
+  --who-sh-flat:0 1px 1px rgba(37,29,24,.16), 0 2px 4px -1px rgba(37,29,24,.10);
+  --who-sh-tab:1px -1px 2px -1px rgba(37,29,24,.12);
+  --who-edge:inset 1px 1px 0 var(--edge);
+
+  --who-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='wf'><feTurbulence type='fractalNoise' baseFrequency='.74 .88' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .40  0 0 0 0 .33  0 0 0 0 .28  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23wf)'/></svg>");
+  --who-blotch:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='wb'><feTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .37  0 0 0 0 .31  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23wb)'/></svg>");
+
+  --who-tabmul:1;
+
+  display:block;
+  overflow-x:clip;
+  background:var(--cream,#FFF0E5);
+  color:var(--ink,#251D18);
+  font-size:17px;
+  line-height:1.55;
+  padding-block:56px 48px;
+}
+@media (min-width:1024px){
+  #who{ padding-block:96px 80px }
+}
+
+.who-wrap{
+  position:relative;
+  max-width:1280px;
+  margin-inline:auto;
+  padding-inline:clamp(16px,4vw,48px);
+  display:grid;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  column-gap:24px;
+}
+
+.who-head{ grid-column:1/-1 }
+@media (min-width:1024px){ .who-head{ grid-column:1/9 } }
+
+.who-eyebrow{
+  margin:0;
+  font-size:12.5px;
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted,#70635C);
+}
+
+.who-h{
+  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
+  font-weight:400;
+  margin:24px 0 0;
+  font-size:clamp(34px,1.6rem + 2.4vw,54px);
+  line-height:1.04;
+  letter-spacing:-.018em;
+  text-indent:-.02em;
+  text-wrap:balance;
+}
+
+/* The cabinet.
+ 
+   Three folders used to sit side by side across a very wide row, everything
+   showing at once, so a reader had to take in all three to find the one that
+   was theirs. It is a drawer now: the tabs pick, one folder is open, and the
+   others stay filed. Same paper, same textures, a third of the reading.
+ 
+   The tabs are real buttons, so everything below is written against a button's
+   defaults rather than a heading's. */
+/* A drawer the width of what is in it.
+
+   `grid-column:1/-1` made this the full twelve columns, so at 1440 the open
+   folder was a sheet 1,650 pixels wide holding one sentence of eight words and
+   a great deal of nothing. A wide empty box reads as something that failed to
+   load. The line inside is set at 52ch; the drawer is now sized to hold it. */
+.who-strip{
+  grid-column:1/-1;
+  max-width:64ch;
+  margin:48px 0 0;
+  min-width:0;
+}
+@media (max-width:940px){ .who-strip{ margin-top:32px } }
+
+.who-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  gap:4px;
+  padding:0 0 0 6px;
+}
+
+.who-tab{
+  position:relative;
+  z-index:2;
+  min-height:44px;
+  margin:0 0 -1px;
+  padding:10px 18px 9px;
+  border:1px solid var(--border,#E4D7CD);
+  border-bottom-color:transparent;
+  border-radius:var(--radius-sm) var(--radius-sm) 0 0;
+
+  background-color:var(--paper-2,#F6EDE6);
+  background-image:var(--who-fibre),var(--who-blotch);
+  background-size:180px 180px,520px 520px;
+
+  font-family:var(--who-serif,var(--demo-serif));
+  font-size:19px;
+  line-height:1.2;
+  color:var(--muted);
+  cursor:pointer;
+  transition:
+    transform var(--who-t-micro) var(--who-e-out),
+    color var(--who-t-micro) var(--who-e-out),
+    background-color var(--who-t-micro) var(--who-e-out);
+}
+@media (hover:hover) and (pointer:fine){
+  .who-tab:not(.is-open):hover{ transform:translateY(-2px); color:var(--ink) }
+}
+.who-tab:focus-visible{
+  outline:2px solid var(--amber);
+  outline-offset:2px;
+  z-index:3;
+}
+/* The open one is the same paper as the folder under it, so the two read as
+   one piece rather than a button sitting on a card. */
+.who-tab.is-open{
+  background-color:var(--card,#FDF9F7);
+  color:var(--ink);
+  font-weight:600;
+  z-index:3;
+}
+
+.who-sheet{
+  position:relative;
+  z-index:1;
+  padding:22px 24px 26px;
+  background-color:var(--card,#FDF9F7);
+  background-image:var(--who-fibre),var(--who-blotch);
+  background-size:180px 180px,520px 520px;
+  border:1px solid var(--border,#E4D7CD);
+  border-radius:0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  box-shadow:var(--who-sh-flat),var(--who-edge);
+}
+#who.who-js .who-sheet{
+  opacity:0;
+  transform:translateY(6px);
+  transition:
+    opacity var(--who-t-micro) var(--who-e-out),
+    transform var(--who-t-micro) var(--who-e-out);
+}
+#who.who-js .who-strip.who-in .who-sheet{ opacity:1; transform:none }
+
+
+.who-sheet::before{
+  content:"";
+  position:absolute;
+  left:24px; right:24px; top:14px;
+  height:1px;
+  background:var(--taupe,#DDCFC6);
+  opacity:.55;
+}
+
+.who-line{
+  margin:0;
+  font-size:21px;
+  line-height:1.45;
+  color:var(--ink);
+  max-width:52ch;
+}
+
+/* The five things that trade's drafts come out of, on one wrapped run under
+   the line. Same middot device as the price band's obligations, drawn rather
+   than typed for the same reason: no translation has to supply a separator. */
+.who-sources{
+  margin:16px 0 0;
+  padding-top:14px;
+  border-top:1px solid var(--taupe,#DDCFC6);
+  max-width:56ch;
+}
+/* Amber and a step heavier, the same treatment "What you give:" carries in
+   the price block. This label introduces the five things a trade's drafts are
+   written out of, which is the answer to the objection the whole section
+   exists for, and in muted grey at 12.5px it read as a caption on the list
+   rather than as the point of it. */
+.who-sources-h{
+  font-size:12.5px; font-weight:600; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--amber);
+}
+.who-sources-list{ font-size:15px; line-height:1.7; color:var(--ink) }
+.who-source + .who-source::before{
+  content:"\00b7"; margin:0 .5em; color:var(--amber); font-weight:700;
+}
+
+/* The accuracy block. Set as a second sheet on the same desk rather than as a
+   new section: the reader is already asking whether this is for them, and
+   "what happens when it is wrong" is the same question one step further in.
+   Two columns on a wide screen so four short lines do not read as a long list,
+   one column on a phone. */
+.who-accuracy{
+  grid-column:1/-1;
+  margin-top:48px;
+  padding-top:24px;
+  border-top:1px dashed var(--taupe,#DDCFC6);
+}
+.who-accuracy-h{
+  margin:0 0 18px;
+  font-family:var(--display,'Playfair Display',serif);
+  font-weight:400;
+  font-size:clamp(1.35rem,2.3vw,1.7rem);
+  line-height:1.2;
+  color:var(--ink,#251D18);
+  text-wrap:balance;
+}
+.who-accuracy-list{
+  margin:0;
+  padding:0;
+  list-style:none;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:14px 32px;
+}
+@media (min-width:900px){
+  .who-accuracy-list{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+}
+.who-accuracy-list li{
+  position:relative;
+  margin:0;
+  padding-left:20px;
+  font-size:16.5px;
+  line-height:1.55;
+  max-width:46ch;
+  color:var(--ink,#251D18);
+  text-wrap:pretty;
+}
+.who-accuracy-list li::before{
+  content:"";
+  position:absolute;
+  left:2px;
+  top:.62em;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--amber-text,#B4740E);
+}
+.who-pen{
+  position:relative;
+  display:inline-block;
+  max-width:100%;
+}
+.who-pen svg{
+  position:absolute;
+  left:-.1em; right:-.1em; bottom:-.34em;
+  width:calc(100% + .2em);
+  height:.6em;
+  overflow:visible;
+  pointer-events:none;
+}
+.who-pen path{
+  fill:none;
+  stroke:var(--amber-text,#8A5200);
+  stroke-width:2.2;
+  stroke-linecap:round;
+  mix-blend-mode:multiply;
+}
+#who.who-js .who-pen path{
+  stroke-dasharray:var(--who-len,110);
+  stroke-dashoffset:var(--who-len,110);
+  transition:
+    stroke-dashoffset var(--who-dur,320ms) var(--who-e-hand),
+    stroke-width calc(var(--who-dur,320ms) * 1.4) var(--who-e-out);
+}
+#who.who-js .who-pen.who-in path{
+  stroke-dashoffset:0;
+  stroke-width:3;
+}
+
+#who a:focus-visible,
+#who button:focus-visible{
+  outline:3px solid var(--who-focus);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  /* !important because the reveal is now gated on an id scoped class that would
+     otherwise outrank these end states. */
+  #who .who-sheet{ opacity:1!important; transform:none!important }
+  #who .who-pen path{ stroke-dasharray:none!important; stroke-dashoffset:0!important; stroke-width:3 }
+}
+

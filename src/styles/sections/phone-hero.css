@@ -1,0 +1,70 @@
+/* ------------------------------------------------------------
+   THE PHONE HERO, composed rather than reflowed.
+
+   A phone gives the hero about 844px and room for one picture.
+   The ghost "40" at desktop size and the pile of forty letters
+   are the same idea twice, so on a phone the numeral shrinks to
+   a small count beside the tally: eight groups of five, in the
+   same amber pen that draws every other mark on the page, one
+   band about 34px tall instead of a block 160px tall. The tally
+   without the count meant nothing, which is why the count stayed.
+   Below 375px even that row goes (see the narrow-phone rules at
+   the end of this file): the pixels are what keep the button
+   clear of the cookie sheet. The height saved is what carries the
+   dealt example card, the concrete thing and the hook into the
+   worked example, up onto the first screen.
+   ------------------------------------------------------------ */
+@media (max-width:719px){
+  .hero-tally{
+    display:block;
+    width:min(268px,74%);
+    margin:0 0 4px;
+  }
+  .hero-count{
+    order:-1;
+    margin:0 0 18px;
+    display:block;
+  }
+
+  /* the desktop rhythm is 48px between bands, which is right for a page read
+     at arm's length and too airy on a screen the size of a hand. The phone
+     reads at half that, and the 64px it saves is the rest of what puts the
+     example card on the first screen. The masthead nav stays: a price sensitive
+     reader jumping straight to what it costs is worth more than the last
+     twenty pixels of a picture. */
+  .hero-grid{padding-block:20px 24px}
+  .hero-act{margin-top:32px}
+  .hero-pile{margin-top:clamp(26px,5vw,34px)}
+}
+
+/* The masthead tab, the hero button and the standing price bar are the same
+   six words. On a wide screen only the first two exist and they are far apart.
+   On a phone all three are in play, the hero's own button is on the first
+   screen, and the standing bar takes over the moment it scrolls away, so the
+   tab is a duplicate rather than a safety net. It stays in landscape, which is
+   the one case where the standing bar is suppressed. */
+@media (max-width:719px) and (min-height:421px){
+  .hero-tab{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-hl{
+    animation:none;
+    background-size:100% .66em;
+    background-image:linear-gradient(rgba(245,155,10,.52),rgba(245,155,10,.52));
+  }
+  .hero-sheet{animation:none; transform:translate(-50%,-50%) translate(var(--x),var(--y))}
+  .hero-sheet-face{animation:none; transform:rotate(var(--r))}
+  .hero-sheet--lit{animation:none; filter:drop-shadow(0 1.5px 2px rgba(37,29,24,.20))}
+  .hero-pile-shadow{animation:none; transform:scale(1); opacity:1}
+  .hero-tally path{stroke-dasharray:none; stroke-dashoffset:0}
+  .hero-tab:hover,.hero-tab:active,
+  .hero-btn:hover,.hero-btn:active{transform:none}
+  .hero-deal:hover .hero-sheet-face,
+  .hero-deal:active .hero-sheet-face{transform:rotate(var(--r))}
+  @media (max-width:559px){
+    .hero-sheet{transform:translate(-50%,0) translate(var(--x),var(--y))}
+    .hero-deal{animation:none; transform:none}
+  }
+}
+

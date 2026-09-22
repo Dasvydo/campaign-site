@@ -1,0 +1,29 @@
+/* ------------------------------------------------------------
+   THE RAIL. The page is about seven and a half thousand pixels
+   and the browser's own scrollbar is an overlay that fades, so
+   an impatient reader has no idea how much is left. Three
+   pixels of the same pen that draws the tally, the underlines
+   and the strike-throughs.
+
+   Decorative, and aria-hidden: it says nothing a screen reader
+   does not already know, and a progressbar role here would
+   announce a number on every scroll tick. It carries no
+   transition, so it tracks the scroll position exactly rather
+   than chasing it, which is also why reduced motion leaves it
+   alone: it moves only when the reader moves.
+
+   It sits outside <main> because several sections set
+   overflow-x:clip, and a clip context captures fixed
+   descendants.
+   ------------------------------------------------------------ */
+.rail{
+  position:fixed; inset:0 0 auto 0; height:3px;
+  z-index:55; pointer-events:none;
+}
+.rail-ink{
+  display:block; height:100%; width:100%;
+  background:var(--amber);
+  transform:scaleX(var(--rail-p,0));
+  transform-origin:0 50%;
+}
+
