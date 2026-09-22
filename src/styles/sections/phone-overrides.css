@@ -1,29 +1,12 @@
 /* ==========================================================================
    THE PHONE, READ AS A BUYER (2026-09-18)
    Measured on a 390x844 screen with the cookie sheet up: the hero's button
-   sat under the sheet, the price was seven screens down, the demo's five
-   source cards stacked to three screens, the calculator's answer was a
-   screen and a half below its first slider, and the masthead nav was the
-   only in-page navigation at 12.5px. Each rule below answers one of those.
+   sat under the sheet, the demo's five source cards stacked to three screens,
+   and the masthead nav was the only in-page navigation at 12.5px. Each rule
+   below answers one of those. The rules for the price band and the calculator
+   went with those sections; the numbering is left as it was so the notes
+   still match the measurements they came from.
    ========================================================================== */
-
-/* What the product leaves alone, said under the draft in body colour rather
-   than as a footnote at the foot of the section. */
-/* The answer, pinned. Hidden above phone width, where the whole panel is on
-   screen at once. */
-.numbers-pin{ display:none }
-.numbers-pin-label{ font-size:14px; color:var(--muted) }
-.numbers-pin-fig{
-  font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
-  font-size:24px; line-height:1; color:var(--amber-text);
-  font-variant-numeric:tabular-nums lining; white-space:nowrap;
-}
-
-/* Three cards the same height, whatever each says. */
-@media (min-width:720px){
-  .price-stop-item{ display:flex; flex-direction:column }
-  .price-stop{ flex:1 1 auto }
-}
 
 /* 1. The button sits before the payback line in the markup on every width
       (see Hero.tsx), so no reorder is needed here; only the rhythm changes
@@ -58,25 +41,6 @@
   .demo-sw-tick{ top:9px; left:8px }
   .demo-sw::before{ left:14px; top:8px; bottom:8px }
 
-  /* 5. The answer pinned to the top of the panel while it is on screen. */
-  .numbers-range{ scroll-margin-top:64px }
-  .numbers-pin{
-    display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-    position:sticky; top:0; z-index:3;
-    margin:calc(-1 * var(--np)) calc(-1 * var(--np)) 16px;
-    padding:10px var(--np);
-    background:var(--card); border-bottom:1px solid rgba(37,29,24,.14);
-    border-radius:3px 3px 0 0;
-  }
-
-  /* 6. One line per stop instead of a card each. */
-  .price-stops{ gap:10px }
-  .price-stop{ display:flex; gap:10px; align-items:baseline; padding:8px 12px }
-  .price-stop-day{ flex:none; padding-bottom:2px }
-  .price-stop-note{ margin-top:0; font-size:14px; line-height:1.4 }
-  .price-stop-item{ padding-left:24px }
-  .price-stop-item::after{ top:12px }
-  .price-stop-item::before{ top:28px; bottom:-12px }
 
   /* 1. The cookie sheet, set to ask its question and get out of the way:
         one line of body, one row of buttons. */
@@ -117,50 +81,4 @@
 @media (max-width:374px){
   .hero-count{ display:none }
   #hero-title{ font-size:42px }
-}
-
-/* The founder's signature, under the founding trade.
-
-   Set as a signed note rather than a bio: the name in the display face, the
-   sentence under it in the body face at reading size. It is the only first
-   person on a page written in "we", which is the point of it. */
-.price-signature{
-  margin:22px 0 0;
-  padding-top:16px;
-  border-top:1px solid rgba(255,255,255,.14);
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-/* `.price-signature-name` was the nameplate in display serif over the line.
-   It is gone; the name is on the sign-off below the sentence now. */
-.price-signature-by{
-  font-size:14px;
-  line-height:1.5;
-  color:var(--price-dim);
-  overflow-wrap:anywhere;
-}
-/* The name, in the page's amber, like the label over the obligations. On a
-   line that is otherwise dim it is the one word a reader is meant to catch:
-   who is making the claim above it. */
-.price-signature-who{ color:var(--amber); font-weight:600 }
-.price-signature-link{
-  color:var(--price-dim);
-  text-decoration:underline;
-  text-underline-offset:.2em;
-  text-decoration-thickness:1px;
-  text-decoration-color:rgba(250,241,235,.38);
-  transition:color var(--price-t-micro) var(--price-e-out),
-             text-decoration-color var(--price-t-micro) var(--price-e-out);
-}
-.price-signature-link:hover{
-  color:var(--warmwhite);
-  text-decoration-color:var(--amber);
-}
-.price-signature-line{
-  font-size:15px;
-  line-height:1.55;
-  color:var(--muted-on-dark,#B8ABA1);
-  max-width:46ch;
-  text-wrap:pretty;
 }

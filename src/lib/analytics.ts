@@ -8,10 +8,20 @@
  */
 import { env } from './env';
 import { consentDecided, consentGranted } from './consent';
-import type { Market } from './contract';
-import type { Locale, Utm } from './types';
+import type { Locale, Market, Utm } from './types';
 
-/** The eight event names, exactly as the spec lists them. */
+/** The event names the page may raise.
+
+    It was eight, fixed by the spec the fit-check form was built to. Five of
+    them described that form and its two result screens: form_start, form_step,
+    form_submit, qualified_shown, too_small_shown. The form is gone, nothing
+    raises them, and leaving them declared would be a vocabulary for a funnel
+    that no longer exists - a name in this union reads as an event somebody can
+    build a dashboard or an audience on.
+
+    `pricing_view` is kept although nothing on the page raises it today. It
+    describes a band this page is getting back, it is what Meta audience 3
+    keys on, and the consent gate fires it as its test event. */
 export type EventName =
   | 'page_view'
   /* Which of the three desks a visitor picks in the worked example: the
@@ -19,16 +29,6 @@ export type EventName =
      replaces video_play, which keyed on a demo video that never existed. */
   | 'demo_desk'
   | 'pricing_view'
-  | 'form_start'
-  /* Reaching the second screen of the form. With form_start and form_submit
-     either side of it, an abandoned form can be attributed to the screen it was
-     abandoned on: no form_step means they left on the questions, form_step with
-     no form_submit means they left on the contact details. Fired on the way
-     forward only. Going back is a different signal and is not this one. */
-  | 'form_step'
-  | 'form_submit'
-  | 'qualified_shown'
-  | 'too_small_shown'
   | 'booking_click';
 
 interface Context {

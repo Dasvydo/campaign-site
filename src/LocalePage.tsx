@@ -1,22 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { content, pathFor, LOCALES } from './content';
-import type { QualifierPayload } from './lib/contract';
 import type { Locale } from './lib/types';
-import type { PackageId } from './lib/offer';
-import { headlinePackage } from './lib/offer';
-import { captureUtm, resolveMarket, resolveSource } from './lib/attribution';
+import { captureUtm, resolveMarket } from './lib/attribution';
 import { applyConsent, initAnalytics, setAnalyticsContext, track } from './lib/analytics';
-import { initMetaPixel, pixelTrack, revokeMetaPixel } from './lib/pixel';
+import { initMetaPixel, revokeMetaPixel } from './lib/pixel';
 import { onConsentChange } from './lib/consent';
 import { flushLeadQueue } from './lib/lead';
 import { Consent } from './components/Consent';
 import { Rail } from './components/Rail';
 import { Hero } from './components/Hero';
 import { Demo } from './components/Demo';
-import { Numbers } from './components/Numbers';
 import { WhoFor } from './components/WhoFor';
-import { Price } from './components/Price';
-import { Qualifier } from './components/Qualifier';
 import { Footer } from './components/Footer';
 
 /* The origin every absolute URL in the head names: canonical, og:url, the
@@ -45,7 +39,6 @@ export function LocalePage({ locale }: { locale: Locale }) {
   /* Captured once on first load and held for the session. First touch wins, so
      an ad still gets the credit if the visitor wanders off and comes back. */
   const utm = useMemo(() => captureUtm(), []);
-  const source = useMemo(() => resolveSource(utm), [utm]);
   const market = useMemo(() => resolveMarket(locale), [locale]);
 
   const booted = useRef(false);
@@ -112,29 +105,6 @@ export function LocalePage({ locale }: { locale: Locale }) {
     track('page_view', { path: pathFor(locale) });
   }, [locale, market, utm]);
 
-  /* The package a reader presses in <Price /> (04) and the calculator in
-     <Numbers /> (05) are two components, and until now two opinions. Pressing
-     Firm and scrolling read "This costs (Desk)" against 5,000 pooled drafts,
-     which is the other package's allowance under the other package's fee. The
-     selection is held here because it is the only place both sections can see
-     it.
-
-     It starts on the headline package rather than on null, because the price
-     block starts there: the Firm card is lit at rest, and a calculator opening
-     on Desk underneath it is the same disagreement one scroll down, with
-     nobody having pressed anything.
-
-     The `at` counter is not decoration. A reader who drags the head count away
-     and then presses the package that is already lit is asking to be put back,
-     and a bare id would be the same value as last time, so the effect
-     downstream would not run and the press would do nothing. The counter makes
-     every press a new value. */
-  const [pickedPackage, setPickedPackage] = useState<{ id: PackageId; at: number }>(() => ({
-    id: headlinePackage().id,
-    at: 0,
-  }));
-  const pickPackage = (id: PackageId) => setPickedPackage((prev) => ({ id, at: prev.at + 1 }));
-
   const localeNames = LOCALES.map((l) => ({ code: l, label: c.nav.localeNames[l] }));
 
   return (
@@ -162,55 +132,6 @@ export function LocalePage({ locale }: { locale: Locale }) {
         <Demo c={c} onDeskChange={(desk) => track('demo_desk', { desk })} />
 
         <WhoFor c={c} />
-
-
-        <Price
-          c={c}
-          onView={() => track('pricing_view')}
-          /* Decision P-6, settled 2026-09-14: the pricing band feeds Meta.
-             Without this, ad-engine's audience 3 (pricing viewers, 90 days)
-             cannot be built at all - it was documented as available while
-             nothing on the page ever sent the event it keys on. Dwell-gated
-             in <Price /> so it stays a high-intent pool. */
-          onSeen={() =>
-            pixelTrack('ViewContent', {
-              content_name: 'pricing',
-              content_category: 'teams_landing',
-            })
-          }
-          onCta={() => track('booking_click', { placement: 'price' })}
-          onPackagePick={pickPackage}
-        />
-
-
-        {/* After the price, not before it. A cold click scrolls for the price;
-            the calculator is the justification and reads better once the fee
-            it subtracts has been seen. */}
-        <Numbers c={c} pickedPackage={pickedPackage} />
-
-        <Qualifier
-          c={c}
-          ctx={{ locale, market, source, utm }}
-          onFormStart={() => track('form_start')}
-          onFormStep={(step: number) => track('form_step', { step })}
-          onFormSubmit={(payload: QualifierPayload) => {
-            track('form_submit', {
-              team_size: payload.team_size,
-              email_client: payload.email_client,
-              role: payload.role,
-              lead_source: payload.source,
-            });
-            pixelTrack('Lead');
-          }}
-          onQualifiedShown={(outcome, delivered) =>
-            track('qualified_shown', { outcome, webhook_delivered: delivered })
-          }
-          onTooSmallShown={(delivered) => track('too_small_shown', { webhook_delivered: delivered })}
-          onBookingClick={() => {
-            track('booking_click', { placement: 'confirmation' });
-            pixelTrack('Schedule');
-          }}
-        />
       </main>
 
       <Footer c={c} />

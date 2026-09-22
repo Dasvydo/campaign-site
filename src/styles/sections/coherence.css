@@ -8,21 +8,16 @@
    it; the per-site fallbacks that disagreed with the declared value are gone,
    so a ledger slip and a dropped letter are the same stock. */
 
-/* the two sections that shipped with their own svg clamp keep it; it is not
+/* the one section that shipped with its own svg clamp keeps it; it is not
    promoted to every svg on the page, because two decorative pen strokes are
    deliberately drawn a hair wider than their inline box. */
-#demo img,#demo svg,#qualifier img,#qualifier svg{ max-width:100% }
+#demo img,#demo svg{ max-width:100% }
 
 /* one shared vertical rhythm: every band opens at 56 and closes at 48,
    and doubles to 96 / 80 from 1024px up. The footer is the only exception,
    because the ream ends rather than continues. */
 #demo .demo-wrap{ padding-block:56px 48px }
 @media (min-width:1024px){ #demo .demo-wrap{ padding-block:96px 80px } }
-
-/* the charcoal band is the one tonal event on the page, so it is given a
-   little more air on both sides than a cream to cream join needs */
-#price{ padding-block:64px 56px }
-@media (min-width:1024px){ #price{ padding-block:104px 88px } }
 
 /* the worked example without a working script: the switches and the gate stop
    pretending to be controls, and the standing note explains why. Gated on the

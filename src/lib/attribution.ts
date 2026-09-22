@@ -2,12 +2,11 @@
  * UTM capture and attribution.
  *
  * Captured from the URL on first load, persisted in sessionStorage, and
- * included in every payload and every PostHog event. First touch wins inside a
+ * included in every lead and every PostHog event. First touch wins inside a
  * session: if someone lands from an ad, wanders to the pricing page and comes
  * back with a bare URL, the ad still gets the credit.
  */
-import type { Market, Source } from './contract';
-import type { Locale, Utm } from './types';
+import type { Locale, Market, Source, Utm } from './types';
 
 const UTM_KEY = 'dl_utm';
 const SOURCE_KEY = 'dl_source';
@@ -73,11 +72,11 @@ export function captureUtm(search: string = window.location.search): Utm {
 }
 
 /**
- * Derives `source` for the contract from the UTM values.
+ * Derives `source` from the UTM values.
  *
- * The contract's `source` enum is coarser than utm_source on purpose: it is the
- * funnel lane, not the platform. An explicit ?source= on the URL always wins,
- * which is how outreach links can label themselves without inventing UTMs.
+ * The `source` enum is coarser than utm_source on purpose: it is the funnel
+ * lane, not the platform. An explicit ?source= on the URL always wins, which
+ * is how outreach links can label themselves without inventing UTMs.
  */
 export function resolveSource(utm: Utm, search: string = window.location.search): Source {
   const store = safeSession();

@@ -3,11 +3,10 @@
  *
  * types.ts says TypeScript guarantees it, and for named keys that is true: a
  * missing `hero.claim` is a build failure. But the interface also holds arrays
- * whose length it does not constrain - objections.items, price.lines,
- * results.qualified.covers, and the three option lists the form is built from.
- * A Danish file with one fewer objection, or one fewer role option, compiles
- * perfectly and quietly ships a shorter page or a form that cannot express a
- * value the payload contract accepts. tsc cannot see it. This can.
+ * whose length it does not constrain - who.accuracy.items, trial.terms and
+ * trial.included.items among them. A Danish file with one fewer term, or one
+ * fewer thing the trial includes, compiles perfectly and quietly ships a
+ * shorter page. tsc cannot see it. This can.
  *
  * It reports, it does not edit. da.ts and lt.ts are marked NEEDS NATIVE CHECK
  * and a native speaker has to review them; a phrasing someone would prefer is
@@ -64,11 +63,12 @@ function arrayLengths(node, prefix = '', out = new Map()) {
    would be less clear, not more. Exact match only, so "Send it" is still
    flagged.
 
-   Desk and Firm are the two package names. They are product names in the same
-   way DoviLoop is, they appear on an invoice and in a support conversation in
-   whatever language it happens in, and translating one of them would mean a
-   Danish reader and an English reader could not talk about the same package. */
-const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send|Cookies|Desk|Firm)$/;
+   Desk and Firm were on this list as the two package names, and came off it
+   with the packages: nothing in the copy says either word now, and an
+   exemption for a string that cannot occur is an exemption that will quietly
+   excuse the next thing that happens to match it. Whatever the tiers are
+   called next earns its place here on the same reasoning, once it exists. */
+const SHARED = /^(|-|DoviLoop|DoviLoop Teams|Outlook|Microsoft 365|Gmail|Google Workspace|Teams|CVR|EUR|USD|LinkedIn|Send|Cookies)$/;
 const isShared = (v) =>
   typeof v !== 'string' ||
   SHARED.test(v.trim()) ||
@@ -90,16 +90,6 @@ const isEndonym = (path) => path.startsWith('nav.localeNames.');
    legal disclosure, not a better one. Identical here is correct, not a gap. */
 const isRegistryFact = (path) => path.startsWith('footer.company.');
 
-
-/* A person's first name, on the signature at the foot of the price band.
-   Identical in all three files because you do not translate somebody's name,
-   and a Danish or Lithuanian rendering of one would be a different person.
-
-   This exemption existed before, was deleted when the name came off the page,
-   and is back because the name is back - as a signature this time rather than
-   a heading. The sentence beside it is his own and is written natively in each
-   language, so only the name is exempt here, never the line. */
-const isPersonalName = (path) => path === 'price.founding.signature.name';
 
 /* The audience ids. Identical in all three files because they are keys, not
    copy. They already slipped past the untranslated check by accident, being
@@ -152,13 +142,15 @@ for (const loc of TARGETS) {
   report(wrongLen.length === 0, `every list is the same length as en`,
     wrongLen.length ? wrongLen.join('; ') : `${enArrays.size} lists match`);
 
-  /* 3. the option values the payload contract pins must be identical, since
-        they are sent to the webhook, not shown to anyone. */
-  for (const field of ['teamSizeOptions', 'emailClientOptions', 'roleOptions']) {
-    const a = (en.form[field] ?? []).map((o) => o.value).join(',');
-    const b = (c.form[field] ?? []).map((o) => o.value).join(',');
-    report(a === b, `form.${field} sends the same values as en`, b || 'empty');
-  }
+  /* 3. The three option lists the fit-check form was built from were checked
+        here, because their values went to the webhook rather than to a reader
+        and a locale that translated one would have sent a value the payload
+        contract did not accept. The form is gone and so are the lists. There
+        is no machine-readable copy left in these files: the ids that remain
+        (who.groups[].id, demo.desks[].id) are exempted further down as keys,
+        and the check that they match across locales is the shape check above,
+        which compares every path and every list length. Nothing replaces this
+        until something is sent to a webhook from the page again. */
 
   /* 4. blank strings: present as a key, empty as copy, which is a gap that
         reads as completeness. footer.company is exempt because it renders only
@@ -175,7 +167,7 @@ for (const loc of TARGETS) {
   const enByPath = new Map(enLeaves);
   const same = locLeaves
     .filter(([p, v]) => enByPath.get(p) === v && !isShared(v) && !isEndonym(p) &&
-      !isRegistryFact(p) && !isPersonalName(p) && !isAudienceId(p))
+      !isRegistryFact(p) && !isAudienceId(p))
     .map(([p, v]) => `${p}=${JSON.stringify(String(v).slice(0, 40))}`);
   report(same.length === 0, `no en string is left untranslated in ${loc}`,
     same.length ? `${same.length}: ${same.join(', ')}` : 'none');

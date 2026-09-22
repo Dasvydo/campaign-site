@@ -22,3 +22,17 @@ export interface Utm {
   campaign: string;
   content: string;
 }
+
+/**
+ * The funnel lane a visit arrived on, and the market it is counted in.
+ *
+ * These two were declared in `contract.ts` alongside the qualifier payload,
+ * and were the only part of that file attribution and analytics ever read.
+ * The payload contract is gone with the fit-check form; both of these outlive
+ * it, because a visit still has a lane and a market whatever the page asks
+ * for at the end of it. They are declared here for the same reason `Locale`
+ * and `Utm` are: the modules that depend on them must not depend on a funnel.
+ */
+export type Source = 'reel' | 'ad' | 'outreach' | 'direct';
+
+export type Market = 'dk' | 'lt' | 'global';

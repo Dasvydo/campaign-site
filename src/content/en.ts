@@ -3,12 +3,8 @@ import { meta } from './en/meta';
 import { nav } from './en/nav';
 import { hero } from './en/hero';
 import { demo } from './en/demo';
-import { numbers } from './en/numbers';
 import { who } from './en/who';
-import { price } from './en/price';
 import { trial } from './en/trial';
-import { form } from './en/form';
-import { results } from './en/results';
 import { consent } from './en/consent';
 import { footer } from './en/footer';
 
@@ -26,12 +22,8 @@ export const en: Content = {
   nav,
   hero,
   demo,
-  numbers,
   who,
-  price,
   trial,
-  form,
-  results,
   consent,
   footer,
 };

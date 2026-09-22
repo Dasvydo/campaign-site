@@ -6,6 +6,9 @@
  *
  *     #price,#numbers{display:none}
  *
+ * (both of those sections have since been deleted; the attack works on any two
+ * ids in PARTS below and the reasoning is unchanged)
+ *
  * and then ran everything this repository has. `npm run verify` exited 0. The
  * build exited 0. Both browser gates exited 0. The whole workflow was green on
  * a page with no prices and no calculator on it.
@@ -15,8 +18,8 @@
  * components in jsdom, which has no layout and no CSS, so it can prove a node
  * is in the tree and can never prove a reader can see it. The two browser gates
  * that do have layout look at the consent sheet and at the worked example. That
- * left the hero, the audience folders, the price band and the calculator with
- * no gate that had ever loaded a stylesheet.
+ * left the hero and the audience folders with no gate that had ever loaded a
+ * stylesheet.
  *
  * So this asks the narrow question the others cannot: for each part of the page
  * the argument needs, does it occupy a box a person could look at. Not "is it
@@ -56,38 +59,23 @@ const PARTS = [
      flag. */
   ['what the open folder is drafted out of', '#who .who-sheet:not([hidden]) .who-source'],
   ['each thing it promises about accuracy', '#who .who-accuracy-list li'],
-  ['the price band', '#price'],
-  ['the package cards', '#price [data-price-pkg]'],
-  ['where a firm too small is sent', '#price .price-pkgs-under a'],
-  /* Each of the four obligations the trade asks for. They were four bulleted
-     sentences and are one wrapped run now, which is exactly the kind of change
-     that can leave an item with no box: an inline `<li>` inside a collapsed
-     parent measures zero and reads as nothing at all. */
-  ['what the trade asks for', '#price .price-gives li'],
-  ['the calculator', '#numbers .numbers-beats'],
-  ['the figure it ends on', '#numbers .numbers-keep'],
-  ['its controls', '#numbers input[type="range"]'],
-  /* The promise the panel makes about its own figures. It spent this long
-     inside a disclosure closed at rest, where nothing on this page could tell
-     the difference between present and invisible. */
-  ['the promise the calculator makes', '#numbers [data-n-promise]'],
-  /* The heading block carries `id="fit"`; the form is a sibling. Checking
-     `#fit` alone passed while the form itself was invisible. */
-  ['the fit check', '#fit'],
-  ['the form inside it', '.qualifier-sheet form'],
-  ['its first question', '.qualifier-chips'],
-  ['and an answer to press', '.qualifier-chip'],
+  /* The price band, the calculator and the fit check were checked here, each
+     down to the control a reader presses. All three are gone with the sales
+     call they were built for, and the parts below the audience folders are
+     whatever the trial section turns out to be. Nothing is left here standing
+     in for them: a selector that cannot match is a line that reads as coverage
+     and is not, which is the exact failure this file was written to end. */
 ];
 
 /* Every copy of the mark, and how big it is allowed to be.
 
-   The page draws the mark four times and sizes each one differently: a 30px
-   masthead, a 28px brand on the fit check, a 34px emboss on the registered
-   office, and a watermark on the draft that is meant to be large. Three of the
-   four are sized by a rule that names a class; the hero and the fit check are
-   sized by a rule on their parent. So "does it carry a class" is the wrong
-   question - what matters is that each copy came out the size it was meant to
-   be.
+   The page draws the mark three times and sizes each one differently: a 30px
+   masthead, a 34px emboss on the registered office, and a watermark on the
+   draft that is meant to be large. A fourth, the 28px brand on the fit check,
+   went with that section. Two of the three are sized by a rule that names a
+   class; the hero is sized by a rule on its parent. So "does it carry a class"
+   is the wrong question - what matters is that each copy came out the size it
+   was meant to be.
 
    The footer's emboss lost `footer-emboss` when the mark became one
    definition, and rendered at its intrinsic size in solid black: three hundred
@@ -102,7 +90,6 @@ const MARKS = [
   ['the masthead', '#hero .hero-brand svg', 20, 48],
   ['the draft watermark', '#demo .demo-emboss', 80, 220],
   ['the emboss on the registered office', '#footer .footer-slip svg', 20, 60],
-  ['the fit check brand', '.qualifier-mark svg', 20, 48],
 ];
 
 const VIEWPORTS = [['desktop', 1440, 900], ['phone', 390, 844]];
@@ -294,141 +281,16 @@ try {
     }
   }
 
-  /* The two lines the founder asked to fit on one line.
 
-     Both were two lines when he read the page, and both are copy: nothing
-     stops the next edit putting the wrap back, and nothing would notice. A
-     character count would not do it either, because what matters is the box,
-     which is 676px for the reason and 333px for a package card, and both are
-     set in different type at different sizes. So it is measured, in a browser,
-     at the width he reviewed at. Below 1280 the reason's column narrows and it
-     wraps again, which is expected and not checked. */
-  {
-    const ctx = await browser.newContext({ viewport: { width: 1920, height: 990 } });
-    const page = await ctx.newPage();
-    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
-    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
-    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
-
-    const lines = (sel, nth) =>
-      page.evaluate(
-        ([sel, nth]) => {
-          const el = document.querySelectorAll(sel)[nth];
-          if (!el) return null;
-          const cs = getComputedStyle(el);
-          const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.4;
-          const r = document.createRange();
-          r.selectNodeContents(el);
-          return {
-            n: Math.round(r.getBoundingClientRect().height / lh),
-            text: (el.textContent || '').replace(/\s+/g, ' ').trim(),
-          };
-        },
-        [sel, nth],
-      );
-
-    for (const [sel, nth, what] of [
-      ['#price .price-reason', 0, 'the reason the price is low'],
-      ['#price .price-pkg-note', 1, "the Firm card's note"],
-    ]) {
-      const got = await lines(sel, nth);
-      check(
-        got !== null && got.n === 1,
-        `\n  ${what} is one line at 1920`,
-        got === null ? `${sel} is not on the page` : `${got.n} line(s): ${JSON.stringify(got.text.slice(0, 64))}`,
-      );
-    }
-    await ctx.close();
-  }
-
-  /* One size, said once.
-
-     Section 04's two package cards and section 05's calculator were two
-     components with two opinions about how big the reader is. Pressing Firm
-     changed the fee above and nothing below it, so a reader who pressed Firm
-     and scrolled one section met "This costs (Desk)" over an allowance of
-     5,000 pooled drafts, which is the other package's number under the other
-     package's fee. The press now moves the head count, the head count moves
-     the package, and the package moves the allowance: one path, checked here
-     from the end a reader actually touches. */
-  {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    const page = await ctx.newPage();
-    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
-    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
-    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
-
-    const read = () =>
-      page.evaluate(() => ({
-        drafts: document.querySelector('[data-n-input="drafts"]')?.textContent?.trim() ?? '',
-        people: document.querySelector('[data-n-input="people"]')?.textContent?.trim() ?? '',
-        fee: Array.from(document.querySelectorAll('#numbers .numbers-beat'))
-          .map((b) => b.textContent ?? '')
-          .find((t) => /costs/i.test(t)) ?? '',
-      }));
-
-    /* At rest, before anything is pressed. The price block lights one card on
-       load, and the calculator used to open on its own smallest band, so a
-       reader who pressed nothing already met a lit Firm card above "This costs
-       (Desk)". The disagreement did not need a click to exist. */
-    {
-      const lit = await page.getAttribute('[data-price-pkg][aria-pressed="true"]', 'data-price-pkg');
-      const got = await read();
-      check(
-        Boolean(lit) && got.fee.toLowerCase().includes(lit),
-        '\n  at rest the calculator is already on the package the price block lit',
-        `${lit} is lit, the fee row says ${JSON.stringify(got.fee.slice(0, 32))}`,
-      );
-    }
-
-    const want = { firm: ['10,000', '20'], desk: ['5,000', '10'] };
-    const press = async (id, label) => {
-      await page.click(`[data-price-pkg="${id}"]`);
-      await page.waitForTimeout(250);
-      const got = await read();
-      const [drafts, people] = want[id];
-      /* The fee row names the package it is charging for, so it is the one
-         place the two sections can be caught disagreeing in words rather than
-         only in numbers. */
-      const named = got.fee.toLowerCase().includes(id);
-      check(
-        got.drafts === drafts && got.people === people && named,
-        label,
-        `${got.people} people, ${got.drafts} drafts, fee row says ${named ? id : JSON.stringify(got.fee.slice(0, 40))}`,
-      );
-    };
-
-    /* Both directions, because the linkage runs off a change in the picked
-       package and either one could be the value it happened to start on. */
-    await press('desk', '\n  pressing desk in the price block moves the calculator with it');
-    await press('firm', '  and pressing firm moves it back');
-
-    /* And the press that is not a change. A reader who drags the head count
-       somewhere else and then presses the card that is already lit is asking
-       to be put back where that card says. Held on to the id alone this does
-       nothing at all: same value, no re-render, a dead button under a finger
-       that just pressed it. */
-    await page.evaluate(() => {
-      const el = document.querySelector('input[name="people"]');
-      const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-      set.call(el, '13');
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    });
-    await page.waitForTimeout(150);
-    const moved = (await read()).people;
-    check(moved === '13', '  (the head count really moved away first)', moved);
-    await press('firm', '  and pressing the card that is already lit puts it back');
-    await ctx.close();
-  }
 
   /* The page a visitor without JavaScript gets.
 
      There was not one. React writes every element in #root, so with scripting
      off the body was empty: no sentence, no address, nothing to click, on a
-     page ads point at. The stylesheet has carried a .qualifier-nojs fallback
-     the whole time and it never rendered once, because it lives inside the
-     component that does not run. This is the only check that can tell the
-     difference, because it is the only one that turns the script off. */
+     page ads point at. The fallback lives in the served index.html, where it
+     cannot depend on the thing that is missing. This is the only check that
+     can tell the difference, because it is the only one that turns the script
+     off. */
   {
     const ctx = await browser.newContext({
       viewport: { width: 1280, height: 800 },
@@ -488,215 +350,7 @@ try {
     await ctx.close();
   }
 
-  /* Every one of the six is required, pressed the way a reader presses it.
 
-     The phone shipped optional on 2026-09-22 and was made required the same
-     day. "Required" is a claim about what the form REFUSES, and the payload
-     harness cannot make it: that one only ever sees what got through, so a
-     form that quietly accepted a blank number would leave it with nothing to
-     notice. This fills every box but one, presses the button, and checks the
-     form stayed put and said which box.
-
-     Done for the phone because it is the field that changed, and for the
-     email beside it as a control: if a check like this passes on a form where
-     nothing is required at all, it is measuring nothing. */
-  {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
-    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
-
-    /* If one ever gets through, it must not reach a webhook: a lead POSTed by
-       a form that was supposed to refuse it is a worse outcome than a failing
-       check, so the request is counted and would fail this too. */
-    let posted = 0;
-    await ctx.route('**/api/lead*', (r) => {
-      posted += 1;
-      return r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
-    });
-
-    for (const [leaveBlank, what] of [['phone', 'the number'], ['work_email', 'the email']]) {
-      const page = await ctx.newPage();
-      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
-      await page.evaluate(() => document.querySelector('#fit')?.scrollIntoView());
-      await page.check('[data-field="team_size"] input[value="10-24"]');
-      await page.check('[data-field="email_client"] input[value="outlook"]');
-      await page.check('[data-field="role"] input[value="ops_office_manager"]');
-      await page.click('#qualifier button[type="submit"]');
-      await page.waitForTimeout(300);
-
-      const fill = { company_name: 'Vesterled', work_email: 'lars@vesterled.dk', phone: '+45 31 42 55 90' };
-      for (const [id, value] of Object.entries(fill)) {
-        if (id !== leaveBlank) await page.fill(`#f-${id}`, value);
-      }
-      const before = posted;
-      await page.click('#qualifier button[type="submit"]');
-      await page.waitForTimeout(600);
-
-      const got = await page.evaluate((id) => {
-        /* Every field keeps its error paragraph in the DOM at all times,
-           `hidden` until there is something to say, so that the id an input's
-           aria-describedby points at always resolves. Counting the paragraphs
-           therefore counts the fields, not the complaints. The first version
-           of this check did exactly that and reported all three fields
-           failing on a form that was behaving perfectly. Only the ones that
-           are both shown and have text in them are complaints. */
-        const shown = [...document.querySelectorAll('#qualifier [id^="e-"]')].filter(
-          (e) => !e.hidden && (e.textContent || '').trim(),
-        );
-        return {
-          onForm: Boolean(document.querySelector('#qualifier .qualifier-form')),
-          said: shown.find((e) => e.id === `e-${id}`)?.textContent?.trim() ?? '',
-          complaints: shown.map((e) => e.id),
-        };
-      }, leaveBlank);
-
-      check(
-        got.onForm && got.said.length > 0 && got.complaints.length === 1 && posted === before,
-        `\n  the form refuses to send a lead with ${what} left blank`,
-        got.onForm
-          ? `said ${JSON.stringify(got.said)}, complaining about ${got.complaints.join(',') || 'nothing'}${posted > before ? ', BUT POSTED IT ANYWAY' : ''}`
-          : 'it went through to an answer screen',
-      );
-      await page.close();
-    }
-    await ctx.close();
-  }
-
-  /* The answer screens, which nothing had ever looked at.
-
-     The fit check's three outcomes are behind a submitted form, so no gate
-     reached them and no screenshot pass had opened them. They were written in
-     Tailwind utilities naming DARK theme tokens - text-warmwhite/90,
-     bg-card-dark, text-muted-dark - on a sheet that is #FDF9F7 paper. Both
-     sentences explaining the call measured 1.06:1 against it. The Gmail note
-     was a near black box with near black text inside it, also 1.06:1. That is
-     not low contrast, it is a live page showing a visitor nothing where its
-     copy should be, and the founder read it as the screens being mostly empty.
-
-     So this walks every piece of text on every outcome and measures it against
-     the background actually painted behind it, rather than trusting a class
-     name. 4.5:1 is the WCAG AA threshold for body text. */
-  {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-    await ctx.route('**://*.facebook.*/**', (r) => r.abort());
-    await ctx.route('**://*.posthog.*/**', (r) => r.abort());
-    await ctx.route('**/api/lead*', (r) =>
-      r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }),
-    );
-
-    /* team size, mail client, and what the page should conclude */
-    const RUNS = [
-      ['1-9', 'outlook', 'too small'],
-      ['10-24', 'outlook', 'qualified'],
-      ['50+', 'gmail', 'qualified, on Gmail'],
-    ];
-
-    for (const [size, client, what] of RUNS) {
-      const page = await ctx.newPage();
-      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
-      await page.evaluate(() => document.querySelector('#fit')?.scrollIntoView());
-      await page.check(`[data-field="team_size"] input[value="${size}"]`);
-      await page.check(`[data-field="email_client"] input[value="${client}"]`);
-      await page.check('[data-field="role"] input[value="ops_office_manager"]');
-      await page.click('#qualifier button:has-text("Continue"), #qualifier button[type="submit"]');
-      await page.waitForTimeout(300);
-      await page.fill('#qualifier input[type="email"]', 'someone@example-firm.dk');
-      await page.fill('#qualifier input[name="company_name"]', 'Example Firm ApS');
-      /* Required since 2026-09-22. Without it this walk never leaves the
-         second screen and every check below reports an answer screen that
-         does not exist, which is how the change announced itself here. */
-      await page.fill('#qualifier input[name="phone"]', '+45 31 42 55 90');
-      await page.click('#qualifier button[type="submit"]');
-      await page.waitForTimeout(1200);
-
-      const got = await page.evaluate(() => {
-        const lum = (rgb) => {
-          const f = rgb.map((v) => {
-            v /= 255;
-            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-          });
-          return 0.2126 * f[0] + 0.7152 * f[1] + 0.0722 * f[2];
-        };
-        const parse = (c) => {
-          const m = c.match(/-?[\d.]+/g);
-          if (!m) return null;
-          /* oklab and oklch cannot be read off the string, so bounce the colour
-             through a canvas, which reports whatever the engine resolved. */
-          if (!c.startsWith('rgb')) {
-            const cv = document.createElement('canvas');
-            cv.width = cv.height = 1;
-            const g = cv.getContext('2d');
-            g.fillStyle = '#fff';
-            g.fillRect(0, 0, 1, 1);
-            g.fillStyle = c;
-            g.fillRect(0, 0, 1, 1);
-            const d = g.getImageData(0, 0, 1, 1).data;
-            return [d[0], d[1], d[2]];
-          }
-          return [Number(m[0]), Number(m[1]), Number(m[2])];
-        };
-        /* What is really painted behind this element: walk up until something
-           is not transparent. An element on a see through parent is sitting on
-           whatever that parent is sitting on. */
-        const behind = (el) => {
-          let n = el;
-          while (n && n !== document.documentElement) {
-            const bg = getComputedStyle(n).backgroundColor;
-            const a = bg.match(/-?[\d.]+/g);
-            if (a && (a.length < 4 || Number(a[3]) > 0.9)) return parse(bg);
-            n = n.parentElement;
-          }
-          return [255, 255, 255];
-        };
-        const root = document.querySelector('#qualifier .qualifier-result');
-        if (!root) return { missing: true };
-        const bad = [];
-        let seen = 0;
-        for (const el of root.querySelectorAll('*')) {
-          /* Only elements that paint text of their own. */
-          const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-          if (!own) continue;
-          const cs = getComputedStyle(el);
-          if (cs.visibility === 'hidden' || cs.display === 'none') continue;
-          const fg = parse(cs.color);
-          const bg = behind(el);
-          if (!fg || !bg) continue;
-          seen++;
-          const l1 = lum(fg);
-          const l2 = lum(bg);
-          const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
-          if (ratio < 4.5) {
-            bad.push(
-              `${ratio.toFixed(2)}:1 "${(el.textContent || '').trim().slice(0, 34)}"`,
-            );
-          }
-        }
-        /* The answer uses the whole sheet. The rail is the form's margin, for
-           the question numbers; on an answer it was 132px of nothing with the
-           text squeezed into what was left. */
-        const body = document.querySelector('#qualifier .qualifier-body');
-        const gutter = Math.round(root.getBoundingClientRect().x - body.getBoundingClientRect().x);
-        return { bad, seen, gutter };
-      });
-
-      check(
-        !got.missing && got.seen >= 3 && got.bad.length === 0,
-        `\n  every word of the "${what}" answer is legible on the paper it is printed on`,
-        got.missing
-          ? 'no answer screen rendered at all'
-          : got.bad.length
-            ? `${got.seen} checked, ${got.bad.length} under 4.5:1 -> ${got.bad.slice(0, 3).join(' | ')}`
-            : `${got.seen} pieces of text, all at or above 4.5:1`,
-      );
-      check(
-        got.gutter === 0,
-        `  and it uses the sheet, not the form's numbering margin`,
-        `${got.gutter}px of empty gutter to its left`,
-      );
-      await page.close();
-    }
-    await ctx.close();
-  }
 
 } finally {
   await browser.close();

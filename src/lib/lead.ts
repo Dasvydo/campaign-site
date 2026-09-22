@@ -3,7 +3,7 @@
  *
  * Design, as required by the spec:
  *
- *   1. POST the contract payload to VITE_LEAD_WEBHOOK_URL. If that is empty we
+ *   1. POST the lead payload to VITE_LEAD_WEBHOOK_URL. If that is empty we
  *      post to same-origin /api/lead, which the local mock endpoint answers in
  *      dev, so the shape can be verified without a real n8n.
  *   2. On failure, retry exactly once after a short pause. Two attempts total.
@@ -19,8 +19,23 @@
  * Batch F must therefore treat `dedupe_id` as an idempotency key. A retry can
  * legitimately deliver the same lead twice.
  */
-import type { QualifierPayload } from './contract';
 import { env } from './env';
+
+/**
+ * What one lead carries.
+ *
+ * This was `QualifierPayload`: eleven named keys and five enums, fixed by the
+ * fit-check form's contract. The form is gone and so is the contract, and the
+ * shape that replaces it belongs to whatever asks for the lead next, not to
+ * the thing that posts it. Nothing below reads a single field: the queue
+ * stores the object, the POST serialises it, and `dedupe_id` is the only key
+ * this file adds. So the type is as wide as the mechanism actually is.
+ *
+ * Deliberately not `unknown` and not `object`: it has to spread into a JSON
+ * body, and a caller handing over an array or a string would be a caller
+ * sending something the endpoint cannot read.
+ */
+export type LeadPayload = Record<string, unknown>;
 
 const QUEUE_KEY = 'dl_lead_queue';
 const MAX_QUEUE = 20;
@@ -32,7 +47,7 @@ export interface QueuedLead {
   dedupe_id: string;
   queued_at: string;
   attempts: number;
-  payload: QualifierPayload;
+  payload: LeadPayload;
 }
 
 export type DeliveryResult =
@@ -88,7 +103,7 @@ function writeQueue(items: QueuedLead[]): boolean {
   }
 }
 
-function enqueue(payload: QualifierPayload, dedupeId: string, attempts: number): boolean {
+function enqueue(payload: LeadPayload, dedupeId: string, attempts: number): boolean {
   const items = readQueue().filter((e) => e.dedupe_id !== dedupeId);
   items.push({
     dedupe_id: dedupeId,
@@ -99,7 +114,7 @@ function enqueue(payload: QualifierPayload, dedupeId: string, attempts: number):
   return writeQueue(items);
 }
 
-async function postOnce(payload: QualifierPayload, dedupeId: string): Promise<void> {
+async function postOnce(payload: LeadPayload, dedupeId: string): Promise<void> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -139,7 +154,7 @@ const pause = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
  * Submits one lead. Two attempts, then queue. Never throws: the caller always
  * gets a result and always shows the visitor their screen.
  */
-export async function submitLead(payload: QualifierPayload): Promise<DeliveryResult> {
+export async function submitLead(payload: LeadPayload): Promise<DeliveryResult> {
   const dedupeId = makeId();
 
   try {
