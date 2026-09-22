@@ -6,6 +6,7 @@ import { demo } from './lt/demo';
 import { numbers } from './lt/numbers';
 import { who } from './lt/who';
 import { price } from './lt/price';
+import { trial } from './lt/trial';
 import { form } from './lt/form';
 import { results } from './lt/results';
 import { consent } from './lt/consent';
@@ -31,6 +32,7 @@ export const lt: Content = {
   numbers,
   who,
   price,
+  trial,
   form,
   results,
   consent,

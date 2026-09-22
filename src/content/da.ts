@@ -6,6 +6,7 @@ import { demo } from './da/demo';
 import { numbers } from './da/numbers';
 import { who } from './da/who';
 import { price } from './da/price';
+import { trial } from './da/trial';
 import { form } from './da/form';
 import { results } from './da/results';
 import { consent } from './da/consent';
@@ -31,6 +32,7 @@ export const da: Content = {
   numbers,
   who,
   price,
+  trial,
   form,
   results,
   consent,

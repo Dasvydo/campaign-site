@@ -6,6 +6,7 @@ import { demo } from './en/demo';
 import { numbers } from './en/numbers';
 import { who } from './en/who';
 import { price } from './en/price';
+import { trial } from './en/trial';
 import { form } from './en/form';
 import { results } from './en/results';
 import { consent } from './en/consent';
@@ -28,6 +29,7 @@ export const en: Content = {
   numbers,
   who,
   price,
+  trial,
   form,
   results,
   consent,

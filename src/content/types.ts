@@ -594,6 +594,71 @@ export interface Content {
     ctaNote: string;
   };
 
+  /** The free trial: the reader starts it themselves, uses the product, and is
+      invoiced only if they keep it.
+
+      It is the argument `price` used to make, rewritten for a funnel with no
+      sales call in it. The timeline, the terms and the capability list were
+      written to say that nobody is charged until they say yes, which is the
+      one thing a trial has to say, so the sentences were carried across and
+      the two calls taken out of them. Carried, not moved: `price` still
+      renders, and still owns its own copy, until the whole firm model is
+      taken off the page.
+
+      Not one figure lives in this block. The length of the trial and the money
+      belong to the data module, and every slot that meets a number splits into
+      `before` and `after` halves around it, the way the rest of this file
+      does. A numeral that lands inside a noun phrase has to agree with it in
+      Danish and in Lithuanian, and a split sentence is what lets each language
+      put its own words on either side of the count. */
+  trial: {
+    /** Heading over the stops. */
+    whenTitle: string;
+
+    /** The stops on the timeline, in order: the day it starts, the day it
+        ends, and stopping before then. Three of them, and the locale audit
+        holds every language to the same number.
+
+        `figure` says which count the day marker wraps, so a renderer can walk
+        the list without having to know what any one stop means. `start` takes
+        the day the trial begins, `end` the day it runs out, and `none` takes
+        no count at all: on that stop the two halves of `day` are joined as
+        they stand. It still splits into halves, because every locale has to
+        carry the same keys and no key may be left blank, which is what the
+        locale audit checks.
+
+        `say` is what the live region announces when a stop is selected, split
+        around the figure the card is showing there: the monthly fee, or the
+        struck out nothing on the last one. A struck out figure is a picture,
+        so the announcement says the amount out loud rather than pointing at
+        it. It does not repeat the day marker, which is ordinary text that a
+        screen reader reaches on its own. */
+    stops: readonly {
+      figure: 'start' | 'end' | 'none';
+      /** "<before><the day count><after>", or the two halves joined where
+          `figure` is `none`. */
+      day: { before: string; after: string };
+      note: string;
+      /** What the total is showing while this stop is selected. */
+      state: string;
+      /** "<before><whatever the total reads at this stop><after>". */
+      say: { before: string; after: string };
+    }[];
+
+    /** The disclosure the terms sit behind. */
+    termsLabel: string;
+    /** Four term and note pairs: `t` is the term, `n` the sentence under it.
+        Neither half carries a figure. */
+    terms: readonly { t: string; n: string }[];
+
+    /** What the trial gives a firm. No figures: these are things you get, and
+        not one of them is a ceiling. */
+    included: { title: string; items: readonly string[] };
+
+    /** Sits under the button that starts the trial. The button is nav.cta. */
+    ctaNote: string;
+  };
+
   form: {
     eyebrow: string;
     title: string;
