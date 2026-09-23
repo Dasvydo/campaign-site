@@ -44,6 +44,26 @@ function footprint() {
       (el as HTMLImageElement).src?.includes('facebook.com/tr'),
     ).length,
     fbqDefined: typeof window.fbq !== 'undefined',
+    /* Everything the page has asked Meta to record, in order.
+
+       fbevents.js never loads here - jsdom does not fetch external scripts,
+       and in a browser this gate's siblings abort the host - so `callMethod`
+       stays undefined and the loader stub keeps every call in `queue`. That
+       array is therefore a complete and exact record of the conversation,
+       which is what makes it worth reading: PostHog is checked by its
+       footprint on the device, but Meta's is the one that is checked by what
+       was SAID.
+
+       Recovered from scripts/verify-browser.py, which read the same array in a
+       real Chromium and was removed on 2026-09-23. It needs no browser: the
+       loader is the standard snippet and the queue is plain JavaScript. */
+    fbqQueue: window.fbq?.queue
+      ? Array.from(window.fbq.queue as unknown[]).map((a) =>
+          Array.from(a as ArrayLike<unknown>).map((v) =>
+            typeof v === 'object' && v !== null ? JSON.parse(JSON.stringify(v)) : v,
+          ),
+        )
+      : null,
     cookies: document.cookie,
     storageKeys: Object.keys(window.localStorage),
   };
@@ -84,6 +104,19 @@ globalThis.__RUN__ = async () => {
   track('page_view', { path: '/da' });
 
   /* ---- 1. undecided ---------------------------------------------------- */
+  /* Sampled after a tick, not synchronously.
+
+     posthog-js is loaded by a dynamic `import()` inside `maybeStart()`, so
+     nothing it does can possibly have happened by the next statement. Reading
+     the footprint immediately meant this whole block passed with the consent
+     gate DELETED from `maybeStart()`: the library had simply not finished
+     loading yet, and only the after-declining block below noticed. Measured on
+     2026-09-23 by removing `if (!consentGranted()) return;` - every check here
+     stayed green.
+
+     So the window is given time to misbehave before it is judged. In correct
+     code nothing starts loading at all and this tick costs a few milliseconds. */
+  await new Promise((r) => setTimeout(r, 60));
   out.beforeChoice = footprint();
   const dialog = host.querySelector('[role="dialog"]');
   out.noticeShown = Boolean(dialog);
@@ -104,7 +137,13 @@ globalThis.__RUN__ = async () => {
     decline?.click();
   });
   pixelTrack('ViewContent', { content_name: 'pricing' });
-  track('pricing_view');
+  /* A name the page can actually raise. This was `pricing_view` until
+     2026-09-23, and it compiled for weeks after that name was retired because
+     scripts/ is in no tsconfig project - see the note at the top of
+     tsconfig.scripts.json. What is being tested here is the footprint after a
+     refusal, not the name, so the gate was measuring the right thing the whole
+     time; it was just firing an event the page could not. */
+  track('price_seen');
   out.afterDecline = footprint();
   out.choiceAfterDecline = consentChoice();
   out.noticeGoneAfterDecline = !host.querySelector('[role="dialog"]');

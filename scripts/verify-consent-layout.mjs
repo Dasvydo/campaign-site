@@ -22,15 +22,22 @@
  * Nothing leaves the machine: every request to a Meta or PostHog host is
  * aborted at the route level before it is sent.
  *
- * Needs a built site being served, and playwright-core with the Chromium at
- * PLAYWRIGHT_BROWSERS_PATH. Same optional-tooling footing as verify-browser.py.
+ * It also owns the horizontal overflow measurement for the whole page, at four
+ * widths by three locales, before and after the notice is answered. That used
+ * to be measured in a second place as well - scripts/verify-browser.py, at
+ * three widths with the notice up - which this strictly contains. The Python
+ * gate was removed on 2026-09-23; its overflow coverage is here and was
+ * already a subset, so nothing was lost with it.
  *
- *   npm run build && npx vite preview --port 4318 &
+ * Needs a built site being served, and playwright-core with a Chromium, which
+ * scripts/chromium.mjs resolves. Same optional-tooling footing as the other
+ * two browser gates, and like them it is not part of `npm run verify`.
+ *
+ *   npm run build && npx vite preview --port 4318 --host 127.0.0.1 &
  *   node scripts/verify-consent-layout.mjs http://127.0.0.1:4318
  */
-/* Optional tooling, same footing as scripts/verify-browser.py: say so plainly
-   rather than throwing a module-resolution stack trace at someone who has not
-   installed it. */
+/* Optional tooling: say so plainly rather than throwing a module-resolution
+   stack trace at someone who has not installed it. */
 let chromium;
 try {
   ({ chromium } = await import('playwright-core'));
@@ -77,6 +84,13 @@ const check = (ok, label, detail = '') => {
 
 const browser = await chromium.launch(launchOptions({ args: ['--no-sandbox'] }));
 
+/* The loop below is wrapped because several measurements read a boundingBox()
+   without a null guard - `slip.boundingBox()` in particular, which returns
+   null the moment `.consent-slip` stops existing. That is a throw, not a
+   FAIL, which is the right direction, but unguarded it left a headless
+   Chromium running after the process gave up. The other two browser gates
+   already close theirs in a `finally`; this one did not. */
+try {
 for (const [w, h, vpName] of VIEWPORTS) {
   console.log(`\n${vpName} ${w}x${h}`);
   for (const [path, loc] of LOCALES) {
@@ -106,8 +120,21 @@ for (const [w, h, vpName] of VIEWPORTS) {
        197px sheet. The phone hero now puts the button above that line and
        the sheet is set tighter, so a first screen with no reachable action is
        a regression this catches rather than a state it excuses. */
+    /* A missing button is a FAIL, not a skip.
+
+       This was `if (await cta.count()) { ... }`, so the whole assertion simply
+       did not run when the selector matched nothing - and the selector names
+       one class on one section, which is the kind of thing a redesign renames
+       without noticing. The page would have shipped with no call to action in
+       the hero and this gate would have printed one line fewer and exited 0.
+       A gate that goes quiet when its subject disappears is the failure this
+       repository has now hit five times. */
     const cta = page.locator('#hero a.hero-btn, #hero button.hero-btn').first();
-    if (await cta.count()) {
+    const haveCta = (await cta.count()) > 0;
+    if (!haveCta) {
+      check(false, `${loc}: the hero has a call to action to measure the notice against`,
+        'no #hero .hero-btn on the page');
+    } else {
       const a = await cta.boundingBox();
       const b = await slip.boundingBox();
       /* boundingBox() returns {x,y,width,height} and no .right, so the edges
@@ -160,6 +187,8 @@ for (const [w, h, vpName] of VIEWPORTS) {
   }
 }
 
-await browser.close();
+} finally {
+  await browser.close();
+}
 console.log(fails === 0 ? '\nLAYOUT HOLDS' : `\n${fails} PROBLEM(S) FOUND`);
 process.exit(fails === 0 ? 0 : 1);

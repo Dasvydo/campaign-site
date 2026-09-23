@@ -12,6 +12,16 @@
  * the object that went in is the object that comes back out. That is the
  * promise the queue actually makes, and it is the one the next form will rely
  * on whatever shape it decides to send.
+ *
+ * The third mode, 'age', is recovered coverage. lead.ts drops a queued lead
+ * after fourteen days so a dead webhook cannot grow an unbounded queue on a
+ * visitor's device, and the only thing that had ever exercised that cutoff was
+ * scripts/verify-browser.py - a manual Python gate that drove the deleted
+ * fit-check form, was in neither package.json nor CI, and cannot run in this
+ * container at all because Playwright for Python is not installed. It was
+ * removed on 2026-09-23 and this is where that one live subject went. It needs
+ * no browser: the cutoff is a filter inside readQueue(), and reading the queue
+ * back is enough to see it.
  */
 import { flushLeadQueue, peekLeadQueue, submitLead } from '../src/lib/lead';
 import type { LeadPayload } from '../src/lib/lead';
@@ -31,14 +41,32 @@ export const payload: LeadPayload = {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __MODE__: 'fail' | 'flush';
+  var __MODE__: 'fail' | 'flush' | 'age';
   // eslint-disable-next-line no-var
   var __RECOVERY__: Record<string, unknown>;
 }
 
 globalThis.__RECOVERY__ = globalThis.__RECOVERY__ ?? {};
 
+/** Days old, as an ISO timestamp the queue would have written. */
+const daysAgo = (d: number) => new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString();
+
 export async function run() {
+  if (globalThis.__MODE__ === 'age') {
+    /* Seeded either side of the cutoff, and read back through the module's own
+       accessor rather than out of localStorage: the filter lives in readQueue,
+       so going around it would test JSON.parse. Fifteen and thirteen days,
+       because a fixture ON the boundary would flip with the clock. */
+    window.localStorage.setItem(
+      'dl_lead_queue',
+      JSON.stringify([
+        { dedupe_id: 'age-15', queued_at: daysAgo(15), attempts: 2, payload },
+        { dedupe_id: 'age-13', queued_at: daysAgo(13), attempts: 2, payload },
+      ]),
+    );
+    globalThis.__RECOVERY__.aged = peekLeadQueue().map((e) => e.dedupe_id);
+    return;
+  }
   if (globalThis.__MODE__ === 'fail') {
     const result = await submitLead(payload);
     globalThis.__RECOVERY__.submit = result;

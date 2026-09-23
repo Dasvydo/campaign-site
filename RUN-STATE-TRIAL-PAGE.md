@@ -46,7 +46,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T10 | Rewrite analytics event union | 4 | verified | 1 | PASS | analytics.ts | src/lib/analytics.ts |
 | T11 | Teams-of-10+ secondary path | 3 | verified | 1 | PASS | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
 | T12 | Mobile + accessibility pass | 4 | verifying | 1 | | a11y fixes | sections/** (a11y only), Consent.tsx |
-| T13 | Update verification gates | 4 | running | 0 | | scripts/** | scripts/**, package.json scripts |
+| T13 | Update verification gates | 4 | verified | 1 | PASS | scripts/** | scripts/**, package.json scripts |
 
 ## Contracts
 | ID | Producer | Consumers | Interface | Honored |
@@ -166,6 +166,57 @@ injected into a section module turns `audit:locales` red, and removing the Lithu
 - Tokens not provided, to add with an `--ix-` name if needed: a disabled-state token, a pending/loading state for
   the signup button, and a `--ix-lift` variant tuned for a large surface (the current one is tuned for controls).
 
+### T13 verified — and the run's worst gap is closed
+Verified by the orchestrator directly rather than by a fourth agent: full suite re-run here (`typecheck` 0,
+`build` 0, `verify` 0 at 153 PASS against 145 before, `verify-visible` 23 PASS against 16, `verify-demo` 22,
+`verify-consent-layout` 90), and the single most important claim independently negative-tested in a throwaway
+worktree so `src/` was never mutated in the real tree.
+
+**The discard-on-decline promise now has a gate.** Both mutations that used to leave `verify:consent` green
+at exit 0 now turn it red, and the failure message names the event that leaked:
+- deleting `if (consentDecided()) pending = [];` from `applyConsent()` ->
+  `FAIL and a later change of mind resurrects nothing that was raised before it (page_view)`
+- neutering the decline drop inside `track()` ->
+  `FAIL ... (price_seen)`
+`src/lib/analytics.ts` restored byte-identical afterwards, confirmed by `diff`, and the gate returns to 0.
+This is the thing the consent dialog promises in three languages to DK and LT visitors, and until now
+nothing in the repository checked it.
+
+Also closed: `verify:payload`'s positive branch now strips comments before searching, so a commented-out
+`track()` no longer satisfies it; and `verify:consent`'s undecided window samples after a tick, so deleting
+the consent gate from `maybeStart()` is caught there rather than only by the decline block.
+
+NOT independently re-run by me: the other ~18 mutations in T13's own sweep table. Its report stands on its
+own evidence for those; the three I cared most about I proved myself.
+
+### SIGN-OFF NEEDED FROM THE FOUNDER (low stakes, easily reversed)
+T13 put `scripts/` into a typecheck project (`tsconfig.scripts.json`, referenced from `tsconfig.json`) with
+**zero pre-existing errors** — nothing suppressed. This is what catches a harness firing an event name the
+app cannot raise, which is exactly what had been sitting in `harness-consent.tsx` uncaught for weeks because
+`scripts/` was in no project. The trade-off: `tsc -b` runs inside `npm run build`, so a type error in a test
+harness now blocks a production bundle. I judge that right and consistent with this repo's stated position,
+and I have left it in. It is one line in `tsconfig.json` to revert.
+
+### Carried forward from T13 — dead code with no owner
+- **(a) UTM-to-lead attribution is entirely dead.** `src/lib/attribution.ts:81` `resolveSource` has no caller
+  anywhere in `src/`, and the enterprise form — the only lead this page now sends — posts no `utm` and no
+  `source` field (`Enterprise.tsx:177-186`). So a lead arriving in n8n cannot be attributed to the ad that
+  paid for it. Either the payload should carry attribution, or `resolveSource` should go. **This one has
+  money attached to it** and is the most consequential item on this list.
+- **(b) `src/lib/env.ts:19` `bookingUrl`** — read from the environment, no consumer. The booking flow went
+  with the fit check.
+- **(c) `src/lib/pixel.ts:102` `pixelTrack`** — exported, no caller. Measured: deleting `!consentGranted()`
+  from its guard leaves the ENTIRE suite green, correctly, because nothing can reach it. If a caller is ever
+  added, that guard needs a gate the same day.
+- **(f)** `verify-demo`'s negative checks are only meaningful because its check 1 proves the sequence runs at
+  all. That cross-guard holds, but it is implicit. Nobody should delete check 1 on the grounds that the
+  others cover it.
+
+Fixed by the orchestrator in the same commit, both being live instructions rather than history:
+`README.md` told a reader three times to run the deleted Python gate, and described a gate set that no longer
+existed; `.github/workflows/verify.yml` cited "402 checks" and "the two browser gates" when there are three.
+The mentions in `SESSION-REPORT.md`, `RUN-REPORT.md` and earlier in THIS file are historical records and stay.
+
 ### Carried forward to T13 (raised by T2's verifier)
 **`verify:posthog` can be disarmed by a copy edit, and this predates the run.** The gate compares the consent
 copy's EU-hosting promise against the configured ingest host. If that sentence were deleted from all three
@@ -216,11 +267,19 @@ gate should then assert something about its CONTENT, not just its length.
 - `booking_click` still fires from the hero on a press that navigates nowhere, so PostHog records intent that
   produced no movement for as long as the interim lasts. T9 renames the event when it repoints the CTA.
 
-### Known-broken, left deliberately
-`scripts/verify-browser.py` (520 lines, manual, not in `package.json`, not in CI) drives the deleted form in
-three of its sections and now **fails loudly** rather than passing green, which is the safe direction. Its other
-sections — layout at 360/768/1280, the 16px input rule, pixel call ordering, UTM persistence across a History
-navigation — still have live subjects and are worth recovering. Needs a decision, not a silent deletion.
+### Known-broken, left deliberately — RESOLVED by T13
+`scripts/verify-browser.py` (520 lines, manual, not in `package.json`, not in CI) drove the deleted form in
+three of its sections. The decision it needed has been made and it is **deleted**, with its live coverage
+moved into gates that already had the right instrument rather than into a fourth gate nobody would run:
+the 14-day queue expiry into `harness-recovery.ts` + `verify:payload` (it was the ONLY thing that had ever
+exercised `MAX_AGE_MS`, and with no webhook URL set the queue is the live delivery path); the Meta pixel
+call order into `harness-consent.tsx` + `verify:consent`; the 16px iOS-zoom rule into `verify-visible.mjs`,
+this time asserting the field count so it cannot pass over an empty list the way the Python one would have
+after the form was deleted; and an uncaught-JavaScript-error listener across all eight pages, which nothing
+in the suite had been watching for. The overflow sweep was dropped as a strict subset of what
+`verify-consent-layout` already measures (four widths, not three, before AND after the notice is answered).
+It could not have run here in any case: Playwright for Python is not installed, so it exited 2 having
+verified nothing.
 
 ### Deferred from T11's verifier — RESOLVED (two applied, one declined)
 T10 and T12 have landed, so these were no longer held. Outcome of each:

@@ -31,8 +31,8 @@
  *   4. The surviving sections, present and in document order
  *   5. The hero's drafted reply, and the audience folders against the worked
  *      example's desks
- *   6. Never lose a lead: two attempts, the localStorage queue, and the drain
- *      on the next load
+ *   6. Never lose a lead: two attempts, the localStorage queue, the drain on
+ *      the next load, and the fourteen day expiry
  *   7. Static checks on the content files, and the share card PNGs on disk
  *   8. Every PostHog event name the page may raise is actually raised
  *
@@ -112,6 +112,59 @@ async function waitForMock(tries = 60) {
     await new Promise((r) => setTimeout(r, 120));
   }
   return false;
+}
+
+/**
+ * The same source with every comment removed.
+ *
+ * The check at the foot of this file asks whether an event is RAISED by
+ * looking for `track('name'` in the source. Read raw, that is a text search
+ * that a comment satisfies: deleting the real `track('price_seen')` from
+ * LocalePage.tsx and leaving `/* was: track('price_seen') *\/` in its place
+ * kept the gate green, measured on 2026-09-23. The page would have stopped
+ * raising the one event the price-first layout is judged on, and the line that
+ * exists to notice would have read PASS.
+ *
+ * A comment is where a call goes to stop being a call, so the comments come
+ * out before anything is searched for. This is a scanner rather than a regex
+ * because `//` inside a string literal is not a comment and 'https://' is all
+ * over this codebase. Strings are tracked in all three quotings; regex
+ * literals are not, which is safe here because no regex in src/ contains a
+ * quote character, and the failure mode if one ever does is over-stripping,
+ * which makes the positive check FAIL rather than pass.
+ */
+function uncommented(src) {
+  let out = '';
+  let i = 0;
+  let quote = null;
+  while (i < src.length) {
+    const c = src[i];
+    const next = src[i + 1];
+    if (quote) {
+      if (c === '\\') { out += c + (next ?? ''); i += 2; continue; }
+      if (c === quote) quote = null;
+      out += c;
+      i += 1;
+      continue;
+    }
+    if (c === "'" || c === '"' || c === '`') { quote = c; out += c; i += 1; continue; }
+    if (c === '/' && next === '/') {
+      while (i < src.length && src[i] !== '\n') i += 1;
+      continue;
+    }
+    if (c === '/' && next === '*') {
+      i += 2;
+      while (i < src.length && !(src[i] === '*' && src[i + 1] === '/')) i += 1;
+      i += 2;
+      /* Left as a newline so line-oriented reading of the result still works
+         and two identifiers either side of a comment cannot fuse. */
+      out += '\n';
+      continue;
+    }
+    out += c;
+    i += 1;
+  }
+  return out;
 }
 
 async function main() {
@@ -376,6 +429,28 @@ async function main() {
     check(w.__RECOVERY__.flush?.sent === 1, 'the queued lead is delivered on the next load');
     check(w.__RECOVERY__.queuedAfterFlush === 0, 'and the queue is emptied afterwards');
 
+    /* Pass 3: the fourteen day cutoff.
+
+       Recovered from scripts/verify-browser.py, which was the only thing that
+       had ever exercised it and was removed on 2026-09-23. With
+       VITE_LEAD_WEBHOOK_URL unset in production the queue is the live delivery
+       path rather than a fallback, so an entry that can never be delivered
+       staying on a visitor's device forever is the failure mode this cutoff
+       exists for, and it had no gate.
+
+       Two entries seeded either side of the line, read back through the
+       module's own accessor. The webhook is not involved: nothing is being
+       delivered here, so only age can remove one. */
+    w.__MODE__ = 'age';
+    w.eval(await recoveryBundle('age', ENDPOINT));
+    await w.__RUN_RECOVERY__();
+    const aged = w.__RECOVERY__.aged;
+    check(
+      Array.isArray(aged) && aged.length === 1 && aged[0] === 'age-13',
+      'a queued lead older than fourteen days is dropped, a younger one is kept',
+      Array.isArray(aged) ? `queue holds ${JSON.stringify(aged)}` : 'the queue was never read',
+    );
+
     /* What actually went over the wire, read back from the mock's own log
        rather than from what the page says it did.
 
@@ -467,9 +542,20 @@ async function main() {
        where an event is actually RAISED. Listing the names here and grepping
        both files for them was a check that agreed with itself: every name is
        in analytics.ts by definition, because analytics.ts is where the union
-       is declared. `pricing_view` is exempt and named as exempt: it is
-       declared for the band this page is getting back and for the consent
-       gate's test event, and nothing on the page raises it today. */
+       is declared.
+
+       NOT_RAISED_YET below is the exemption list and it is now empty. It held
+       `pricing_view` for the months that name was declared against a price
+       band which had been deleted and was expected back. The vocabulary was
+       replaced on 2026-09-23 and nothing declares that name any more, at which
+       point the entry stopped exempting anything at all: this loop only visits
+       names the union declares, and that was no longer one of them. An
+       exemption for a name that cannot occur is the same defect as a check
+       whose subject is gone - it reads in a diff as a live decision and is
+       inert - so it comes off rather than being left as furniture.
+
+       Anything put back on this list has to be a name the union DOES declare
+       and that nothing raises, with the reason written down beside it. */
     const analyticsSrc = readFileSync(join(root, 'src/lib/analytics.ts'), 'utf8');
     /* Every place an event could be raised, not just the page shell.
 
@@ -477,27 +563,37 @@ async function main() {
        page raised everything from one file. It is not true now: a section
        component is exactly where a section's own event would be raised, so a
        negative assertion that only reads the shell says nothing about the
-       component that would break it. Adding `track('pricing_view')` inside
-       `Tiers.tsx` left this gate green.
+       component that would break it. The mutation that proved it was run while
+       `pricing_view` was still a declared-and-unraised name: adding
+       `track('pricing_view')` inside `Tiers.tsx` left this gate green. That
+       name has since been retired, and it is named here only because it is
+       what the mutation used; the hole was in the scan, not in the name.
 
-       Both directions read the whole tree now. The positive check still
-       passes, because the calls it looks for are in the shell and the shell is
-       part of the tree. */
-    const pageSrc = (function readAll(dir) {
-      let out = '';
-      for (const e of readdirSync(dir, { withFileTypes: true })) {
-        const full = join(dir, e.name);
-        if (e.isDirectory()) out += readAll(full);
-        else if (/\.tsx?$/.test(e.name)) out += readFileSync(full, 'utf8') + '\n';
-      }
-      return out;
-    })(join(root, 'src'));
+       Both directions read the whole tree now, with the comments stripped
+       first - see `uncommented` above for why that is not a detail. The
+       positive check still passes, because the calls it looks for are in the
+       shell and the shell is part of the tree. */
+    const pageSrc = uncommented(
+      (function readAll(dir) {
+        let out = '';
+        for (const e of readdirSync(dir, { withFileTypes: true })) {
+          const full = join(dir, e.name);
+          if (e.isDirectory()) out += readAll(full);
+          else if (/\.tsx?$/.test(e.name)) out += readFileSync(full, 'utf8') + '\n';
+        }
+        return out;
+      })(join(root, 'src')),
+    );
     const declared = [...analyticsSrc.matchAll(/^\s*\|\s*'([a-z_]+)'/gm)].map((m) => m[1]);
-    const NOT_RAISED_YET = ['pricing_view'];
+    const NOT_RAISED_YET = [];
     check(declared.length > 0, 'the event names can be read out of analytics.ts', declared.join(', '));
     for (const name of declared) {
       if (NOT_RAISED_YET.includes(name)) {
-        /* A RAISE, not a mention. The negative used to look for the bare
+        /* Unreachable while the list above is empty, and kept rather than
+           deleted because the list is the thing that is empty, not the idea.
+           Read it as the shape a future exemption has to take.
+
+           A RAISE, not a mention. The negative used to look for the bare
            quoted name, which worked only because it read one file that does
            not declare them. Widening the scan to the whole tree brought
            analytics.ts in with it, where every name appears by definition, so

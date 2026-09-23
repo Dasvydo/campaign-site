@@ -49,26 +49,38 @@ a 422 and the reason printed.
 ## Verify it
 
 ```bash
-npm run build          # tsc then vite build, must pass
-npm run verify:payload # the full QA harness, ~10 seconds
-python3 scripts/verify-browser.py   # the same page in a real browser, ~40 seconds
+npm run build   # tsc then vite build, must pass
+npm run verify  # every offline gate, ~30 seconds
+
+npx vite preview --port 4173 &                        # then, against a served build:
+node scripts/verify-visible.mjs        http://127.0.0.1:4173
+node scripts/verify-demo.mjs           http://127.0.0.1:4173
+node scripts/verify-consent-layout.mjs http://127.0.0.1:4173
 ```
 
 `verify:payload` boots the mock webhook, bundles the real components, renders
-them in jsdom, and checks 88 assertions: all three locales render with no
-missing keys and no English leaking in, all three routing outcomes are correct,
-the POSTed body is exactly the contract shape over real HTTP, the free-provider
-email warns without blocking, the retry and localStorage recovery path works,
-and every PostHog event name is wired. It exits non-zero on any failure, so it
-can go straight into CI.
+them in jsdom, and checks a hundred-odd assertions: all three locales render
+with no missing keys and no English leaking in; the lead webhook's failure
+recovery works end to end, including a retry that reuses the same `dedupe_id`
+so the webhook can recognise it rather than making a second lead; the content
+files carry no em dash and no blank key; the three share cards exist and every
+URL in the head is absolute; and every name in the `EventName` union is really
+raised somewhere in `src/`. It exits non-zero on any failure, so it can go
+straight into CI.
 
-`verify-browser.py` covers what jsdom structurally cannot: layout, and what the
-analytics calls actually are as a person scrolls and submits. It measures
-horizontal overflow at 360x800 in all three locales, the 16px rule that stops
-iOS zooming the form, every Meta pixel call in order, and a phone-attributed
-lead arriving at the webhook as `outreach`. It builds with fake analytics ids
-and aborts every request to a Meta or PostHog host, so nothing leaves the
-machine.
+Three Node gates cover what jsdom structurally cannot, each taking the URL of a
+served build. `verify-visible.mjs` checks the page is genuinely on the screen,
+the 16px rule that stops iOS zooming a form, and that no page raises an
+uncaught error. `verify-demo.mjs` checks the worked example runs and stands
+down for a pointer, a key, or reduced motion. `verify-consent-layout.mjs`
+measures four viewports across three locales, before and after the notice is
+answered, including that the notice never covers the hero's call to action.
+
+There was a fourth, `scripts/verify-browser.py`. It needed Playwright for
+Python, was never wired into CI, and three of its sections drove the fit-check
+form and died with it. What still had a subject was moved into the gates above,
+which already had the right instrument: the 14-day queue expiry, the Meta pixel
+call order, the 16px rule and an uncaught-error listener. It has been deleted.
 
 It is not an npm script on purpose. It needs Playwright for Python and a
 Chromium - both already present in the container this was built in
@@ -88,7 +100,10 @@ front of every install for a check that runs occasionally. On a fresh machine:
 | `npm run verify:payload` | The full QA harness described above |
 | `npm run fonts` | Re-copy the woff2 faces into `public/fonts` after an install |
 | `npm run og` | Redraw the three share cards in `public/og-*.png` from the hero copy. Run it after changing the hero headline, the setup line or the palette |
-| `python3 scripts/verify-browser.py` | The real-browser pass. Needs Playwright for Python |
+| `npm run verify` | Every offline gate: consent, payload, PostHog config, locales |
+| `npm run verify:visible -- <url>` | Real browser. The page is on the screen, forms do not zoom iOS, nothing throws |
+| `npm run verify:demo -- <url>` | Real browser. The worked example runs, and stands down when it should |
+| `npm run verify:consent-layout -- <url>` | Real browser. Four viewports x three locales, notice up and answered. Each of these three needs a served build, so pass the URL |
 
 ## Layout
 

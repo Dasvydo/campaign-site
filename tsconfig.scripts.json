@@ -1,0 +1,47 @@
+{
+  /* scripts/ used to be in no tsconfig project at all.
+
+     tsconfig.app.json includes only `src`, and tsconfig.node.json only
+     vite.config.ts, so nothing ever typechecked the harnesses that the gates
+     bundle and run. That is not a theoretical gap. Three files in here once
+     imported a type from a module that was being deleted and no gate noticed,
+     because esbuild erases type imports and never reads a tsconfig. And on
+     2026-09-23 `scripts/harness-consent.tsx` was still calling
+     `track('pricing_view')` weeks after that name left the EventName union:
+     the one harness that exercises the declined-consent path was firing an
+     event the page cannot raise, and it compiled, because nobody was asking.
+
+     Reinstating that check costs nothing: the tree is at zero errors under
+     these settings. Verified by reverting the call above to `pricing_view`,
+     which fails here with TS2345 and passes everywhere else.
+
+     The options mirror tsconfig.app.json rather than tsconfig.node.json,
+     because these files are browser code: they render React into jsdom and
+     into a real Chromium. `target` is ES2022 because the harnesses are built
+     by esbuild for a modern engine, not shipped to the same browser matrix as
+     the page.
+
+     Only .ts and .tsx are here. The .mjs gates are plain ESM with no
+     annotations and `allowJs` would mostly buy checkJs noise; their subject is
+     the page, and they are held to it by running rather than by compiling. */
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client"]
+  },
+  "include": ["scripts/**/*.ts", "scripts/**/*.tsx"]
+}

@@ -1,7 +1,7 @@
 # Every guard in this repository, run on every push.
 #
-# Until this file existed there was no CI at all. The 402 checks in `npm run
-# verify` and the two browser gates held only for as long as somebody
+# Until this file existed there was no CI at all. The checks in `npm run
+# verify` and the browser gates held only for as long as somebody
 # remembered to type the commands, and a run of independent verification had
 # already found three separate things that had silently stopped being true.
 # A guard nobody runs is a comment.
@@ -49,7 +49,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Chromium for the two browser gates
+      - name: Chromium for the three browser gates
         run: npx playwright-core install --with-deps chromium
 
       # Server and gates in one step on purpose. A background process started in

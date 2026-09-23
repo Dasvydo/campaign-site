@@ -27,6 +27,21 @@
  * and not transparent. That is a low bar on purpose. It is also the bar the
  * suite was failing to clear.
  *
+ * Two more things live here as of 2026-09-23, because they need a real engine
+ * and this is the gate that has one loaded over the whole page. Both came from
+ * scripts/verify-browser.py, a 520 line manual Python gate that was in neither
+ * package.json nor CI, could not run in this container at all (Playwright for
+ * Python is not installed, so it exits 2 having verified nothing), and drove a
+ * form that has been deleted. It was removed; these are the parts of it that
+ * still had a subject and no other home:
+ *
+ *   - the 16px rule on form fields, which stops iOS zooming the page when a
+ *     reader taps one. It is a computed style, so jsdom cannot see it.
+ *   - uncaught JavaScript errors, watched across every page this gate opens.
+ *     Nothing else in the suite was listening: the page can throw on first
+ *     paint and every check here still passes, because a thrown exception in a
+ *     React effect does not remove the markup that already rendered.
+ *
  * Needs a built site being served, and playwright-core with a Chromium. Same
  * optional-tooling footing as the other two browser gates.
  *
@@ -107,6 +122,16 @@ const check = (ok, label, detail = '') => {
   if (!ok) failures += 1;
 };
 
+/* Every uncaught exception, from every page this file opens, with the page it
+   came from. `pageerror` is the signal; console errors are not, because every
+   analytics host below is aborted on purpose and the browser reports each
+   abort as a console error with no URL in the text. */
+const thrown = [];
+const watch = (page, where) => {
+  page.on('pageerror', (e) => thrown.push(`${where}: ${e.message.split('\n')[0]}`));
+  return page;
+};
+
 const browser = await chromium.launch(launchOptions({ args: ['--no-sandbox'] }));
 
 try {
@@ -114,7 +139,7 @@ try {
     console.log(`\n${vname} ${width}x${height}`);
     for (const loc of LOCALES) {
       const ctx = await browser.newContext({ viewport: { width, height } });
-      const page = await ctx.newPage();
+      const page = watch(await ctx.newPage(), `${vname} /${loc || 'en'}`);
       await ctx.route('**://*.facebook.*/**', (r) => r.abort());
       await ctx.route('**://*.posthog.*/**', (r) => r.abort());
       await page.goto(`${BASE}/${loc}`, { waitUntil: 'domcontentloaded' });
@@ -283,6 +308,30 @@ try {
       }, MARKS);
       check(marks.length === 0, `  /${loc || 'en'}: every copy of the mark is the size it is drawn at`,
         marks.length ? marks.join(' | ') : `${MARKS.length} copies`);
+
+      /* The iOS zoom guard. Safari on iPhone zooms the whole page when a
+         reader focuses a field set below 16px, and the page does not zoom
+         back: the visitor is left on a sideways document, mid-form, on the
+         one screen where the page asks a larger firm for its name.
+
+         The count is asserted as well as the sizes, and that is the half that
+         matters here. `every field is >= 16px` over an empty list is true, so
+         when the fit-check form was deleted the version of this check in
+         verify-browser.py would have gone on passing over nothing at all. The
+         fields it looks at now are the enterprise enquiry form's. */
+      const type = await page.evaluate(() => {
+        const els = Array.from(document.querySelectorAll('input, select, textarea'));
+        return {
+          count: els.length,
+          small: els
+            .map((el) => [el.name || el.id || el.tagName, parseFloat(getComputedStyle(el).fontSize)])
+            .filter(([, px]) => !(px >= 16))
+            .map(([name, px]) => `${name} at ${px}px`),
+        };
+      });
+      check(type.count > 0 && type.small.length === 0,
+        `  /${loc || 'en'}: every form field sets at 16px or more, so iOS does not zoom`,
+        type.count === 0 ? 'no fields on the page at all' : type.small.join(' | ') || `${type.count} fields`);
       await ctx.close();
     }
   }
@@ -302,7 +351,7 @@ try {
       viewport: { width: 1280, height: 800 },
       javaScriptEnabled: false,
     });
-    const page = await ctx.newPage();
+    const page = watch(await ctx.newPage(), 'no-JS /');
     await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
     const got = await page.evaluate(() => ({
       text: (document.body.innerText || '').replace(/\s+/g, ' ').trim(),
@@ -331,7 +380,7 @@ try {
      overlay could be kept off the screen while its code was still shipped. */
   {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    const page = await ctx.newPage();
+    const page = watch(await ctx.newPage(), 'review mode');
     await ctx.route('**://*.facebook.*/**', (r) => r.abort());
     await ctx.route('**://*.posthog.*/**', (r) => r.abort());
 
@@ -358,6 +407,10 @@ try {
 
 
 
+  /* Collected from every page above rather than checked per page, so one
+     listener covers the lot and the verdict names where it happened. */
+  check(thrown.length === 0, '\n  nothing threw on any page this gate opened',
+    thrown.length ? thrown.slice(0, 3).join(' | ') : 'no uncaught exceptions');
 } finally {
   await browser.close();
 }
