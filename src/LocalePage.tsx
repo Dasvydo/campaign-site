@@ -12,6 +12,7 @@ import { Hero } from './components/Hero';
 import { Tiers } from './components/Tiers';
 import { Demo } from './components/Demo';
 import { WhoFor } from './components/WhoFor';
+import { Enterprise } from './components/Enterprise';
 import { Footer } from './components/Footer';
 
 /* The origin every absolute URL in the head names: canonical, og:url, the
@@ -141,6 +142,15 @@ export function LocalePage({ locale }: { locale: Locale }) {
         <Demo c={c} onDeskChange={(desk) => track('demo_desk', { desk })} />
 
         <WhoFor c={c} />
+
+        {/* The secondary path, last and deliberately quiet. Self-serve is the
+            motion this page sells and the trial CTA above is the only ask;
+            this is here because a firm of ten desks with a security review
+            and a procurement form will not press that button today, and
+            sending them away is worse than answering them. It never says
+            trial, it carries no #fit control, and it turns nobody away: the
+            old funnel's `too_small` redirect went with the funnel. */}
+        <Enterprise c={c} locale={locale} />
       </main>
 
       <Footer c={c} />

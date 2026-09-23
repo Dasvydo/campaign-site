@@ -1,0 +1,277 @@
+/* ==========================================================================
+   SECTION: enterprise   "Larger firms"   #enterprise
+
+   The last band before the footer. It is the secondary path: a firm that will
+   not start a trial from a landing page and wants to talk to somebody first.
+
+   IT IS DRAWN TO BE FOUND, NOT TO BE NOTICED. The one thing this page asks
+   for is the trial, and that ask is in the hero and again under the tiers. So
+   nothing here competes for it: no display numeral, no amber pill, no espresso
+   button on the cream ground, and the heading sets at the size of a section
+   heading rather than the size of an offer. A reader scanning for "start the
+   trial" scrolls past this; a reader with a procurement form stops at it.
+
+   THE GROUND. Sand, which is the blotter the page already puts under its two
+   exhibits (see tonal.css). It separates this block from the cream folders
+   above and the cream footer below without introducing a second charcoal band
+   to argue with the price. The FORM sits on charcoal inside it, and that is
+   not a decoration: .field in index.css re-points its focus ring to
+   --ix-ring-dark because it assumes a charcoal ground, and on cream that ring
+   measures about 2.5:1. The fields are put where the class expects them.
+
+   NO NEW COLOUR AND NO NEW TYPEFACE. Sand, charcoal, warmwhite, espresso,
+   muted, and amber twice as a mark: a hairline over the heading and the rule
+   beside the personal-address warning. Amber never carries a letterform here.
+
+   INTERACTION IS BORROWED, NOT INVENTED. The panel carries `on-dark`. The
+   button is .btn .btn-primary and the mail link is .ix-link, both of which
+   already own their hover, press, ring and curve. This file declares no hover
+   shadow, no press transform, no focus ring and no transition curve, and the
+   two hover rules it does declare are colour only and guarded.
+   ========================================================================== */
+
+#enterprise {
+  /* One alpha per job, mixed out of warmwhite, so a value is never typed
+     twice inside the dark panel. */
+  --ent-dim: rgba(250, 241, 235, 0.72);
+  --ent-rule: rgba(250, 241, 235, 0.16);
+
+  display: block;
+  overflow-x: clip;
+  background: var(--sand);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.55;
+  /* The page's one vertical rhythm: every band opens at 56 and closes at 48,
+     and doubles from 1024 up. See coherence.css. */
+  padding-block: 56px 48px;
+}
+@media (min-width: 1024px) {
+  #enterprise { padding-block: 96px 80px; }
+}
+
+.ent-wrap {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+  display: grid;
+  gap: 32px;
+  align-items: start;
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .ent-wrap {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 470px);
+    gap: 64px;
+  }
+}
+
+/* --- what it is, and the two facts a review asks for ---------------------- */
+.ent-say { min-width: 0; }
+
+.ent-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* The amber hairline over the eyebrow. A mark, not a letterform: the same
+   device the rest of the page uses to say a block has started. */
+.ent-eyebrow::before {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 3px;
+  margin-bottom: 14px;
+  background: var(--amber);
+}
+
+.ent-h {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(27px, 18px + 1.8vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+.ent-lede {
+  margin: 18px 0 0;
+  max-width: 54ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+@media (min-width: 1024px) {
+  .ent-lede { font-size: 18px; }
+}
+/* The seat floor, inline in the sentence. Tabular lining figures so it sets
+   as a number rather than as a word, and no larger than what surrounds it:
+   this is a qualifier, not the offer. */
+.ent-fig {
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Where it runs. Set as a labelled fact on its own sheet rather than as
+   another sentence in the paragraph, because it is the answer to a question
+   somebody came here holding. */
+.ent-host {
+  margin-top: 26px;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-low);
+  max-width: 46ch;
+}
+.ent-host-h {
+  margin: 0 0 4px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ent-host-p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* who.accuracy, rendered from there and folded away: the same four lines are
+   open in full one section up, and a reader should not meet them twice in a
+   row. The disclosure's own summary hover is unguarded in the shared file, so
+   it is re-declared here at (1,1,0), which beats the shared (0,2,0) rule. */
+.ent-acc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.ent-acc-list li {
+  position: relative;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.ent-acc-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+#enterprise .disc-sum { border-bottom-color: transparent; }
+@media (hover: hover) {
+  #enterprise .disc-sum:hover { border-bottom-color: currentColor; }
+}
+
+/* --- the enquiry ---------------------------------------------------------- */
+.ent-panel {
+  min-width: 0;
+  padding: 26px 22px 24px;
+  background: var(--charcoal);
+  border-radius: var(--radius-brand);
+  /* A resting sheet shadow from paper.css, not an interaction value: nothing
+     here hovers, lifts or presses as a surface. */
+  box-shadow: var(--shadow-soft);
+  color: var(--warmwhite);
+}
+@media (min-width: 1024px) {
+  .ent-panel { padding: 32px 30px 30px; }
+}
+
+.ent-form-h {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 17px + 0.9vw, 27px);
+  line-height: 1.15;
+  color: var(--warmwhite);
+}
+.ent-form-p {
+  margin: 0 0 22px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ent-dim);
+}
+
+.ent-field { margin-bottom: 18px; }
+
+/* A head count is three digits at the very most, and a full width number
+   field invites a phone number. */
+.ent-num { max-width: 10rem; }
+
+.ent-note {
+  min-height: 92px;
+  resize: vertical;
+}
+
+/* The soft warning under a personal address. It sits inside .field-hint, so
+   it inherits the hint's size and only changes emphasis: warmwhite instead of
+   muted, behind an amber rule. Amber as a mark, never as the letterform. This
+   is a nudge and it is never a gate: the submit path does not read it. */
+.ent-warn {
+  display: block;
+  padding-left: 10px;
+  border-left: 2px solid var(--amber);
+  color: var(--warmwhite);
+}
+
+/* The button is .btn .btn-primary, which inverts to warmwhite on charcoal
+   inside on-dark. It is the form's submit and nothing else on this ground
+   competes with it; it is NOT the page's call to action, which is the espresso
+   pill four sections up. Full width on a phone, where the panel is the whole
+   column. */
+.ent-send {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 6px;
+}
+@media (min-width: 560px) {
+  .ent-send { width: auto; }
+}
+
+/* --- what the reader gets back -------------------------------------------- */
+.ent-done { padding-block: 6px; }
+.ent-done-h {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 17px + 0.9vw, 27px);
+  line-height: 1.15;
+  color: var(--warmwhite);
+}
+.ent-done-p {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ent-dim);
+}
+.ent-done-mail {
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--ent-rule);
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ent-dim);
+  overflow-wrap: anywhere;
+}
+.ent-done-mail a { color: var(--warmwhite); }

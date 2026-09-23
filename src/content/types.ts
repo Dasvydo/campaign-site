@@ -386,6 +386,100 @@ export interface Content {
     };
   };
 
+  /** The secondary path, low on the page: a larger firm that will not start a
+      trial from a landing page and wants to talk to somebody first.
+
+      IT IS NOT A SECOND CALL TO ACTION AND MUST NOT READ AS ONE. Self-serve is
+      the motion this page sells; the trial CTA in the hero and under the tiers
+      is the ask. This block exists because a firm with ten desks, client
+      correspondence, a security review and a procurement form is a real buyer
+      who will not press "start the trial" today, and sending them away is
+      worse than answering them. Nothing here says trial, nothing here is
+      styled like the CTA above it, and there is no rejection: the old funnel
+      computed a `too_small` outcome and redirected small firms to another
+      site, and under per-seat self-serve a small firm is a customer.
+
+      Two things in it are not new copy and must not be rewritten here. The
+      objection a regulated trade asks first is `who.accuracy`, rendered from
+      there behind a disclosure. And the on-premise fact below is the exact
+      sentence the hero used to carry, recovered from 92c89c7~1: it was taken
+      off the hero because it read as contradicting "Nothing to install" one
+      section below, and it is a real product fact that belongs where a firm
+      handling client correspondence is asking where their mail goes.
+
+      No figures. The seat floor in `lede` is the largest tier's own count,
+      read from src/lib/pricing.ts and printed between the two halves. */
+  enterprise: {
+    eyebrow: string;
+    title: string;
+    /** "<before><the seat floor of the largest tier><after>".
+
+        The only count this slot can ever be handed is
+        PRICING.tiers.managed.seats, which is ten, so the endings on either
+        side are written for a plural above nine: Danish takes "pladser",
+        Lithuanian the genitive plural "vietu". If that figure ever drops to
+        one, both halves need re-reading by somebody who speaks the language. */
+    lede: { before: string; after: string };
+
+    /** Where the software itself runs. The label is this section's own; the
+        sentence under it is the hero's recovered wording, unaltered. */
+    hostingLabel: string;
+    hosting: string;
+
+    /** The short enquiry form. Not a qualifier: it asks who you are, where to
+        reply, roughly how many people, and what you want to know. Nothing in
+        it routes, scores or turns anybody away. */
+    form: {
+      title: string;
+      intro: string;
+
+      nameLabel: string;
+      namePlaceholder: string;
+
+      emailLabel: string;
+      emailHint: string;
+      /** The soft warning under a personal address. It NEVER blocks: a ten
+          person brokerage genuinely might be on a personal mailbox, and a
+          form that refuses one loses the lead to make a point. */
+      emailFree: string;
+
+      /** The count is typed by the reader, so no figure is written here. */
+      sizeLabel: string;
+      sizeHint: string;
+
+      noteLabel: string;
+      notePlaceholder: string;
+      noteHint: string;
+
+      submit: string;
+      sending: string;
+
+      /** One per field the reader can see. Nothing is validated that is not
+          on the screen in front of them. */
+      errorName: string;
+      errorEmail: string;
+      errorEmailShape: string;
+      errorSize: string;
+
+      /** Delivered. */
+      sentTitle: string;
+      sentBody: string;
+      /** Not delivered, but written to the recovery queue: it goes out on the
+          next load by itself. */
+      heldTitle: string;
+      heldBody: string;
+      /** Not delivered and not queueable, which is what a blocked or full
+          localStorage looks like. The only honest thing left to offer is the
+          address, so this pair says so rather than promising a retry that
+          cannot happen. */
+      lostTitle: string;
+      lostBody: string;
+      /** Introduces the mail address, which is not copy and comes from
+          src/lib/env.ts like the footer's. */
+      mailLead: string;
+    };
+  };
+
   /** The free trial: the reader starts it themselves, uses the product, and is
       invoiced only if they keep it.
 

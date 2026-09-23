@@ -5,6 +5,7 @@ import { hero } from './en/hero';
 import { tiers } from './en/tiers';
 import { demo } from './en/demo';
 import { who } from './en/who';
+import { enterprise } from './en/enterprise';
 import { trial } from './en/trial';
 import { consent } from './en/consent';
 import { footer } from './en/footer';
@@ -25,6 +26,7 @@ export const en: Content = {
   tiers,
   demo,
   who,
+  enterprise,
   trial,
   consent,
   footer,

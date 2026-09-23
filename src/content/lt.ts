@@ -5,6 +5,7 @@ import { hero } from './lt/hero';
 import { tiers } from './lt/tiers';
 import { demo } from './lt/demo';
 import { who } from './lt/who';
+import { enterprise } from './lt/enterprise';
 import { trial } from './lt/trial';
 import { consent } from './lt/consent';
 import { footer } from './lt/footer';
@@ -28,6 +29,7 @@ export const lt: Content = {
   tiers,
   demo,
   who,
+  enterprise,
   trial,
   consent,
   footer,

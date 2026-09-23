@@ -5,6 +5,7 @@ import { hero } from './da/hero';
 import { tiers } from './da/tiers';
 import { demo } from './da/demo';
 import { who } from './da/who';
+import { enterprise } from './da/enterprise';
 import { trial } from './da/trial';
 import { consent } from './da/consent';
 import { footer } from './da/footer';
@@ -28,6 +29,7 @@ export const da: Content = {
   tiers,
   demo,
   who,
+  enterprise,
   trial,
   consent,
   footer,
