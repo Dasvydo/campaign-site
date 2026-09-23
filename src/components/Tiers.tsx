@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Content } from '../content/types';
 import { PRICING, count, money, tierById } from '../lib/pricing';
 import type { TierId } from '../lib/pricing';
@@ -39,8 +39,30 @@ import { Disclosure } from './Disclosure';
  * A struck out figure is a picture, so the live region says the amount out
  * loud. That is what `trial.stops[].say` is for, and why it splits around the
  * figure: the sentence is the locale's, the number is the module's.
+ *
+ * WHAT IT REPORTS, AND WHAT THAT COSTS. `onPriceSeen` is the measurement of the
+ * decision that built this page: the price was moved above the worked example
+ * so that an ad click would meet it, and without an event from here there is
+ * nothing to tell anyone whether that worked. It is deliberately NOT a mount
+ * or a render. A page that contains a price is not a reader who saw one, and
+ * an event that counts every load is an event whose ratio against page_view is
+ * always 1 and therefore says nothing. The gate below is the one the deleted
+ * price band used, and it is kept at its two seconds so the two signals mean
+ * the same thing.
  */
-export function Tiers({ c }: { c: Content }) {
+export function Tiers({
+  c,
+  onPriceSeen,
+  onCta,
+}: {
+  c: Content;
+  /* Raised once, when the price has genuinely been READ rather than scrolled
+     past. See the dwell gate below. */
+  onPriceSeen: () => void;
+  /* The primary call to action, pressed here rather than in the hero. The
+     press is all this reports: the href below is still dangling. */
+  onCta: () => void;
+}) {
   const t = c.tiers;
   const lang = c.htmlLang;
 
@@ -51,6 +73,70 @@ export function Tiers({ c }: { c: Content }) {
   const [stop, setStop] = useState(0);
   const [status, setStatus] = useState('');
   const stopRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  /* The dwell gate. The cards are what is watched, not the section: the
+     section opens on a heading about a free fortnight, and the thing this
+     event claims was seen is the per seat fee.
+
+     Not a ratio of the cards' own area. IntersectionObserver measures against
+     the TARGET, so a row taller than the viewport - which is what three
+     stacked cards are on a phone - can never reach a ratio gate however far
+     you scroll, and the old band shipped a 50% gate that fired on desktop and
+     never once on mobile, where the paid traffic lands. Shrinking the root to
+     its middle half and asking only for overlap says "the price is what is on
+     your screen", and it holds at every viewport because it no longer divides
+     by the height of the thing being measured.
+
+     Two continuous seconds, cancelled by scrolling away, and at most once per
+     load. Without the dwell this counts everyone who scrolled through the
+     price on their way to somewhere else, which is the dilution that made the
+     old audience worthless.
+
+     No IntersectionObserver, no event. The deleted band counted an
+     unmeasurable browser as a view; that is the one thing a gate like this
+     cannot do and stay worth reading, because a fallback that fires blind
+     makes the event mean "seen, or possibly not" forever after. */
+  const priceRef = useRef<HTMLDivElement | null>(null);
+  const seenFired = useRef(false);
+  /* Held through a ref so the observer is built once per mount. Pressing a
+     card re-renders this component, and an effect keyed on the callback would
+     tear the observer down and restart the two seconds - so a reader engaged
+     enough to press a tier would be the one reader who never counted. */
+  const seenCb = useRef(onPriceSeen);
+  useEffect(() => {
+    seenCb.current = onPriceSeen;
+  });
+
+  useEffect(() => {
+    const node = priceRef.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (seenFired.current) return;
+          if (e.isIntersecting) {
+            timer ??= setTimeout(() => {
+              seenFired.current = true;
+              seenCb.current();
+              obs.disconnect();
+            }, 2000);
+          } else {
+            clearTimeout(timer);
+            timer = undefined;
+          }
+        }
+      },
+      { threshold: 0, rootMargin: '-25% 0px -25% 0px' },
+    );
+    obs.observe(node);
+    return () => {
+      clearTimeout(timer);
+      obs.disconnect();
+    };
+  }, []);
 
   const chosen = tierById(tierId);
   const lastStop = c.trial.stops.length - 1;
@@ -123,7 +209,7 @@ export function Tiers({ c }: { c: Content }) {
         <p className="tiers-pick" id="tiers-pick">
           {t.pickLead}
         </p>
-        <div className="tiers-row" role="group" aria-labelledby="tiers-pick">
+        <div className="tiers-row" role="group" aria-labelledby="tiers-pick" ref={priceRef}>
           {t.rows.map((row) => {
             const tier = tierById(row.id);
             const on = row.id === tierId;
@@ -263,7 +349,13 @@ export function Tiers({ c }: { c: Content }) {
             href is #fit along with the hero's three, and is dangling until
             the signup exists; whoever builds it repoints all four. */}
         <div className="tiers-act">
-          <a className="btn btn-primary tiers-cta" href="#fit">
+          {/* The press is reported as a press and nothing more. While that
+              href is dangling, an event claiming a booking, a signup or a
+              navigation would be claiming something that did not happen -
+              which is exactly what `booking_click` was doing from the hero.
+              Called with no arguments so the synthetic event never becomes an
+              accidental part of this contract. */}
+          <a className="btn btn-primary tiers-cta" href="#fit" onClick={() => onCta()}>
             {c.nav.cta}
           </a>
           <p className="tiers-note">{c.trial.ctaNote}</p>

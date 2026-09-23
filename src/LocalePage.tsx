@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { content, pathFor, LOCALES } from './content';
 import type { Locale } from './lib/types';
 import { captureUtm, resolveMarket } from './lib/attribution';
@@ -109,6 +109,28 @@ export function LocalePage({ locale }: { locale: Locale }) {
 
   const localeNames = LOCALES.map((l) => ({ code: l, label: c.nav.localeNames[l] }));
 
+  /* The vocabulary lives here, in one file, and the sections are handed plain
+     callbacks. A section that imported track() would be a second place to look
+     for what this page reports, and the name of an event would then be spread
+     across the tree rather than sitting next to the funnel it describes.
+
+     Stable identities on purpose. The price section builds an
+     IntersectionObserver from `onPriceSeen` and holds a two second dwell open;
+     a callback that changed on every render would be a callback that could
+     restart that dwell. It holds the callback through a ref as well, so this
+     is belt and braces rather than the only thing standing between a reader
+     and their event. */
+  const onPriceSeen = useCallback(() => track('price_seen'), []);
+  const onHeroCta = useCallback(() => track('trial_cta_click', { placement: 'hero' }), []);
+  const onPriceCta = useCallback(() => track('trial_cta_click', { placement: 'pricing' }), []);
+  /* The head count and how many attempts delivery took. No name, no email, no
+     note: those were typed for the lead webhook, not for a product analytics
+     tool. */
+  const onEnquiry = useCallback(
+    (info: { people: number; attempts: number }) => track('enterprise_enquiry', info),
+    [],
+  );
+
   return (
     <>
       {/* First in the document on purpose: a keyboard reaches the notice before
@@ -126,7 +148,10 @@ export function LocalePage({ locale }: { locale: Locale }) {
           locale={locale}
           localeNames={localeNames}
           pathFor={(code) => pathFor(code as Locale)}
-          onCta={() => track('booking_click', { placement: 'hero' })}
+          /* A press, reported as a press. It was `booking_click` until the
+             call it named stopped existing; the button offers a trial and its
+             target is still dangling, so the event claims only the press. */
+          onCta={onHeroCta}
         />
 
         {/* The price, immediately after the hero and before anything else,
@@ -135,7 +160,14 @@ export function LocalePage({ locale }: { locale: Locale }) {
             is an ad click that leaves. It carries id="price", which is the
             target the masthead's own nav link has been pointing at since the
             old band was deleted. */}
-        <Tiers c={c} />
+        {/* Two signals out of this section, and they are different questions.
+            `onPriceSeen` answers whether moving the price up the page put it
+            in front of anybody: it is dwell gated inside the component, so it
+            means a reader who stopped on the fee, not a reader who loaded a
+            page that has one. `onPriceCta` is the same press as the hero's,
+            told apart by `placement`, which is how the two positions are
+            compared against each other. */}
+        <Tiers c={c} onPriceSeen={onPriceSeen} onCta={onPriceCta} />
 
         {/* Which desk a visitor picks is the strongest signal on the page of
             what they actually do for a living, so it goes to analytics. */}
@@ -150,7 +182,7 @@ export function LocalePage({ locale }: { locale: Locale }) {
             sending them away is worse than answering them. It never says
             trial, it carries no #fit control, and it turns nobody away: the
             old funnel's `too_small` redirect went with the funnel. */}
-        <Enterprise c={c} locale={locale} />
+        <Enterprise c={c} locale={locale} onDelivered={onEnquiry} />
       </main>
 
       <Footer c={c} />

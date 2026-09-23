@@ -39,6 +39,35 @@ import { Disclosure } from './Disclosure';
  * of that, and the three result states below are exactly the three answers
  * `submitLead` can give: delivered, queued, or neither.
  *
+ * ONLY ONE OF THOSE THREE RAISES AN EVENT, AND DELIBERATELY SO. `onDelivered`
+ * is called when, and only when, the enquiry ARRIVED. The reader sees their
+ * result screen in all three cases, because that is about them; the analytics
+ * event is about whether there is a lead to answer, and the two are not the
+ * same question.
+ *
+ *   delivered - the POST was accepted, on the first attempt or the retry. The
+ *               enquiry is in the inbox, so `enterprise_enquiry` is raised and
+ *               carries `attempts`, which is the only way to see from the
+ *               dashboard that the webhook needed a second go.
+ *   queued    - both attempts failed and the payload is in this visitor's
+ *               localStorage. Nothing is raised. An enquiry sitting in a
+ *               browser is not an enquiry: nobody can answer it, and counting
+ *               it would put a lead on the dashboard that is not in the inbox.
+ *               It goes out on that visitor's next load through
+ *               flushLeadQueue, which knows nothing about which form wrote it
+ *               and runs before a consent decision is necessarily in, so it is
+ *               not the place to raise an event either. The cost is stated
+ *               rather than papered over: an enquiry recovered from the queue
+ *               is invisible to PostHog and visible in n8n, and n8n is the
+ *               system of record for leads.
+ *   neither   - both attempts failed and the queue could not be written
+ *               (storage blocked or full). Nothing is raised, for the same
+ *               reason, and the result screen hands the reader the mailto.
+ *
+ * NO PERSONAL DATA GOES TO POSTHOG. The name, the email and the note go to the
+ * lead webhook, which is what they were typed for. The event carries the head
+ * count and the attempt count and nothing else.
+ *
  * THE FORM IS ON THE DARK PANEL ON PURPOSE. `.field` in index.css re-points
  * its focus ring to --ix-ring-dark because it assumes a charcoal ground; on
  * cream that ring measures about 2.5:1. Putting the fields where the class
@@ -73,7 +102,17 @@ const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(v.t
 
 type Sent = { kind: 'sent' } | { kind: 'held' } | { kind: 'lost' };
 
-export function Enterprise({ c, locale }: { c: Content; locale: Locale }) {
+export function Enterprise({
+  c,
+  locale,
+  onDelivered,
+}: {
+  c: Content;
+  locale: Locale;
+  /* Called once per enquiry that ARRIVED. Not called for the queued or the
+     undelivered outcome; see the header. */
+  onDelivered: (info: { people: number; attempts: number }) => void;
+}) {
   const t = c.enterprise;
   const f = t.form;
   const uid = useId();
@@ -132,6 +171,9 @@ export function Enterprise({ c, locale }: { c: Content; locale: Locale }) {
     const res = await submitLead(payload);
     setBusy(false);
     setSent(res.delivered ? { kind: 'sent' } : res.queued ? { kind: 'held' } : { kind: 'lost' });
+    /* After the result screen is set, and never in front of it: analytics must
+       not be able to delay or break what the reader is waiting for. */
+    if (res.delivered) onDelivered({ people: payload.people, attempts: res.attempts });
   };
 
   const result =
