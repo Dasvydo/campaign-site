@@ -3,9 +3,11 @@ import type { Content } from '../types';
 /**
  * The pricing tiers, in English. This is the master copy.
  *
- * The founder asked for two things here, in one sentence: pricing tiers
- * immediately after the hero, the way doviloop.dev has them, and the free
- * fortnight made painfully obvious. So the free days are the section's own
+ * The brief asks two things here, in one sentence: pricing tiers immediately
+ * after the hero, the way doviloop.dev has them, and the free fortnight made
+ * painfully obvious. (Relayed from an adviser rather than asked for by the
+ * founder directly - src/lib/pricing.ts carries the provenance.) So the free
+ * days are the section's own
  * headline, set in the largest type on the page, and they are said again on
  * every card. The repetition is the brief, not an oversight.
  *

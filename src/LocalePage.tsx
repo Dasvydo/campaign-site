@@ -155,7 +155,7 @@ export function LocalePage({ locale }: { locale: Locale }) {
         />
 
         {/* The price, immediately after the hero and before anything else,
-            because that is where the founder put it and because an ad click
+            because that is where the brief puts it and because an ad click
             that has to scroll past a worked example to find out what it costs
             is an ad click that leaves. It carries id="price", which is the
             target the masthead's own nav link has been pointing at since the

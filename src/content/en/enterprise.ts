@@ -33,7 +33,7 @@ export const enterprise: Content['enterprise'] = {
 
   lede: {
     before:
-      'Every tier above is open to a firm of any size, and most read the terms and get on with it. From ',
+      'The tiers above are self-serve, and most firms read the terms and get on with it. From ',
     after:
       ' seats up there is usually a security review, a procurement form and somebody in IT who wants to know where the mail goes. Tell us what you need to see and we will answer in writing.',
   },

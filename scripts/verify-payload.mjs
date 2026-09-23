@@ -355,9 +355,17 @@ async function main() {
       check(
         p.fitCtaLabels.length > 0 &&
           p.fitCtaLabels.every((l) => l === p.fitCtaInContent) &&
-          p.fitNavLinks === 1,
+          p.fitNavLinks === 0,
         `    every call to action says the one thing the copy says`,
         `${p.fitCtaLabels.length} button(s): ${[...new Set(p.fitCtaLabels)].join(' | ') || 'none'}`,
+      );
+      /* The masthead is a table of contents. An entry that leads nowhere is
+         worse than no entry, and one of them advertised a deleted funnel for
+         two waves because nothing checked where it pointed. */
+      check(
+        p.navTargets.length > 0 && p.navTargets.every((t) => t.resolves),
+        `    every masthead link lands on a section that exists`,
+        p.navTargets.map((t) => `${t.href}${t.resolves ? '' : ' MISSING'}`).join(' '),
       );
       /* The audience folders and the worked example's desks are the same three
          trades in the same order, paired on the id both lists carry. */

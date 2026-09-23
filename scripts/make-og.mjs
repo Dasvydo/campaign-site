@@ -47,7 +47,18 @@ function copyFor(locale) {
     before: t('before'),
     mark: t('mark'),
     mid: t('mid') + clockOut + t('after'),
-    setup: (block.match(/\n    setup:\s*'((?:[^'\\]|\\.)*)'/) ?? [, ''])[1].replace(/\\'/g, "'"),
+    /* Indent-agnostic, and it THROWS. It used to require exactly four spaces
+       with the string on the same line, and to fall back to '' on a miss. The
+       content split moved this key to two spaces with the string on the next
+       line, so the match stopped working, the fallback swallowed it, and this
+       script went on printing "Three cards written to public/." and exiting 0
+       while drawing three cards with no sub-headline at all. The four title
+       slots above throw on a miss; there was no reason for this one not to. */
+    setup: (() => {
+      const m = block.match(/\n\s*setup:\s*'((?:[^'\\]|\\.)*)'/);
+      if (!m) throw new Error(`${locale}/hero.ts: no setup line found`);
+      return m[1].replace(/\\'/g, "'");
+    })(),
   };
 }
 

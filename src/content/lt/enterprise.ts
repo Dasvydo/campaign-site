@@ -17,7 +17,7 @@ export const enterprise: Content['enterprise'] = {
 
   lede: {
     before:
-      'Visi aukščiau esantys planai tinka bet kokio dydžio įmonei, ir dauguma tiesiog perskaito sąlygas ir pradeda. Nuo ',
+      'Aukščiau esantys planai veikia savitarna, ir dauguma tiesiog perskaito sąlygas ir pradeda. Nuo ',
     after:
       ' vietų paprastai prireikia saugumo peržiūros, viešųjų pirkimų formos ir atsakymo IT žmogui, kur keliauja paštas. Parašykite, ką norite pamatyti, ir atsakysime raštu.',
   },

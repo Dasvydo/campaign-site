@@ -6,8 +6,8 @@
 # already found three separate things that had silently stopped being true.
 # A guard nobody runs is a comment.
 #
-# The two browser gates are deliberately included even though they are not part
-# of `npm run verify`. They are excluded there because they need a built site
+# The three browser gates are deliberately included even though they are not
+# part of `npm run verify`. They are excluded there because they need a built site
 # and a Chromium, which is a fair thing to keep out of a fast local loop and a
 # poor reason to never run them.
 
@@ -38,14 +38,18 @@ jobs:
       - name: Install exactly what the lockfile says
         run: npm ci
 
-      # The offer and the value model, the consent gate, the webhook payload,
-      # and the three locale files against each other.
+      # The consent gate, the webhook payload, the PostHog key and region
+      # against what the consent copy promises, and the three locale files
+      # against each other.
       - name: npm run verify
         run: npm run verify
 
-      # `prebuild` no longer runs a gate: verify:offer asserted the whole-firm fee,
-      # the two packages and the founding cohort, none of which are on the page now.
-      # a build that would ship a broken offer must not produce a bundle.
+      # `prebuild` no longer runs a gate. verify:offer asserted the whole-firm
+      # fee, the two packages and the founding cohort, none of which are on the
+      # page now, so it was deleted with them. What still holds the line at
+      # build time is `tsc -b`, which now typechecks scripts/ as well as src/:
+      # a harness that fires an event name the app cannot raise fails the build
+      # rather than compiling quietly.
       - name: Build
         run: npm run build
 

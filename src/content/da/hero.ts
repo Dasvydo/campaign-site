@@ -5,7 +5,7 @@ export const hero: Content['hero'] = {
   clockOut: '08:41',
 
   skip: 'Spring til indholdet',
-  nav: { example: 'Eksempel', price: 'Hvad det koster', fit: 'Passer det' },
+  nav: { label: 'Sektioner', example: 'Eksempel', price: 'Hvad det koster', who: 'For hvem' },
 
   /* Re-cut around the clause the pen should mark. Concatenated with clockOut
      it is the same sentence as before, word for word. */
@@ -32,7 +32,7 @@ export const hero: Content['hero'] = {
     'DoviLoop skriver svarudkast inde i Outlook, ud fra de sager, jeres virksomhed allerede har, i jeres egen tone. Jeres team læser hvert udkast og trykker send.',
 
   bar: {
-    text: 'Under et minut, intet kort.',
+    text: 'I sætter det op selv, i den mail I allerede har.',
   },
 
   message: {

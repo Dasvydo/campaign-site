@@ -18,9 +18,35 @@
  * somebody else's page said on one day; nobody has confirmed that this
  * campaign sells at them. `basis` says so in the data rather than in a comment
  * a renderer cannot see, so a later task can print or gate on it. The trial
- * length is the one figure here that is not a transcription: the founder asked
- * for fourteen days free, twice, and that is the whole argument of the
- * section.
+ * length is the one figure here that is not a transcription. See the note
+ * below on where it actually came from, because this header used to get it
+ * wrong in two different ways at once.
+ *
+ * WHERE THESE FIGURES AND THIS LAYOUT CAME FROM, ACCURATELY.
+ *
+ * Not from the founder directly. Several comments in this repository said so,
+ * including this one, and they were wrong. The price-first layout, the
+ * fortnight made unmissable and the per-seat rate all originate in a
+ * recommendation from an adviser, which the founder read out and had recorded
+ * - prefaced with "don't put any of this into effect" - and then, in a later
+ * and separate instruction, authorised a build around.
+ *
+ * What he stated in his OWN words when that build was scoped was three things
+ * and no more: the call to action is "start a free trial"; the redesign stays
+ * on brand with no palette change, and carries its modernity in hover, press
+ * and focus rather than colour; and it ships from this repository.
+ *
+ * So "the founder asked for a trial CTA" is true and stays. "The founder put
+ * the price directly under the hero" was not true and has been removed
+ * everywhere it appeared. The distinction matters practically: the price-first
+ * layout is the single thing most worth revisiting if this page underperforms,
+ * and a comment claiming he chose it personally is exactly what would stop the
+ * next reader from asking the question.
+ *
+ * On the trial length: this header previously said he asked for fourteen days
+ * "twice". The recording has THIRTEEN said once and FOURTEEN said once, and
+ * the capture of it flags the discrepancy as an open question. Fourteen is an
+ * assumption this build made and nobody has confirmed.
  *
  * WHAT IS NOT HERE. No whole-firm fee, no founding cohort, no FX rate, no
  * comparison against anybody. All of that went with the sales call it was
@@ -83,7 +109,9 @@ export interface Pricing {
   readonly trial: {
     /**
      * The free days. The loudest fact in the section, and the one figure
-     * here nobody transcribed: the founder asked for it.
+     * here nobody transcribed. It comes from the relayed recommendation, not
+     * from the founder directly, and the recording has two different numbers
+     * in it. See the provenance note in this file's header.
      */
     readonly days: number;
     /**

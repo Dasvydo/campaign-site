@@ -225,9 +225,17 @@ export function Hero({
 
     let io: IntersectionObserver | null = null;
     if ('IntersectionObserver' in window) {
-      const watch = [document.getElementById('fit'), hero.querySelector('.hero-act')].filter(
-        Boolean,
-      ) as Element[];
+      /* `#fit` does not exist yet, so it is filtered out here and starts
+         counting the day a trial target lands. `.tiers-cta` is the OTHER real
+         call to action on this page and was missing from this list, so on a
+         phone the standing bar and the pricing button were both on screen at
+         once - precisely the two-of-the-same-button case the comment above
+         says cannot happen. Measured at 390x844 in all three locales. */
+      const watch = [
+        document.getElementById('fit'),
+        hero.querySelector('.hero-act'),
+        document.querySelector('.tiers-cta'),
+      ].filter(Boolean) as Element[];
       if (watch.length) {
         bar.classList.add('is-off');
         const seen = new Set<Element>();
@@ -282,15 +290,18 @@ export function Hero({
             <b>DoviLoop</b>
           </a>
 
-          <nav className="hero-nav" aria-label={c.hero.nav.example}>
+          <nav className="hero-nav" aria-label={c.hero.nav.label}>
             <a href="#demo" onClick={() => focusTarget('demo')}>
               {c.hero.nav.example}
             </a>
             <a href="#price" onClick={() => focusTarget('price')}>
               {c.hero.nav.price}
             </a>
-            <a href="#fit" onClick={() => focusTarget('fit')}>
-              {c.hero.nav.fit}
+            {/* #who, not #fit. This link read "Fit" and pointed at a target
+                that does not exist, which left the deleted fit check advertised
+                in the masthead an inch from a button offering a free trial. */}
+            <a href="#who" onClick={() => focusTarget('who')}>
+              {c.hero.nav.who}
             </a>
           </nav>
 

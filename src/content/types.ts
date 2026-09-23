@@ -148,13 +148,18 @@ export interface Content {
     localeLabel: string;
     localeNames: { en: string; da: string; lt: string };
     /** The one call to action, for the one thing this page asks anyone to do.
-        Every control that points at #fit reads this key: the folder tab, the
+        All four controls that point at #fit read this key: the folder tab, the
         hero button, the standing bar on phones and the button under the price.
-        It used to be four keys, and they had drifted into four different
-        promises, one of which said a call was being booked when what happens
-        is the fit check. The page harness holds every #fit control to one
+        There were FIVE until the masthead's third link was repointed at #who -
+        the docs said four while the code had five, so whoever answers the open
+        question about where a trial signup lives would have missed one.
+        The key used to be four separate keys that had drifted into four
+        different promises, one of which said a call was being booked. The
+        page harness holds every #fit control to one
         label, so a literal typed back into a component fails the build rather
-        than quietly making it five. Changing the wording here changes it
+        than quietly making it five. #fit itself does not exist yet; these four
+        are the set that has to be repointed together. Changing the wording here
+        changes it
         everywhere, which is what lets ad copy be written against it. */
     cta: string;
   };
@@ -166,7 +171,15 @@ export interface Content {
     /** Masthead. The section links are in-page anchors; the hrefs live in the
         component because they are structural, not translatable. */
     skip: string;
-    nav: { example: string; price: string; fit: string };
+    /** The masthead's three links, each pointing at a section that exists.
+        `who` was `fit`, pointed at `#fit`, and read "Fit" / "Passer det" /
+        "Ar tinkame" - the last surviving piece of the deleted fit check, sitting
+        an inch from a button that offers a free trial. It now points at #who,
+        the section actually headed "Who this is for".
+        `label` names the <nav> for a screen reader. It used to be labelled with
+        `example`, so the landmark announced as "Example navigation" while
+        containing three links. */
+    nav: { label: string; example: string; price: string; who: string };
 
     /** The headline is split so the highlighter can fall on the right phrase in
         each language rather than on a fixed word count, and so the time the
@@ -231,13 +244,16 @@ export interface Content {
 
   /** The pricing tiers, and the free trial said out loud over the top of them.
 
-      It sits directly under the hero because that is where the founder put
+      It sits directly under the hero because that is where the brief puts
       it: "immediately after the hero section, we want to have actually
       pricing tiers, just like it is on the website for DoviLoop. And we want
       to make it very, very painfully obvious that it's free for the first 14
-      days." The second sentence is why the trial is the section's own
-      headline rather than a line under the cards. The numeral in that quote
-      is the founder's own words and is the only digit anywhere near this
+      days." That is an adviser's recommendation relayed by the founder, not
+      his own instruction; src/lib/pricing.ts has the provenance, and this
+      comment used to attribute it to him. The second sentence is why the
+      trial is the section's own headline rather than a line under the cards.
+      The numeral in the quote is part of that quote and is the only digit
+      anywhere near this
       block: it is a comment, not copy, and the figure the page prints comes
       from src/lib/pricing.ts like every other.
 
@@ -487,9 +503,13 @@ export interface Content {
       sales call in it. The timeline, the terms and the capability list were
       written to say that nobody is charged until they say yes, which is the
       one thing a trial has to say, so the sentences were carried across and
-      the two calls taken out of them. Carried, not moved: `price` still
-      renders, and still owns its own copy, until the whole firm model is
-      taken off the page.
+      the two calls taken out of them. They were carried rather than moved,
+      because at the time `price` still rendered alongside this block. It does
+      not any more: `Price.tsx`, its content modules and the whole firm model
+      all went with the sales call, and this block is now the only place the
+      argument is made. (This paragraph described the interim state for two
+      waves after the interim ended. It was on the run's own list as a
+      one-line fix, and the task that owned it was signed off without it.)
 
       Not one figure lives in this block. The length of the trial and the money
       belong to the data module, and every slot that meets a number splits into

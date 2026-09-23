@@ -17,7 +17,7 @@ export const enterprise: Content['enterprise'] = {
 
   lede: {
     before:
-      'Alle niveauer ovenfor er åbne for firmaer i enhver størrelse, og de fleste læser vilkårene og går i gang. Fra ',
+      'Niveauerne ovenfor er selvbetjening, og de fleste firmaer læser vilkårene og går i gang. Fra ',
     after:
       ' pladser og op er der som regel en sikkerhedsgennemgang, et indkøbsskema og en i IT, der vil vide, hvor posten havner. Skriv, hvad I har brug for at se, så svarer vi skriftligt.',
   },

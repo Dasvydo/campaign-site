@@ -5,7 +5,7 @@ export const hero: Content['hero'] = {
   clockOut: '08:41',
 
   skip: 'Skip to content',
-  nav: { example: 'Example', price: 'What it costs', fit: 'Fit' },
+  nav: { label: 'Page sections', example: 'Example', price: 'What it costs', who: 'Who it is for' },
 
   /* The pen falls on the clause the page's own worked example calls the moat,
      not on the verb. "Drafted" is what every tool in this category does and
@@ -57,7 +57,7 @@ export const hero: Content['hero'] = {
        were defensible and the page was still telling a reader two different
        numbers about the same form. The bar stops counting; the heading
        keeps the count. */
-    text: 'Under a minute, no card.',
+    text: 'You set it up yourself, in the mail you already have.',
   },
 
   message: {

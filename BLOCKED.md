@@ -79,7 +79,14 @@ written into any committed file.
 
 **Unblocks it:** Dovy fills the five values in Vercel once Batches B and F land. About 5 minutes.
 
-## 5. Batch E's objection taxonomy does not exist yet
+## 5. Batch E's objection taxonomy does not exist yet — OBSOLETE 2026-09-23
+
+**There is nothing left to refresh.** The objections section was deleted with the fit-check
+funnel; `objections` does not appear anywhere in `src/`, and `src/content/{en,da,lt}.ts` now hold
+only the imports that compose each locale. The unblock step below names a file shape and an array
+that no longer exist. Kept as a record of what was traded away, not as work.
+
+The original entry:
 
 **Missing:** the competitor teardown that Batch E produces.
 
@@ -143,7 +150,15 @@ These are the things Lighthouse would flag, but the score itself is unverified.
 
 ---
 
-## 9. The phone number is collected again, but only this repo knows it
+## 9. The phone number is collected again, but only this repo knows it — OBSOLETE 2026-09-23
+
+**Nothing collects a phone number any more.** The two-step form, its phone field and
+`src/lib/contract.ts` were all deleted when the gated sales call came off the page. The only lead
+this page now sends is the enterprise enquiry: name, email, head count, note. The unblock step
+below asks for a lead to be opened "through the live form with a number in the box", and there is
+no such form and no such box. Kept as a record.
+
+The original entry:
 
 **Asked for on 2026-09-22:** a field where a visitor can type their number, so it shows up in
 Supabase against the lead. The field is back on the form (step two, `06 Phone`), and the number
@@ -202,3 +217,57 @@ Four campaign-wide decisions landed. Checked each of the eight entries above aga
 
 Net: no numbered entry closes. Entries 1 to 8 remain open on exactly what they said before, and
 none of them was waiting on these four decisions.
+
+---
+
+## 10. Where "Start a free trial" points — OPEN, and it is the one that blocks launch
+
+**Missing:** a URL. The page's primary call to action carries `href="#fit"`, and no element with
+`id="fit"` exists. Measured in a browser: pressing it appends `#fit` to the address, moves the page
+zero pixels, and consumes the Back button.
+
+**Blocks:** the only conversion path on the page. Everything else can be right and this page still
+converts nobody. It is also why `trial_cta_click` deliberately claims only that a button was
+pressed, rather than that a signup was reached.
+
+**What was done instead:** the button's label was corrected to say what it offers, so at least it
+no longer advertises the fit check that was deleted. The target was left dangling rather than
+guessed at.
+
+**Unblocks it:** the founder names the URL. Then repoint **all four** `href="#fit"` anchors
+together (`Tiers.tsx`, and three in `Hero.tsx`) and give it an env slot — `.env.example` has no
+`VITE_TRIAL_URL` and `src/lib/env.ts` has no reader, so answering this today means hand-editing
+four hardcoded strings in two components.
+
+## 11. Does self-serve signup take a card? — OPEN, and the page has already answered it
+
+**Missing:** confirmation. Self-serve 14-day trials usually do take a card up front.
+
+**Blocks:** nothing technically, which is exactly the problem. The page ships the promise anyway:
+`trial.terms[1]` renders "No card, and nothing taken." in all three locales, and `terms[3]` adds
+"No year to sign, and no notice period." Neither has been confirmed by anyone. If the signup this
+eventually points at asks for a card, the page is lying on its most trust-bearing line, in three
+languages, to two markets.
+
+**What was done instead:** the claim was removed from the standing phone bar, where it was
+gratuitous and where the surrounding copy was stale anyway. It remains in the trial terms, which is
+where terms belong and where it is flagged.
+
+**Unblocks it:** the founder says yes or no. Coupled to entry 10 - the trial target must not be
+wired under this copy until both are answered together.
+
+## 12. What currency does this campaign sell in, and at what rate? — OPEN
+
+**Missing:** a decision. The tiers print `29 / 59 / 89 USD` per seat. Those three figures were
+transcribed from doviloop.dev's published pricing on 2026-09-16, and the file they came from said
+in its own header that dollars are "the currency the rates below are PUBLISHED in, which is not
+ours". The same file carried an FX rate and a conversion helper whose stated purpose was to stop
+exactly this confusion; both went with the whole-firm model.
+
+**Blocks:** nothing from building, everything from being true. The markets are Denmark and
+Lithuania. The worked example two sections below the price prints EUR. No VAT is stated anywhere.
+
+**Unblocks it:** the founder states the currency and the rates. Then `PRICING.currency` and the
+three `seat` values in `src/lib/pricing.ts` are one edit, a VAT line is added to `tiers.lede` in
+all three locales, and `OFFER-HANDOFF.md` is updated in the same change - it still calls itself the
+canonical source on money and still describes a whole-firm fee that is off the page.

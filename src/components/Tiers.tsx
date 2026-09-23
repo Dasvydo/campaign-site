@@ -7,10 +7,16 @@ import { Disclosure } from './Disclosure';
 /**
  * The tiers, on a charcoal band, under the loudest sentence on the page.
  *
- * THE BRIEF, VERBATIM. "Immediately after the hero section, we want to have
- * actually pricing tiers, just like it is on the website for DoviLoop. And we
- * want to make it very, very painfully obvious that it's free for the first 14
- * days." Both halves are load bearing, and the second one decides the layout:
+ * WHAT THIS SECTION IS ANSWERING. "Immediately after the hero section, we want
+ * to have actually pricing tiers, just like it is on the website for DoviLoop.
+ * And we want to make it very, very painfully obvious that it's free for the
+ * first 14 days."
+ *
+ * That is a recommendation from an adviser, read out and recorded by the
+ * founder, NOT an instruction he gave. This header used to call it "THE BRIEF,
+ * VERBATIM", which put his name on somebody else's words. See the provenance
+ * note in src/lib/pricing.ts for what he did say in his own. Both halves are
+ * load bearing either way, and the second one decides the layout:
  * the free fortnight is the section's own heading, set in the largest type
  * anywhere on the page, and it is said again on every card and a third time
  * under the button. A reader who takes in nothing else takes in that.
@@ -222,8 +228,8 @@ export function Tiers({
                 data-tier={row.id}
                 onClick={() => pick(row.id)}
               >
-                {/* The fortnight, again, on every card. The founder asked for
-                    painfully obvious and this is the cheapest way to be it:
+                {/* The fortnight, again, on every card. "Painfully obvious" is
+                    the brief's phrase, and this is the cheapest way to be it:
                     whichever card a reader is reading says it. */}
                 <span className="tiers-badge">
                   <span className="tiers-badge-dot" aria-hidden="true" />

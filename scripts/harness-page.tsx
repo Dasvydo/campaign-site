@@ -228,13 +228,21 @@ function leaves(value: unknown, path = '', out: Array<[string, string]> = []): A
       fitCtaLabels: Array.from(
         host.querySelectorAll('a[href="#fit"]:not(.hero-nav a)'),
       ).map((a) => (a.textContent ?? '').trim()),
-      /* The masthead's own section link also points at #fit and is excluded
-         above. It is a table of contents entry, not an ask, and holding it to
-         the button wording would put a sentence in a list of one-word labels.
-         Counted here so that the exclusion is a measurement rather than an
-         assumption: if the masthead ever stops carrying it, this reads 0 and
-         says so. */
+      /* The masthead's third link used to point at #fit too, and this counted
+         it so the exclusion above was a measurement rather than an assumption.
+         It did its job: the day the link was repointed this read 0 and failed,
+         which is how the change got noticed. It now asserts the opposite, and
+         the masthead must carry NO dangling ask - it is a table of contents,
+         and every entry in it has to lead somewhere. */
       fitNavLinks: host.querySelectorAll('.hero-nav a[href="#fit"]').length,
+      /* Every masthead link resolves to a section that exists on the page.
+         "Fit" pointed at #fit for two waves after #fit was deleted, so the
+         masthead went on advertising the fit check next to a button offering a
+         free trial, and nothing could see it. */
+      navTargets: Array.from(host.querySelectorAll('.hero-nav a')).map((a) => {
+        const href = a.getAttribute('href') ?? '';
+        return { href, resolves: href.startsWith('#') && !!host.querySelector(href) };
+      }),
       fitCtaInContent: c.nav.cta,
       /* The audiences, in the two places the page enumerates them.
 

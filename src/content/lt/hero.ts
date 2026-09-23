@@ -5,7 +5,7 @@ export const hero: Content['hero'] = {
   clockOut: '08:41',
 
   skip: 'Pereiti prie turinio',
-  nav: { example: 'Pavyzdys', price: 'Kiek kainuoja', fit: 'Ar tinkame' },
+  nav: { label: 'Puslapio skiltys', example: 'Pavyzdys', price: 'Kiek kainuoja', who: 'Kam tai skirta' },
 
   /* Re-cut around the clause the pen should mark. Concatenated with clockOut
      it is the same sentence as before, word for word. */
@@ -31,7 +31,7 @@ export const hero: Content['hero'] = {
     'DoviLoop rašo atsakymų juodraščius Outlook programoje, remdamasi bylomis, kurias Jūsų įmonė jau turi, ir Jūsų pačių tonu. Jūsų žmonės kiekvieną perskaito ir išsiunčia.',
 
   bar: {
-    text: 'Trunka mažiau nei minutę, kortelės neprašome.',
+    text: 'Įsidiegiate patys, savo pašte.',
   },
 
   message: {

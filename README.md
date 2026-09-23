@@ -42,9 +42,10 @@ npm run mock           # local stand-in for Batch F's n8n webhook, port 8787
 ```
 
 `npm run dev` proxies `/api` to it, so with `VITE_LEAD_WEBHOOK_URL` empty the
-qualifier posts to the mock and the mock validates the payload strictly against
-the shared contract. Anything that does not match the contract is rejected with
-a 422 and the reason printed.
+enterprise enquiry form posts to the mock, which accepts any JSON object and
+prints the `dedupe_id` it carries. It used to validate strictly against a shared
+contract; that contract described the fit-check form and went with it, and a
+validator for a shape nothing sends is worse than none.
 
 ## Verify it
 
@@ -82,12 +83,12 @@ form and died with it. What still had a subject was moved into the gates above,
 which already had the right instrument: the 14-day queue expiry, the Meta pixel
 call order, the 16px rule and an uncaught-error listener. It has been deleted.
 
-It is not an npm script on purpose. It needs Playwright for Python and a
-Chromium - both already present in the container this was built in
-(`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`), neither present after a plain
-`npm ci`. Adding Playwright to `package.json` would put a browser download in
-front of every install for a check that runs occasionally. On a fresh machine:
-`pip install playwright && playwright install chromium`.
+The three Node gates need a Chromium, which `scripts/chromium.mjs` resolves:
+`CHROMIUM_PATH` if you set it, then this container's own
+(`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`), then Playwright's resolution
+after `npx playwright-core install chromium`. They are kept out of
+`npm run verify` because they need a built site and a browser, which is a fair
+thing to leave out of a fast local loop; CI runs all three.
 
 ## Scripts
 
@@ -109,12 +110,15 @@ front of every install for a check that runs occasionally. On a fresh machine:
 
 ```
 src/
-  content/{en,da,lt}.ts   all copy. Edit these, never the components
+  content/{en,da,lt}/     all copy, one module per section. Edit these, never
+                          the components. The {en,da,lt}.ts files beside them
+                          are now only the imports that compose each locale
   content/types.ts        the shape every locale must fill. A missing key is a
                           build error, which is how "no missing keys" is held
-  lib/contract.ts         the shared payload and the three routing rules
+  lib/pricing.ts          the seat rates, the seat bands and the trial length.
+                          The only place a figure is written down
   lib/attribution.ts      UTM capture, source and market resolution
-  lib/analytics.ts        PostHog, the eight event names
+  lib/analytics.ts        PostHog, the five event names
   lib/pixel.ts            Meta pixel, inert until the ID exists
   lib/lead.ts             POST, retry once, queue, drain on next load
   components/             one file per section
@@ -125,20 +129,22 @@ scripts/                  the mock webhook and the verification harnesses
 
 ### Editing copy
 
-All customer-facing text is in `src/content/{en,da,lt}.ts`. Rules, enforced by
-`npm run verify:payload`:
+All customer-facing text is in `src/content/{en,da,lt}/`, one module per
+section. Rules, enforced by `npm run verify:payload` and `npm run audit:locales`
+over the whole assembled locale, section modules included:
 
 - No em dashes anywhere.
 - No AI-flavoured phrasing. No "unlock", "supercharge", "seamless".
 - No invented customers, testimonials or named pilots. None exist yet.
 - Lithuanian stays in the formal *Jūs* register.
 
-`da.ts` and `lt.ts` are marked `NEEDS NATIVE CHECK` and have not been read by a
-native speaker yet.
+Every Danish and Lithuanian module is marked `NEEDS NATIVE CHECK` and none has
+been read by a native speaker yet.
 
-The objections section is marked `REFRESHED-BY-BATCH-E`. When Batch E's
-competitor teardown lands, replace the `objections.items` array in each locale
-file. No component changes.
+- No figure may be written into a copy string. Every rate, seat band and day
+  count comes from `src/lib/pricing.ts`, and a slot that meets a number splits
+  into `before` and `after` halves around it, so each language can inflect
+  around the numeral.
 
 ---
 
@@ -181,7 +187,7 @@ These are all client-side values, baked into the bundle and visible in the
 browser. That is expected. No secret belongs in this project.
 
 Every one of them can be empty and the page still works: analytics no-ops, the
-pixel stays inert, the booking button falls back to a mailto, and leads queue in
+pixel stays inert, the enquiry form falls back to a mailto, and leads queue in
 the visitor's browser instead of being lost. Set them anyway before you spend
 money on traffic.
 
@@ -226,7 +232,7 @@ interactive example replaces it and the `video_play` event became `demo_desk`.
 ### 6. Add the logo, if you want the monogram
 
 The monogram is drawn as inline SVG in `src/components/Hero.tsx` and reused by
-the fit check and the colophon, each with its own gradient id. `design/` also
+the masthead and the colophon, each with its own gradient id. `design/` also
 holds the real 1024px PNG pulled from the product site and a clean SVG redraw of
 it, neither of which ships. To use a supplied file instead, drop it at
 `public/logo.png` and swap the `<Mark />` call.
@@ -290,7 +296,7 @@ a specific audience.
 ## The lead is never lost
 
 `src/lib/lead.ts`: POST, and on failure retry once. If both attempts fail, the
-visitor still gets their result screen and their booking link, and the payload
+visitor still gets their result screen and the mail address, and the payload
 goes into a `localStorage` queue that drains on the next page load. Each POST
 carries an `X-DoviLoop-Dedupe` header, so **Batch F must treat that header as an
 idempotency key**: a retry can legitimately deliver the same lead twice.

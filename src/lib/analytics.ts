@@ -33,7 +33,7 @@ import type { Locale, Market, Utm } from './types';
       - `pricing_view` was declared and deliberately never raised: it named a
         price band that had been deleted, and it was kept for the band's
         return. The price came back as the section directly under the hero,
-        which is where the founder put it precisely so that it would convert,
+        which is where the brief puts it precisely so that it would convert,
         and it emitted nothing, so the one decision this page was rebuilt
         around could not be measured.
 
