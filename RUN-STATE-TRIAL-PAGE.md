@@ -237,6 +237,27 @@ Apply once T10 (Enterprise.tsx, analytics) and T12 (sections/**) have landed:
 3. Minor: `.field-hint` for the email carries `role="status"` from first paint, so static hint text sits in a
    live region before there is anything to announce. `aria-live="polite"` on a wrapper that starts empty is cleaner.
 
+### Carried forward to T13 (raised by T10, confirmed by the orchestrator's own grep)
+T10 renamed the price event. `pricing_view` is no longer declared anywhere in `src/`, which leaves three
+references in `scripts/` describing a vocabulary that has gone. None of them fails a gate today; all three
+mislead the next reader, and one of them is a test firing a name that does not exist.
+
+1. **`scripts/verify-payload.mjs:496` — `const NOT_RAISED_YET = ['pricing_view'];`** is now inert. Nothing
+   declares that name, so the loop never visits the entry. It should become `[]`. The prose that explains the
+   mechanism at **:470 and :480** names `pricing_view` as the worked example and has to move with it, or the
+   comment will describe a list that is empty and an exemption that is gone.
+2. **`scripts/harness-consent.tsx:107` — `track('pricing_view')`** is the test event the consent harness fires.
+   `scripts/` is outside the typecheck program and esbuild does not typecheck, so this compiles and
+   `verify:consent` still passes — it asserts the network/storage footprint, never the name. It is nonetheless
+   the one place that exercises the declined path, and it is naming an event the page cannot raise. Should
+   become `track('price_seen')`.
+3. **`scripts/verify-posthog.mjs:9-10` — LEAVE ALONE.** It lists `pricing_view`, `booking_click` and five
+   fit-check events. That list is an account of what was silently dropped on 2026-09-22 by the US/EU key
+   mismatch, and the file says so directly two paragraphs later. It is history and it is accurate as history.
+   The same is true of the `booking_click` references in `analytics.ts`, `LocalePage.tsx:151` and
+   `Tiers.tsx:355`: each explains why the old name went. Find-and-replace across this repository has already
+   destroyed one historical note in this run. Do not do it again.
+
 ### For the founder — Lithuanian, confirmed by two independent reviews
 `Veikia mūsų serveriuose arba įdiegiame Jūsų.` was recovered from the old hero byte-for-byte (50/64/49 bytes,
 code-point identical in all three locales), exactly as instructed. The **string itself** is elliptical:
