@@ -108,5 +108,62 @@
    here in all three languages. */
 @media (max-width:374px){
   .hero-count{ display:none }
-  #hero-title{ font-size:42px }
+  /* `#hero-title{font-size:42px}` stood here and had never once applied: it is
+     (1,0,0) against the `#hero h1` clamp at (1,0,1) in hero.css, so the title
+     has always computed 40px at this width regardless. Removed rather than
+     corrected, deliberately - giving it the winning specificity would make the
+     headline BIGGER between 360 and 374, which is the wrong direction and
+     would walk straight into the sheet-over-button problem the block below
+     exists to fix. */
+}
+
+/* ==========================================================================
+   THE 320px PHONE (2026-09-23)
+   The consent layout gate tests 360, 390, 768 and 1280. Nothing tested below
+   360, and below 360 the sheet sat on the button in all three languages:
+   English overlapped by 2px, Lithuanian cleared by 6, and Danish overlapped by
+   70. Measured, not guessed, at 320x800 with the notice up.
+
+   Two of those three predate this run. Lithuanian was the one this run broke:
+   the call to action went from "Pazuirekite, ar tinkame" to "Pradekite
+   nemokama bandyma", which is three characters longer and wrapped the button
+   to a second line at this width, costing 21px and turning a 6px clearance
+   into a 15px overlap. So the button's padding comes down here, which buys the
+   vertical space back AND lets the longest of the three labels sit on one line
+   again.
+
+   Everything is scoped to max-width:359px on purpose: 360 and 390 are measured
+   and passing, and this must not perturb them. The sheet gives a little back
+   as well - it is a legal notice and it keeps every word, but at this width it
+   can afford tighter leading.
+
+   The lang rule is restated because `html:lang(lt) #hero-title` at (1,1,1)
+   outranks a bare `#hero-title` at (1,0,0) no matter which comes later. A rule
+   written without it would sit here doing nothing, which is the trap this file
+   already documents twice. */
+@media (max-width:359px){
+  .hero-nav{ gap:0 12px }
+  .hero-nav a{ font-size:12px; letter-spacing:.04em }
+
+  /* `#hero h1`, not `#hero-title`. The base size is set by
+     `#hero h1{font-size:clamp(40px, 26px + 3vw, 72px)}` in hero.css at (1,0,1),
+     which outranks a bare id at (1,0,0) however late it comes. Asked the
+     browser rather than the stylesheet: CSS.getMatchedStylesForNode on the
+     Danish h1 at 320px listed both, and the clamp won. The Lithuanian rule
+     below keeps its id form because `html:lang(lt) #hero-title` is (1,1,1)
+     and already beats the clamp. */
+  #hero h1{ font-size:32px }
+  html:lang(lt) #hero-title{ font-size:29px }
+
+  .hero-setup{ margin-top:8px; font-size:15px }
+  .hero-for{ margin-top:8px; font-size:16px }
+  .hero-act{ margin-top:10px }
+  .hero-trust{ margin-top:8px; font-size:12.5px }
+
+  .hero-btn{ padding:13px 18px; font-size:16px }
+
+  .consent-slip{ padding:8px var(--consent-gutter) calc(8px + env(safe-area-inset-bottom,0px)) }
+  .consent-h{ font-size:14px }
+  .consent-body{ font-size:12.5px; line-height:1.4 }
+  .consent-btn{ min-height:38px; padding:8px 12px }
 }

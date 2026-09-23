@@ -52,9 +52,16 @@
 }
 .hero-skip:focus-visible{transform:translateY(0)}
 /* It had no pressed state at all: the first control a keyboard reaches on this
-   page answered Enter with nothing. --ix-press composes with the translateY(0)
-   above rather than replacing a rest of its own, because at rest this link is
-   parked at -140% and a press must not be what brings it on screen. */
+   page answered Enter with nothing. It is on :focus-visible:active rather than
+   :active alone because at rest this link is parked at -140%, and a press must
+   not be what brings it on screen.
+
+   One correction to what this comment used to say, because a reader could act
+   on it and lose a layout: `transform: var(--ix-press)` REPLACES the transform
+   above, it does not compose with it. interaction.css says exactly that where
+   the token is defined. It is safe here only because translateY(0) is the
+   identity, so there is nothing to lose by replacing it. A control with a real
+   resting transform has to write the two together itself. */
 .hero-skip:focus-visible:active{
   transform:var(--ix-press);
   transition:transform var(--ix-curve-press);

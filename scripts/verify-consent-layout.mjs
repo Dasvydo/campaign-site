@@ -52,7 +52,12 @@ if (!BASE) {
   console.error('usage: node scripts/verify-consent-layout.mjs <base-url>');
   process.exit(2);
 }
-const VIEWPORTS = [[360, 800, 'phone'], [390, 844, 'phone'], [768, 1024, 'tablet'], [1280, 800, 'laptop']];
+/* 320 is here because nothing below 360 was ever measured, and below 360 the
+   sheet sat on the button in all three languages: English overlapped by 2px,
+   Danish by 70, and Lithuanian cleared by 6 until a longer call-to-action
+   label wrapped its button and turned that into a 15px overlap. Two of the
+   three predated the rebuild and no gate could see any of them. */
+const VIEWPORTS = [[320, 800, 'phone'], [360, 800, 'phone'], [390, 844, 'phone'], [768, 1024, 'tablet'], [1280, 800, 'laptop']];
 const LOCALES = [['/', 'en'], ['/da', 'da'], ['/lt', 'lt']];
 
 const OVERFLOW = () => {

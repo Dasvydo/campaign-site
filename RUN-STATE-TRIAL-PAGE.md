@@ -45,7 +45,7 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T9 | Wire trial CTA + analytics | 3 | held | 0 | | CTA wiring | Hero/Tiers CTA blocks, src/lib/env.ts |
 | T10 | Rewrite analytics event union | 4 | verified | 1 | PASS | analytics.ts | src/lib/analytics.ts |
 | T11 | Teams-of-10+ secondary path | 3 | verified | 1 | PASS | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
-| T12 | Mobile + accessibility pass | 4 | verifying | 1 | | a11y fixes | sections/** (a11y only), Consent.tsx |
+| T12 | Mobile + accessibility pass | 4 | verified | 1 | PASS | a11y fixes | sections/** (a11y only), Consent.tsx |
 | T13 | Update verification gates | 4 | verified | 1 | PASS | scripts/** | scripts/**, package.json scripts |
 
 ## Contracts
@@ -165,6 +165,79 @@ injected into a section module turns `audit:locales` red, and removing the Lithu
   on cream instead, that re-point is wrong.
 - Tokens not provided, to add with an `--ix-` name if needed: a disabled-state token, a pending/loading state for
   the signup button, and a `--ix-lift` variant tuned for a large surface (the current one is tuned for controls).
+
+### T12 verified PASS — and the 320px phone it led to
+All five criteria proven in a browser: 156 hover probes with `hover:none`/`pointer:coarse` emulated and
+asserted through `matchMedia` (forcing `:hover` changed nothing on any control); ~600 pressed-state
+measurements across 12 scenarios with pseudo-states forced ONE element at a time, zero controls losing their
+press under reduced motion; every focus ring measured twice by two independent methods (painted-pixel diff
+and an `elementFromPoint` band walk) which agreed; and 666 overflow checks at 1px steps, with
+`documentElement.scrollWidth - innerWidth` zero at every single width.
+
+**A correction to my own commit message.** `d9c8f15` says focus rings measure "5.10:1 at worst across 273 tab
+stops". The verifier measures **4.20:1** at worst (`#8a5200` on taupe, on `a.consent-priv`,
+`button.consent-btn`, `a.hero-tab`, `a.hero-brand`, `button.demo-tab`). Still comfortably above the 3:1 that
+WCAG 1.4.11 asks, but the figure I published is optimistic and I took it from the working agent's report
+rather than measuring it. The number to quote is 4.20:1.
+
+### The 320px phone: one pre-existing bug, one I caused, both fixed
+The consent layout gate tested 360, 390, 768 and 1280. Nothing below 360 had ever been measured, and at
+320x800 with the notice up the sheet sat on the hero's call to action in every language. Measured at the
+commit before my change and after, so the attribution is not a guess:
+
+| locale | before the CTA relabel | after it | now |
+|---|---|---|---|
+| en | **overlap 2px** | overlap 2px | clear by 108px |
+| da | **overlap 70px** | overlap 70px | clear by 51px |
+| lt | clear by 6px | **overlap 15px** | clear by 98px |
+
+English and Danish predate this run entirely. **Lithuanian is mine**: "Pradėkite nemokamą bandymą" is longer
+than the label it replaced and wrapped the button onto a second line at this width, costing 21px and turning
+a 6px clearance into a 15px overlap. The fix is one `@media (max-width:359px)` block, scoped below 360 on
+purpose so the widths that were already measured and passing are not perturbed — confirmed, 360 and 390 read
+byte-identical before and after (65/22/42 and 133/66/134).
+
+**`#hero-title{font-size:42px}` in the 374px block had never applied, to anything, ever.** It is (1,0,0)
+against `#hero h1{font-size:clamp(40px, 26px + 3vw, 72px)}` at (1,0,1) in hero.css. Established by asking the
+browser — `CSS.getMatchedStylesForNode` on the Danish h1 at 320px listed both rules and the clamp won, with
+the title computing 40px rather than 42. My first attempt at the fix had the identical bug and did nothing
+until I measured it. The dead rule is removed rather than repaired: giving it the winning specificity would
+make the headline BIGGER between 360 and 374, which is the wrong direction entirely. This is the third orphan
+rule found in this one file, which already documents the trap twice.
+
+**320 is now in the gate's viewport list**, and the coverage is not decorative: with the new block deleted
+the gate goes red in all three locales naming the geometry (`en cta y=578..632 vs slip y=630..800`,
+`da 646..700`, `lt 570..645`), which matches my own measurements exactly. 117 PASS, was 90.
+
+### Still thin, and worth knowing before the Danish copy is touched again
+**Danish at 360x800 has 22px between the button and the sheet.** That is pre-existing, unchanged by anything
+here, and it passes. It is also the third time this page has had a sheet-over-button bug. One more line of
+Danish hero copy breaks it again. Left alone deliberately rather than perturbing a verified-passing layout at
+the end of a run, but it is the first thing to check after any Danish copy edit.
+
+### Carried forward from T12's verifier — real, pre-existing, nobody owns them
+- **The open language menu completely covers the third masthead nav link on a phone.** 100% covered in all
+  three locales at 360px; at 390px da 100%, lt 89%, en 57%. Byte-identical at the parent commit, so not this
+  run's doing. The verifier calls it "the one real interaction defect on the page" and axe flags it as
+  2.5.8 "partially obscured". Nothing in this run touched it.
+- **Three inert focus rules that declare a ring nobody ever sees**: `who.css:150-154` (effective ring is
+  3px/+4px from `#who button:focus-visible` at `:315-320`), `demo.css:121` (from `demo.css:57-65`), and
+  `hero.css:583` (from `hero.css:31-37`). Each looks like it sets the geometry and does not.
+- **`hero.css:588-596`** — `.hero-deal:not([href]):hover` and `:active` match zero elements in every locale
+  and state; `.hero-deal` always carries `href="#demo"`. Defensive and documented, but dead.
+- **Four text-entry fields have no pressed state** (`input.field` x2, `.ent-num`, `.ent-note`). Judgement
+  call: a press is not a meaningful gesture on a text field, and they answer both pointer and keyboard.
+- **Three controls press with a bare `translateY(1px)` instead of `--ix-press`** — `demo.css:122` `.demo-tab`,
+  `consent.css:137` `.consent-btn`, `footer.css:227` `#footer .footer-a`. Visible, but off the C4 contract.
+- **`.hero-numeral` at 1.36:1** remains a serious axe `color-contrast` finding, desktop only. `aria-hidden`,
+  the count carried sighted beside it, and fixing it is a palette decision which this run was told not to
+  make. It will be raised by every future audit; that is the cost of leaving it.
+
+Fixed here: `hero.css:55-57` claimed `--ix-press` "composes with the translateY(0) above rather than
+replacing a rest of its own". That is wrong about CSS — `transform: var(--ix-press)` replaces the whole
+transform, and `interaction.css:163` says so where the token is defined. The code is correct only because
+`translateY(0)` is the identity. A reader who trusted that comment and added a press to a control with a real
+resting transform would silently lose it.
 
 ### T13 verified — and the run's worst gap is closed
 Verified by the orchestrator directly rather than by a fourth agent: full suite re-run here (`typecheck` 0,
