@@ -574,6 +574,22 @@
   box-shadow:var(--hero-sh-lift);
   transition:box-shadow var(--t-in) var(--e-out), transform var(--t-in) var(--e-out);
 }
+/* The draft card is a link to the worked example and is about eight times the
+   area of the primary call to action. Until this line existed, a pointer user
+   discovered that only by hovering it, and nobody else discovered it at all -
+   the invitation was a screen-reader-only string. Readable amber on the card's
+   paper, which is the one amber allowed to carry a letterform. */
+.hero-deal-cue{
+  display:block; margin-top:10px; text-align:right;
+  font:500 12.5px/1.25 "DM Sans","Helvetica Neue",Arial,sans-serif;
+  letter-spacing:.07em; text-transform:uppercase;
+  color:var(--amber-text);
+}
+.hero-deal-arrow{ margin-left:6px }
+@media (hover:hover){
+  .hero-deal:hover .hero-deal-cue{ text-decoration:underline; text-underline-offset:3px }
+}
+
 @media (hover:hover){
   .hero-deal:hover .hero-sheet-face{
     transform:rotate(var(--r)) translateY(-6px);

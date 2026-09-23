@@ -64,6 +64,12 @@ const PARTS = [
   ['the hero headline', '#hero h1'],
   ['the drafted reply in the hero', '#hero .hero-deal'],
   ['the sentence that says what the product is', '#hero .hero-setup'],
+  /* The card's own invitation. The card has linked to the worked example since
+     it was built and is about eight times the area of the primary call to
+     action, but the only things that said so were a hover lift, which no touch
+     device shows, and a screen-reader-only string. A visible line is the whole
+     point of it, so a rule that hides it is a defect this suite should catch. */
+  ["the draft card's invitation", '#hero .hero-deal-cue'],
   /* The price band. This file's own docstring names `#price,#numbers{display:none}`
      as the attack it was written to catch, and `#price` was not in this list -
      so the one section an ad click arrives to read could have been hidden with

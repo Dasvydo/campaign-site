@@ -1,6 +1,6 @@
 # Run state: trial-page
 Started: 2026-09-22
-Last updated: 2026-09-23 (phase 6 coherence audit complete)
+Last updated: 2026-09-23 (post-audit wave: T15, T16)
 Status: build complete, 12 of 13 tasks verified; T9 held on the founder
 Domain profile: software (T5, T7, T8, T11 tagged content)
 
@@ -46,7 +46,9 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T10 | Rewrite analytics event union | 4 | verified | 1 | PASS | analytics.ts | src/lib/analytics.ts |
 | T11 | Teams-of-10+ secondary path | 3 | verified | 1 | PASS | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
 | T12 | Mobile + accessibility pass | 4 | verified | 1 | PASS | a11y fixes | sections/** (a11y only), Consent.tsx |
-| T13 | Update verification gates | 4 | verified | 1 | PASS | scripts/** | scripts/**, package.json scripts |
+| T13 | Update verification gates | 4 | verified | 1 | PASS |
+| T15 | Stop a scroll killing the demo run | 5 | landed | 1 | measured | Demo.tsx, verify-demo.mjs | src/components/Demo.tsx, scripts/verify-demo.mjs |
+| T16 | Give the draft card a visible invitation | 5 | landed | 1 | measured | hero cue | Hero.tsx, sections/hero.css, content/*/hero.ts, types.ts, scripts/verify-visible.mjs | scripts/** | scripts/**, package.json scripts |
 
 ## Contracts
 | ID | Producer | Consumers | Interface | Honored |
@@ -465,9 +467,48 @@ mislead the next reader, and one of them is a test firing a name that does not e
 `Veikia mūsų serveriuose arba įdiegiame Jūsų.` was recovered from the old hero byte-for-byte (50/64/49 bytes,
 code-point identical in all three locales), exactly as instructed. The **string itself** is elliptical:
 `įdiegiame Jūsų` ends on a genitive modifier with no noun to modify; idiomatic Lithuanian wants
-`…įdiegiame Jūsų serveriuose` or `…pas Jus`. It passed as clipped shorthand in the hero. It now sits under
+`…įdiegiame Jūsų serveriuose` or `…pas Jus`.
+
+Two further Lithuanian strings written by this run and NOT native-reviewed: the call to action
+`Pradėkite nemokamą bandymą`, and the draft card's cue `Pažiūrėkite, kaip jis parašytas`. It passed as clipped shorthand in the hero. It now sits under
 "KUR JI VEIKIA" in the one block a security reviewer opens, where "our servers or yours" has to be unambiguous.
 Needs a native speaker, not an agent.
+
+### Post-audit wave — two rubric findings that never had a task
+The founder asked which findings from the video rubric and lawsofux were actually built rather than only
+analysed. Four had never been assigned. He dropped the token ramp (no visitor benefit, every stylesheet
+touched) and skipped the desktop standing bar (a visible addition to a page he asked to keep minimal). The
+two he kept are done, by me rather than by agents: two rows with disjoint files is below the threshold where
+orchestration pays for itself.
+
+**T15 — a thumb going past is not a hand reaching for it.** The worked example's auto-run stood down on a
+pointerdown anywhere in a section about 2,000px tall. Now: mouse and pen stand it down on any press, which is
+right because nobody clicks a paragraph by accident; touch stands it down only on a press that lands on a
+control, matched by role rather than class name. Proven before and after with a probe that reports what the
+section actually received, so a press that misses is visible rather than silent.
+
+**The finding's framing was half wrong, and worth recording as such.** It said the auto-run was "dead on
+mobile, and scrolling kills it". On a PHONE the sequence declines to play deliberately - the switch and the
+clause it changes cannot both hold 90% of a 390px viewport, and `verify-demo` asserts that on purpose. The
+real defect was the tablet and the touch laptop, where it does arm.
+
+**Two gate problems this change surfaced rather than caused.** `it stands down for a key` was passing on its
+own setup: it clicked inert text first to get focus into the section, and that click was what stood the run
+down, so the key was never the reason. It now dispatches the keydown at the section, and the `.catch()` that
+would swallow a failed act is gone. And nothing covered the touch case at all; `a thumb on inert text does not
+stand it down` is new. 23 checks there, from 22.
+
+**T16 — the draft card now says it is a way in.** The card links to the worked example and is about eight
+times the area of the primary call to action; the only things saying so were a hover lift no touch device can
+show and a screen-reader-only string. A visible line in readable amber, measured at 6.10:1 on the card's
+paper in all three locales at both viewports, with the arrow as markup rather than copy so no locale carries
+punctuation. `verify-visible` now lists it as a part, negative-tested: hiding it turns the gate red by name.
+The 320px consent clearance is unchanged (108 / 51 / 98), and the worst gap on the page is still the
+pre-existing 22px for Danish at 360.
+
+**Still not done, by the founder's decision:** the standing bar has no desktop life (rubric finding #5, "the
+one pattern the rubric praises by name"), and there is no type or radius ramp - 58 distinct font sizes across
+13 files, 22 radii.
 
 ## Coherence audit
 Run by an independent agent against the founder's own words, then acted on. Its full finding list is long;

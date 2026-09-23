@@ -483,7 +483,13 @@ export function Hero({
                   only thing in the hero that is the product rather than a
                   description of it. */}
               <span className="hero-draft">{c.hero.deal.preview}</span>
-              <span className="hero-sr">{c.hero.deal.sr}</span>
+              {/* The card has linked to the worked example since it was
+                  built, and the only things that said so were a hover lift no
+                  phone can show and a string only a screen reader received. */}
+              <span className="hero-deal-cue">
+                {c.hero.deal.cue}
+                <span className="hero-deal-arrow" aria-hidden="true">&#8594;</span>
+              </span>
             </span>
           </a>
         </div>

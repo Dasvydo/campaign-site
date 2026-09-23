@@ -207,7 +207,14 @@ export interface Content {
       subjectLabel: string;
       subject: string;
       preview: string;
-      sr: string;
+      /** The line in the corner of the draft card that says the card is a way
+          in. It was `sr`, a screen-reader-only string, so the card - about
+          eight times the area of the primary call to action - offered a
+          pointer user a hover lift and offered everyone else nothing at all.
+          It is visible now, in readable amber on the card's paper, and the
+          arrow beside it is markup rather than copy so no locale has to carry
+          punctuation. */
+      cue: string;
     };
 
     /** The standing price bar on phones. Its button is nav.cta. */

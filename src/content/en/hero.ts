@@ -28,7 +28,7 @@ export const hero: Content['hero'] = {
     subjectLabel: 'Subject',
     subject: 'Deposit statement, still nothing',
     preview: 'Thank you for chasing this, and sorry you have had to.',
-    sr: 'Read the whole draft in the worked example.',
+    cue: 'See how it was written',
   },
 
   /* THE SUB-HEADLINE, under the h1 and above the button.

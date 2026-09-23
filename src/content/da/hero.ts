@@ -23,7 +23,7 @@ export const hero: Content['hero'] = {
     subjectLabel: 'Emne',
     subject: 'Fraflytningsopgørelse, stadig intet',
     preview: 'Tak fordi du rykker, og undskyld at det har været nødvendigt.',
-    sr: 'Læs hele udkastet i det gennemgåede eksempel.',
+    cue: 'Se hvordan det blev skrevet',
   },
 
   /* The sub-headline. See the long note on the English key: this slot carried

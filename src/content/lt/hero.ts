@@ -22,7 +22,7 @@ export const hero: Content['hero'] = {
     subjectLabel: 'Tema',
     subject: 'Atsiskaitymas už užstatą, vis dar nieko',
     preview: 'Ačiū, kad priminėte, ir atsiprašome, kad teko.',
-    sr: 'Visą juodraštį perskaitykite išnagrinėtame pavyzdyje.',
+    cue: 'Pažiūrėkite, kaip jis parašytas',
   },
 
   /* The sub-headline. See the long note on the English key: this slot carried
