@@ -8,13 +8,16 @@
    still match the measurements they came from.
    ========================================================================== */
 
-/* 1. The button sits before the payback line in the markup on every width
-      (see Hero.tsx), so no reorder is needed here; only the rhythm changes
-      where the hero is one column, which keeps the button clear of the
-      cookie sheet on a phone and a tablet. */
+/* 1. Only the rhythm changes where the hero is one column, which keeps the
+      button clear of the cookie sheet on a phone and a tablet.
+
+      There was a second rule here for `.hero-payback`, a figure line that had
+      already been cut from the markup before this file was written and whose
+      base rule went with the hero rebuild. It is gone; nothing carries that
+      class. The comment above it described a markup order that no longer
+      existed either. */
 @media (max-width:1023px){
   .hero-act{ margin-top:26px }
-  .hero-payback{ margin-top:22px; font-size:17px }
 }
 
 @media (max-width:719px){

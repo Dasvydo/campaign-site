@@ -48,7 +48,13 @@ if (!BASE) {
 const PARTS = [
   ['the hero headline', '#hero h1'],
   ['the drafted reply in the hero', '#hero .hero-deal'],
-  ['where it is installed', '#hero .hero-setup'],
+  ['the sentence that says what the product is', '#hero .hero-setup'],
+  /* The price band. This file's own docstring names `#price,#numbers{display:none}`
+     as the attack it was written to catch, and `#price` was not in this list -
+     so the one section an ad click arrives to read could have been hidden with
+     the whole suite still green. */
+  ['the free trial headline', '#price .tiers-h-fig'],
+  ['each pricing tier', '#price .tiers-card'],
   ['the worked example', '#demo .demo-beats'],
   ['the draft it writes back', '#demo-draft'],
   ['who it is for', '#who .who-accuracy'],

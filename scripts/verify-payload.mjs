@@ -39,7 +39,7 @@
  *   npm run verify:payload
  */
 import { spawn } from 'node:child_process';
-import { readFileSync, rmSync, mkdtempSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, rmSync, mkdtempSync, existsSync } from 'node:fs';
 import { localeSource } from './content-src.mjs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
@@ -471,13 +471,39 @@ async function main() {
        declared for the band this page is getting back and for the consent
        gate's test event, and nothing on the page raises it today. */
     const analyticsSrc = readFileSync(join(root, 'src/lib/analytics.ts'), 'utf8');
-    const pageSrc = readFileSync(join(root, 'src/LocalePage.tsx'), 'utf8');
+    /* Every place an event could be raised, not just the page shell.
+
+       This read `src/LocalePage.tsx` alone, which was true enough while the
+       page raised everything from one file. It is not true now: a section
+       component is exactly where a section's own event would be raised, so a
+       negative assertion that only reads the shell says nothing about the
+       component that would break it. Adding `track('pricing_view')` inside
+       `Tiers.tsx` left this gate green.
+
+       Both directions read the whole tree now. The positive check still
+       passes, because the calls it looks for are in the shell and the shell is
+       part of the tree. */
+    const pageSrc = (function readAll(dir) {
+      let out = '';
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, e.name);
+        if (e.isDirectory()) out += readAll(full);
+        else if (/\.tsx?$/.test(e.name)) out += readFileSync(full, 'utf8') + '\n';
+      }
+      return out;
+    })(join(root, 'src'));
     const declared = [...analyticsSrc.matchAll(/^\s*\|\s*'([a-z_]+)'/gm)].map((m) => m[1]);
     const NOT_RAISED_YET = ['pricing_view'];
     check(declared.length > 0, 'the event names can be read out of analytics.ts', declared.join(', '));
     for (const name of declared) {
       if (NOT_RAISED_YET.includes(name)) {
-        check(!pageSrc.includes(`'${name}'`), `${name} is declared and deliberately not raised yet`);
+        /* A RAISE, not a mention. The negative used to look for the bare
+           quoted name, which worked only because it read one file that does
+           not declare them. Widening the scan to the whole tree brought
+           analytics.ts in with it, where every name appears by definition, so
+           the bare form inverted into a check that could never pass. Both
+           branches look for the same call shape now. */
+        check(!pageSrc.includes(`track('${name}'`), `${name} is declared and deliberately not raised yet`);
       } else {
         check(pageSrc.includes(`track('${name}'`), `${name} is raised by the page`);
       }
