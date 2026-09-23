@@ -315,7 +315,12 @@ try {
   {
     for (const [how, act] of [
       ['a pointer on inert text', (p) => p.click('#demo .demo-beat-note', { force: true })],
-      ['a key', (p) => p.keyboard.press('ArrowRight')],
+      /* Dispatched straight at the section. This used to be a real keypress
+         preceded by a click on inert text, to get focus into the section - and
+         that click was what stood the run down, so this case passed for years
+         without the key ever being the reason. Found when a change to the
+         pointer rule made the click stop counting and this went red with it. */
+      ['a key', (p) => p.dispatchEvent('#demo', 'keydown', { key: 'ArrowRight' })],
       ['focus reaching a switch', (p) => p.focus(`#demo .demo-sw[data-src="rules"]`)],
     ]) {
       const ctx = await browser.newContext({ viewport: DESKTOP });
@@ -324,12 +329,41 @@ try {
       /* Inside the arming window and before the removing step, which is where a
          person who has just arrived at the section actually is. */
       await page.waitForTimeout(150);
-      if (how === 'a key') await page.click('#demo .demo-beat-note', { force: true }).catch(() => {});
-      await act(page).catch(() => {});
+      /* No `.catch()` here. A silenced act is a check that passes because
+         nothing happened, which is the failure mode this suite keeps finding
+         in itself. */
+      await act(page);
       const { moved } = await stillFor(page, 4000);
       check(!moved, `it stands down for ${how}`, 'nothing moved for four seconds after');
       await ctx.close();
     }
+  }
+
+  /* 4c. a thumb travelling past is not a person taking over ----------------- */
+  {
+    /* The mouse cases above are right: nobody clicks a paragraph by accident,
+       so a click is an act. A touch pointerdown on inert text is not the same
+       thing - it is how a scroll begins. Any touch device large enough for the
+       sequence to arm used to cancel it with the very press that carried the
+       reader past, which killed the demonstration on exactly the devices whose
+       readers, per Demo.tsx, "never saw the proof".
+
+       Not the phone case: there the sequence declines to play at all, and
+       check 5 asserts that separately. This is the tablet and the touch
+       laptop, at a viewport where it does arm. */
+    const ctx = await browser.newContext({ viewport: DESKTOP, hasTouch: true });
+    const page = await openPage(ctx);
+    await showBoth(page);
+    await page.waitForTimeout(150);
+    const box = await (await page.$('#demo .demo-beat-note')).boundingBox();
+    await page.touchscreen.tap(Math.round(box.x + 4), Math.round(box.y + 4));
+    const off = await until(page, (s) => s.checked === 'false');
+    check(
+      off.ok,
+      'a thumb on inert text does not stand it down',
+      off.ok ? `ran ${off.took}ms after the tap` : 'the tap cancelled the sequence',
+    );
+    await ctx.close();
   }
 
   /* 4b. the next letter is a NEW letter ------------------------------------- */

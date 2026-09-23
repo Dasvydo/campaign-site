@@ -355,8 +355,40 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
     const effect = section?.querySelector(`.demo-clause[data-clause="${AUTO_KEY}"]`);
     if (!section || !cause || !effect || typeof IntersectionObserver === 'undefined') return;
 
+    /* WHO COUNTS AS A PERSON TAKING OVER, AND IT DEPENDS ON THE POINTER.
+
+       A pointerdown anywhere in this section used to stand the run down, and
+       the section is about 2,000px tall. With a mouse that is right: nobody
+       clicks a paragraph by accident, so a click is an act and the sequence
+       should get out of the way. With a thumb it is wrong, because the press
+       that begins a SCROLL is indistinguishable from the press that means
+       something - so on a touch device large enough for the sequence to arm at
+       all, travelling past the section killed the very demonstration that
+       exists, per the note at the top of this file, because "most visitors
+       never saw the proof".
+
+       So: mouse and pen, any press counts. Touch, only a press that lands on a
+       control counts. The selector is by role rather than class name so it
+       cannot drift with the markup - the desk tabs, the source switches,
+       restore and send/edit/deal are all `button`, the struck clauses carry
+       `role="button"`, and the edit box is a `textarea`.
+
+       (This is NOT the phone case. On a phone the sequence declines to play at
+       all, because the switch and the clause it changes cannot both hold 90%
+       of a 390px viewport; verify-demo asserts that separately. This is the
+       tablet and the touch laptop, where it does arm.)
+
+       `keydown` and `focusin` stay unscoped. Both already require focus to be
+       inside the section, which is a person using it either way. */
+    const CONTROLS = 'button, a, [role="button"], input, textarea, select, label';
     const stop = () => standDown();
-    section.addEventListener('pointerdown', stop);
+    const stopIfMeant = (e: Event) => {
+      const t = e.target;
+      const touch = e instanceof PointerEvent && e.pointerType === 'touch';
+      if (!touch) return standDown();
+      if (t instanceof Element && t.closest(CONTROLS)) standDown();
+    };
+    section.addEventListener('pointerdown', stopIfMeant);
     section.addEventListener('keydown', stop);
     section.addEventListener('focusin', stop);
 
@@ -418,7 +450,7 @@ export function Demo({ c, onDeskChange }: { c: Content; onDeskChange?: (id: stri
 
     return () => {
       io.disconnect();
-      section.removeEventListener('pointerdown', stop);
+      section.removeEventListener('pointerdown', stopIfMeant);
       section.removeEventListener('keydown', stop);
       section.removeEventListener('focusin', stop);
       if (offTimer.current !== null) window.clearTimeout(offTimer.current);
