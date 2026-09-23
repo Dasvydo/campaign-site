@@ -74,6 +74,31 @@
   .consent-h{ font-size:15px }
   .consent-body{ font-size:13px }
   .consent-btn{ min-height:40px }
+
+  /* The hero grew a sub-headline and an audience strip, and at 360px the two
+     languages that set longest put the button back under the sheet: Danish
+     605..659, Lithuanian 631..685, against a slip that opens at 630. English
+     never showed it, because English is the short one.
+
+     The sheet is not what shrinks. It is a legal notice and it already sits
+     inside the third of the screen the layout gate allows it. The hero is what
+     grew, so the hero gives the space back - tighter joins between the four
+     blocks, nothing removed and the order untouched.
+
+     These live here rather than in phone-hero.css because this file is
+     imported last and `html:lang(lt) #hero-title` below carries an id and a
+     language together. A rule written anywhere earlier loses to it and sits in
+     the stylesheet doing nothing, which is how the orphan above got there. */
+  .hero-setup{ margin-top:10px; font-size:16px }
+  .hero-for{ margin-top:12px }
+  .hero-act{ margin-top:12px }
+  .hero-trust{ margin-top:10px }
+
+  /* Lithuanian needs one more step than the joins can give. Its headline runs
+     five lines here where English runs four, and the rule above that already
+     takes it down a size carries an id and a language, so nothing shorter
+     reaches it - this has to match that weight and come after it. */
+  html:lang(lt) #hero-title{ font-size:34px }
 }
 
 /* The smallest phones. At 360x800 the count row and the dateline were the
