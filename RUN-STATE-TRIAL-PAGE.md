@@ -222,8 +222,8 @@ three of its sections and now **fails loudly** rather than passing green, which 
 sections — layout at 360/768/1280, the 16px input rule, pixel call ordering, UTM persistence across a History
 navigation — still have live subjects and are worth recovering. Needs a decision, not a silent deletion.
 
-### Deferred from T11's verifier — both in files another agent holds right now
-Apply once T10 (Enterprise.tsx, analytics) and T12 (sections/**) have landed:
+### Deferred from T11's verifier — RESOLVED (two applied, one declined)
+T10 and T12 have landed, so these were no longer held. Outcome of each:
 1. **`Enterprise.tsx` accepts fractional and exponent head counts.** The form is `noValidate` and the guard is
    `Number(fields.people) > 0`, so `min={1}` and `step={1}` are decorative. Proven by the verifier: typing `3.7`
    delivers `people: 3.7` to the webhook and `1e5` delivers `people: 100000`. Fix is one line, no new copy —
@@ -234,8 +234,31 @@ Apply once T10 (Enterprise.tsx, analytics) and T12 (sections/**) have landed:
    up". That page does not exist: `.on-dark .btn-primary` renders the Tiers CTA warmwhite-on-charcoal, the same
    treatment as this submit. The differentiation is real (ground, placement, label, no anchors) but it is not the
    differentiation the comments claim, and comments this load-bearing are how the next reader gets misled.
-3. Minor: `.field-hint` for the email carries `role="status"` from first paint, so static hint text sits in a
-   live region before there is anything to announce. `aria-live="polite"` on a wrapper that starts empty is cleaner.
+3. **DECLINED, having looked at it properly.** The item was that `.field-hint` for the email carries
+   `role="status"` from first paint, so static hint text sits in a live region; T12's audit independently
+   flagged the same line, adding that it "will be re-announced whenever React re-renders it".
+
+   That stated mechanism does not hold. React writes `nodeValue` only when the string differs, so a re-render
+   that leaves the hint unchanged is not a DOM mutation and nothing is announced. (Reasoned from React's DOM
+   reconciliation, not measured — if someone wants it measured, a MutationObserver on that node across a
+   keystroke settles it.) Live regions also do not announce their initial content, so the text sitting there
+   at first paint costs nothing either.
+
+   What IS real is smaller and cuts both ways: the one node is both the `aria-describedby` target and the live
+   region, so the warning is read on focus and again as an announcement, and when the warning clears the
+   neutral hint is announced as though it were news. The recommended fix — a visible `<p>` as the description
+   plus a hidden polite region that starts empty — removes the double purpose but puts the warning text in the
+   accessibility tree twice, which a reader browsing linearly then meets twice.
+
+   Neither shape is plainly better, and the current one announces the thing that actually matters. The comment
+   above it also records a deliberate choice ("the field keeps one description rather than growing a second
+   one"), so swapping the text rather than adding a line is the author's intent, not an oversight. Left as is.
+
+Applied and proven (commit below): the guard blocks `3.7`, `1e5` and `0` in a real browser with the error
+shown and zero POSTs, while `12` still delivers `people: 12` and the result screen. The two comment
+corrections were checked against the rendered page first: `#price` is `tiers on-dark` and `.ent-panel` is
+`on-dark`, so `.on-dark .btn-primary` gives both buttons warmwhite-on-charcoal; the espresso pill on cream is
+`.hero-btn` (`background: var(--ink)`), at the top of the page, not four sections up.
 
 ### Carried forward to T13 (raised by T10, confirmed by the orchestrator's own grep)
 T10 renamed the price event. `pricing_view` is no longer declared anywhere in `src/`, which leaves three

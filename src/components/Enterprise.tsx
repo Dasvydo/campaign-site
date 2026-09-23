@@ -13,9 +13,17 @@ import { Disclosure } from './Disclosure';
  * worked example and the audience folders. Self-serve is the motion this page
  * sells and the trial CTA above is the ask; a reader scanning for "start the
  * trial" must not land here by mistake. So this block never says trial, it
- * carries no espresso pill on the cream ground, and its one button sends an
- * email. It is the answer to "we are ten people with a procurement form", not
- * a second front door.
+ * sits last, and its one button is a form submit that sends an email rather
+ * than an anchor that starts something.
+ *
+ * What separates it is NOT colour. This header used to claim the block
+ * "carries no espresso pill on the cream ground", which read as a contrast
+ * with the page's call to action. The panel below is `.on-dark`, so
+ * `.on-dark .btn-primary` renders this submit warmwhite on charcoal - and the
+ * tiers section four up is `.on-dark` too, so the trial CTA inside it gets the
+ * very same rule and the very same treatment. The espresso pill on cream is
+ * the HERO's button, at the top of the page. It is the answer to "we are ten
+ * people with a procurement form", not a second front door.
  *
  * IT REJECTS NOBODY. The deleted fit check was 727 lines with a routing table,
  * two screens and a `too_small` outcome that redirected firms under ten people
@@ -142,7 +150,15 @@ export function Enterprise({
     if (!fields.name.trim()) found.name = f.errorName;
     if (!fields.email.trim()) found.email = f.errorEmail;
     else if (!looksLikeEmail(fields.email)) found.email = f.errorEmailShape;
-    if (!(Number(fields.people) > 0)) found.people = f.errorSize;
+    /* The form is `noValidate`, so `min={1}` and `step={1}` on the input are
+       decorative - the browser never enforces them, and `Number()` turns "3.7"
+       into 3.7 and "1e5" into 100000. Both used to reach the webhook verbatim:
+       a head count of three and seven tenths of a person, and a hundred
+       thousand seats out of three keystrokes. Testing the STRING keeps this a
+       format rule rather than a policy one - a firm that really does have a
+       hundred thousand people can still say so, but it has to type it out. */
+    const people = fields.people.trim();
+    if (!/^\d+$/.test(people) || Number(people) < 1) found.people = f.errorSize;
     return found;
   };
 

@@ -6,9 +6,10 @@
 
    IT IS DRAWN TO BE FOUND, NOT TO BE NOTICED. The one thing this page asks
    for is the trial, and that ask is in the hero and again under the tiers. So
-   nothing here competes for it: no display numeral, no amber pill, no espresso
-   button on the cream ground, and the heading sets at the size of a section
-   heading rather than the size of an offer. A reader scanning for "start the
+   nothing here competes for it: no display numeral, no amber pill, and the
+   heading sets at the size of a section heading rather than the size of an
+   offer. It does NOT differ in button colour, though this note used to say so
+   - see .ent-send near the foot of this file. A reader scanning for "start the
    trial" scrolls past this; a reader with a procurement form stops at it.
 
    THE GROUND. Sand, which is the blotter the page already puts under its two
@@ -236,9 +237,19 @@
 
 /* The button is .btn .btn-primary, which inverts to warmwhite on charcoal
    inside on-dark. It is the form's submit and nothing else on this ground
-   competes with it; it is NOT the page's call to action, which is the espresso
-   pill four sections up. Full width on a phone, where the panel is the whole
-   column. */
+   competes with it.
+
+   This note used to end "it is NOT the page's call to action, which is the
+   espresso pill four sections up", and neither half of that survives reading.
+   The tiers section four up is itself .on-dark, so its CTA takes this exact
+   .on-dark .btn-primary rule and renders warmwhite on charcoal, the same as
+   this submit. The espresso pill on cream is the HERO's button - .hero-btn,
+   background var(--ink) - at the top of the page.
+
+   The two are still told apart, just not by colour: this one is a submit
+   rather than an anchor, it carries no #fit target, its label asks for a
+   conversation rather than a trial, and it is the last thing on the page.
+   Full width on a phone, where the panel is the whole column. */
 .ent-send {
   width: 100%;
   min-height: 50px;
