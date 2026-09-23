@@ -207,12 +207,22 @@
     background-size var(--t-in, 260ms) var(--e-hand, cubic-bezier(.33,.06,.28,1)),
     text-decoration-color var(--t-in, 260ms) linear;
 }
-#footer .footer-a:hover,
 #footer .footer-a:focus-visible{
   background-size:100% .72em;
   text-decoration-color:var(--footer-amber-text);
   text-decoration-thickness:2px;
   transition-duration:var(--t-mark, 340ms);
+}
+/* Split from the :focus-visible rule above so the hover half can be guarded on
+   its own. Unguarded, a tapped colophon link kept its marker stroke filled in
+   after the finger left, and the colophon is a column of them. */
+@media (hover:hover){
+  #footer .footer-a:hover{
+    background-size:100% .72em;
+    text-decoration-color:var(--footer-amber-text);
+    text-decoration-thickness:2px;
+    transition-duration:var(--t-mark, 340ms);
+  }
 }
 #footer .footer-a:active{
   transform:translateY(1px);
@@ -284,11 +294,22 @@
 }
 
 @media (prefers-reduced-motion:reduce){
+  /* The marker still fills, it just stops being drawn across 340ms. The three
+     selectors are all needed: the two state rules above carry a
+     transition-duration of their own at (1,2,1), which a plain
+     `#footer .footer-a` at (1,1,1) cannot reach.
+
+     `#footer .footer-a:active{ transform:none }` USED TO BE HERE and is gone.
+     It took the 1px drop that is the only confirmation a reduced-motion reader
+     gets that a colophon link was pressed - including the row that reopens the
+     cookie notice, which is a button. Removing the animation is what the
+     setting asks for; removing the answer is not. See interaction.css. */
   #footer .footer-a,
-  #footer .footer-a:hover,
   #footer .footer-a:focus-visible{
     transition:none;
   }
-  #footer .footer-a:active{ transform:none; }
+  @media (hover:hover){
+    #footer .footer-a:hover{ transition:none }
+  }
 }
 

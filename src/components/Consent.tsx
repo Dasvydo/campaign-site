@@ -51,6 +51,13 @@ export function Consent({ c }: { c: Content }) {
   const [takeFocus, setTakeFocus] = useState(false);
   const panel = useRef<HTMLDivElement | null>(null);
   const head = useRef<HTMLParagraphElement | null>(null);
+  /* Where the keyboard came from, so it can be put back. The notice is the
+     first thing in the document, and the row that reopens it is the last: a
+     visitor who withdraws consent from the colophon of a seven thousand pixel
+     page and is then handed back to document.body has lost their place
+     entirely, because the next Tab starts again at the top. Only set on a
+     reopen; on first load nothing had focus to return to. */
+  const returnTo = useRef<HTMLElement | null>(null);
   const titleId = useId();
   const bodyId = useId();
 
@@ -63,6 +70,8 @@ export function Consent({ c }: { c: Content }) {
 
   useEffect(() => {
     const reopen = () => {
+      const from = document.activeElement;
+      returnTo.current = from instanceof HTMLElement && from !== document.body ? from : null;
       setTakeFocus(true);
       setOpen(true);
     };
@@ -101,12 +110,35 @@ export function Consent({ c }: { c: Content }) {
     if (open && takeFocus) head.current?.focus();
   }, [open, takeFocus]);
 
-  const answer = useCallback((choice: Choice) => {
-    setConsent(choice);
-    setOpen(false);
-    setTakeFocus(false);
-    window.dispatchEvent(new Event(CONSENT_SET_EVENT));
+  /* Closing the notice unmounts the button that was focused, so focus has to be
+     put somewhere deliberately or the browser drops it on <body>. The element
+     is re-checked against the document rather than trusted: the row that
+     opened the notice re-renders with a new label the moment the answer lands,
+     and a node that React has replaced is no longer focusable. */
+  const restoreFocus = useCallback(() => {
+    const el = returnTo.current;
+    returnTo.current = null;
+    if (el && el.isConnected) {
+      try {
+        el.focus({ preventScroll: true });
+      } catch {
+        el.focus();
+      }
+    }
   }, []);
+
+  const answer = useCallback(
+    (choice: Choice) => {
+      setConsent(choice);
+      setOpen(false);
+      setTakeFocus(false);
+      window.dispatchEvent(new Event(CONSENT_SET_EVENT));
+      /* After the event, so the colophon row has already been told the answer
+         and re-rendered; otherwise this focuses a node about to be replaced. */
+      restoreFocus();
+    },
+    [restoreFocus],
+  );
 
   /* Escape closes only a notice that is being revisited. On first load there is
      no previous answer to fall back to, so dismissing it would have to invent
@@ -116,9 +148,10 @@ export function Consent({ c }: { c: Content }) {
       if (e.key === 'Escape' && consentDecided()) {
         setOpen(false);
         setTakeFocus(false);
+        restoreFocus();
       }
     },
-    [],
+    [restoreFocus],
   );
 
   if (!open) return null;
@@ -226,7 +259,11 @@ export function ConsentStatus({ c }: { c: Content }) {
       type="button"
       className="footer-a footer-a-btn"
       aria-label={t.reopenLabel}
-      onClick={() => {
+      onClick={(e) => {
+        /* Focused explicitly before the event goes out: a click does not move
+           focus to the button in every engine, and the notice reads
+           document.activeElement to learn where to hand the keyboard back. */
+        e.currentTarget.focus();
         clearConsent();
         window.dispatchEvent(new Event(CONSENT_OPEN_EVENT));
       }}

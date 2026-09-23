@@ -12,11 +12,24 @@
   font-family:'DM Sans',sans-serif; font-size:14.5px; font-weight:500;
   letter-spacing:.01em; color:var(--amber-text); cursor:pointer;
   list-style:none; border-bottom:1px solid transparent;
+  transition:border-color var(--ix-curve), transform var(--ix-curve-press);
 }
+/* It had no pressed state: the underline thickening is a hover, and a hover
+   does not exist on a phone. --ix-press, like every other control. */
+.disc-sum:active{ transform:var(--ix-press) }
 .disc-sum::-webkit-details-marker{ display:none; }
 .disc-sum::marker{ content:""; }
-.disc-sum:hover{ border-bottom-color:var(--amber-text); }
-.disc-sum:focus-visible{ outline:2px solid var(--amber); outline-offset:4px; border-radius:2px; }
+@media (hover:hover){
+  .disc-sum:hover{ border-bottom-color:var(--amber-text); }
+}
+/* --ix-ring, not plain --amber. This summary appears on three grounds - the
+   sand of the worked example, the paper of a sheet, and the charcoal of the
+   price band - and #f59b0a measured 1.75:1 on sand and 2.10:1 on paper, under
+   the 3:1 WCAG 1.4.11 asks of a focus indicator. --ix-ring is #8a5200 on a
+   light ground (5.10:1 on sand, 6.10:1 on paper) and flips to #fbbd23 inside
+   .on-dark (10.4:1 on the charcoal), which is the ground this disclosure sits
+   on inside the price band. One token, all three grounds. */
+.disc-sum:focus-visible{ outline:var(--ix-ring); outline-offset:4px; border-radius:2px; }
 .disc-mark{ position:relative; width:11px; height:11px; flex:none; color:var(--amber-text); }
 .disc-mark::before,.disc-mark::after{ content:""; position:absolute; background:currentColor; border-radius:1px; }
 .disc-mark::before{ left:0; right:0; top:50%; height:1.5px; transform:translateY(-50%); }

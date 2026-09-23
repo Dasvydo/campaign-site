@@ -102,6 +102,7 @@
 }
 .demo-tab{
   appearance:none;-webkit-appearance:none;
+  min-height:44px;
   margin:0 0 -1px;padding:12px 18px 13px;
   font:inherit;font-size:15.5px;font-weight:500;line-height:1.2;color:var(--muted);
   background:transparent;border:1px solid transparent;border-bottom:none;
@@ -109,7 +110,9 @@
   transition:color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1)),
              background-color var(--t-micro,160ms) var(--e-out,cubic-bezier(.2,.8,.3,1));
 }
-.demo-tab:hover{color:var(--ink);background:var(--sand,rgba(37,29,24,.04))}
+@media (hover:hover){
+  .demo-tab:hover{color:var(--ink);background:var(--sand,rgba(37,29,24,.04))}
+}
 .demo-tab[aria-selected="true"]{
   color:var(--ink);background:var(--card);
   border-color:var(--taupe);
@@ -209,9 +212,11 @@
   box-shadow:var(--demo-sh-lift);
   transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
 }
-.demo-letter:hover{
-  transform:rotate(-1.05deg);
-  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+@media (hover:hover){
+  .demo-letter:hover{
+    transform:rotate(-1.05deg);
+    transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+  }
 }
 .demo-meta{
   display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;
@@ -249,13 +254,15 @@
     box-shadow var(--demo-t-in) var(--demo-e-out),
     background-color var(--demo-t-in) var(--demo-e-out);
 }
-.demo-sw:hover{
-  transform:rotate(var(--r,0deg)) translateY(-1px);
-  box-shadow:var(--demo-sh-lift);
-  transition:
-    transform var(--demo-t-micro) var(--demo-e-out),
-    box-shadow var(--demo-t-micro) var(--demo-e-out),
-    background-color var(--demo-t-micro) var(--demo-e-out);
+@media (hover:hover){
+  .demo-sw:hover{
+    transform:rotate(var(--r,0deg)) translateY(-1px);
+    box-shadow:var(--demo-sh-lift);
+    transition:
+      transform var(--demo-t-micro) var(--demo-e-out),
+      box-shadow var(--demo-t-micro) var(--demo-e-out),
+      background-color var(--demo-t-micro) var(--demo-e-out);
+  }
 }
 .demo-sw:active{
   transform:rotate(var(--r,0deg)) translateY(1px) scale(.994);
@@ -275,7 +282,8 @@
 
 @media (max-width:599px){
   .demo-switches .demo-sw{--ml:0}
-  .demo-letter,.demo-letter:hover{transform:none}
+  .demo-letter{transform:none}
+  @media (hover:hover){ .demo-letter:hover{transform:none} }
   .demo-reply{transform:none}
 }
 
@@ -366,9 +374,11 @@
   border-radius:var(--radius-sm);box-shadow:var(--demo-sh-flat);cursor:pointer;
   transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
 }
-.demo-restore:hover{
-  transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
-  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+@media (hover:hover){
+  .demo-restore:hover{
+    transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
+    transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+  }
 }
 .demo-restore:active{
   transform:translateY(1px) scale(.994);box-shadow:var(--demo-sh-press);
@@ -429,7 +439,17 @@
 }
 
 .demo-clause{min-width:0}
-.demo-clause[role="button"]{cursor:pointer}
+/* An inline run of text inside a sentence, so it presses with opacity rather
+   than with --ix-press: a translate on an inline element does nothing at all,
+   and forcing inline-block to make it work would change where the sentence
+   wraps. .78 is the page's knocked-back value and the same press .ix-link
+   takes in src/styles/interaction.css, for the same reason. It had no pressed
+   state before; the trace only appears once the clause has been acted on. */
+.demo-clause[role="button"]{
+  cursor:pointer;
+  transition:opacity var(--ix-curve-press);
+}
+.demo-clause[role="button"]:active{ opacity:.78 }
 .demo-v{
   transition:opacity var(--demo-t-in) var(--demo-e-out),
              background-color var(--demo-t-micro) var(--demo-e-out);
@@ -490,9 +510,11 @@
   box-shadow:var(--demo-sh-flat);
   transition:transform var(--demo-t-in) var(--demo-e-out),box-shadow var(--demo-t-in) var(--demo-e-out);
 }
-.demo-btn:hover{
-  transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
-  transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+@media (hover:hover){
+  .demo-btn:hover{
+    transform:translateY(-1px);box-shadow:var(--demo-sh-lift);
+    transition:transform var(--demo-t-micro) var(--demo-e-out),box-shadow var(--demo-t-micro) var(--demo-e-out);
+  }
 }
 .demo-btn:active{
   transform:translateY(1px) scale(.994);box-shadow:var(--demo-sh-press);
@@ -501,7 +523,9 @@
 .demo-btn--send{background:var(--amber);color:var(--charcoal);border:1px solid var(--amber-text)}
 .demo-btn--edit{background:var(--card);color:var(--ink);border:1px solid var(--border)}
 .demo-btn--ghost{background:var(--cream);color:var(--ink);border:1px dashed var(--taupe);box-shadow:none}
-.demo-btn--ghost:hover{box-shadow:var(--demo-sh-flat)}
+@media (hover:hover){
+  .demo-btn--ghost:hover{box-shadow:var(--demo-sh-flat)}
+}
 
 .demo-gate-done{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
 .demo-sent-chip{
@@ -546,8 +570,21 @@
 }
 
 @media (prefers-reduced-motion: reduce){
-  .demo-letter:hover,.demo-sw:hover,.demo-restore:hover,.demo-btn:hover{transform:rotate(var(--r,0deg))}
-  .demo-sw:active,.demo-restore:active,.demo-btn:active{transform:rotate(var(--r,0deg))}
+  /* The hover RISE is withdrawn under reduced motion - a 1px lift that arrives
+     instantly is a jump, and the shadow already says the same thing. Guarded,
+     because an unguarded hover inside this query is still a hover a finger can
+     get stuck in.
+
+     The matching :active line is GONE. It sat here setting the pressed
+     transform back to the resting rotation, so a reduced-motion reader pressing
+     a source switch, the restore button or either gate button got no answer at
+     all. "Do not animate me" is not "do not tell me my click worked"; see the
+     reduced-motion block in interaction.css. The presses in this file
+     (.demo-sw:active, .demo-restore:active, .demo-btn:active) now stand, and
+     index.css's transition-duration floor makes them arrive at once. */
+  @media (hover:hover){
+    .demo-letter:hover,.demo-sw:hover,.demo-restore:hover,.demo-btn:hover{transform:rotate(var(--r,0deg))}
+  }
   .demo-draw path{stroke-dasharray:none;stroke-dashoffset:0;stroke-width:3}
   .demo-v.demo-struck{background-size:100% .34em}
   .demo-v.demo-enter{opacity:1}

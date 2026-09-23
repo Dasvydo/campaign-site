@@ -123,8 +123,32 @@
 @media (hover:hover) and (pointer:fine){
   .who-tab:not(.is-open):hover{ transform:translateY(-2px); color:var(--ink) }
 }
+/* The tab had no pressed state. Measured with the pseudo-states forced: rest,
+   :active and :hover+:active were byte-identical, so a reader picking a trade
+   got no answer until the panel below them changed.
+
+   `:not(:disabled)` is not defensive, it is arithmetic: the hover rule above
+   is (0,3,0) and a plain `.who-tab:active` is (0,2,0), so on a pointer device
+   - where you cannot press without hovering first - the tab would have stayed
+   lifted at -2px through the press. This matches its weight and comes after
+   it. Same pattern as .btn-primary:not(:disabled):active in index.css, and for
+   exactly the same reason. */
+.who-tab:not(:disabled):active{
+  transform:var(--ix-press);
+  transition:transform var(--ix-curve-press);
+}
+/* --ix-ring rather than plain --amber: #f59b0a measures 2.10:1 on the paper
+   these tabs are cut from and 1.75:1 on the sand behind them, under the 3:1
+   WCAG 1.4.11 asks of a focus indicator. --ix-ring is #8a5200 here (5.53:1
+   measured on the tab's own ground) and flips with .on-dark.
+
+   This declaration is currently outranked by `#who button:focus-visible` lower
+   in this file, which already rings in --who-focus (= --amber-text) - so the
+   ring a reader actually sees was passing. It is corrected anyway: a rule that
+   only passes because something heavier happens to sit after it is a rule that
+   fails the day that heavier rule moves. */
 .who-tab:focus-visible{
-  outline:2px solid var(--amber);
+  outline:var(--ix-ring);
   outline-offset:2px;
   z-index:3;
 }
@@ -189,13 +213,21 @@
    written out of, which is the answer to the objection the whole section
    exists for, and in muted grey at 12.5px it read as a caption on the list
    rather than as the point of it. */
+/* --amber-text, not --amber. This is a letterform, and plain #f59b0a on the
+   #fdf9f7 of this sheet measures 2.10:1 - the exact failure index.css names
+   when it says amber never carries a letterform, and 1.4.3 wants 4.5:1 of a
+   12.5px label. The darkened amber the identity already owns for this purpose
+   reads 6.10:1 here. Same treatment, same pen, one step along. */
 .who-sources-h{
   font-size:12.5px; font-weight:600; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--amber);
+  text-transform:uppercase; color:var(--amber-text);
 }
 .who-sources-list{ font-size:15px; line-height:1.7; color:var(--ink) }
+/* The separator is the only thing holding five run-on items apart, so it has
+   to be seen: at plain #f59b0a it measured 2.10:1 on this sheet and the list
+   read as one sentence. Still a dot, still amber - the darkened amber, 6.10:1. */
 .who-source + .who-source::before{
-  content:"\00b7"; margin:0 .5em; color:var(--amber); font-weight:700;
+  content:"\00b7"; margin:0 .5em; color:var(--amber-text); font-weight:700;
 }
 
 /* The accuracy block. Set as a second sheet on the same desk rather than as a

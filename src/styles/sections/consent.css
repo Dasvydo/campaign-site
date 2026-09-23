@@ -47,7 +47,17 @@
   font-family:'Playfair Display',serif; font-size:19px; font-weight:600;
   letter-spacing:-.01em; color:var(--ink);
 }
-.consent-h:focus-visible{ outline:2px solid var(--amber); outline-offset:4px; border-radius:2px; }
+/* THE RING. It was `2px solid var(--amber)` on all four of these, and plain
+   #f59b0a measures 2.10:1 against the #fdf9f7 the slip is cut from - measured,
+   not estimated. WCAG 1.4.11 wants 3:1 for a focus indicator, which is the same
+   arithmetic that bars amber from carrying a letterform anywhere on this page.
+
+   --ix-ring is the page's ring: the identity's darkened amber #8a5200 on a
+   light ground (6.10:1 here), flipped to #fbbd23 by .on-dark. Same 2px, same
+   amber, one step along a value the brand already owns. The offsets below are
+   left exactly as they were - they are geometry tuned against this sheet, not
+   colour. See the --ix-ring comment in src/styles/interaction.css. */
+.consent-h:focus-visible{ outline:var(--ix-ring); outline-offset:4px; border-radius:2px; }
 .consent-body{
   margin:0 0 4px; max-width:58ch;
   font-size:14.5px; line-height:1.6; color:var(--muted);
@@ -68,11 +78,18 @@
   min-height:44px; padding:2px;
   font-size:14px; font-weight:500; color:var(--amber-text);
   cursor:pointer; list-style:none; border-bottom:1px solid transparent;
+  transition:border-color var(--ix-curve), transform var(--ix-curve-press);
 }
+/* Neither this nor the policy link below had a pressed state, and both are on
+   the one sheet every first-time visitor on a phone touches - where the
+   underline hover they did have cannot happen at all. */
+.consent-sum:active{ transform:var(--ix-press) }
 .consent-sum::-webkit-details-marker{ display:none }
 .consent-sum::marker{ content:"" }
-.consent-sum:hover{ border-bottom-color:var(--amber-text) }
-.consent-sum:focus-visible{ outline:2px solid var(--amber); outline-offset:4px; border-radius:2px }
+@media (hover:hover){
+  .consent-sum:hover{ border-bottom-color:var(--amber-text) }
+}
+.consent-sum:focus-visible{ outline:var(--ix-ring); outline-offset:4px; border-radius:2px }
 .consent-mark{ position:relative; width:10px; height:10px; flex:none; color:var(--amber-text) }
 .consent-mark::before,.consent-mark::after{ content:""; position:absolute; background:currentColor; border-radius:1px }
 .consent-mark::before{ left:0; right:0; top:50%; height:1.5px; transform:translateY(-50%) }
@@ -110,18 +127,28 @@
              border-color var(--t-micro) var(--e-out),
              transform var(--t-tap) var(--e-press);
 }
-.consent-btn:hover{ background:var(--peach); border-color:var(--amber-text) }
+/* Guarded. This is the one control on the page every first-time visitor on a
+   phone touches, and unguarded it kept the peach wash and the amber border
+   after the tap - on a notice whose whole job is to be answered and dismissed,
+   a button that stays lit reads as one that did not take. */
+@media (hover:hover){
+  .consent-btn:hover{ background:var(--peach); border-color:var(--amber-text) }
+}
 .consent-btn:active{ transform:translateY(1px) }
-.consent-btn:focus-visible{ outline:2px solid var(--amber); outline-offset:3px }
+.consent-btn:focus-visible{ outline:var(--ix-ring); outline-offset:3px }
 
 .consent-priv{
   flex:0 0 auto; min-height:40px; display:inline-flex; align-items:center;
   order:1;
   font-size:13.5px; color:var(--amber-text); text-decoration:none;
   border-bottom:1px solid transparent;
+  transition:border-color var(--ix-curve), transform var(--ix-curve-press);
 }
-.consent-priv:hover{ border-bottom-color:var(--amber-text) }
-.consent-priv:focus-visible{ outline:2px solid var(--amber); outline-offset:3px; border-radius:2px }
+.consent-priv:active{ transform:var(--ix-press) }
+@media (hover:hover){
+  .consent-priv:hover{ border-bottom-color:var(--amber-text) }
+}
+.consent-priv:focus-visible{ outline:var(--ix-ring); outline-offset:3px; border-radius:2px }
 
 /* the colophon is the one thing a fixed slip can sit on top of, so the slip
    pays for its own footprint */

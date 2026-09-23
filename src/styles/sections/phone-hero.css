@@ -74,10 +74,24 @@
      "do not animate me" is not "do not tell me my click worked", and this rule
      was one of the six that took the only confirmation a reader gets that
      their tap on the primary call to action landed. The hover RISE is still
-     withdrawn, by --ix-lift-y going to 0 in that same block. */
-  .hero-tab:hover,.hero-tab:active{transform:none}
-  .hero-deal:hover .hero-sheet-face,
-  .hero-deal:active .hero-sheet-face{transform:rotate(var(--r))}
+     withdrawn, by --ix-lift-y going to 0 in that same block.
+
+     The tab and the dealt card are here for the same reason, and the same cut
+     has now been made to both: the hover RISE goes, the PRESS stays. Each of
+     these two rules used to name :hover and :active together and set them both
+     to the resting transform, so a reduced-motion reader tapping the masthead
+     tab or the example card got no answer at all. The :active half is gone;
+     .hero-tab:active and .hero-deal:active in hero.css do the telling, and the
+     global transition-duration floor in index.css makes it arrive at once,
+     which is what the setting actually asks for.
+
+     The :hover halves keep their own (hover:hover) guard, nested inside this
+     query. Without it a touch device synthesises hover on tap and the withdrawn
+     rise is the state that sticks. */
+  @media (hover:hover){
+    .hero-tab:hover{transform:none}
+    .hero-deal:hover .hero-sheet-face{transform:rotate(var(--r))}
+  }
   @media (max-width:559px){
     .hero-sheet{transform:translate(-50%,0) translate(var(--x),var(--y))}
     .hero-deal{animation:none; transform:none}

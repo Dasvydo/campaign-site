@@ -51,6 +51,14 @@
   transition:transform var(--t-micro) var(--e-out);
 }
 .hero-skip:focus-visible{transform:translateY(0)}
+/* It had no pressed state at all: the first control a keyboard reaches on this
+   page answered Enter with nothing. --ix-press composes with the translateY(0)
+   above rather than replacing a rest of its own, because at rest this link is
+   parked at -140% and a press must not be what brings it on screen. */
+.hero-skip:focus-visible:active{
+  transform:var(--ix-press);
+  transition:transform var(--ix-curve-press);
+}
 
 /* ---- masthead ---- */
 .hero-wrap{
@@ -63,13 +71,28 @@
   gap:16px 24px; flex-wrap:wrap;
   padding-block:20px 0;
 }
+/* THE PRESS, on this and on the four controls below it.
+
+   None of the masthead's controls had one. Measured under
+   prefers-reduced-motion with the pseudo-states forced: pressing the brand, a
+   nav link, the language control or an item in its menu changed nothing at
+   all, on any device. A hover is not a press - it says "you are over this",
+   not "that took" - and on a touch screen there is no hover to stand in.
+
+   --ix-press and --ix-curve-press, from src/styles/interaction.css, so these
+   go down exactly as far and exactly as fast as every other control on the
+   page. The curve is carried on the base transition rather than restated in
+   each :active block, so the press eases back out as well as in. */
 .hero-brand{
   display:inline-flex; align-items:center; gap:10px; min-height:44px;
   text-decoration:none; color:var(--ink);
   padding-block:0 12px;
-  transition:opacity var(--t-in) var(--e-out);
+  transition:opacity var(--t-in) var(--e-out), transform var(--ix-curve-press);
 }
-.hero-brand:hover{opacity:.78; transition-duration:var(--t-micro)}
+.hero-brand:active{ transform:var(--ix-press) }
+@media (hover:hover){
+  .hero-brand:hover{opacity:.78; transition-duration:var(--t-micro)}
+}
 .hero-brand svg{width:30px; height:30px; display:block; flex:none}
 .hero-brand b{
   font-family:"Playfair Display","Iowan Old Style",Georgia,serif;
@@ -80,20 +103,27 @@
   display:flex; gap:0 24px; flex-wrap:wrap; margin-inline-start:auto;
   padding-block:0 3px;
 }
+/* min-width, because "Fit" sets 20px wide in English and WCAG 2.5.8 wants
+   24x24 or a 24px circle of clear space, and it had 22.2px of clear space. The
+   box grows to the right; the text does not move and the ::after rule keeps
+   its own right inset, so the underline still lands under the word. */
 .hero-nav a{
-  display:inline-flex; align-items:center; min-height:44px;
+  display:inline-flex; align-items:center; min-height:44px; min-width:24px;
   font-size:12.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
   color:var(--muted); text-decoration:none; margin-right:-.14em;
   position:relative;
-  transition:color var(--t-in) var(--e-out);
+  transition:color var(--t-in) var(--e-out), transform var(--ix-curve-press);
 }
+.hero-nav a:active{ transform:var(--ix-press) }
 .hero-nav a::after{
   content:""; position:absolute; left:0; right:.14em; bottom:calc(50% - .85em); height:1px;
   background:var(--ink); transform:scaleX(0); transform-origin:left;
   transition:transform var(--t-in) var(--e-out);
 }
-.hero-nav a:hover{color:var(--ink); transition-duration:var(--t-micro)}
-.hero-nav a:hover::after{transform:scaleX(1); transition-duration:var(--t-micro)}
+@media (hover:hover){
+  .hero-nav a:hover{color:var(--ink); transition-duration:var(--t-micro)}
+  .hero-nav a:hover::after{transform:scaleX(1); transition-duration:var(--t-micro)}
+}
 .hero-nav a[aria-current="true"]{color:var(--ink)}
 .hero-nav a[aria-current="true"]::after{transform:scaleX(1)}
 
@@ -106,13 +136,19 @@
   box-shadow:0 -2px 3px -1px rgba(37,29,24,.14), inset 1px 1px 0 rgba(253,249,247,.35);
   transition:transform var(--t-in) var(--e-out), box-shadow var(--t-in) var(--e-out);
 }
-.hero-tab:hover{
-  transform:translateY(-2px);
-  box-shadow:0 -4px 7px -2px rgba(37,29,24,.24), inset 1px 1px 0 rgba(253,249,247,.35);
-  transition-duration:var(--t-micro);
+@media (hover:hover){
+  .hero-tab:hover{
+    transform:translateY(-2px);
+    box-shadow:0 -4px 7px -2px rgba(37,29,24,.24), inset 1px 1px 0 rgba(253,249,247,.35);
+    transition-duration:var(--t-micro);
+  }
 }
+/* The press was translateY(0), which is the tab's RESTING position: from a
+   hover it read as a press and from a tap it read as nothing at all, because a
+   touch device never hovers first. It takes the shared press now, so the tab
+   goes below its rest wherever the finger or the cursor came from. */
 .hero-tab:active{
-  transform:translateY(0);
+  transform:var(--ix-press);
   box-shadow:0 -1px 1px rgba(37,29,24,.18), inset 1px 1px 0 rgba(253,249,247,.35);
   transition-duration:var(--t-tap);
   transition-timing-function:var(--e-press);
@@ -139,10 +175,13 @@
   min-height:44px; padding-inline:2px;
   font-size:12.5px; font-weight:500; letter-spacing:.1em;
   color:var(--muted); cursor:pointer; list-style:none;
-  transition:color var(--t-in) var(--e-out);
+  transition:color var(--t-in) var(--e-out), transform var(--ix-curve-press);
 }
+.hero-locale > summary:active{ transform:var(--ix-press) }
 .hero-locale > summary::-webkit-details-marker{ display:none }
-.hero-locale > summary:hover{ color:var(--ink); transition-duration:var(--t-micro) }
+@media (hover:hover){
+  .hero-locale > summary:hover{ color:var(--ink); transition-duration:var(--t-micro) }
+}
 .hero-locale-caret{
   width:9px; height:6px; flex:none;
   fill:none; stroke:currentColor; stroke-width:1.6;
@@ -161,11 +200,15 @@
   box-shadow:var(--shadow-soft, 0 2px 4px rgba(37,29,24,.10), 0 12px 28px rgba(37,29,24,.14));
 }
 .hero-locale-menu a{
-  display:flex; align-items:center; min-height:40px; padding-inline:10px;
+  display:flex; align-items:center; min-height:44px; padding-inline:10px;
   font-size:14px; font-weight:400; letter-spacing:0;
   color:var(--ink); text-decoration:none; border-radius:2px;
+  transition:background-color var(--ix-curve), transform var(--ix-curve-press);
 }
-.hero-locale-menu a:hover{ background:var(--sand,#F3E7DD) }
+.hero-locale-menu a:active{ transform:var(--ix-press) }
+@media (hover:hover){
+  .hero-locale-menu a:hover{ background:var(--sand,#F3E7DD) }
+}
 .hero-locale-menu a[aria-current="page"]{
   font-weight:500;
   box-shadow:inset 2px 0 0 var(--amber-text);
@@ -524,10 +567,12 @@
   box-shadow:var(--hero-sh-lift);
   transition:box-shadow var(--t-in) var(--e-out), transform var(--t-in) var(--e-out);
 }
-.hero-deal:hover .hero-sheet-face{
-  transform:rotate(var(--r)) translateY(-6px);
-  box-shadow:var(--hero-sh-raise);
-  transition-duration:var(--t-micro);
+@media (hover:hover){
+  .hero-deal:hover .hero-sheet-face{
+    transform:rotate(var(--r)) translateY(-6px);
+    box-shadow:var(--hero-sh-raise);
+    transition-duration:var(--t-micro);
+  }
 }
 .hero-deal:active .hero-sheet-face{
   transform:rotate(var(--r)) translateY(1px) scale(.994);
@@ -537,7 +582,15 @@
 }
 .hero-deal:focus-visible{outline:3px solid var(--hero-focus); outline-offset:6px; border-radius:3px}
 .hero-deal:not([href]){cursor:default}
-.hero-deal:not([href]):hover .hero-sheet-face,
+/* A card that is not a link answers neither a cursor nor a finger. The two
+   halves are split because only the hover half may be guarded: the press half
+   has to hold on a touch device, which is the only place a stuck press could
+   be produced in the first place. */
+@media (hover:hover){
+  .hero-deal:not([href]):hover .hero-sheet-face{
+    transform:rotate(var(--r)); box-shadow:var(--hero-sh-lift);
+  }
+}
 .hero-deal:not([href]):active .hero-sheet-face{
   transform:rotate(var(--r)); box-shadow:var(--hero-sh-lift);
 }
@@ -653,9 +706,11 @@
     box-shadow:0 1px 1px rgba(37,29,24,.16), 0 6px 12px -8px rgba(37,29,24,.34),
                inset 1px 1px 0 rgba(253,249,247,.35);
   }
-  .hero-tab:hover{
-    box-shadow:0 1px 1px rgba(37,29,24,.16), 0 10px 18px -8px rgba(37,29,24,.42),
-               inset 1px 1px 0 rgba(253,249,247,.35);
+  @media (hover:hover){
+    .hero-tab:hover{
+      box-shadow:0 1px 1px rgba(37,29,24,.16), 0 10px 18px -8px rgba(37,29,24,.42),
+                 inset 1px 1px 0 rgba(253,249,247,.35);
+    }
   }
   .hero-tab:active{
     box-shadow:0 1px 1px rgba(37,29,24,.22), inset 1px 1px 0 rgba(253,249,247,.35);

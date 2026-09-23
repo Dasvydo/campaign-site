@@ -244,12 +244,21 @@
    no component needs a `transform: none` rule to opt in.
 
    The PRESS SURVIVES. It is re-asserted below rather than merely left alone,
-   because six rules in the existing stylesheet zero their :active transform
-   in exactly this media query - phone-hero.css twice, price.css, qualifier.css,
-   footer.css and demo.css - and a reduced-motion reader there gets no
-   confirmation their click registered at all. That is a feedback failure
-   wearing an accessibility costume. Reduced motion is a request about ambient
-   movement, not a request to be told less.
+   because six rules in the existing stylesheet used to zero their :active
+   transform in exactly this media query - phone-hero.css twice, price.css,
+   qualifier.css, footer.css and demo.css - and a reduced-motion reader there
+   got no confirmation their click registered at all. That is a feedback
+   failure wearing an accessibility costume. Reduced motion is a request about
+   ambient movement, not a request to be told less.
+
+   All six are now gone at the source. price.css and qualifier.css went with
+   their sections; the :active halves in phone-hero.css (.hero-tab and
+   .hero-deal), footer.css (.footer-a) and demo.css (.demo-sw, .demo-restore,
+   .demo-btn) were deleted, and each of those files carries a note saying why.
+   Only the :hover halves remain in those blocks, which is the part that is
+   correct: the RISE is withdrawn, the PRESS is not. This re-assertion stays
+   regardless - it is what covers anything carrying .ix-raise, .ix-tap or .btn,
+   and it is the rule a future section rule would have to argue with.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   :root {
