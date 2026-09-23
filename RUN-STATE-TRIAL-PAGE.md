@@ -43,10 +43,10 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T7 | Rebuild the hero | 3 | verified | 1 | PASS | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
 | T8 | Pricing tiers section | 3 | verified | 1 | PASS | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
 | T9 | Wire trial CTA + analytics | 3 | held | 0 | | CTA wiring | Hero/Tiers CTA blocks, src/lib/env.ts |
-| T10 | Rewrite analytics event union | 4 | running | 0 | | analytics.ts | src/lib/analytics.ts |
+| T10 | Rewrite analytics event union | 4 | verified | 1 | PASS | analytics.ts | src/lib/analytics.ts |
 | T11 | Teams-of-10+ secondary path | 3 | verified | 1 | PASS | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
-| T12 | Mobile + accessibility pass | 4 | running | 0 | | a11y fixes | sections/** (a11y only), Consent.tsx |
-| T13 | Update verification gates | 4 | pending | 0 | | scripts/** | scripts/**, package.json scripts |
+| T12 | Mobile + accessibility pass | 4 | verifying | 1 | | a11y fixes | sections/** (a11y only), Consent.tsx |
+| T13 | Update verification gates | 4 | running | 0 | | scripts/** | scripts/**, package.json scripts |
 
 ## Contracts
 | ID | Producer | Consumers | Interface | Honored |
@@ -259,6 +259,54 @@ shown and zero POSTs, while `12` still delivers `people: 12` and the result scre
 corrections were checked against the rendered page first: `#price` is `tiers on-dark` and `.ent-panel` is
 `on-dark`, so `.on-dark .btn-primary` gives both buttons warmwhite-on-charcoal; the espresso pill on cream is
 `.hero-btn` (`background: var(--ink)`), at the top of the page, not four sections up.
+
+### T10 verified PASS — and the CTA label it exposed
+All five criteria proven in a real browser with negative tests behind each gate, not inferred from source:
+the dwell gate measured at five viewports (0 on a fast scroll-past, 0 at 1.2s, exactly 1 past 2s, still 1
+after leaving and returning three times); five distinct submit outcomes for the enterprise form, of which
+only the two that actually arrive raise the event; and the consent gate shown holding with real posthog-js
+and a real Meta pixel — zero localStorage keys, zero cookies, zero external requests before a decision, and
+held events proven DISCARDED on decline rather than parked. The strongest guard turns out to be `typecheck`:
+`EventName` is a real type constraint, so no name outside the union can be raised at all.
+
+**What that verification walked into.** Every call to action on this page renders `c.nav.cta`, and in all
+three locales that still read "Check if we are a fit" / "Se om vi passer sammen" / "Pažiūrėkite, ar tinkame"
+— the label of the fit-check funnel deleted in T6. Four render sites: `Hero.tsx:334`, `:401`, `:488` and
+`Tiers.tsx:359`. The founder's own gate answer was that the CTA is "start a free trial", `types.ts:544`
+already documents this button as "the button that starts the trial", and the section directly above it is
+headed "Free for the first 14 days". The label was the one thing nobody had changed.
+
+Fixed here, in all three locales, using vocabulary the page already uses (`prøveperiode`, `bandymas`,
+`nemokamai`). Measured after: the whole suite green, and the button fits at 320px in every locale, the
+Lithuanian being widest at 288px inside a 320px viewport with no document scroll. The Lithuanian string is
+NOT native-reviewed — it joins the list at the foot of this file.
+
+**The target is still dangling, and that is HS1, not this fix.** `href="#fit"` resolves to nothing:
+`document.getElementById('fit') === null`, confirmed in-browser. So the primary call to action of this page
+currently moves the visitor nowhere, in every locale, at every breakpoint. That was documented in the code
+but appeared in NO tracking document — not BLOCKED.md, not this file, not OFFER-HANDOFF.md, not README.md.
+It is written down now. The button label is now honest about what it offers and still cannot deliver it,
+which is strictly better than a button that offered a screening step that does not exist either, but it is
+not shippable until HS1 is answered.
+
+### Flagged by T10's verifier and deliberately NOT actioned
+`SESSION-REPORT.md:166` names `pricing_view` and a line number that no longer matches, and was reported as
+stale. It is not. That file is a dated session report from branch `claude/campaign-build-status-9j9194`
+whose own header says "Every number below was observed in this container". Rewriting it would falsify a
+record of what was true then. Same standing as `verify-posthog.mjs:9-10`. Left exactly as it is.
+
+### Gate weaknesses proven by negative test, handed to T13 mid-run
+None created by this run; all pre-existing, all under `scripts/`.
+1. **The discard-on-decline promise is completely ungated.** Removing `if (consentDecided()) pending = [];`
+   from `applyConsent()` leaves `verify:consent` GREEN at exit 0; additionally neutering the decline drop
+   inside `track()` ALSO leaves it green. The one thing the consent dialog promises in three languages has
+   no check behind it at all.
+2. **`verify:payload`'s positive branch is a text grep.** Replacing the real `track('price_seen')` with a
+   comment containing the same characters keeps it green. It cannot prove a raise happens.
+3. **`verify:consent`'s undecided-window block cannot catch an analytics-gate removal on its own** —
+   `posthog-js` is a dynamic import and the footprint is sampled synchronously, so deleting
+   `if (!consentGranted()) return;` from `maybeStart()` still PASSED that line; only the afterDecline block
+   caught it.
 
 ### Carried forward to T13 (raised by T10, confirmed by the orchestrator's own grep)
 T10 renamed the price event. `pricing_view` is no longer declared anywhere in `src/`, which leaves three

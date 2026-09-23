@@ -220,15 +220,33 @@ it, neither of which ships. To use a supplied file instead, drop it at
 
 ## Tracking
 
-PostHog, EU host. Eight events, named exactly as the campaign spec fixes them:
+PostHog, EU host. Five events. The `EventName` union in `src/lib/analytics.ts`
+is the entire vocabulary and `track()` will not accept a name outside it, so the
+typecheck, not a gate and not this list, is what actually holds it shut:
 
-`page_view` · `demo_desk` · `pricing_view` · `booking_click`
+`page_view` · `demo_desk` · `price_seen` · `trial_cta_click` · `enterprise_enquiry`
 
-The five form events (`form_start`, `form_step`, `form_submit`, `qualified_shown`,
-`too_small_shown`) went with the fit-check form. `pricing_view` is declared and
-deliberately not raised yet: the pricing band is being rebuilt. `verify:payload`
-reads the live set out of the `EventName` union rather than from this list, so a
-name added here that nothing raises does not make the gate pass.
+`price_seen` is dwell gated: the fee cards have to hold the middle of the
+viewport for two continuous seconds, so `page_view` to `price_seen` measures
+whether putting the price above the worked example got it in front of anybody,
+rather than counting people who loaded a page that has a price somewhere on it.
+`trial_cta_click` carries `placement`, `hero` or `pricing`, which is how the two
+positions are compared against each other. `enterprise_enquiry` is raised on
+delivery only, so an enquiry still sitting in the recovery queue is never
+counted as a lead. The honest cost of that is an enquiry which only gets
+through on a later visit is under-reported.
+
+The set before this one was eight events built for a gated sales call:
+`pricing_view`, `booking_click` and five fit-check form events, all of which
+went with the form. Two of them had started reporting motions the page no longer
+performed, which is the reason the vocabulary was rewritten rather than trimmed.
+`scripts/verify-posthog.mjs` still lists the old names in its header; that is a
+record of what a key/region mismatch silently dropped on 2026-09-22, not a
+register of what is raised now.
+
+`verify:payload` reads the live set out of the `EventName` union rather than
+from this list, so a name added here that nothing raises does not make the gate
+pass.
 
 Every event carries `market`, `locale`, `utm_source`, `utm_medium`,
 `utm_campaign` and `utm_content`. Those properties are how the three-market A/B
