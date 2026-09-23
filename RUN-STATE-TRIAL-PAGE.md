@@ -40,12 +40,12 @@ booking step, chatbot); the predecessor Vercel project; deploying, pushing to ma
 | T4 | Build the interaction system | 1 | verified | 1 | PARTIAL -> PASS (fix applied) | src/styles/interaction.css | src/styles/interaction.css, src/styles/index.css |
 | T5 | Extract trial copy before deletion | 2 | verified | 2 | PARTIAL -> PASS (retry) | src/content/*/trial.ts | src/content/*/trial.ts |
 | T6 | Delete the dead funnel | 2 | verified | 1 | PARTIAL -> PASS (coverage restored) | removals | +Price.tsx, LocalePage.tsx, content price/numbers/form/results, sections css (SCOPE AMENDED) |
-| T7 | Rebuild the hero | 3 | pending | 0 | | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
-| T8 | Pricing tiers section | 3 | pending | 0 | | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
+| T7 | Rebuild the hero | 3 | verified | 1 | PASS | Hero.tsx | Hero.tsx, sections/hero.css, content/*/hero.ts |
+| T8 | Pricing tiers section | 3 | verified | 1 | PASS | Tiers.tsx | Tiers.tsx, sections/tiers.css, content/*/tiers.ts |
 | T9 | Wire trial CTA + analytics | 3 | held | 0 | | CTA wiring | Hero/Tiers CTA blocks, src/lib/env.ts |
-| T10 | Rewrite analytics event union | 4 | pending | 0 | | analytics.ts | src/lib/analytics.ts |
-| T11 | Teams-of-10+ secondary path | 3 | pending | 0 | | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
-| T12 | Mobile + accessibility pass | 4 | pending | 0 | | a11y fixes | sections/** (a11y only), Consent.tsx |
+| T10 | Rewrite analytics event union | 4 | running | 0 | | analytics.ts | src/lib/analytics.ts |
+| T11 | Teams-of-10+ secondary path | 3 | verified | 1 | PASS | Enterprise.tsx | Enterprise.tsx, sections/enterprise.css, content/*/enterprise.ts |
+| T12 | Mobile + accessibility pass | 4 | running | 0 | | a11y fixes | sections/** (a11y only), Consent.tsx |
 | T13 | Update verification gates | 4 | pending | 0 | | scripts/** | scripts/**, package.json scripts |
 
 ## Contracts
@@ -221,6 +221,29 @@ gate should then assert something about its CONTENT, not just its length.
 three of its sections and now **fails loudly** rather than passing green, which is the safe direction. Its other
 sections — layout at 360/768/1280, the 16px input rule, pixel call ordering, UTM persistence across a History
 navigation — still have live subjects and are worth recovering. Needs a decision, not a silent deletion.
+
+### Deferred from T11's verifier — both in files another agent holds right now
+Apply once T10 (Enterprise.tsx, analytics) and T12 (sections/**) have landed:
+1. **`Enterprise.tsx` accepts fractional and exponent head counts.** The form is `noValidate` and the guard is
+   `Number(fields.people) > 0`, so `min={1}` and `step={1}` are decorative. Proven by the verifier: typing `3.7`
+   delivers `people: 3.7` to the webhook and `1e5` delivers `people: 100000`. Fix is one line, no new copy —
+   `const n = Number(fields.people); if (!Number.isInteger(n) || n < 1) found.people = f.errorSize;` — and
+   `errorSize` already reads "Even a rough count helps us answer." in all three locales.
+2. **Stale rationale in two headers.** `Enterprise.tsx:16` and `enterprise.css:9,239` justify the section by
+   saying it "carries no espresso pill on the cream ground" and contrasts with "the espresso pill four sections
+   up". That page does not exist: `.on-dark .btn-primary` renders the Tiers CTA warmwhite-on-charcoal, the same
+   treatment as this submit. The differentiation is real (ground, placement, label, no anchors) but it is not the
+   differentiation the comments claim, and comments this load-bearing are how the next reader gets misled.
+3. Minor: `.field-hint` for the email carries `role="status"` from first paint, so static hint text sits in a
+   live region before there is anything to announce. `aria-live="polite"` on a wrapper that starts empty is cleaner.
+
+### For the founder — Lithuanian, confirmed by two independent reviews
+`Veikia mūsų serveriuose arba įdiegiame Jūsų.` was recovered from the old hero byte-for-byte (50/64/49 bytes,
+code-point identical in all three locales), exactly as instructed. The **string itself** is elliptical:
+`įdiegiame Jūsų` ends on a genitive modifier with no noun to modify; idiomatic Lithuanian wants
+`…įdiegiame Jūsų serveriuose` or `…pas Jus`. It passed as clipped shorthand in the hero. It now sits under
+"KUR JI VEIKIA" in the one block a security reviewer opens, where "our servers or yours" has to be unambiguous.
+Needs a native speaker, not an agent.
 
 ## Coherence audit
 <pending — phase 6>
